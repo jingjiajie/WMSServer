@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD//EN"
+    "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <property name="connection.url">jdbc:mysql://linuxserver.jingjiajie.com:3306/WMS_Template?useUnicode=true&amp;characterEncoding=utf8</property>
+    <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+    <property name="connection.username">wms</property>
+    <property name="connection.password">Wms666666</property>
+    <property name="hbm2ddl.auto">update</property>
+      <property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>
+
+    <mapping class="com.wms.services.warehouse.model.Material"/>
+    <mapping class="com.wms.services.ledger.model.Person"/>
+    <mapping class="com.wms.services.warehouse.model.Supplier"/>
+    <mapping class="com.wms.services.warehouse.model.Supply"/>
+    <mapping class="com.wms.services.warehouse.model.Warehouse"/>
+
+  </session-factory>
+</hibernate-configuration>
