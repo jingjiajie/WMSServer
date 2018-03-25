@@ -12,6 +12,17 @@
 
     <artifactId>ledger-service</artifactId>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>../Parent/src/main/resources</directory>
+                <includes>
+                    <include>dataSourceBean.xml</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>com.wms</groupId>
@@ -45,12 +56,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>5.0.4.RELEASE</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>2.1.1</version>
         </dependency>
 
         <dependency>

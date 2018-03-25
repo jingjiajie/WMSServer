@@ -17,6 +17,13 @@
         <module>../Utilities</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+        </dependency>
+    </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -34,7 +41,9 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
         </dependencies>
+
     </dependencyManagement>
 
     <repositories>
