@@ -17,7 +17,8 @@ public class PersonControllerImpl implements PersonController {
     PersonService personService;
 
     @RequestMapping(value="/",method = RequestMethod.POST)
-    public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook, Person[] persons) {
+    public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook,
+                                     @RequestBody Person[] persons) {
         int ids[] = personService.add(accountBook, persons);
         return new ResponseEntity<int[]>(ids, HttpStatus.OK);
     }

@@ -20,7 +20,7 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     public int[] add(String accountBook, Person[] persons) throws WMSServiceException{
         try{
-        return personDAO.add(accountBook,persons);
+            return personDAO.add(accountBook,persons);
         }catch (DatabaseNotFoundException ex){
             throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
