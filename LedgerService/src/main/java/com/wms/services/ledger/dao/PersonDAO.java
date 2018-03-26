@@ -7,8 +7,8 @@ import com.wms.utilities.exceptions.dao.WMSDAOException;
 import java.util.Map;
 
 public interface PersonDAO {
-    void add(String database,Person person[]) throws WMSDAOException;
-    void update(String database,Person person[]) throws WMSDAOException;
-    void remove(String database,int[] ids) throws WMSDAOException;
-    Person[] find(String database,Condition[] conds) throws WMSDAOException;
+    int[] add(String database,Person persons[]) throws WMSDAOException;
+    void update(String database,Person persons[]) throws WMSDAOException;
+    void remove(String database,int ids[]) throws WMSDAOException;
+    Person[] find(String database,Condition cond) throws WMSDAOException;
 }

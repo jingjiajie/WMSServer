@@ -1,110 +1,78 @@
 package com.wms.utilities.datastructures;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.utilities.exceptions.ConditionException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Condition {
-    public enum Relation{
-        EQUAL,GREATER_THAN,LESS_THAN,BETWEEN
-    }
+    private ConditionItem[] conditions = null;
+    private OrderItem[] orders = null;
 
-    private String key;
-    private Relation relation;
-    private Object[] values;
-
-    private Condition(){}
-
-    public static Condition[] fromJson(String jsonStr) throws ConditionException{
+    public static Condition fromJson(String jsonStr) throws ConditionException{
         Gson gson = new Gson();
-        Condition[] results = gson.fromJson(jsonStr,new TypeToken<Condition[]>(){}.getType());
-        return results;
-//        JsonParser jsonParser = new JsonParser();
-//        JsonElement jsonElement = null;
-//        try {
-//            jsonElement = jsonParser.parse(jsonStr);
-//        }catch (Exception ex){
-//            throw new ConditionException("Invalid condition: "+jsonStr);
-//        }
-//        //要转换的JsonObject列表
-//        List<JsonObject> listJsonObject = new ArrayList<JsonObject>();
-//        //如果是单项，则作为数组的唯一一项
-//        if(jsonElement.isJsonObject()){
-//            listJsonObject.add(jsonElement.getAsJsonObject());
-//        }else if(jsonElement.isJsonArray()){ //如果是数组，转为Condition数组
-//            JsonArray jsonArray = jsonElement.getAsJsonArray();
-//            for(JsonElement arrayElement : jsonArray) {
-//                if (!arrayElement.isJsonObject()) {
-//                    throw new ConditionException("Invalid condition: " + arrayElement.toString());
-//                }
-//                listJsonObject.add(arrayElement.getAsJsonObject());
-//            }
-//        }else{ //格式不对，抛出错误
-//            throw new ConditionException("Invalid condition: " + jsonElement.toString());
-//        }
-//
-//        //开始进行转换
-//        List<Condition> results = new ArrayList<Condition>();
-//        for(JsonObject jsonObject : listJsonObject) {
-//            if (!jsonObject.has("key")) {
-//                throw new ConditionException("condition must contain property \"key\" : " + jsonObject.toString());
-//            } else if (!jsonObject.has("relation")) {
-//                throw new ConditionException("condition must contain property \"relation\" : " + jsonObject.toString());
-//            } else if (!jsonObject.has("values")) {
-//                throw new ConditionException("condition must contain property \"values\" : " + jsonObject.toString());
-//            }
-//            String key = jsonObject.get("key");
-//        }
+        Condition result = gson.fromJson(jsonStr,new TypeToken<Condition>(){}.getType());
+        return result;
     }
 
-    public static Query createQuery(String entityName, Condition[] conditions, Session session){
+    public Query createQuery(String entityName, Session session){
+        ConditionItem[] conditionItems = this.conditions;
+        OrderItem[] orderItems = this.orders;
         StringBuffer hqlString = new StringBuffer("from "+entityName+" ");
         Map<String,Object> queryParams = new HashMap<String, Object>();
-        if(conditions.length != 0){
-            hqlString.append("where 1=1 ");
-        }
+        int valueNum = 0;
+        if(conditionItems != null) {
+            if (conditionItems.length != 0) {
+                hqlString.append("where 1=1 ");
+            }
 
-        for(int i=0;i<conditions.length;i++){
-            Condition cond = conditions[i];
-            switch (cond.relation) {
-                case EQUAL:
-                    if(cond.getValues().length != 1){
-                        throw new ConditionException("EQUAL relation needs one value");
-                    }
-                    hqlString.append(String.format("AND %s = :value%d", cond.getKey(), i));
-                    queryParams.put("value" + i, cond.getValues()[0]);
-                    break;
-                case GREATER_THAN:
-                    if(cond.getValues().length != 1){
-                        throw new ConditionException("GREATER_THAN relation needs one value");
-                    }
-                    hqlString.append(String.format("AND %s > :value%d", cond.getKey(), i));
-                    queryParams.put("value" + i, cond.getValues()[0]);
-                    break;
-                case LESS_THAN:
-                    if(cond.getValues().length != 1){
-                        throw new ConditionException("LESS_THAN relation needs one value");
-                    }
-                    hqlString.append(String.format("AND %s < :value%d", cond.getKey(), i));
-                    queryParams.put("value" + i, cond.getValues()[0]);
-                    break;
-                case BETWEEN:
-                    if(cond.getValues().length != 2){
-                        throw new ConditionException("BETWEEN relation needs two values");
-                    }
-                    hqlString.append(String.format("AND %s BETWEEN :value%d_1 AND :value%d_2", cond.getKey(), i,i));
-                    queryParams.put("value" + i+"_1", cond.getValues()[0]);
-                    queryParams.put("value" + i+"_2", cond.getValues()[1]);
-                    break;
-                default:
-                    throw new ConditionException("Unsupported relation "+cond.relation.toString());
+            for (int i=0; i < conditionItems.length; i++,valueNum++) {
+                ConditionItem cond = conditionItems[i];
+                switch (cond.getRelation()) {
+                    case EQUAL:
+                        if (cond.getValues().length != 1) {
+                            throw new ConditionException("EQUAL relation needs one value");
+                        }
+                        hqlString.append(String.format("AND %s = :value%d", cond.getKey(), valueNum));
+                        queryParams.put("value" + i, cond.getValues()[0]);
+                        break;
+                    case GREATER_THAN:
+                        if (cond.getValues().length != 1) {
+                            throw new ConditionException("GREATER_THAN relation needs one value");
+                        }
+                        hqlString.append(String.format("AND %s > :value%d", cond.getKey(), valueNum));
+                        queryParams.put("value" + i, cond.getValues()[0]);
+                        break;
+                    case LESS_THAN:
+                        if (cond.getValues().length != 1) {
+                            throw new ConditionException("LESS_THAN relation needs one value");
+                        }
+                        hqlString.append(String.format("AND %s < :value%d", cond.getKey(), valueNum));
+                        queryParams.put("value" + i, cond.getValues()[0]);
+                        break;
+                    case BETWEEN:
+                        if (cond.getValues().length != 2) {
+                            throw new ConditionException("BETWEEN relation needs two values");
+                        }
+                        hqlString.append(String.format("AND %s BETWEEN :value%d_1 AND :value%d_2", cond.getKey(), valueNum,valueNum));
+                        queryParams.put("value" + i + "_1", cond.getValues()[0]);
+                        queryParams.put("value" + i + "_2", cond.getValues()[1]);
+                        break;
+                    default:
+                        throw new ConditionException("Unsupported relation " + cond.getRelation().toString());
+                }
+            }
+        }
+        if(orderItems != null){
+            if(orderItems.length > 0){
+                hqlString.append("order by 1");
+            }
+            for(int i=0;i<orderItems.length;i++,valueNum++){
+                hqlString.append(String.format(",%s %s",orderItems[i].getKey(),orderItems[i].getOrder().toString()));
             }
         }
         Query query = session.createQuery(hqlString.toString());
@@ -114,27 +82,19 @@ public class Condition {
         return query;
     }
 
-    public String getKey() {
-        return key;
+    public ConditionItem[] getConditions() {
+        return conditions;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setConditions(ConditionItem[] conditions) {
+        this.conditions = conditions;
     }
 
-    public Relation getRelation() {
-        return relation;
+    public OrderItem[] getOrders() {
+        return orders;
     }
 
-    public void setRelation(Relation relation) {
-        this.relation = relation;
-    }
-
-    public Object[] getValues() {
-        return values;
-    }
-
-    public void setValues(Object[] values) {
-        this.values = values;
+    public void setOrders(OrderItem[] orders) {
+        this.orders = orders;
     }
 }
