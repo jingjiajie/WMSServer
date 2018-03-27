@@ -15,12 +15,23 @@ import java.util.stream.Stream;
 
 @Repository
 public class PersonDAOImpl implements PersonDAO {
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
+
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
+
     @Autowired
     private SessionFactory sessionFactory;
 
     public int[] add(String database, Person[] persons) throws WMSDAOException{
         if(persons.length == 0){
             return new int[0];
+        }
+        if(sessionFactory==null){
+            System.out.println("sessionFactory 为空");
         }
         Session session = sessionFactory.getCurrentSession();
         try {
