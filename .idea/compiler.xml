@@ -13,7 +13,7 @@
         <module name="Zuul" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="EurekaServer" target="1.5" />
       <module name="LedgerService" target="1.8" />
       <module name="Parent" target="1.5" />
