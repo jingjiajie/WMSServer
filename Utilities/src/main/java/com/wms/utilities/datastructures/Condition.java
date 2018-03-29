@@ -69,7 +69,7 @@ public class Condition {
         }
         if(orderItems != null){
             if(orderItems.length > 0){
-                hqlString.append("order by 1");
+                hqlString.append(" order by 1");
             }
             for(int i=0;i<orderItems.length;i++,valueNum++){
                 hqlString.append(String.format(",%s %s",orderItems[i].getKey(),orderItems[i].getOrder().toString()));

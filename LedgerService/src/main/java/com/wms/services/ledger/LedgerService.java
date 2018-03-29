@@ -1,10 +1,16 @@
 package com.wms.services.ledger;
 
+/*
 import com.wms.services.ledger.dao.AccountTitleDAO;
 import com.wms.services.ledger.dao.AccountTitleDAOImpl;
 import com.wms.services.ledger.dao.PersonDAO;
 import com.wms.services.ledger.model.AccountTitle;
 import com.wms.services.ledger.service.AccountTitleService;
+
+import com.wms.services.ledger.model.Person;
+import com.wms.services.ledger.service.PersonService;
+import com.wms.services.ledger.service.PersonServiceImpl;
+*/
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +29,7 @@ public class LedgerService {
     public static void main(String args[]){
         ApplicationContext applicationContext = SpringApplication.run(LedgerService.class,args);
         System.out.println("总账服务启动...");
+
         /*AccountTitleService accountTitleService = applicationContext.getBean(AccountTitleService.class);
         AccountTitle accountTitle = new AccountTitle();
         accountTitle.setDirection(1);
@@ -40,6 +47,16 @@ public class LedgerService {
         accountTitle.setType(1);
         accountTitle.setId(4);
         accountTitleService.update("WMS_Template",new AccountTitle[]{accountTitle});
+
+        Person person = new Person();
+        person.setName("小黑");
+        person.setPassword("987654321");
+        person.setRole("管理员");
+        person.setAuthorityString("HEHE");
+        PersonService personService = applicationContext.getBean(PersonService.class);
+        personService.add("WMS_Template",new Person[]{person});
+        System.out.println("添加完成！");
         */
+
     }
 }

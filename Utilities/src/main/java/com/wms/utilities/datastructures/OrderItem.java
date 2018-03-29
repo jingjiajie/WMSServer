@@ -6,7 +6,7 @@ public class OrderItem {
     }
 
     private String key;
-    private Order order;
+    private Order order = Order.ASC;
 
     public String getKey() {
         return key;
