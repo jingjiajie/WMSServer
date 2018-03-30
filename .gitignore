@@ -1,5 +1,6 @@
 #common ignore
 #.idea/
+.idea/workspace.xml
 .svn/
 *.iml
 .settings/
