@@ -6,11 +6,13 @@
     <import resource="classpath:dataSourceBean.xml"/>
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" lazy-init="false">
-        <!--<property name="configLocation" value="classpath:hibernate.cfg.xml"/>-->
         <property name="dataSource" ref="dataSource"/>
         <property name="annotatedClasses">
             <list>
                 <value>com.wms.services.ledger.model.Person</value>
+                <value>com.wms.services.ledger.model.AccountTitle</value>
+                <value>com.wms.services.ledger.model.Tax</value>
+                <value>com.wms.services.ledger.model.TaxItem</value>
             </list>
         </property>
     </bean>

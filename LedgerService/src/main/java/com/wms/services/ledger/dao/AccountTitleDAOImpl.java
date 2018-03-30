@@ -1,13 +1,12 @@
 package com.wms.services.ledger.dao;
 
-import com.wms.services.ledger.model.Person;
+import com.wms.services.ledger.model.AccountTitle;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Repository
-public class PersonDAOImpl implements PersonDAO {
+public class AccountTitleDAOImpl implements AccountTitleDAO {
     public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
@@ -27,57 +26,57 @@ public class PersonDAOImpl implements PersonDAO {
     @Autowired
     private SessionFactory sessionFactory;
 
-    public int[] add(String database, Person[] persons) throws WMSDAOException{
-        if(persons.length == 0){
+    public int[] add(String database, AccountTitle[] accountTitles) throws WMSDAOException {
+        if (accountTitles.length == 0) {
             return new int[0];
         }
-        if(sessionFactory==null){
+        if (sessionFactory == null) {
             System.out.println("sessionFactory 为空");
         }
         Session session = sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
+        } catch (Throwable ex) {
             throw new DatabaseNotFoundException(database);
         }
 
         try {
-            for (Person person : persons) {
-                session.save(person);
+            for (AccountTitle accountTitle : accountTitles) {
+                session.save(accountTitle);
             }
-            int ids[] = Stream.of(persons).mapToInt((p) -> p.getId()).toArray();
+            int ids[] = Stream.of(accountTitles).mapToInt((p) -> p.getId()).toArray();
             return ids;
-        }catch (Throwable ex){
+        } catch (Throwable ex) {
             throw new WMSDAOException(ex.getMessage());
         }
     }
 
-    public void update(String database, Person persons[]) throws WMSDAOException{
+    public void update(String database, AccountTitle accountTitles[]) throws WMSDAOException {
         Session session = sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
+        } catch (Throwable ex) {
             throw new DatabaseNotFoundException(database);
         }
 
         try {
-            for (Person person : persons) {
+            for (AccountTitle accountTitle : accountTitles) {
                 StringBuffer sbHQLString = new StringBuffer();
-                session.update(person);
+                session.update(accountTitle);
             }
-        }catch (Throwable ex){
+        } catch (Throwable ex) {
             throw new WMSDAOException(ex.getMessage());
         }
     }
 
-    public void remove(String database, int ids[]) throws WMSDAOException{
-        if(ids.length == 0){
+    public void remove(String database, int[] ids) throws WMSDAOException {
+        if (ids.length == 0) {
             return;
         }
         Session session = sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
+        } catch (Throwable ex) {
             throw new DatabaseNotFoundException(database);
         }
         try {
@@ -86,13 +85,13 @@ public class PersonDAOImpl implements PersonDAO {
                 idStr.append(String.format("%d,", id));
             }
             idStr.setLength(idStr.length() - 1);
-            session.createQuery(String.format("delete from Person where ID in(%s)", idStr.toString())).executeUpdate();
+            session.createQuery(String.format("delete from AccountTitle where ID in(%s)", idStr.toString())).executeUpdate();
         }catch (Throwable ex){
             throw new WMSDAOException(ex.getMessage());
         }
     }
 
-    public Person[] find(String database,Condition cond) throws WMSDAOException{
+    public AccountTitle[] find(String database, Condition cond) throws WMSDAOException {
         Session session = sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + database + ";").executeUpdate();
@@ -101,12 +100,12 @@ public class PersonDAOImpl implements PersonDAO {
         }
 
         try {
-            Query query = cond.createQuery("Person", session);
+            Query query = cond.createQuery("AccountTitle", session);
 
-            List<Person> listPerson = query.list();
-            Person[] arrPerson = new Person[listPerson.size()];
-            listPerson.toArray(arrPerson);
-            return arrPerson;
+            List<AccountTitle> listAccountTitle = query.list();
+            AccountTitle[] arrAccountTitle = new AccountTitle[listAccountTitle.size()];
+            listAccountTitle.toArray(arrAccountTitle);
+            return arrAccountTitle;
         }catch (Throwable ex){
             throw new WMSDAOException(ex.getMessage());
         }
