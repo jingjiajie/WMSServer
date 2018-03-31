@@ -11,6 +11,8 @@ import com.wms.services.ledger.model.Person;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.ledger.service.PersonServiceImpl;
 */
+import com.wms.services.ledger.model.Tax;
+import com.wms.services.ledger.service.TaxService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
