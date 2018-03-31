@@ -20,9 +20,30 @@ public class SipplierServicesImpl  implements SupplierServices{
             throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
     }
-
-
-
+    @Transactional
+    public void update(String accountBook, Supplier[] suppliers) throws WMSServiceException{
+        try {
+            supplierDAO.update(accountBook, suppliers);
+        }catch (DatabaseNotFoundException ex){
+            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
+        }
+    }
+    @Transactional
+    public void remove(String accountBook, int[] ids) throws WMSServiceException{
+        try {
+            supplierDAO.remove(accountBook, ids);
+        } catch (DatabaseNotFoundException ex) {
+            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
+        }
+    }
+    @Transactional
+    public Supplier[] find(String accountBook, Condition cond) throws WMSServiceException{
+        try {
+            return this.supplierDAO.find(accountBook, cond);
+        }catch (DatabaseNotFoundException ex){
+            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
+        }
+    }
 
 
 
