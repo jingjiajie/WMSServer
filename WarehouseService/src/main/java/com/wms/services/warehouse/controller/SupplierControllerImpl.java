@@ -4,4 +4,5 @@ import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.model.Supplier;
 
 public class SupplierControllerImpl implements SupplierController {
+
 }
