@@ -18,7 +18,7 @@
       <module name="LedgerService" target="1.8" />
       <module name="Parent" target="1.5" />
       <module name="Utilities" target="1.5" />
-      <module name="WarehouseService" target="1.5" />
+      <module name="WarehouseService" target="1.8" />
       <module name="Zuul" target="1.5" />
     </bytecodeTargetLevel>
   </component>
