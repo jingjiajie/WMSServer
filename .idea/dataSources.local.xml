@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="WMS" uuid="38d4914e-d70c-4bcf-841d-785dda45e156">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
+      <introspection-schemas>*:WMS_Template</introspection-schemas>
+    </data-source>
+    <data-source name="hibernate.cfg.xml/Hibernate" uuid="e39a0fd7-05a0-4f04-9139-bf6ebd32757b">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" />
+      <introspection-schemas>*:WMS_Template</introspection-schemas>
+    </data-source>
+  </component>
+</project>
