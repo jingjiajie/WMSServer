@@ -15,6 +15,7 @@ public class TaxItem {
     private int type;
     private BigDecimal taxAmount;
     private BigDecimal taxRate;
+    private int taxId;
 
     @Id
     @Column(name = "ID")
@@ -93,5 +94,15 @@ public class TaxItem {
     public int hashCode() {
 
         return Objects.hash(id, startAmount, endAmount, type, taxAmount, taxRate);
+    }
+
+    @Basic
+    @Column(name = "TaxID")
+    public int getTaxId() {
+        return taxId;
+    }
+
+    public void setTaxId(int taxId) {
+        this.taxId = taxId;
     }
 }

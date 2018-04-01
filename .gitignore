@@ -1,8 +1,8 @@
 #common ignore
-#.idea/
-.idea/workspace.xml
+/.idea/*
+!/.idea/modules.xml
 .svn/
-*.iml
+#*.iml
 .settings/
 .classpath
 .project
