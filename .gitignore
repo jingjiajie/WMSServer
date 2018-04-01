@@ -2,7 +2,7 @@
 /.idea/*
 !/.idea/modules.xml
 .svn/
-*.iml
+#*.iml
 .settings/
 .classpath
 .project
