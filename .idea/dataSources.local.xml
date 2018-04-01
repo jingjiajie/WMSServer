@@ -11,7 +11,10 @@
         <identifier-quote-string>`</identifier-quote-string>
       </database-info>
       <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
+<<<<<<< HEAD
       <secret-storage>master_key</secret-storage>
+=======
+>>>>>>> d8243f68486b02c33e3883131aadc924b519a7cd
       <user-name>wms</user-name>
       <introspection-schemas>*:WMS_Template</introspection-schemas>
     </data-source>
