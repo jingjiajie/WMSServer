@@ -1,5 +1,4 @@
 #common ignore
-!/.idea
 /.idea/*
 !/.idea/modules.xml
 .svn/
