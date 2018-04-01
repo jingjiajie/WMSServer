@@ -21,8 +21,7 @@
     <facet type="hibernate" name="Hibernate">
       <configuration>
         <datasource-map>
-          <unit-entry name="a.xml" value="38d4914e-d70c-4bcf-841d-785dda45e156" />
-          <unit-entry name="hibernate.cfg.xml" />
+          <unit-entry name="hibernate.cfg.xml" value="38d4914e-d70c-4bcf-841d-785dda45e156" />
           <unit-entry name="sessionFactory" />
         </datasource-map>
         <naming-strategy-map />
@@ -30,7 +29,7 @@
       </configuration>
     </facet>
   </component>
-  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
