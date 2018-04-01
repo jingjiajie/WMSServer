@@ -1,7 +1,6 @@
 #common ignore
-#.idea/
-.idea/workspace.xml
-.idea/dataSources.local.xml
+.idea/
+!.idea/modules.xml
 .svn/
 *.iml
 .settings/
