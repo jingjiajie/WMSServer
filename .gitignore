@@ -1,6 +1,6 @@
 #common ignore
 .idea/
-!.idea/modules.xml
+!/.idea/modules.xml
 .svn/
 *.iml
 .settings/
