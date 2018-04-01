@@ -4,6 +4,8 @@ import com.wms.services.ledger.model.AccountTitle;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
 import com.wms.utilities.datastructures.Condition;
 
+import java.util.Map;
+
 public interface AccountTitleDAO {
     int[] add(String database, AccountTitle accountTitles[]) throws WMSDAOException;
     void update(String database,AccountTitle accountTitles[]) throws WMSDAOException;

@@ -11,6 +11,10 @@ import com.wms.services.ledger.model.Person;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.ledger.service.PersonServiceImpl;
 */
+import com.wms.services.ledger.model.Tax;
+import com.wms.services.ledger.model.TaxItem;
+import com.wms.services.ledger.service.TaxItemService;
+import com.wms.services.ledger.service.TaxService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +23,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 @SpringBootApplication
@@ -29,6 +34,23 @@ public class LedgerService {
     public static void main(String args[]){
         ApplicationContext applicationContext = SpringApplication.run(LedgerService.class,args);
         System.out.println("总账服务启动...");
+        double d1 = 133999441.132;
+        double d2 = 44123.031;
+
+        TaxItemService taxItemService = applicationContext.getBean(TaxItemService.class);
+        TaxItem taxItem = new TaxItem();
+
+        taxItem.setId(2);
+        taxItem.setTaxId(3);
+
+
+
+        taxItem.setStartAmount(new BigDecimal(String.valueOf(d1)));
+        taxItem.setEndAmount(new BigDecimal(String.valueOf(d2)));
+        taxItem.setTaxAmount(new BigDecimal(String.valueOf(d1)));
+        //taxItem.setTaxRate(new BigDecimal(String.valueOf(d2)));
+        taxItem.setType(0);
+        taxItemService.update("WMS_Template",new TaxItem[]{taxItem});
 
         /*AccountTitleService accountTitleService = applicationContext.getBean(AccountTitleService.class);
         AccountTitle accountTitle = new AccountTitle();

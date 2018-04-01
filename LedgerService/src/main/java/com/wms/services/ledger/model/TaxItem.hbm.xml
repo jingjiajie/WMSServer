@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.wms.services.ledger.model.TaxItem" table="TaxItem" schema="WMS_Template">
+        <id name="id" column="ID"/>
+        <property name="taxId" column="TaxID"/>
+        <property name="startAmount" column="StartAmount"/>
+        <property name="endAmount" column="EndAmount"/>
+        <property name="type" column="Type"/>
+        <property name="taxAmount" column="TaxAmount"/>
+        <property name="taxRate" column="TaxRate"/>
+    </class>
+</hibernate-mapping>
