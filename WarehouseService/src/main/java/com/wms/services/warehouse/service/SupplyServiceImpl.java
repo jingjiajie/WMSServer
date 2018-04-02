@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.SupplyDAO;
+import com.wms.services.warehouse.model.Supplier;
 import com.wms.services.warehouse.model.Supply;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
@@ -31,6 +32,19 @@ public class SupplyServiceImpl implements SupplyService {
     }
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
+
+        /*
+        for (int i=0;i<ids.length;i++)
+        {
+
+            Supply supplyRefference;
+            ReceiptTicketItem[] receiptTicketItem;//收货单零件条目
+            StockInfo[] stockInfo;//库存信息
+            int SupplyID=ids[i];
+            Condition condition = Condition.fromJson("{\"conditions\":[{\"key\":\"SupplyID\",\"values\":[\"" + SupplyID + "\"],\"relation\":\"EQUAL\"}], \"orders\":[{\"key\":\"name\",\"order\":\"ASC\"}]}");
+
+        }
+        */
         try {
             supplyDAO.remove(accountBook, ids);
         } catch (DatabaseNotFoundException ex) {
