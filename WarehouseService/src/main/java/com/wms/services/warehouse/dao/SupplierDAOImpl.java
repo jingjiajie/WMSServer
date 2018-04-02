@@ -55,13 +55,13 @@ public class SupplierDAOImpl implements SupplierDAO {
 
         try {
             for (Supplier supplier : suppliers) {
-                StringBuffer sbHQLString = new StringBuffer();
                 session.update(supplier);
             }
         }catch (Throwable ex){
             throw new WMSDAOException(ex.getMessage());
         }
     }
+
     public void remove(String database, int ids[]) throws WMSDAOException{
         if(ids.length == 0){
             return;
@@ -83,6 +83,7 @@ public class SupplierDAOImpl implements SupplierDAO {
             throw new WMSDAOException(ex.getMessage());
         }
     }
+
     public Supplier[] find(String database,Condition cond) throws WMSDAOException{
         Session session = sessionFactory.getCurrentSession();
         try {

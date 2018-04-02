@@ -15,6 +15,7 @@
                 <value>com.wms.services.warehouse.model.Supply</value>
                 <value>com.wms.services.warehouse.model.Warehouse</value>
 
+
             </list>
         </property>
     </bean>

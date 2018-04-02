@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/{accountBook}/person")
+@RequestMapping("/{accountBook}/supplier")
 public class SupplierControllerImpl implements SupplierController {
     @Autowired
     SupplierServices supplierServices;
