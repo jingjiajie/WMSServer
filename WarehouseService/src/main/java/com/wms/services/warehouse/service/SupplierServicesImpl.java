@@ -1,6 +1,8 @@
 package com.wms.services.warehouse.service;
 
+import com.sun.javafx.scene.layout.region.Margins;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.dao.SupplyDAO;
 import com.wms.services.warehouse.model.Supplier;
 import com.wms.services.warehouse.model.Supply;
 import com.wms.utilities.datastructures.Condition;
@@ -9,11 +11,16 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 public class SupplierServicesImpl implements SupplierServices{
     @Autowired
     SupplierDAO  supplierDAO;
-
+    SupplyDAO supplyDAO;
     @Transactional
     public int[] add(String accountBook, Supplier[] suppliers) throws WMSServiceException
     {
@@ -65,19 +72,28 @@ public class SupplierServicesImpl implements SupplierServices{
 
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
-
-        for (int i=0;i<ids.length;i++)
+        Supply[] supplies;
+        int idLength=ids.length;
+        int[] idsModify=null;
+        List<int[]>  idsList = Arrays.asList(ids);
+        List<int[]> IDRemove=null;
+        for (int i=0;i<idLength;i++)
         {
-            Supply[] supplies;
             Supplier supplierRefference;
             int SupplierID=ids[i];
             Condition condition = Condition.fromJson("{\"conditions\":[{\"key\":\"SupplierID\",\"values\":[\"" + SupplierID + "\"],\"relation\":\"EQUAL\"}], \"orders\":[{\"key\":\"name\",\"order\":\"ASC\"}]}");
-            //用SupplyDAO
+            supplies =supplyDAO.find(accountBook,condition);
+            if(supplies.length>0){
+                    idsList.remove(i);
+                    i--;
+            }
         }
 
-
+        for(int i=0;i<idsList.size();i++){
+           idsModify=idsList.get(i);
+}
         try {
-            supplierDAO.remove(accountBook, ids);
+            supplierDAO.remove(accountBook, idsModify);
         } catch (DatabaseNotFoundException ex) {
             throw new WMSServiceException("Accountbook " + accountBook + " not found!");
         }
