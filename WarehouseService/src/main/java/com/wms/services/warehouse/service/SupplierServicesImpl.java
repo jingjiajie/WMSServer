@@ -26,15 +26,15 @@ public class SupplierServicesImpl implements SupplierServices{
     {
         for (int i=0;i<suppliers.length;i++)
         {
-        Supplier[] suppliersRepet;
+        Supplier[] suppliersRepeat;
         String supplierName = suppliers[i].getName();
         Condition condition = Condition.fromJson("{\"conditions\":[{\"key\":\"name\",\"values\":[\"" + supplierName + "\"],\"relation\":\"EQUAL\"}], \"orders\":[{\"key\":\"name\",\"order\":\"ASC\"}]}");
         try{
-            suppliersRepet = supplierDAO.find(accountBook,condition);
+            suppliersRepeat = supplierDAO.find(accountBook,condition);
         }catch (DatabaseNotFoundException ex){
             throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
-        if(suppliersRepet.length>0)
+        if(suppliersRepeat.length>0)
         {
             break;
         }
