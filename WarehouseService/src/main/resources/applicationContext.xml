@@ -14,7 +14,8 @@
                 <value>com.wms.services.warehouse.model.Supplier</value>
                 <value>com.wms.services.warehouse.model.Supply</value>
                 <value>com.wms.services.warehouse.model.Warehouse</value>
-
+                <value>com.wms.services.warehouse.model.StorageLocation</value>
+                <value>com.wms.services.warehouse.model.StorageArea</value>
 
             </list>
         </property>

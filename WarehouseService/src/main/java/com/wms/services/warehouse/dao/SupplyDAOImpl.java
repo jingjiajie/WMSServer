@@ -7,10 +7,11 @@ import com.wms.utilities.exceptions.dao.WMSDAOException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.stream.Stream;
-
+@Repository
 public class SupplyDAOImpl implements SupplyDAO {
     public SessionFactory getSessionFactory() {
         return sessionFactory;

@@ -36,7 +36,7 @@ public class SupplierServicesImpl implements SupplierServices{
         }
         if(suppliersRepet.length>0)
         {
-            break;
+            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
         }
         try

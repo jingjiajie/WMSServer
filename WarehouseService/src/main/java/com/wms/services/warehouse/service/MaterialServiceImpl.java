@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MaterialServiceImpl implements MaterialService {
     @Autowired
     MaterialDAO materialDAO;
-    @Autowired
     SupplyDAO  supplyDAO;
 
     @Transactional

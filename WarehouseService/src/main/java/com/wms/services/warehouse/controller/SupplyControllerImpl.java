@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/{accountBook}/person")
+@RequestMapping("/{accountBook}/Supply")
 public class SupplyControllerImpl implements SupplyController {
     @Autowired
     SupplyService supplyService;

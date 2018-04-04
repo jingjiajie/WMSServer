@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class StorgeAreaServiceImpl {
+public class StorgeAreaServiceImpl implements StorageAreaService{
     @Autowired
     StorgeAreaDAO storgeAreaDAO;
     @Transactional

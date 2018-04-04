@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/{accountBook}/person")
+@RequestMapping("/{accountBook}/storageLocation")
 public class StorageLocationControllerImpl implements StorageLocationController{
     @Autowired
     StorageLocationService storageLocationService;
