@@ -1,9 +1,7 @@
 package com.wms.services.warehouse.service;
 
-import com.sun.javafx.scene.layout.region.Margins;
 import com.wms.services.warehouse.dao.SupplierDAO;
 import com.wms.services.warehouse.dao.SupplyDAO;
-import com.wms.services.warehouse.model.Supplier;
 import com.wms.services.warehouse.model.Supply;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
@@ -11,8 +9,7 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
+import com.wms.services.warehouse.model.Supplier;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,6 +21,7 @@ public class SupplierServicesImpl implements SupplierServices{
     @Transactional
     public int[] add(String accountBook, Supplier[] suppliers) throws WMSServiceException
     {
+        /*
         for (int i=0;i<suppliers.length;i++)
         {
         Supplier[] suppliersRepeat;
@@ -38,7 +36,7 @@ public class SupplierServicesImpl implements SupplierServices{
         {
             throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
-        }
+        }*/
         try
         { return supplierDAO.add(accountBook,suppliers);
         }catch (DatabaseNotFoundException ex){

@@ -22,7 +22,8 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
-
+import com.wms.services.ledger.service.PersonService;
+import com.wms.services.ledger.model.Person;
 import java.math.BigDecimal;
 import java.util.Scanner;
 
@@ -36,7 +37,7 @@ public class LedgerService {
         System.out.println("总账服务启动...");
         double d1 = 133999441.132;
         double d2 = 44123.031;
-
+/*
         TaxItemService taxItemService = applicationContext.getBean(TaxItemService.class);
         TaxItem taxItem = new TaxItem();
 
@@ -51,8 +52,9 @@ public class LedgerService {
         //taxItem.setTaxRate(new BigDecimal(String.valueOf(d2)));
         taxItem.setType(0);
         taxItemService.update("WMS_Template",new TaxItem[]{taxItem});
-
-        /*AccountTitleService accountTitleService = applicationContext.getBean(AccountTitleService.class);
+*/
+      /*
+        AccountTitleService accountTitleService = applicationContext.getBean(AccountTitleService.class);
         AccountTitle accountTitle = new AccountTitle();
         accountTitle.setDirection(1);
         accountTitle.setEnabled(1);
@@ -69,7 +71,7 @@ public class LedgerService {
         accountTitle.setType(1);
         accountTitle.setId(4);
         accountTitleService.update("WMS_Template",new AccountTitle[]{accountTitle});
-
+*/
         Person person = new Person();
         person.setName("小黑");
         person.setPassword("987654321");
@@ -78,7 +80,7 @@ public class LedgerService {
         PersonService personService = applicationContext.getBean(PersonService.class);
         personService.add("WMS_Template",new Person[]{person});
         System.out.println("添加完成！");
-        */
+
 
     }
 }

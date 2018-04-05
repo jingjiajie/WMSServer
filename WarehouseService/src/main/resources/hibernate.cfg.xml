@@ -4,7 +4,7 @@
     "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
   <session-factory>
-    <property name="connection.url"><![CDATA[jdbc:mysql://linuxserver.jingjiajie.com:3306/WMS_Template?useUnicode=true&characterEncoding=utf8]]></property>
+    <property name="connection.url"><![CDATA[jdbc:mysql://linuxserver.jingjiajie.com:3306]]></property>
     <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
       <property name="hbm2ddl.auto">update</property>
       <property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>
@@ -22,6 +22,8 @@
       <mapping resource="com/wms/services/warehouse/model/StorageAreaViewEntity.hbm.xml"/>
       <mapping class="com.wms.services.warehouse.model.StorageLocationViewEntity"/>
       <mapping resource="com/wms/services/warehouse/model/StorageLocationViewEntity.hbm.xml"/>
+      <mapping resource="com/wms/services/warehouse/model/SupplierEntity.hbm.xml"/>
+      <mapping class="com.wms.services.warehouse.model.Supplier"/>
 
   </session-factory>
 </hibernate-configuration>

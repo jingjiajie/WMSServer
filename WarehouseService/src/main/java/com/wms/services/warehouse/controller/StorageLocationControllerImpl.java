@@ -2,11 +2,8 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.services.warehouse.model.StorageArea;
 import com.wms.services.warehouse.model.StorageLocation;
-import com.wms.services.warehouse.model.Supplier;
 import com.wms.services.warehouse.service.StorageLocationService;
-import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

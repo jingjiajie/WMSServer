@@ -1,7 +1,6 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.SupplyDAO;
-import com.wms.services.warehouse.model.Supplier;
 import com.wms.services.warehouse.model.Supply;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
