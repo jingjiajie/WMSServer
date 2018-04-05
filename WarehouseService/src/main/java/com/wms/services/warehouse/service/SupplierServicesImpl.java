@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.model.Supplier;
 import java.util.Arrays;
 import java.util.List;
+import java.sql.Timestamp;
 
 @Service
 public class SupplierServicesImpl implements SupplierServices{
@@ -37,6 +38,12 @@ public class SupplierServicesImpl implements SupplierServices{
             throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
         }*/
+        for (int i=0;i<suppliers.length;i++)
+        {
+            suppliers[i].setWarehouseId(1);
+            suppliers[i].setCreatePersonId(19);
+            suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
+        }
         try
         { return supplierDAO.add(accountBook,suppliers);
         }catch (DatabaseNotFoundException ex){
@@ -74,6 +81,7 @@ public class SupplierServicesImpl implements SupplierServices{
         int idLength=ids.length;
         int[] idsModify=null;
         List<int[]>  idsList = Arrays.asList(ids);
+        /*
         List<int[]> IDRemove=null;
         for (int i=0;i<idLength;i++)
         {
@@ -90,6 +98,7 @@ public class SupplierServicesImpl implements SupplierServices{
         for(int i=0;i<idsList.size();i++){
            idsModify=idsList.get(i);
 }
+*/
         try {
             supplierDAO.remove(accountBook, idsModify);
         } catch (DatabaseNotFoundException ex) {

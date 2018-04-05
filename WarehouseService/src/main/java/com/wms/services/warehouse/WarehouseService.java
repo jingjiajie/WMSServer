@@ -10,6 +10,8 @@ import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.services.warehouse.model.Supplier;
 import java.sql.Timestamp;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.service.StorageAreaService;
+import com.wms.services.warehouse.model.StorageArea;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableAutoConfiguration(exclude={HibernateJpaAutoConfiguration.class})
@@ -31,6 +33,10 @@ public class WarehouseService {
         supplier.setCreatePersonId(19);
         supplier.setCreateTime(new Timestamp(System.currentTimeMillis()));
         supplierServices.add("WMS_Template",new Supplier[]{supplier});*/
-
+        StorageAreaService storageAreaService= applicationContext.getBean(StorageAreaService.class);
+        StorageArea storageArea=new StorageArea();
+        storageArea.setNo("asda");
+        storageArea.setName("asdafafafafaf");
+        storageAreaService.add("WMS_Template",new StorageArea[]{storageArea});
     }
 }

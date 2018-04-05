@@ -1,11 +1,14 @@
 package com.wms.services.warehouse.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
-@Table(name = "StorageLocation", schema = "WMS_Template", catalog = "")
 public class StorageLocation {
     private int id;
+    private int storageAreaId;
     private String no;
     private String name;
 
@@ -17,6 +20,16 @@ public class StorageLocation {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Basic
+    @Column(name = "StorageAreaID")
+    public int getStorageAreaId() {
+        return storageAreaId;
+    }
+
+    public void setStorageAreaId(int storageAreaId) {
+        this.storageAreaId = storageAreaId;
     }
 
     @Basic
@@ -47,6 +60,7 @@ public class StorageLocation {
         StorageLocation that = (StorageLocation) o;
 
         if (id != that.id) return false;
+        if (storageAreaId != that.storageAreaId) return false;
         if (no != null ? !no.equals(that.no) : that.no != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
 
@@ -56,6 +70,7 @@ public class StorageLocation {
     @Override
     public int hashCode() {
         int result = id;
+        result = 31 * result + storageAreaId;
         result = 31 * result + (no != null ? no.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;

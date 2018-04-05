@@ -1,14 +1,14 @@
 package com.wms.services.warehouse.dao;
 
-import com.wms.services.warehouse.model.StorageArea;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
+import com.wms.services.warehouse.model.StorageArea;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -20,6 +20,7 @@ public class StorgeAreaDAOImpl implements StorgeAreaDAO {
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
+    @Autowired
     private SessionFactory sessionFactory;
     public int[] add(String database,StorageArea[] storageAreas) throws WMSDAOException {
         if(storageAreas.length == 0){

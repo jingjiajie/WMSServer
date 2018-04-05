@@ -1,9 +1,8 @@
 package com.wms.services.warehouse.dao;
 
-import com.wms.services.warehouse.model.StorageLocation;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
-
+import com.wms.services.warehouse.model.StorageLocation;
 public interface StorageLocationDAO {
     int[] add(String database,StorageLocation storageLocations[]) throws WMSDAOException;
     void update(String database,StorageLocation storageLocations[]) throws WMSDAOException;

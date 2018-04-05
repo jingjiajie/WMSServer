@@ -1,14 +1,13 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.StorgeAreaDAO;
-import com.wms.services.warehouse.model.StorageArea;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.wms.services.warehouse.model.StorageArea;
 @Service
 public class StorgeAreaServiceImpl implements StorageAreaService{
     @Autowired
