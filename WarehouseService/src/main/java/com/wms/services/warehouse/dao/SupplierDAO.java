@@ -9,5 +9,6 @@ public interface SupplierDAO {
     void update(String database,Supplier suppliers[]) throws WMSDAOException;
     void remove(String database,int ids[]) throws WMSDAOException;
     Supplier[] find(String database,Condition cond) throws WMSDAOException;
+    //  List<Supplier> findInside(String database, String sql) throws WMSDAOException;
 }
 

@@ -101,6 +101,25 @@ public class SupplierDAOImpl implements SupplierDAO {
             throw new WMSDAOException(ex.getMessage());
         }
     }
+    /* public List<Supplier> findInside(String database,String sql ) throws WMSDAOException{
+        Session session = sessionFactory.getCurrentSession();
+        String entityName="Supplier";
+        StringBuffer hqlString = new StringBuffer("from "+entityName+" ");
+        Map<String,Object> queryParams = new HashMap<String, Object>();
+        String SQL=sql ;
+         try {
+            session.createNativeQuery("USE " + database + ";").executeUpdate();
+        }catch (Throwable ex){
+            throw new DatabaseNotFoundException(database);
+        }
+        Query query = session.createQuery(SQL);
+        for(Map.Entry<String,Object> entry : queryParams.entrySet()){
+            query.setParameter(entry.getKey(),entry.getValue());
+        }
+        List<Supplier> listSupplier = query.list();
+        return listSupplier;
+    }
+*/
 
 }
 
