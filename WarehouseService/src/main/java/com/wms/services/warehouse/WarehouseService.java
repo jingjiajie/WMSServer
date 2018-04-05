@@ -18,9 +18,8 @@ public class WarehouseService {
     public static void main(java.lang.String args[]){
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class,args);
         System.out.println("仓库服务启动...");
+/*
 
-        double d1 = 133999441.132;
-        double d2 = 44123.031;
         java.lang.String a="asaas";
 
         SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
@@ -31,6 +30,7 @@ public class WarehouseService {
         supplier.setWarehouseId(1);
         supplier.setCreatePersonId(19);
         supplier.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        supplierServices.add("WMS_Template",new Supplier[]{supplier});
+        supplierServices.add("WMS_Template",new Supplier[]{supplier});*/
+
     }
 }
