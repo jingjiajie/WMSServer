@@ -7,4 +7,5 @@ public interface SupplierServices {
     void update(String accountBook,Supplier suppliers[]) throws WMSServiceException;
     void remove(String accountBook,int ids[]) throws WMSServiceException;
     Supplier[] find(String accountBook,Condition cond) throws WMSServiceException;
+
 }
