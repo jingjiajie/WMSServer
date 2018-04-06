@@ -54,7 +54,6 @@ public class StorgeAreaDAOImpl implements StorgeAreaDAO {
         }
         try {
             for (StorageArea storageArea : storageAreas) {
-                StringBuffer sbHQLString = new StringBuffer();
                 session.update(storageArea);
             }
         }catch (Throwable ex){
@@ -91,7 +90,7 @@ public class StorgeAreaDAOImpl implements StorgeAreaDAO {
             throw new DatabaseNotFoundException(database);
         }
         try {
-            Query query = cond.createQuery("Storage", session);
+            Query query = cond.createQuery("StorageArea", session);
             List<StorageArea> listStorageArea = query.list();
             StorageArea[] arrStorageArea = new StorageArea[listStorageArea.size()];
             listStorageArea.toArray(arrStorageArea);

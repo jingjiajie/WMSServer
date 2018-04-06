@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.model.StorageArea;
 @Service
-public class StorgeAreaServiceImpl implements StorageAreaService{
+public class StorageAreaServiceImpl implements StorageAreaService{
     @Autowired
     StorgeAreaDAO storgeAreaDAO;
     @Transactional
     public int[] add(String accountBook,StorageArea[] storageAreas) throws WMSServiceException {
-        try{
-            return storgeAreaDAO.add(accountBook,storageAreas);
+        try
+        { return storgeAreaDAO.add(accountBook,storageAreas);
         }catch (DatabaseNotFoundException ex){
             throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }

@@ -18,26 +18,23 @@ import java.sql.Timestamp;
 public class SupplierServicesImpl implements SupplierServices{
     @Autowired
     SupplierDAO  supplierDAO;
-    SupplyDAO supplyDAO;
     @Transactional
     public int[] add(String accountBook, Supplier[] suppliers) throws WMSServiceException
     {
-        /*
-        for (int i=0;i<suppliers.length;i++)
-        {
-        Supplier[] suppliersRepeat;
-        String supplierName = suppliers[i].getName();
-        Condition condition = Condition.fromJson("{\"conditions\":[{\"key\":\"name\",\"values\":[\"" + supplierName + "\"],\"relation\":\"EQUAL\"}], \"orders\":[{\"key\":\"name\",\"order\":\"ASC\"}]}");
-        try{
-            suppliersRepeat = supplierDAO.find(accountBook,condition);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
+
+        for (int i=0;i<suppliers.length;i++) {
+            Supplier[] suppliersRepeat=null;
+            String supplierName = suppliers[i].getName();;
+            Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['"+supplierName+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
+            try {
+                suppliersRepeat = supplierDAO.find(accountBook, condition);
+            } catch (DatabaseNotFoundException ex) {
+                throw new WMSServiceException("Accountbook " + accountBook + " not found!");
+            }
+            if (suppliersRepeat.length > 0) {
+               throw new WMSServiceException("供应商名 " + supplierName + " 已经存在！");
+            }
         }
-        if(suppliersRepeat.length>0)
-        {
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
-        }
-        }*/
         for (int i=0;i<suppliers.length;i++)
         {
             suppliers[i].setWarehouseId(1);
