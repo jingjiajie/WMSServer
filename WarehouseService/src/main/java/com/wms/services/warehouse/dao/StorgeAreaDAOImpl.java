@@ -22,7 +22,8 @@ public class StorgeAreaDAOImpl implements StorgeAreaDAO {
     }
     @Autowired
     private SessionFactory sessionFactory;
-    public int[] add(String database,StorageArea[] storageAreas) throws WMSDAOException {
+
+    public int[] add(String database, StorageArea[] storageAreas) throws WMSDAOException{
         if(storageAreas.length == 0){
             return new int[0];
         }
@@ -35,8 +36,9 @@ public class StorgeAreaDAOImpl implements StorgeAreaDAO {
         }catch (Throwable ex){
             throw new DatabaseNotFoundException(database);
         }
+
         try {
-            for (StorageArea storageArea : storageAreas) {
+            for (StorageArea storageArea: storageAreas) {
                 session.save(storageArea);
             }
             int ids[] = Stream.of(storageAreas).mapToInt((p) -> p.getId()).toArray();

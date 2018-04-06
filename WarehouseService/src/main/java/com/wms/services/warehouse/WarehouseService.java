@@ -35,13 +35,14 @@ public class WarehouseService {
         Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
        //suppliers=supplierServices.find("WMS_Template",condition);
         //System.out.println(suppliers.length+"22929292929292929292929292929");
-        /*
+        */
         StorageAreaService storageAreaService= applicationContext.getBean(StorageAreaService.class);
         StorageArea storageArea=new StorageArea();
-        storageArea.setNo("asda");
+        storageArea.setNo("asda11111");
         storageArea.setName("asdafafafafaf");
         storageAreaService.add("WMS_Template",new StorageArea[]{storageArea});
 
+/*
         StorageLocationService storageLocationService=applicationContext.getBean(StorageLocationService.class);
         StorageLocation[] storageLocations=null;
         storageLocation.setName("adasasasd");
