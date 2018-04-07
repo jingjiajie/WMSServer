@@ -17,7 +17,7 @@ public class ConditionItem {
     }
 
     private String key;
-    private Relation relation;
+    private Relation relation = Relation.EQUAL;
     private Object[] values;
 
     public String getKey() {
