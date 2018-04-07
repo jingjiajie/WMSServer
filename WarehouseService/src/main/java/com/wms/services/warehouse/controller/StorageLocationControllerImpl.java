@@ -2,19 +2,15 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.services.warehouse.model.StorageArea;
-import com.wms.services.warehouse.model.StorageLocation;
-import com.wms.services.warehouse.model.Supplier;
 import com.wms.services.warehouse.service.StorageLocationService;
-import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.wms.services.warehouse.model.StorageLocation;
 @RestController
-@RequestMapping("/{accountBook}/person")
+@RequestMapping("/{accountBook}/storageLocation")
 public class StorageLocationControllerImpl implements StorageLocationController{
     @Autowired
     StorageLocationService storageLocationService;

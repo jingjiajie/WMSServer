@@ -1,9 +1,11 @@
 package com.wms.services.warehouse.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
-@Table(name = "StorageArea", schema = "WMS_Template", catalog = "")
 public class StorageArea {
     private int id;
     private String no;

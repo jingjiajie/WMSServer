@@ -1,25 +1,27 @@
 package com.wms.services.warehouse.dao;
 
-import com.wms.services.warehouse.model.Supplier;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import com.wms.services.warehouse.model.Supplier;
 import java.util.List;
 import java.util.stream.Stream;
+
 @Repository
 public class SupplierDAOImpl implements SupplierDAO {
     public SessionFactory getSessionFactory() {
      return sessionFactory;
     }
+
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
+    @Autowired
     private SessionFactory sessionFactory;
     public int[] add(String database,Supplier[] suppliers) throws WMSDAOException{
         if(suppliers.length == 0){
@@ -55,13 +57,13 @@ public class SupplierDAOImpl implements SupplierDAO {
 
         try {
             for (Supplier supplier : suppliers) {
-                StringBuffer sbHQLString = new StringBuffer();
                 session.update(supplier);
             }
         }catch (Throwable ex){
             throw new WMSDAOException(ex.getMessage());
         }
     }
+
     public void remove(String database, int ids[]) throws WMSDAOException{
         if(ids.length == 0){
             return;
@@ -83,6 +85,7 @@ public class SupplierDAOImpl implements SupplierDAO {
             throw new WMSDAOException(ex.getMessage());
         }
     }
+
     public Supplier[] find(String database,Condition cond) throws WMSDAOException{
         Session session = sessionFactory.getCurrentSession();
         try {
@@ -100,7 +103,25 @@ public class SupplierDAOImpl implements SupplierDAO {
             throw new WMSDAOException(ex.getMessage());
         }
     }
-
+   /* public List<Supplier> findInside(String database,String sql ) throws WMSDAOException{
+        Session session = sessionFactory.getCurrentSession();
+        String entityName="Supplier";
+        StringBuffer hqlString = new StringBuffer("from "+entityName+" ");
+        Map<String,Object> queryParams = new HashMap<String, Object>();
+        String SQL=sql ;
+         try {
+            session.createNativeQuery("USE " + database + ";").executeUpdate();
+        }catch (Throwable ex){
+            throw new DatabaseNotFoundException(database);
+        }
+        Query query = session.createQuery(SQL);
+        for(Map.Entry<String,Object> entry : queryParams.entrySet()){
+            query.setParameter(entry.getKey(),entry.getValue());
+        }
+        List<Supplier> listSupplier = query.list();
+        return listSupplier;
+    }
+*/
 }
 
 
