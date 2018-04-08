@@ -9,27 +9,43 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.model.StorageLocation;
+import com.wms.services.warehouse.model.StorageArea;
 @Service
 public class StorageLocationServiceImpl implements StorageLocationService{
 
     @Autowired
     StorageLocationDAO storageLocationDAO;
+    @Autowired
+    StorageAreaService storageAreaService;
     @Transactional
     public int[] add(String accountBook, StorageLocation[] storageLocations )throws WMSServiceException {
-        for(int i=0;i<storageLocations.length;)
-        {
-            if(storageLocations[i].getName()==null)
-            {
+
+        if(storageAreaService==null){
+            System.out.printf("a");
+        }
+
+        for(int i=0;i<storageLocations.length;i++) {
+
+            if (storageLocations[i].getName() == null) {
                 throw new WMSServiceException("库位名不能为空！");
             }
-            if(storageLocations[i].getNo()==null)
-            {
+            if (storageLocations[i].getNo() == null) {
                 throw new WMSServiceException("库位代号不能为空！");
             }
+            if (storageLocations[i].getStorageAreaId() == 0) {
+                throw new WMSServiceException("库区信息不能为空！");
+            }
+            StorageArea[] storageAreas = null;
+            Condition condition1 = Condition.fromJson("{'conditions':[{'key':'id','values':["+storageLocations[i].getStorageAreaId()+"],'relation':'EQUAL'}]}");
+            storageAreas = storageAreaService.find(accountBook, condition1);
+            if (storageAreas.length == 0) {
+                throw new WMSServiceException("所选库位不存在！");
+            }
+
             String storageLocationNo=storageLocations[i].getNo();
             StorageLocation[] storageLocations1=null;
             Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageLocationNo+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
-            storageLocations1=storageLocationDAO.find(accountBook,condition);
+             storageLocations1=storageLocationDAO.find(accountBook,condition);
             if(storageLocations1.length>0)
             {
                 throw new WMSServiceException("库位代号 " + storageLocationNo + " 已经存在！");
@@ -44,7 +60,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     @Transactional
     public void update(String accountBook, StorageLocation[] storageLocations) throws WMSServiceException{
 
-        for(int i=0;i<storageLocations.length;)
+        for(int i=0;i<storageLocations.length;i++)
         {
             if(storageLocations[i].getName()==null)
             {
