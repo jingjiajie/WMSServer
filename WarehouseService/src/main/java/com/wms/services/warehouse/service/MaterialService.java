@@ -1,9 +1,8 @@
 package com.wms.services.warehouse.service;
 
-import com.wms.services.warehouse.model.Material;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import java.util.Map;
+import com.wms.services.warehouse.model.Material;
 
 public interface MaterialService {
     int[] add(String accountBook, Material materials[]) throws WMSServiceException;

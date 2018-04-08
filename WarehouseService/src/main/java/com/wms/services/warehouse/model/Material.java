@@ -10,9 +10,10 @@ public class Material {
     private int id;
     private String name;
     private int warehouseId;
+    private String no;
 
     @Id
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -22,7 +23,7 @@ public class Material {
     }
 
     @Basic
-    @Column(name = "Name", nullable = false, length = 64)
+    @Column(name = "Name")
     public String getName() {
         return name;
     }
@@ -32,13 +33,23 @@ public class Material {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
 
     public void setWarehouseId(int warehouseId) {
         this.warehouseId = warehouseId;
+    }
+
+    @Basic
+    @Column(name = "No")
+    public String getNo() {
+        return no;
+    }
+
+    public void setNo(String no) {
+        this.no = no;
     }
 
     @Override
@@ -51,6 +62,7 @@ public class Material {
         if (id != material.id) return false;
         if (warehouseId != material.warehouseId) return false;
         if (name != null ? !name.equals(material.name) : material.name != null) return false;
+        if (no != null ? !no.equals(material.no) : material.no != null) return false;
 
         return true;
     }
@@ -60,6 +72,7 @@ public class Material {
         int result = id;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + warehouseId;
+        result = 31 * result + (no != null ? no.hashCode() : 0);
         return result;
     }
 }
