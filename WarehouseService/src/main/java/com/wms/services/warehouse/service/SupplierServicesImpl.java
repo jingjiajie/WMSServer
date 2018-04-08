@@ -25,6 +25,14 @@ public class SupplierServicesImpl implements SupplierServices{
     {
 
         for (int i=0;i<suppliers.length;i++) {
+            if(suppliers[i].getName()==null)
+            {
+                throw new WMSServiceException("供应商名不能为空！");
+            }
+            if(suppliers[i].getNo()==null)
+            {
+                throw new WMSServiceException("供应商代号不能为空！");
+            }
             Supplier[] suppliersRepeat=null;
             String supplierName = suppliers[i].getName();;
             Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['"+supplierName+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
@@ -55,6 +63,14 @@ public class SupplierServicesImpl implements SupplierServices{
     public void update(String accountBook, Supplier[] suppliers) throws WMSServiceException{
         for (int i=0;i<suppliers.length;i++)
         {
+            if(suppliers[i].getName()==null)
+            {
+                throw new WMSServiceException("供应商名不能为空！");
+            }
+            if(suppliers[i].getNo()==null)
+            {
+                throw new WMSServiceException("供应商代号不能为空！");
+            }
             Supplier[] suppliersRepet;
             String supplierName = suppliers[i].getName();
             Condition condition = Condition.fromJson("{\"conditions\":[{\"key\":\"name\",\"values\":[\"" + supplierName + "\"],\"relation\":\"EQUAL\"}], \"orders\":[{\"key\":\"name\",\"order\":\"ASC\"}]}");

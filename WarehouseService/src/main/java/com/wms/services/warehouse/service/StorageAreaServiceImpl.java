@@ -19,6 +19,14 @@ public class StorageAreaServiceImpl implements StorageAreaService{
     public int[] add(String accountBook,StorageArea[] storageAreas) throws WMSServiceException {
         for(int i=0;i<storageAreas.length;)
         {
+            if(storageAreas[i].getName()==null)
+            {
+                throw new WMSServiceException("库区名不能为空！");
+            }
+            if(storageAreas[i].getNo()==null)
+            {
+                throw new WMSServiceException("库区代号不能为空！");
+            }
             String storageAreaNo=storageAreas[i].getNo();
             StorageArea[] storageAreas1=null;
             Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageAreaNo+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
@@ -39,6 +47,14 @@ public class StorageAreaServiceImpl implements StorageAreaService{
     public void update(String accountBook, StorageArea[] storageAreas) throws WMSServiceException{
         for(int j=0;j<storageAreas.length;)
         {
+            if(storageAreas[j].getName()==null)
+            {
+                throw new WMSServiceException("库区名不能为空！");
+            }
+            if(storageAreas[j].getNo()==null)
+            {
+                throw new WMSServiceException("库区代号不能为空！");
+            }
             StorageArea[] storageAreas1=null;
             String storageAreaNoUpdate=storageAreas[j].getNo();
             Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageAreaNoUpdate+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");

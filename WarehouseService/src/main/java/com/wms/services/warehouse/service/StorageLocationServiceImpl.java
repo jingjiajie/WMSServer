@@ -18,6 +18,14 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     public int[] add(String accountBook, StorageLocation[] storageLocations )throws WMSServiceException {
         for(int i=0;i<storageLocations.length;)
         {
+            if(storageLocations[i].getName()==null)
+            {
+                throw new WMSServiceException("库位名不能为空！");
+            }
+            if(storageLocations[i].getNo()==null)
+            {
+                throw new WMSServiceException("库位代号不能为空！");
+            }
             String storageLocationNo=storageLocations[i].getNo();
             StorageLocation[] storageLocations1=null;
             Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageLocationNo+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
@@ -38,6 +46,14 @@ public class StorageLocationServiceImpl implements StorageLocationService{
 
         for(int i=0;i<storageLocations.length;)
         {
+            if(storageLocations[i].getName()==null)
+            {
+                throw new WMSServiceException("库位名不能为空！");
+            }
+            if(storageLocations[i].getNo()==null)
+            {
+                throw new WMSServiceException("库位代号不能为空！");
+            }
             String storageLocationNo=storageLocations[i].getNo();
             StorageLocation[] storageLocations1=null;
             Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageLocationNo+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
