@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Repository
-public class StorgeAreaDAOImpl implements StorgeAreaDAO {
+public class StorageAreaDAOImpl implements StorageAreaDAO {
     public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
