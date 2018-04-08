@@ -40,7 +40,9 @@ public class WarehouseService {
         StorageArea storageArea=new StorageArea();
         storageArea.setNo("asda11111");
         storageArea.setName("asdafafafafaf");
-        storageAreaService.add("WMS_Template",new StorageArea[]{storageArea});
+
+            storageAreaService.add("WMS_Template", new StorageArea[]{storageArea});
+
 
 /*
         StorageLocationService storageLocationService=applicationContext.getBean(StorageLocationService.class);

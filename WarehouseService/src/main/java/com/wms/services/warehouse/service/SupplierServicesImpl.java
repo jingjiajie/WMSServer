@@ -65,7 +65,8 @@ public class SupplierServicesImpl implements SupplierServices{
             }
             if(suppliersRepet.length>0)
             {
-                throw new WMSServiceException("供应商名 " + supplierName + " 已经存在！");
+                if(suppliersRepet[1].getId()!=suppliers[i].getId())
+                { throw new WMSServiceException("供应商名 " + supplierName + " 已经存在！");}
             }
         }
         try {

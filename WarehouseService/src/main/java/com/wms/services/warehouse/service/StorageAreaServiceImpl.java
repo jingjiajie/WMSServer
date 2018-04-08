@@ -17,20 +17,45 @@ public class StorageAreaServiceImpl implements StorageAreaService{
     StorageLocationService storageLocationService;
     @Transactional
     public int[] add(String accountBook,StorageArea[] storageAreas) throws WMSServiceException {
+        for(int i=0;i<storageAreas.length;)
+        {
+            String storageAreaNo=storageAreas[i].getNo();
+            StorageArea[] storageAreas1=null;
+            Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageAreaNo+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
+            storageAreas1=storageAreaDAO.find(accountBook,condition);
+            if(storageAreas1.length>0)
+            {
+                throw new WMSServiceException("库区代号 " + storageAreaNo + " 已经存在！");
+            }
+        }
         try
         { return storageAreaDAO.add(accountBook,storageAreas);
         }catch (DatabaseNotFoundException ex){
             throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
     }
+
     @Transactional
     public void update(String accountBook, StorageArea[] storageAreas) throws WMSServiceException{
+        for(int j=0;j<storageAreas.length;)
+        {
+            StorageArea[] storageAreas1=null;
+            String storageAreaNoUpdate=storageAreas[j].getNo();
+            Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageAreaNoUpdate+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
+            storageAreas1=storageAreaDAO.find(accountBook,condition);
+            if(storageAreas1.length>0)
+            {
+                if(storageAreas1[0].getId()!=storageAreas[j].getId())
+                throw new WMSServiceException("库区代号 " + storageAreaNoUpdate + " 已经存在！");
+            }
+        }
         try {
             storageAreaDAO.update(accountBook, storageAreas);
         }catch (DatabaseNotFoundException ex){
             throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
     }
+
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
         if(storageLocationService==null)
@@ -69,6 +94,7 @@ public class StorageAreaServiceImpl implements StorageAreaService{
             throw new WMSServiceException("Accountbook " + accountBook + " not found!");
         }
     }
+
     @Transactional
     public StorageArea[] find(String accountBook, Condition cond) throws WMSServiceException{
         try {
