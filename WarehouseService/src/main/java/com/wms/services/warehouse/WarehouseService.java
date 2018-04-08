@@ -36,25 +36,34 @@ public class WarehouseService {
        //suppliers=supplierServices.find("WMS_Template",condition);
         //System.out.println(suppliers.length+"22929292929292929292929292929");
         */
-        StorageAreaService storageAreaService= applicationContext.getBean(StorageAreaService.class);
-        StorageArea storageArea=new StorageArea();
-        storageArea.setNo("asda11111");
-        storageArea.setName("asdafafafafaf");
-
-            storageAreaService.add("WMS_Template", new StorageArea[]{storageArea});
-
-
 /*
-        StorageLocationService storageLocationService=applicationContext.getBean(StorageLocationService.class);
-        StorageLocation[] storageLocations=null;
-        storageLocation.setName("adasasasd");
-        storageLocation.setNo("122");
-         storageLocation.setStorageAreaId(1);
-        storageLocationService.add("WMS_Template",new StorageLocation[] {storageLocation});
-        Condition condition = Condition.fromJson("{'conditions':[{'key':'No','values':['122'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
-        storageLocations=storageLocationService.find("WMS_Template",condition);
-        for(int i=0;i<storageLocations.length;i++)
-        {System.out.println(storageLocations[i].getName());}
-        */
+        StorageAreaService storageAreaService= applicationContext.getBean(StorageAreaService.class);
+        if(storageAreaService==null){
+            System.out.printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        }
+        StorageArea[] storageAreas=null;
+        Condition condition1 = Condition.fromJson("{'conditions':[{'key':'id','values':[1],'relation':'EQUAL'}]}");
+        storageAreas=storageAreaService.find("WMS_Template",condition1);
+        if(storageAreas==null){
+            System.out.printf("saaaaaaaaaaaaaaaaaaaaa");
+        }
+        //storageArea.setNo("111");
+        //storageArea.setName("111");
+       // storageAreaService.add("WMS_Template", new StorageArea[]{storageArea});
+        //Condition condition = Condition.fromJson("{'conditions':[{'key':'name','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
+        //storageAreas= storageAreaService.find("WMS_Template",condition);
+
+*/
+        //StorageLocationService storageLocationService=applicationContext.getBean(StorageLocationService.class);
+        //StorageLocation storageLocation=new StorageLocation();
+        //storageLocation.setName("adasasasd135");
+       // storageLocation.setNo("12211356");
+        //storageLocation.setStorageAreaId(1);
+        //storageLocationService.add("WMS_Template",new StorageLocation[] {storageLocation});
+        //Condition condition = Condition.fromJson("{'conditions':[{'key':'No','values':['122'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
+       // storageLocations=storageLocationService.find("WMS_Template",condition);
+       // for(int i=0;i<storageLocations.length;i++)
+        //{System.out.println(storageLocations[i].getName());}
+
     }
 }

@@ -17,7 +17,7 @@ public class StorageAreaServiceImpl implements StorageAreaService{
     StorageLocationService storageLocationService;
     @Transactional
     public int[] add(String accountBook,StorageArea[] storageAreas) throws WMSServiceException {
-        for(int i=0;i<storageAreas.length;)
+        for(int i=0;i<storageAreas.length;i++)
         {
             if(storageAreas[i].getName()==null)
             {
@@ -45,7 +45,7 @@ public class StorageAreaServiceImpl implements StorageAreaService{
 
     @Transactional
     public void update(String accountBook, StorageArea[] storageAreas) throws WMSServiceException{
-        for(int j=0;j<storageAreas.length;)
+        for(int j=0;j<storageAreas.length;j++)
         {
             if(storageAreas[j].getName()==null)
             {
