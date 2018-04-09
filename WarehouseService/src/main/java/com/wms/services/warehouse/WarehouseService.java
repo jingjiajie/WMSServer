@@ -66,15 +66,15 @@ public class WarehouseService {
        // for(int i=0;i<storageLocations.length;i++)
         //{System.out.println(storageLocations[i].getName());}
 
-        com.wms.services.warehouse.service.WarehouseService warehouseService=applicationContext.getBean(com.wms.services.warehouse.service.WarehouseService.class);
+        //com.wms.services.warehouse.service.WarehouseService warehouseService=applicationContext.getBean(com.wms.services.warehouse.service.WarehouseService.class);
        // Condition condition = Condition.fromJson("{'conditions':[{'key':'id','values':[1],'relation':'EQUAL'}]}");
-        Warehouse warehouses=new Warehouse();
+       // Warehouse warehouses=new Warehouse();
        // warehouses=warehouseService.find("WMS_Template",condition);
         //System.out.printf(warehouses[0].getName());
-         warehouses.setName("aaaa");
-        warehouses.setAddress("asaaaaaaaaaaaaaaaaaaa");
+       //  warehouses.setName("aaaa");
+       // warehouses.setAddress("asaaaaaaaaaaaaaaaaaaa");
        // warehouseService.add("WMS_Template",new Warehouse[]{warehouses});
-        int[] ids={1};
-        warehouseService.remove("WMS_Template",ids);
+       // int[] ids={1};
+       // warehouseService.remove("WMS_Template",ids);
     }
 }

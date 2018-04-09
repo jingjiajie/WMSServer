@@ -1,7 +1,5 @@
 package com.wms.services.warehouse.service;
 
-
-
 import com.wms.services.warehouse.dao.WarehouseDAO;
 import com.wms.services.warehouse.model.Supplier;
 import com.wms.services.warehouse.model.Supply;
@@ -11,7 +9,6 @@ import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -62,8 +59,6 @@ public class WarehouseServiceImpl implements WarehouseService{
                throw new WMSServiceException(warehouses[0].getName()+"被引用，无法删除");
            }
         }
-
-
         try {
             warehouseDAO.remove(accountBook, ids);
         } catch (DatabaseNotFoundException ex) {

@@ -9,7 +9,10 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.wms.services.warehouse.model.Supplier;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @Repository
@@ -103,7 +106,8 @@ public class SupplierDAOImpl implements SupplierDAO {
             throw new WMSDAOException(ex.getMessage());
         }
     }
-   /* public List<Supplier> findInside(String database,String sql ) throws WMSDAOException{
+    /*
+    public List<Supplier> findInside(String database,String sql ) throws WMSDAOException{
         Session session = sessionFactory.getCurrentSession();
         String entityName="Supplier";
         StringBuffer hqlString = new StringBuffer("from "+entityName+" ");
@@ -120,8 +124,8 @@ public class SupplierDAOImpl implements SupplierDAO {
         }
         List<Supplier> listSupplier = query.list();
         return listSupplier;
-    }
-*/
+    }*/
+
 }
 
 
