@@ -38,9 +38,10 @@ public class MaterialServiceImpl implements MaterialService {
             if (materialWarehouseId == 0) {       //判断是否为空
                 throw new WMSServiceException("仓库ID不能为空！");
             }
-            /*
+
             Supply[] materialsRepeat=null;//新建一个数组，物料复述
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['"+materialName+"'],'relation':'EQUAL'}],'orders':[{'key':'Name','order':'ASC'}]}");
+            Condition condition = Condition.fromJson("{’conditions':[{'key':'Name','values':['"+materialName+"'],'relation':'EQUAL'}],'orders':[{'key':'Name','order':'ASC'}]}");
+            //这里用单引号，避免了用双引号要转义字符
             //添加供货商-物料关联查询条件，按供货商ID排序
             try {
                 materialsRepeat = supplyDAO.find(accountBook, condition);
@@ -53,7 +54,7 @@ public class MaterialServiceImpl implements MaterialService {
             //判断物料是否唯一
 
             materials[i].setWarehouseId(1);//先添加一个仓库ID，后面修正
-            */
+
         }
 
         try{

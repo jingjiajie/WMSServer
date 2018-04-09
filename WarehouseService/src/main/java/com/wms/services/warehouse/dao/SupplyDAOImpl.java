@@ -7,6 +7,7 @@ import com.wms.utilities.exceptions.dao.WMSDAOException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class SupplyDAOImpl implements SupplyDAO {
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
+    @Autowired
     private SessionFactory sessionFactory;
     public int[] add(String database,Supply[] supplies) throws WMSDAOException {
         if(supplies.length == 0){

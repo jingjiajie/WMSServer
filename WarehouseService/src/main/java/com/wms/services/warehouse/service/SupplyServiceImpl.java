@@ -24,7 +24,9 @@ public class SupplyServiceImpl implements SupplyService {
     MaterialService materialService;
     @Transactional
     public int[] add(String accountBook, Supply[] supplies) throws WMSServiceException{
+
         for (int i=0;i<supplies.length;i++) {
+
 
             //判断物料ID是否为空
             String materialID = supplies[i].getMaterialId().toString();;//获取供货物料名称
@@ -32,13 +34,14 @@ public class SupplyServiceImpl implements SupplyService {
                 throw new WMSServiceException("物料不能为空！");
             }
             //判断供货商ID是否为空
-            String SupplierId = supplies[i].getSupplierId().toString();;//获取供货商名称
-            if (SupplierId == null || SupplierId.trim().length() <=0) {       //判断是否为空
+            String supplierId = supplies[i].getSupplierId().toString();;//获取供货商名称
+            if (supplierId == null || supplierId.trim().length() <=0) {       //判断是否为空
                 throw new WMSServiceException("供货商不能为空！");
             }
 
+
             Supply[] suppliesRepeat=null;//新建一个数组，物料复述
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['"+SupplierId+"'],'relation':'EQUAL'}],[{'key':'MaterialId','values':['"+materialID+"'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
+            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['"+supplierId+"'],'relation':'EQUAL'},{'key':'MaterialId','values':['"+materialID+"'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
             //添加供货商-物料关联查询条件，按供货商ID排序
             try {
                 suppliesRepeat = supplyDAO.find(accountBook, condition);
@@ -49,13 +52,16 @@ public class SupplyServiceImpl implements SupplyService {
                 throw new WMSServiceException("物料-供货商组合 " + materialID + " 已经存在！");
             }
             //判断物料-供货商组合是否唯一
+
         }
+
         for (int i=0;i<supplies.length;i++)
         {
-            supplies[i].setWarehouseId(1);//先添加一个仓库ID，后面修正
+            supplies[i].setWarehouseId(4);//先添加一个仓库ID，后面修正
             supplies[i].setCreatePersonId(19);//先添加一个创建人员ID，后面修正
             supplies[i].setCreateTime(new Timestamp(System.currentTimeMillis()));//添加创建时间
         }
+
 
         try{
             return supplyDAO.add(accountBook,supplies);

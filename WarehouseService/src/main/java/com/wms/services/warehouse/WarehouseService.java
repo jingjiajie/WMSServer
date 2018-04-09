@@ -8,9 +8,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.services.warehouse.model.Supplier;
+import com.wms.services.warehouse.model.Supply;
 import java.sql.Timestamp;
 import java.util.Arrays;
-
+import com.wms.services.warehouse.dao.SupplyDAO;
+import com.wms.services.warehouse.service.SupplyService;
+import com.wms.services.warehouse.model.Material;
+import com.wms.services.warehouse.dao.MaterialDAO;
+import com.wms.services.warehouse.service.MaterialService;
 import com.wms.services.warehouse.dao.SupplierDAO;
 import com.wms.services.warehouse.service.StorageAreaService;
 import com.wms.services.warehouse.model.StorageArea;
@@ -37,6 +42,38 @@ public class WarehouseService {
         //System.out.println(suppliers.length+"22929292929292929292929292929");
         */
 /*
+        MaterialService materialService= applicationContext.getBean(MaterialService.class);
+        Material material=new Material();
+        material.setName("1222");
+        material.setWarehouseId(3);
+        material.setNo("32323");
+        materialService.add("WMS_Template",new Material[]{material});
+        System.out.println("添加完成！");
+        */
+
+
+        /*
+                SupplyService supplyService= applicationContext.getBean(SupplyService.class);
+        Supply supply=new Supply();
+        //supply.setWarehouseId(4);
+        supply.setSupplierId(4);
+        supply.setMaterialId(3);
+        //supply.setCreatePersonId(19);
+        //supply.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        supplyService.add("WMS_Template",new Supply[]{supply});
+        System.out.println("添加完成！");
+        MaterialService materialService= applicationContext.getBean(MaterialService.class);
+        MaterialDAO materialDAO=applicationContext.getBean(MaterialDAO.class);
+        Material material=new Material();
+        material.setName("ewe");
+        material.setWarehouseId(3);
+        material.setNo("32323");
+        materialService.add("WMS_Template",new Material[]{material});
+        */
+        //Condition condition = Condition.fromJson("{'conditions':[{'key':'WarehouseId','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
+        //suppliers=supplierServices.find("WMS_Template",condition);
+/*
+
         StorageAreaService storageAreaService= applicationContext.getBean(StorageAreaService.class);
         if(storageAreaService==null){
             System.out.printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
