@@ -115,10 +115,10 @@ public class SupplierServicesImpl implements SupplierServices{
         {
             Supplier[] supplierRefference=null;
             int SupplierID=ids[i];
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'supplierID','values':['" + SupplierID + "'],'relation':'EQUAL'}]}");
+            Condition condition = Condition.fromJson("{'conditions':[{'key':'supplierID','values':[" + SupplierID + "],'relation':'EQUAL'}]}");
             supplies =supplyService.find(accountBook,condition);
             if(supplies.length>0){
-                Condition conditionSupplier= Condition.fromJson("{'conditions':[{'key':'id','values':['" + SupplierID + "'],'relation':'EQUAL'}]}");
+                Condition conditionSupplier= Condition.fromJson("{'conditions':[{'key':'id','values':[" + SupplierID + "],'relation':'EQUAL'}]}");
                 supplierRefference=supplierDAO.find(accountBook,conditionSupplier);
                 throw new WMSServiceException("供应商名 " +supplierRefference[0].getName() + " 被引用无法删除!");
             }
