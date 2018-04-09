@@ -33,6 +33,14 @@ public class SupplierServicesImpl implements SupplierServices{
             {
                 throw new WMSServiceException("供应商代号不能为空！");
             }
+            if(suppliers[i].getCreatePersonId()==0)
+            {
+                throw new WMSServiceException("人员信息无法找到！");
+            }
+            if(suppliers[i].getWarehouseId()==0)
+            {
+                throw new WMSServiceException("仓库信息无法找到！");
+            }
             Supplier[] suppliersRepeat=null;
             String supplierName = suppliers[i].getName();;
             Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['"+supplierName+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
@@ -47,8 +55,8 @@ public class SupplierServicesImpl implements SupplierServices{
         }
         for (int i=0;i<suppliers.length;i++)
         {
-            suppliers[i].setWarehouseId(1);
-            suppliers[i].setCreatePersonId(19);
+            //suppliers[i].setWarehouseId(1);
+            //suppliers[i].setCreatePersonId(19);
             suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
         }
         try
@@ -84,6 +92,11 @@ public class SupplierServicesImpl implements SupplierServices{
                 if(suppliersRepet[1].getId()!=suppliers[i].getId())
                 { throw new WMSServiceException("供应商名 " + supplierName + " 已经存在！");}
             }
+
+                //suppliers[i].setWarehouseId(1);
+                //suppliers[i].setCreatePersonId(19);
+                suppliers[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+
         }
         try {
             supplierDAO.update(accountBook, suppliers);
@@ -102,10 +115,10 @@ public class SupplierServicesImpl implements SupplierServices{
         {
             Supplier[] supplierRefference=null;
             int SupplierID=ids[i];
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'supplierID','values':['" + SupplierID + "'],'relation':'EQUAL'}]}");
+            Condition condition = Condition.fromJson("{'conditions':[{'key':'supplierID','values':[" + SupplierID + "],'relation':'EQUAL'}]}");
             supplies =supplyService.find(accountBook,condition);
             if(supplies.length>0){
-                Condition conditionSupplier= Condition.fromJson("{'conditions':[{'key':'id','values':['" + SupplierID + "'],'relation':'EQUAL'}]}");
+                Condition conditionSupplier= Condition.fromJson("{'conditions':[{'key':'id','values':[" + SupplierID + "],'relation':'EQUAL'}]}");
                 supplierRefference=supplierDAO.find(accountBook,conditionSupplier);
                 throw new WMSServiceException("供应商名 " +supplierRefference[0].getName() + " 被引用无法删除!");
             }

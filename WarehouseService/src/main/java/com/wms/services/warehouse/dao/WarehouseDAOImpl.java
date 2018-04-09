@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.dao;
 
+import com.wms.services.warehouse.model.Warehouse;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
@@ -8,17 +9,14 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import com.wms.services.warehouse.model.Supplier;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 @Repository
-public class SupplierDAOImpl implements SupplierDAO {
+public class WarehouseDAOImpl implements WarehouseDAO {
     public SessionFactory getSessionFactory() {
-     return sessionFactory;
+        return sessionFactory;
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
@@ -26,8 +24,9 @@ public class SupplierDAOImpl implements SupplierDAO {
     }
     @Autowired
     private SessionFactory sessionFactory;
-    public int[] add(String database,Supplier[] suppliers) throws WMSDAOException{
-        if(suppliers.length == 0){
+
+    public int[] add(String database,Warehouse[] warehouses) throws WMSDAOException{
+        if(warehouses.length == 0){
             return new int[0];
         }
         if(sessionFactory==null){
@@ -40,17 +39,16 @@ public class SupplierDAOImpl implements SupplierDAO {
             throw new DatabaseNotFoundException(database);
         }
         try {
-            for (Supplier supplier : suppliers) {
-                session.save(supplier);
+            for (Warehouse warehouse : warehouses) {
+                session.save(warehouse);
             }
-            int ids[] = Stream.of(suppliers).mapToInt((p) -> p.getId()).toArray();
+            int ids[] = Stream.of(warehouses).mapToInt((p) -> p.getId()).toArray();
             return ids;
         }catch (Throwable ex){
             throw new WMSDAOException(ex.getMessage());
         }
     }
-
-    public void update(String database, Supplier suppliers[]) throws WMSDAOException{
+    public void update(String database, Warehouse warehouses[]) throws WMSDAOException{
         Session session = sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + database + ";").executeUpdate();
@@ -59,14 +57,13 @@ public class SupplierDAOImpl implements SupplierDAO {
         }
 
         try {
-            for (Supplier supplier : suppliers) {
-                session.update(supplier);
+            for (Warehouse warehouse : warehouses) {
+                session.update(warehouse);
             }
         }catch (Throwable ex){
             throw new WMSDAOException(ex.getMessage());
         }
     }
-
     public void remove(String database, int ids[]) throws WMSDAOException{
         if(ids.length == 0){
             return;
@@ -83,57 +80,28 @@ public class SupplierDAOImpl implements SupplierDAO {
                 idStr.append(String.format("%d,", id));
             }
             idStr.setLength(idStr.length() - 1);
-            session.createQuery(String.format("delete from Supplier where ID in(%s)", idStr.toString())).executeUpdate();
+            session.createQuery(String.format("delete from Warehouse where ID in(%s)", idStr.toString())).executeUpdate();
+        }catch (Throwable ex){
+            throw new WMSDAOException(ex.getMessage());
+        }
+    }
+    public Warehouse[] find(String database,Condition cond) throws WMSDAOException{
+        Session session = sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + database + ";").executeUpdate();
+        }catch (Throwable ex){
+            throw new DatabaseNotFoundException(database);
+        }
+        try {
+            Query query = cond.createQuery("Warehouse", session);
+            List<Warehouse> warehouseList = query.list();
+            Warehouse[] arrWarehouse = new Warehouse[warehouseList.size()];
+            warehouseList.toArray(arrWarehouse);
+            return arrWarehouse;
         }catch (Throwable ex){
             throw new WMSDAOException(ex.getMessage());
         }
     }
 
-    public Supplier[] find(String database,Condition cond) throws WMSDAOException{
-        Session session = sessionFactory.getCurrentSession();
-        try {
-            session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
-            throw new DatabaseNotFoundException(database);
-        }
-        try {
-            Query query = cond.createQuery("Supplier", session);
-            List<Supplier> listSupplier = query.list();
-            Supplier[] arrSupplier = new Supplier[listSupplier.size()];
-            listSupplier.toArray(arrSupplier);
-            return arrSupplier;
-        }catch (Throwable ex){
-            throw new WMSDAOException(ex.getMessage());
-        }
-    }
-    /*
-    public List<Supplier> findInside(String database,String sql ) throws WMSDAOException{
-        Session session = sessionFactory.getCurrentSession();
-        String entityName="Supplier";
-        StringBuffer hqlString = new StringBuffer("from "+entityName+" ");
-        Map<String,Object> queryParams = new HashMap<String, Object>();
-        String SQL=sql ;
-         try {
-            session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
-            throw new DatabaseNotFoundException(database);
-        }
-        Query query = session.createQuery(SQL);
-        for(Map.Entry<String,Object> entry : queryParams.entrySet()){
-            query.setParameter(entry.getKey(),entry.getValue());
-        }
-        List<Supplier> listSupplier = query.list();
-        return listSupplier;
-    }*/
 
 }
-
-
-
-
-
-
-
-
-
-

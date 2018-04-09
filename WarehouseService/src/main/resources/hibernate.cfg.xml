@@ -9,7 +9,7 @@
       <property name="hbm2ddl.auto">update</property>
       <property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>
 
-    <mapping class="com.wms.services.warehouse.model.Material"/>
+      <mapping class="com.wms.services.warehouse.model.Material"/>
     <mapping class="com.wms.services.ledger.model.Person"/>
     <mapping class="com.wms.services.warehouse.model.Supplier"/>
     <mapping class="com.wms.services.warehouse.model.Supply"/>

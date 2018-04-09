@@ -9,6 +9,8 @@ import javax.persistence.Id;
 public class Warehouse {
     private int id;
     private String name;
+    private String address;
+    private String tel;
 
     @Id
     @Column(name = "ID", nullable = false)
@@ -48,5 +50,25 @@ public class Warehouse {
         int result = id;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
+    }
+
+    @Basic
+    @Column(name = "Address")
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    @Basic
+    @Column(name = "Tel")
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
     }
 }
