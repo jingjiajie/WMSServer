@@ -1,7 +1,6 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.WarehouseDAO;
-import com.wms.services.warehouse.model.Supplier;
 import com.wms.services.warehouse.model.Supply;
 import com.wms.services.warehouse.model.Warehouse;
 import com.wms.utilities.datastructures.Condition;
