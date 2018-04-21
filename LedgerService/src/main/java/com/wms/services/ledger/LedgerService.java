@@ -72,10 +72,10 @@ public class LedgerService {
         accountTitle.setId(4);
         accountTitleService.update("WMS_Template",new AccountTitle[]{accountTitle});
 */
-      /*
+/*
         Person person = new Person();
-        person.setName("小黑");
-        person.setPassword("987654321");
+        person.setName("小b");
+        person.setPassword("1111111");
         person.setRole("管理员");
         person.setAuthorityString("HEHE");
         PersonService personService = applicationContext.getBean(PersonService.class);

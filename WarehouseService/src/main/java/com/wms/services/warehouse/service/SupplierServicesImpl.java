@@ -18,11 +18,29 @@ import java.sql.Timestamp;
 public class SupplierServicesImpl implements SupplierServices{
     @Autowired
     SupplierDAO  supplierDAO;
+    @Autowired
+    SupplyService supplyService;
     @Transactional
     public int[] add(String accountBook, Supplier[] suppliers) throws WMSServiceException
     {
 
         for (int i=0;i<suppliers.length;i++) {
+            if(suppliers[i].getName()==null)
+            {
+                throw new WMSServiceException("供应商名不能为空！");
+            }
+            if(suppliers[i].getNo()==null)
+            {
+                throw new WMSServiceException("供应商代号不能为空！");
+            }
+            if(suppliers[i].getCreatePersonId()==0)
+            {
+                throw new WMSServiceException("人员信息无法找到！");
+            }
+            if(suppliers[i].getWarehouseId()==0)
+            {
+                throw new WMSServiceException("仓库信息无法找到！");
+            }
             Supplier[] suppliersRepeat=null;
             String supplierName = suppliers[i].getName();;
             Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['"+supplierName+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
@@ -37,8 +55,8 @@ public class SupplierServicesImpl implements SupplierServices{
         }
         for (int i=0;i<suppliers.length;i++)
         {
-            suppliers[i].setWarehouseId(1);
-            suppliers[i].setCreatePersonId(19);
+            //suppliers[i].setWarehouseId(1);
+            //suppliers[i].setCreatePersonId(19);
             suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
         }
         try
@@ -53,6 +71,14 @@ public class SupplierServicesImpl implements SupplierServices{
     public void update(String accountBook, Supplier[] suppliers) throws WMSServiceException{
         for (int i=0;i<suppliers.length;i++)
         {
+            if(suppliers[i].getName()==null)
+            {
+                throw new WMSServiceException("供应商名不能为空！");
+            }
+            if(suppliers[i].getNo()==null)
+            {
+                throw new WMSServiceException("供应商代号不能为空！");
+            }
             Supplier[] suppliersRepet;
             String supplierName = suppliers[i].getName();
             Condition condition = Condition.fromJson("{\"conditions\":[{\"key\":\"name\",\"values\":[\"" + supplierName + "\"],\"relation\":\"EQUAL\"}], \"orders\":[{\"key\":\"name\",\"order\":\"ASC\"}]}");
@@ -62,8 +88,15 @@ public class SupplierServicesImpl implements SupplierServices{
                 throw new WMSServiceException("Accountbook "+accountBook+" not found!");
             }
             if(suppliersRepet.length>0)
-            {return;
-             }
+            {
+                if(suppliersRepet[1].getId()!=suppliers[i].getId())
+                { throw new WMSServiceException("供应商名 " + supplierName + " 已经存在！");}
+            }
+
+                //suppliers[i].setWarehouseId(1);
+                //suppliers[i].setCreatePersonId(19);
+                suppliers[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+
         }
         try {
             supplierDAO.update(accountBook, suppliers);
@@ -74,30 +107,24 @@ public class SupplierServicesImpl implements SupplierServices{
 
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
-        Supply[] supplies;
         int idLength=ids.length;
         int[] idsModify=null;
         List<int[]>  idsList = Arrays.asList(ids);
-        /*
-        List<int[]> IDRemove=null;
+        Supply[] supplies;
         for (int i=0;i<idLength;i++)
         {
-            Supplier supplierRefference;
+            Supplier[] supplierRefference=null;
             int SupplierID=ids[i];
-            Condition condition = Condition.fromJson("{\"conditions\":[{\"key\":\"SupplierID\",\"values\":[\"" + SupplierID + "\"],\"relation\":\"EQUAL\"}], \"orders\":[{\"key\":\"name\",\"order\":\"ASC\"}]}");
-            supplies =supplyDAO.find(accountBook,condition);
+            Condition condition = Condition.fromJson("{'conditions':[{'key':'supplierID','values':[" + SupplierID + "],'relation':'EQUAL'}]}");
+            supplies =supplyService.find(accountBook,condition);
             if(supplies.length>0){
-                    idsList.remove(i);
-                    i--;
+                Condition conditionSupplier= Condition.fromJson("{'conditions':[{'key':'id','values':[" + SupplierID + "],'relation':'EQUAL'}]}");
+                supplierRefference=supplierDAO.find(accountBook,conditionSupplier);
+                throw new WMSServiceException("供应商名 " +supplierRefference[0].getName() + " 被引用无法删除!");
             }
         }
-
-        for(int i=0;i<idsList.size();i++){
-           idsModify=idsList.get(i);
-}
-*/
         try {
-            supplierDAO.remove(accountBook, idsModify);
+            supplierDAO.remove(accountBook, ids);
         } catch (DatabaseNotFoundException ex) {
             throw new WMSServiceException("Accountbook " + accountBook + " not found!");
         }

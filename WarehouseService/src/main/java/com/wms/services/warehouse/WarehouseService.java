@@ -8,9 +8,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.services.warehouse.model.Supplier;
+import com.wms.services.warehouse.model.Supply;
 import java.sql.Timestamp;
 import java.util.Arrays;
-
+import com.wms.services.warehouse.dao.SupplyDAO;
+import com.wms.services.warehouse.service.SupplyService;
+import com.wms.services.warehouse.model.Material;
+import com.wms.services.warehouse.dao.MaterialDAO;
+import com.wms.services.warehouse.service.MaterialService;
 import com.wms.services.warehouse.dao.SupplierDAO;
 import com.wms.services.warehouse.service.StorageAreaService;
 import com.wms.services.warehouse.model.StorageArea;
@@ -36,23 +41,66 @@ public class WarehouseService {
        //suppliers=supplierServices.find("WMS_Template",condition);
         //System.out.println(suppliers.length+"22929292929292929292929292929");
         */
-        StorageAreaService storageAreaService= applicationContext.getBean(StorageAreaService.class);
-        StorageArea storageArea=new StorageArea();
-        storageArea.setNo("asda11111");
-        storageArea.setName("asdafafafafaf");
-        storageAreaService.add("WMS_Template",new StorageArea[]{storageArea});
-
 /*
-        StorageLocationService storageLocationService=applicationContext.getBean(StorageLocationService.class);
-        StorageLocation[] storageLocations=null;
-        storageLocation.setName("adasasasd");
-        storageLocation.setNo("122");
-         storageLocation.setStorageAreaId(1);
-        storageLocationService.add("WMS_Template",new StorageLocation[] {storageLocation});
-        Condition condition = Condition.fromJson("{'conditions':[{'key':'No','values':['122'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
-        storageLocations=storageLocationService.find("WMS_Template",condition);
-        for(int i=0;i<storageLocations.length;i++)
-        {System.out.println(storageLocations[i].getName());}
+        MaterialService materialService= applicationContext.getBean(MaterialService.class);
+        Material material=new Material();
+        material.setName("1222");
+        material.setWarehouseId(3);
+        material.setNo("32323");
+        materialService.add("WMS_Template",new Material[]{material});
+        System.out.println("添加完成！");
         */
+
+
+        /*
+                SupplyService supplyService= applicationContext.getBean(SupplyService.class);
+        Supply supply=new Supply();
+        //supply.setWarehouseId(4);
+        supply.setSupplierId(4);
+        supply.setMaterialId(3);
+        //supply.setCreatePersonId(19);
+        //supply.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        supplyService.add("WMS_Template",new Supply[]{supply});
+        System.out.println("添加完成！");
+        MaterialService materialService= applicationContext.getBean(MaterialService.class);
+        MaterialDAO materialDAO=applicationContext.getBean(MaterialDAO.class);
+        Material material=new Material();
+        material.setName("ewe");
+        material.setWarehouseId(3);
+        material.setNo("32323");
+        materialService.add("WMS_Template",new Material[]{material});
+        */
+        //Condition condition = Condition.fromJson("{'conditions':[{'key':'WarehouseId','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
+        //suppliers=supplierServices.find("WMS_Template",condition);
+/*
+
+        StorageAreaService storageAreaService= applicationContext.getBean(StorageAreaService.class);
+        if(storageAreaService==null){
+            System.out.printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        }
+        StorageArea[] storageAreas=null;
+        Condition condition1 = Condition.fromJson("{'conditions':[{'key':'id','values':[1],'relation':'EQUAL'}]}");
+        storageAreas=storageAreaService.find("WMS_Template",condition1);
+        if(storageAreas==null){
+            System.out.printf("saaaaaaaaaaaaaaaaaaaaa");
+        }
+        //storageArea.setNo("111");
+        //storageArea.setName("111");
+       // storageAreaService.add("WMS_Template", new StorageArea[]{storageArea});
+        //Condition condition = Condition.fromJson("{'conditions':[{'key':'name','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
+        //storageAreas= storageAreaService.find("WMS_Template",condition);
+
+*/
+        //StorageLocationService storageLocationService=applicationContext.getBean(StorageLocationService.class);
+        //StorageLocation storageLocation=new StorageLocation();
+        //storageLocation.setName("adasasasd135");
+       // storageLocation.setNo("12211356");
+        //storageLocation.setStorageAreaId(1);
+        //storageLocationService.add("WMS_Template",new StorageLocation[] {storageLocation});
+        //Condition condition = Condition.fromJson("{'conditions':[{'key':'No','values':['122'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
+       // storageLocations=storageLocationService.find("WMS_Template",condition);
+       // for(int i=0;i<storageLocations.length;i++)
+        //{System.out.println(storageLocations[i].getName());}
+
     }
 }
