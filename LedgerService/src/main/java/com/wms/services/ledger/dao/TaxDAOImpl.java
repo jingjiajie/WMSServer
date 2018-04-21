@@ -63,7 +63,7 @@ public class TaxDAOImpl implements TaxDAO {
         try {
             for (Tax tax : taxes) {
                 StringBuffer sbHQLString = new StringBuffer();
-                session.update(tax);
+                session.merge(tax);
             }
         } catch (Throwable ex) {
             throw new WMSDAOException(ex.getMessage());

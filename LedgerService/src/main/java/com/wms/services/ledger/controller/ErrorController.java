@@ -11,6 +11,6 @@ public class ErrorController {
 
     @ExceptionHandler
     public ResponseEntity<String> handleDatabaseNotFoundException(DatabaseNotFoundException e){
-        return new ResponseEntity<>("Hello World", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<String>(String.format("找不到帐套:%s",e.getDatabaseName()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

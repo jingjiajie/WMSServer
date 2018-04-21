@@ -62,7 +62,7 @@ public class AccountTitleDAOImpl implements AccountTitleDAO {
         try {
             for (AccountTitle accountTitle : accountTitles) {
                 StringBuffer sbHQLString = new StringBuffer();
-                session.update(accountTitle);
+                session.merge(accountTitle);
             }
         } catch (Throwable ex) {
             throw new WMSDAOException(ex.getMessage());
