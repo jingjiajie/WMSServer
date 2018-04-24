@@ -106,7 +106,7 @@ public class SupplierDAOImpl implements SupplierDAO {
             throw new WMSDAOException(ex.getMessage());
         }
     }
-    /*
+
     public List<Supplier> findInside(String database,String sql ) throws WMSDAOException{
         Session session = sessionFactory.getCurrentSession();
         String entityName="Supplier";
@@ -124,7 +124,7 @@ public class SupplierDAOImpl implements SupplierDAO {
         }
         List<Supplier> listSupplier = query.list();
         return listSupplier;
-    }*/
+    }
 
 }
 
