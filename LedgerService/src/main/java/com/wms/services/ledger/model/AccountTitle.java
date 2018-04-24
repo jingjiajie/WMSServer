@@ -15,6 +15,7 @@ public class AccountTitle {
     private int direction;
     private int enabled;
 
+
     @Id
     @Column(name = "ID")
     public int getId() {

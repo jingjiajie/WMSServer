@@ -43,7 +43,7 @@ public class PersonServiceImpl implements PersonService {
         try{
             return personDAO.add(accountBook,persons);
         }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("账套 "+accountBook+" 不存在!");
+            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
     }
 
@@ -77,7 +77,7 @@ public class PersonServiceImpl implements PersonService {
         try {
             personDAO.update(accountBook, persons);
         }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("账套 "+accountBook+" 不存在!");
+            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
     }
 
@@ -86,12 +86,16 @@ public class PersonServiceImpl implements PersonService {
         try {
             personDAO.remove(accountBook, ids);
         } catch (DatabaseNotFoundException ex) {
-            throw new WMSServiceException("账套 " + accountBook + " 不存在!");
+            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
         }
     }
 
     @Transactional
     public Person[] find(String accountBook, Condition cond) throws WMSServiceException{
+        try {
             return this.personDAO.find(accountBook, cond);
+        }catch (DatabaseNotFoundException ex){
+            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
+        }
     }
 }

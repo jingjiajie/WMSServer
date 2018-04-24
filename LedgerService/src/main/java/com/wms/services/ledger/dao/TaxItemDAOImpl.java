@@ -64,7 +64,7 @@ public class TaxItemDAOImpl implements TaxItemDAO {
         try {
             for (TaxItem taxItem : taxItems) {
                 StringBuffer sbHQLString = new StringBuffer();
-                session.update(taxItem);
+                session.merge(taxItem);
             }
         }catch (Throwable ex){
             throw new WMSDAOException(ex.getMessage());

@@ -48,6 +48,16 @@ public class TaxItem {
     }
 
     @Basic
+    @Column(name = "TaxID")
+    public int getTaxId() {
+        return taxId;
+    }
+
+    public void setTaxId(int taxId) {
+        this.taxId = taxId;
+    }
+
+    @Basic
     @Column(name = "Type")
     public int getType() {
         return type;
@@ -96,13 +106,4 @@ public class TaxItem {
         return Objects.hash(id, startAmount, endAmount, type, taxAmount, taxRate);
     }
 
-    @Basic
-    @Column(name = "TaxID")
-    public int getTaxId() {
-        return taxId;
-    }
-
-    public void setTaxId(int taxId) {
-        this.taxId = taxId;
-    }
 }

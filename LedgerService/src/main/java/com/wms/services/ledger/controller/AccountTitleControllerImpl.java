@@ -22,7 +22,6 @@ public class AccountTitleControllerImpl implements AccountTitleController{
         int ids[] = accountTitleService.add(accountBook, accountTitles);
         return new ResponseEntity<int[]>(ids, HttpStatus.OK);
     }
-
     @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
     @ResponseBody
     public void remove(@PathVariable("accountBook") String accountBook,
@@ -46,7 +45,4 @@ public class AccountTitleControllerImpl implements AccountTitleController{
         AccountTitle[] accountTitles = accountTitleService.find(accountBook,cond);
         return new ResponseEntity<AccountTitle[]>(accountTitles, HttpStatus.OK);
     }
-
-
-
 }
