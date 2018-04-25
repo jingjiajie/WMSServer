@@ -6,6 +6,7 @@ import com.wms.services.warehouse.model.Supply;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,9 @@ public class SupplierServicesImpl implements SupplierServices{
     @Transactional
     public int[] add(String accountBook, Supplier[] suppliers) throws WMSServiceException
     {
+
+
+
 
         for (int i=0;i<suppliers.length;i++) {
             if(suppliers[i].getName()==null)
