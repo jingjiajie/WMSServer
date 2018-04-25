@@ -22,26 +22,29 @@ public class SupplyServiceImpl implements SupplyService {
     SupplierServices supplierServices;
     @Autowired
     MaterialService materialService;
-    @Transactional
-    public int[] add(String accountBook, Supply[] supplies) throws WMSServiceException{
 
-        for (int i=0;i<supplies.length;i++) {
+    @Transactional
+    public int[] add(String accountBook, Supply[] supplies) throws WMSServiceException {
+
+        for (int i = 0; i < supplies.length; i++) {
 
 
             //判断物料ID是否为空
-            String materialID = supplies[i].getMaterialId().toString();;//获取供货物料名称
-            if (materialID == null || materialID.trim().length() <=0) {       //判断是否为空，trim()去除字符串两边空格
+            String materialID = supplies[i].getMaterialId().toString();//
+            ;//获取供货物料名称
+            if (materialID == null || materialID.trim().length() <= 0) {       //判断是否为空，trim()去除字符串两边空格
                 throw new WMSServiceException("物料不能为空！");
             }
             //判断供货商ID是否为空
-            String supplierId = supplies[i].getSupplierId().toString();;//获取供货商名称
-            if (supplierId == null || supplierId.trim().length() <=0) {       //判断是否为空
+            String supplierId = supplies[i].getSupplierId().toString();
+            ;//获取供货商名称
+            if (supplierId == null || supplierId.trim().length() <= 0) {       //判断是否为空
                 throw new WMSServiceException("供货商不能为空！");
             }
 
 
-            Supply[] suppliesRepeat=null;//新建一个数组，物料复述
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['"+supplierId+"'],'relation':'EQUAL'},{'key':'MaterialId','values':['"+materialID+"'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
+            Supply[] suppliesRepeat = null;//新建一个数组，物料复述
+            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['" + supplierId + "'],'relation':'EQUAL'},{'key':'MaterialId','values':['" + materialID + "'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
             //添加供货商-物料关联查询条件，按供货商ID排序
             try {
                 suppliesRepeat = supplyDAO.find(accountBook, condition);
@@ -55,27 +58,26 @@ public class SupplyServiceImpl implements SupplyService {
 
         }
 
-        for (int i=0;i<supplies.length;i++)
-        {
+        for (int i = 0; i < supplies.length; i++) {
             supplies[i].setWarehouseId(4);//先添加一个仓库ID，后面修正
             supplies[i].setCreatePersonId(19);//先添加一个创建人员ID，后面修正
             supplies[i].setCreateTime(new Timestamp(System.currentTimeMillis()));//添加创建时间
         }
 
 
-        try{
-            return supplyDAO.add(accountBook,supplies);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
+        try {
+            return supplyDAO.add(accountBook, supplies);
+        } catch (DatabaseNotFoundException ex) {
+            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
         }
     }
 
     @Transactional
-    public void update(String accountBook, Supply[] supplies) throws WMSServiceException{
+    public void update(String accountBook, Supply[] supplies) throws WMSServiceException {
 
-        for (int i=0;i<supplies.length;i++) {
+        for (int i = 0; i < supplies.length; i++) {
 
-            Supply[] suppliesRepeat=null;//新建一个数组，物料复述
+            Supply[] suppliesRepeat = null;//新建一个数组，物料复述
             int actid = supplies[i].getId();//获取要修改供货信息的Id
 
             if (actid == 0) {       //判断是否输入所要查询科目的ID int类型默认为0 数据库id默认从1开始 所以可以用0判断，参考AccountTitle
@@ -83,17 +85,19 @@ public class SupplyServiceImpl implements SupplyService {
             }
 
             //判断物料ID是否为空
-            String materialID = supplies[i].getMaterialId().toString();;//获取供货物料名称
-            if (materialID == null || materialID.trim().length() <=0) {       //判断是否为空，trim()去除字符串两边空格
+            String materialID = supplies[i].getMaterialId().toString();
+            ;//获取供货物料名称
+            if (materialID == null || materialID.trim().length() <= 0) {       //判断是否为空，trim()去除字符串两边空格
                 throw new WMSServiceException("物料不能为空！");
             }
             //判断供货商ID是否为空
-            String SupplierId = supplies[i].getSupplierId().toString();;//获取供货商名称
-            if (SupplierId == null || SupplierId.trim().length() <=0) {       //判断是否为空
+            String SupplierId = supplies[i].getSupplierId().toString();
+            ;//获取供货商名称
+            if (SupplierId == null || SupplierId.trim().length() <= 0) {       //判断是否为空
                 throw new WMSServiceException("供货商不能为空！");
             }
 
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['"+SupplierId+"'],'relation':'EQUAL'}],[{'key':'MaterialId','values':['"+materialID+"'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
+            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['" + SupplierId + "'],'relation':'EQUAL'}],[{'key':'MaterialId','values':['" + materialID + "'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
             //添加供货商-物料关联查询条件，按供货商ID排序
             try {
                 suppliesRepeat = supplyDAO.find(accountBook, condition);
@@ -111,12 +115,13 @@ public class SupplyServiceImpl implements SupplyService {
 
         try {
             supplyDAO.update(accountBook, supplies);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
+        } catch (DatabaseNotFoundException ex) {
+            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
         }
     }
+
     @Transactional
-    public void remove(String accountBook, int[] ids) throws WMSServiceException{
+    public void remove(String accountBook, int[] ids) throws WMSServiceException {
 
 /*
         Supply[] supplies;
@@ -146,12 +151,13 @@ public class SupplyServiceImpl implements SupplyService {
             throw new WMSServiceException("Accountbook " + accountBook + " not found!");
         }
     }
+
     @Transactional
-    public Supply[] find(String accountBook, Condition cond) throws WMSServiceException{
+    public Supply[] find(String accountBook, Condition cond) throws WMSServiceException {
         try {
             return this.supplyDAO.find(accountBook, cond);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
+        } catch (DatabaseNotFoundException ex) {
+            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
         }
     }
 }

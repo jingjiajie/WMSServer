@@ -30,7 +30,7 @@ public class WarehouseService {
     public static void main(java.lang.String args[]){
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class,args);
         System.out.println("仓库服务启动...");
-/*
+
         SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
        // SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
         Supplier supplier=new Supplier();
@@ -40,7 +40,7 @@ public class WarehouseService {
         Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
        //suppliers=supplierServices.find("WMS_Template",condition);
         //System.out.println(suppliers.length+"22929292929292929292929292929");
-        */
+
 /*
         MaterialService materialService= applicationContext.getBean(MaterialService.class);
         Material material=new Material();
