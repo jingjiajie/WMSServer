@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-public class Supply {
+public class SupplyView {
     private int id;
     private Integer warehouseId;
     private Integer supplierId;
@@ -64,9 +64,17 @@ public class Supply {
     private Timestamp createTime;
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
+    private String warehouseName;
+    private String createPersonName;
+    private String lastUpdatePersonName;
+    private String materialNo;
+    private String materialName;
+    private String supplierNo;
+    private String supplierName;
     private int enabled;
 
     @Id
+    @Basic
     @Column(name = "ID", nullable = false)
     public int getId() {
         return id;
@@ -607,6 +615,76 @@ public class Supply {
     }
 
     @Basic
+    @Column(name = "WarehouseName", nullable = true, length = 64)
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
+    }
+
+    @Basic
+    @Column(name = "CreatePersonName", nullable = true, length = 64)
+    public String getCreatePersonName() {
+        return createPersonName;
+    }
+
+    public void setCreatePersonName(String createPersonName) {
+        this.createPersonName = createPersonName;
+    }
+
+    @Basic
+    @Column(name = "LastUpdatePersonName", nullable = true, length = 64)
+    public String getLastUpdatePersonName() {
+        return lastUpdatePersonName;
+    }
+
+    public void setLastUpdatePersonName(String lastUpdatePersonName) {
+        this.lastUpdatePersonName = lastUpdatePersonName;
+    }
+
+    @Basic
+    @Column(name = "MaterialNo", nullable = true, length = 64)
+    public String getMaterialNo() {
+        return materialNo;
+    }
+
+    public void setMaterialNo(String materialNo) {
+        this.materialNo = materialNo;
+    }
+
+    @Basic
+    @Column(name = "MaterialName", nullable = true, length = 64)
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
+    }
+
+    @Basic
+    @Column(name = "SupplierNo", nullable = true, length = 64)
+    public String getSupplierNo() {
+        return supplierNo;
+    }
+
+    public void setSupplierNo(String supplierNo) {
+        this.supplierNo = supplierNo;
+    }
+
+    @Basic
+    @Column(name = "SupplierName", nullable = true, length = 64)
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    @Basic
     @Column(name = "Enabled", nullable = false)
     public int getEnabled() {
         return enabled;
@@ -620,67 +698,74 @@ public class Supply {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Supply supply = (Supply) o;
-        return id == supply.id &&
-                createPersonId == supply.createPersonId &&
-                enabled == supply.enabled &&
-                Objects.equals(warehouseId, supply.warehouseId) &&
-                Objects.equals(supplierId, supply.supplierId) &&
-                Objects.equals(materialId, supply.materialId) &&
-                Objects.equals(defaultReceiptUnit, supply.defaultReceiptUnit) &&
-                Objects.equals(defaultReceiptUnitAmount, supply.defaultReceiptUnitAmount) &&
-                Objects.equals(defaultSubmissionUnit, supply.defaultSubmissionUnit) &&
-                Objects.equals(defaultSubmissionUnitAmount, supply.defaultSubmissionUnitAmount) &&
-                Objects.equals(defaultPrepareUnit, supply.defaultPrepareUnit) &&
-                Objects.equals(defaultPrepareUnitAmount, supply.defaultPrepareUnitAmount) &&
-                Objects.equals(defaultShipmentUnit, supply.defaultShipmentUnit) &&
-                Objects.equals(defaultShipmentUnitAmount, supply.defaultShipmentUnitAmount) &&
-                Objects.equals(validPeriod, supply.validPeriod) &&
-                Objects.equals(photoIndex, supply.photoIndex) &&
-                Objects.equals(containerNo, supply.containerNo) &&
-                Objects.equals(factroy, supply.factroy) &&
-                Objects.equals(workPosition, supply.workPosition) &&
-                Objects.equals(supplierType, supply.supplierType) &&
-                Objects.equals(type, supply.type) &&
-                Objects.equals(size, supply.size) &&
-                Objects.equals(groupPrincipal, supply.groupPrincipal) &&
-                Objects.equals(charge1, supply.charge1) &&
-                Objects.equals(charge2, supply.charge2) &&
-                Objects.equals(singleBoxPhotoIndex, supply.singleBoxPhotoIndex) &&
-                Objects.equals(singleBoxPackagingBoxType, supply.singleBoxPackagingBoxType) &&
-                Objects.equals(singleBoxLength, supply.singleBoxLength) &&
-                Objects.equals(singleBoxWidth, supply.singleBoxWidth) &&
-                Objects.equals(singleBoxHeight, supply.singleBoxHeight) &&
-                Objects.equals(singleBoxSnp, supply.singleBoxSnp) &&
-                Objects.equals(singleBoxRatedMinimumBoxCount, supply.singleBoxRatedMinimumBoxCount) &&
-                Objects.equals(singleBoxWeight, supply.singleBoxWeight) &&
-                Objects.equals(singleBoxLayerCount, supply.singleBoxLayerCount) &&
-                Objects.equals(singleBoxStorageCount, supply.singleBoxStorageCount) &&
-                Objects.equals(singleBoxTheoreticalLayerCount, supply.singleBoxTheoreticalLayerCount) &&
-                Objects.equals(singleBoxTheoreticalStorageHeight, supply.singleBoxTheoreticalStorageHeight) &&
-                Objects.equals(singleBoxThroreticalStorageCount, supply.singleBoxThroreticalStorageCount) &&
-                Objects.equals(outerPackingPhotoIndex, supply.outerPackingPhotoIndex) &&
-                Objects.equals(outerPackingBoxType, supply.outerPackingBoxType) &&
-                Objects.equals(outerPackingLength, supply.outerPackingLength) &&
-                Objects.equals(outerPackingWidth, supply.outerPackingWidth) &&
-                Objects.equals(outerPackingHeight, supply.outerPackingHeight) &&
-                Objects.equals(outerPackingSnp, supply.outerPackingSnp) &&
-                Objects.equals(outerPackingComment, supply.outerPackingComment) &&
-                Objects.equals(outerPackingRequiredLayers, supply.outerPackingRequiredLayers) &&
-                Objects.equals(shipmentInfoBoxType, supply.shipmentInfoBoxType) &&
-                Objects.equals(shipmentInfoBoxLength, supply.shipmentInfoBoxLength) &&
-                Objects.equals(shipmentInfoBoxWidth, supply.shipmentInfoBoxWidth) &&
-                Objects.equals(shipmentInfoBoxHeight, supply.shipmentInfoBoxHeight) &&
-                Objects.equals(isHistory, supply.isHistory) &&
-                Objects.equals(newestSupplyId, supply.newestSupplyId) &&
-                Objects.equals(createTime, supply.createTime) &&
-                Objects.equals(lastUpdatePersonId, supply.lastUpdatePersonId) &&
-                Objects.equals(lastUpdateTime, supply.lastUpdateTime);
+        SupplyView that = (SupplyView) o;
+        return id == that.id &&
+                createPersonId == that.createPersonId &&
+                enabled == that.enabled &&
+                Objects.equals(warehouseId, that.warehouseId) &&
+                Objects.equals(supplierId, that.supplierId) &&
+                Objects.equals(materialId, that.materialId) &&
+                Objects.equals(defaultReceiptUnit, that.defaultReceiptUnit) &&
+                Objects.equals(defaultReceiptUnitAmount, that.defaultReceiptUnitAmount) &&
+                Objects.equals(defaultSubmissionUnit, that.defaultSubmissionUnit) &&
+                Objects.equals(defaultSubmissionUnitAmount, that.defaultSubmissionUnitAmount) &&
+                Objects.equals(defaultPrepareUnit, that.defaultPrepareUnit) &&
+                Objects.equals(defaultPrepareUnitAmount, that.defaultPrepareUnitAmount) &&
+                Objects.equals(defaultShipmentUnit, that.defaultShipmentUnit) &&
+                Objects.equals(defaultShipmentUnitAmount, that.defaultShipmentUnitAmount) &&
+                Objects.equals(validPeriod, that.validPeriod) &&
+                Objects.equals(photoIndex, that.photoIndex) &&
+                Objects.equals(containerNo, that.containerNo) &&
+                Objects.equals(factroy, that.factroy) &&
+                Objects.equals(workPosition, that.workPosition) &&
+                Objects.equals(supplierType, that.supplierType) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(size, that.size) &&
+                Objects.equals(groupPrincipal, that.groupPrincipal) &&
+                Objects.equals(charge1, that.charge1) &&
+                Objects.equals(charge2, that.charge2) &&
+                Objects.equals(singleBoxPhotoIndex, that.singleBoxPhotoIndex) &&
+                Objects.equals(singleBoxPackagingBoxType, that.singleBoxPackagingBoxType) &&
+                Objects.equals(singleBoxLength, that.singleBoxLength) &&
+                Objects.equals(singleBoxWidth, that.singleBoxWidth) &&
+                Objects.equals(singleBoxHeight, that.singleBoxHeight) &&
+                Objects.equals(singleBoxSnp, that.singleBoxSnp) &&
+                Objects.equals(singleBoxRatedMinimumBoxCount, that.singleBoxRatedMinimumBoxCount) &&
+                Objects.equals(singleBoxWeight, that.singleBoxWeight) &&
+                Objects.equals(singleBoxLayerCount, that.singleBoxLayerCount) &&
+                Objects.equals(singleBoxStorageCount, that.singleBoxStorageCount) &&
+                Objects.equals(singleBoxTheoreticalLayerCount, that.singleBoxTheoreticalLayerCount) &&
+                Objects.equals(singleBoxTheoreticalStorageHeight, that.singleBoxTheoreticalStorageHeight) &&
+                Objects.equals(singleBoxThroreticalStorageCount, that.singleBoxThroreticalStorageCount) &&
+                Objects.equals(outerPackingPhotoIndex, that.outerPackingPhotoIndex) &&
+                Objects.equals(outerPackingBoxType, that.outerPackingBoxType) &&
+                Objects.equals(outerPackingLength, that.outerPackingLength) &&
+                Objects.equals(outerPackingWidth, that.outerPackingWidth) &&
+                Objects.equals(outerPackingHeight, that.outerPackingHeight) &&
+                Objects.equals(outerPackingSnp, that.outerPackingSnp) &&
+                Objects.equals(outerPackingComment, that.outerPackingComment) &&
+                Objects.equals(outerPackingRequiredLayers, that.outerPackingRequiredLayers) &&
+                Objects.equals(shipmentInfoBoxType, that.shipmentInfoBoxType) &&
+                Objects.equals(shipmentInfoBoxLength, that.shipmentInfoBoxLength) &&
+                Objects.equals(shipmentInfoBoxWidth, that.shipmentInfoBoxWidth) &&
+                Objects.equals(shipmentInfoBoxHeight, that.shipmentInfoBoxHeight) &&
+                Objects.equals(isHistory, that.isHistory) &&
+                Objects.equals(newestSupplyId, that.newestSupplyId) &&
+                Objects.equals(createTime, that.createTime) &&
+                Objects.equals(lastUpdatePersonId, that.lastUpdatePersonId) &&
+                Objects.equals(lastUpdateTime, that.lastUpdateTime) &&
+                Objects.equals(warehouseName, that.warehouseName) &&
+                Objects.equals(createPersonName, that.createPersonName) &&
+                Objects.equals(lastUpdatePersonName, that.lastUpdatePersonName) &&
+                Objects.equals(materialNo, that.materialNo) &&
+                Objects.equals(materialName, that.materialName) &&
+                Objects.equals(supplierNo, that.supplierNo) &&
+                Objects.equals(supplierName, that.supplierName);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, warehouseId, supplierId, materialId, defaultReceiptUnit, defaultReceiptUnitAmount, defaultSubmissionUnit, defaultSubmissionUnitAmount, defaultPrepareUnit, defaultPrepareUnitAmount, defaultShipmentUnit, defaultShipmentUnitAmount, validPeriod, photoIndex, containerNo, factroy, workPosition, supplierType, type, size, groupPrincipal, charge1, charge2, singleBoxPhotoIndex, singleBoxPackagingBoxType, singleBoxLength, singleBoxWidth, singleBoxHeight, singleBoxSnp, singleBoxRatedMinimumBoxCount, singleBoxWeight, singleBoxLayerCount, singleBoxStorageCount, singleBoxTheoreticalLayerCount, singleBoxTheoreticalStorageHeight, singleBoxThroreticalStorageCount, outerPackingPhotoIndex, outerPackingBoxType, outerPackingLength, outerPackingWidth, outerPackingHeight, outerPackingSnp, outerPackingComment, outerPackingRequiredLayers, shipmentInfoBoxType, shipmentInfoBoxLength, shipmentInfoBoxWidth, shipmentInfoBoxHeight, isHistory, newestSupplyId, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime, enabled);
+        return Objects.hash(id, warehouseId, supplierId, materialId, defaultReceiptUnit, defaultReceiptUnitAmount, defaultSubmissionUnit, defaultSubmissionUnitAmount, defaultPrepareUnit, defaultPrepareUnitAmount, defaultShipmentUnit, defaultShipmentUnitAmount, validPeriod, photoIndex, containerNo, factroy, workPosition, supplierType, type, size, groupPrincipal, charge1, charge2, singleBoxPhotoIndex, singleBoxPackagingBoxType, singleBoxLength, singleBoxWidth, singleBoxHeight, singleBoxSnp, singleBoxRatedMinimumBoxCount, singleBoxWeight, singleBoxLayerCount, singleBoxStorageCount, singleBoxTheoreticalLayerCount, singleBoxTheoreticalStorageHeight, singleBoxThroreticalStorageCount, outerPackingPhotoIndex, outerPackingBoxType, outerPackingLength, outerPackingWidth, outerPackingHeight, outerPackingSnp, outerPackingComment, outerPackingRequiredLayers, shipmentInfoBoxType, shipmentInfoBoxLength, shipmentInfoBoxWidth, shipmentInfoBoxHeight, isHistory, newestSupplyId, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime, warehouseName, createPersonName, lastUpdatePersonName, materialNo, materialName, supplierNo, supplierName, enabled);
     }
 }

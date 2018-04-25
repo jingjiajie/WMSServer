@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class StorageLocation {
+public class StorageLocationView {
     private int id;
     private int storageAreaId;
     private String no;
@@ -15,6 +15,7 @@ public class StorageLocation {
     private int enabled;
 
     @Id
+    @Basic
     @Column(name = "ID", nullable = false)
     public int getId() {
         return id;
@@ -68,7 +69,7 @@ public class StorageLocation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StorageLocation that = (StorageLocation) o;
+        StorageLocationView that = (StorageLocationView) o;
         return id == that.id &&
                 storageAreaId == that.storageAreaId &&
                 enabled == that.enabled &&

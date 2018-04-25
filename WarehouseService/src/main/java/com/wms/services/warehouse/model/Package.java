@@ -7,10 +7,9 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class StorageLocation {
+public class Package {
     private int id;
-    private int storageAreaId;
-    private String no;
+    private int warehouseId;
     private String name;
     private int enabled;
 
@@ -25,27 +24,17 @@ public class StorageLocation {
     }
 
     @Basic
-    @Column(name = "StorageAreaID", nullable = false)
-    public int getStorageAreaId() {
-        return storageAreaId;
+    @Column(name = "WarehouseID", nullable = false)
+    public int getWarehouseId() {
+        return warehouseId;
     }
 
-    public void setStorageAreaId(int storageAreaId) {
-        this.storageAreaId = storageAreaId;
-    }
-
-    @Basic
-    @Column(name = "No", nullable = false, length = 64)
-    public String getNo() {
-        return no;
-    }
-
-    public void setNo(String no) {
-        this.no = no;
+    public void setWarehouseId(int warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
     @Basic
-    @Column(name = "Name", nullable = true, length = 64)
+    @Column(name = "Name", nullable = false, length = 64)
     public String getName() {
         return name;
     }
@@ -68,17 +57,16 @@ public class StorageLocation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StorageLocation that = (StorageLocation) o;
-        return id == that.id &&
-                storageAreaId == that.storageAreaId &&
-                enabled == that.enabled &&
-                Objects.equals(no, that.no) &&
-                Objects.equals(name, that.name);
+        Package aPackage = (Package) o;
+        return id == aPackage.id &&
+                warehouseId == aPackage.warehouseId &&
+                enabled == aPackage.enabled &&
+                Objects.equals(name, aPackage.name);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, storageAreaId, no, name, enabled);
+        return Objects.hash(id, warehouseId, name, enabled);
     }
 }

@@ -21,11 +21,12 @@
     <facet type="hibernate" name="Hibernate">
       <configuration>
         <datasource-map>
-          <unit-entry name="hibernate.cfg.xml" value="809cdf5e-9851-4528-8275-0349fbbb4d4a" />
+          <unit-entry name="a.xml" value="90b67ad7-19f9-4c5c-964c-d0752e4c1166" />
+          <unit-entry name="hibernate1.cfg.xml" />
           <unit-entry name="sessionFactory" />
         </datasource-map>
         <naming-strategy-map />
-        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/src/main/resources/hibernate.cfg.xml" />
+        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/src/main/resources/hibernate1.cfg.xml" />
       </configuration>
     </facet>
   </component>

@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class Warehouse {
+public class WarehouseView {
     private int id;
     private String name;
     private String address;
@@ -15,6 +15,7 @@ public class Warehouse {
     private int enabled;
 
     @Id
+    @Basic
     @Column(name = "ID", nullable = false)
     public int getId() {
         return id;
@@ -68,12 +69,12 @@ public class Warehouse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Warehouse warehouse = (Warehouse) o;
-        return id == warehouse.id &&
-                enabled == warehouse.enabled &&
-                Objects.equals(name, warehouse.name) &&
-                Objects.equals(address, warehouse.address) &&
-                Objects.equals(tel, warehouse.tel);
+        WarehouseView that = (WarehouseView) o;
+        return id == that.id &&
+                enabled == that.enabled &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(address, that.address) &&
+                Objects.equals(tel, that.tel);
     }
 
     @Override

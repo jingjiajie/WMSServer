@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-public class Supplier {
+public class SupplierView {
     private int id;
     private int warehouseId;
     private String no;
@@ -39,9 +39,13 @@ public class Supplier {
     private Timestamp createTime;
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
+    private String warehouseName;
+    private String createPersonName;
+    private String lastUpdatePersonName;
     private int enabled;
 
     @Id
+    @Basic
     @Column(name = "ID", nullable = false)
     public int getId() {
         return id;
@@ -332,6 +336,36 @@ public class Supplier {
     }
 
     @Basic
+    @Column(name = "WarehouseName", nullable = false, length = 64)
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
+    }
+
+    @Basic
+    @Column(name = "CreatePersonName", nullable = false, length = 64)
+    public String getCreatePersonName() {
+        return createPersonName;
+    }
+
+    public void setCreatePersonName(String createPersonName) {
+        this.createPersonName = createPersonName;
+    }
+
+    @Basic
+    @Column(name = "LastUpdatePersonName", nullable = false, length = 64)
+    public String getLastUpdatePersonName() {
+        return lastUpdatePersonName;
+    }
+
+    public void setLastUpdatePersonName(String lastUpdatePersonName) {
+        this.lastUpdatePersonName = lastUpdatePersonName;
+    }
+
+    @Basic
     @Column(name = "Enabled", nullable = false)
     public int getEnabled() {
         return enabled;
@@ -345,42 +379,45 @@ public class Supplier {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Supplier supplier = (Supplier) o;
-        return id == supplier.id &&
-                warehouseId == supplier.warehouseId &&
-                isHistory == supplier.isHistory &&
-                createPersonId == supplier.createPersonId &&
-                enabled == supplier.enabled &&
-                Objects.equals(no, supplier.no) &&
-                Objects.equals(fullName, supplier.fullName) &&
-                Objects.equals(name, supplier.name) &&
-                Objects.equals(enterpriseCode, supplier.enterpriseCode) &&
-                Objects.equals(contractNo, supplier.contractNo) &&
-                Objects.equals(contractStartTime, supplier.contractStartTime) &&
-                Objects.equals(contractEndTime, supplier.contractEndTime) &&
-                Objects.equals(invoiceDelayMonth, supplier.invoiceDelayMonth) &&
-                Objects.equals(balanceDelayMonth, supplier.balanceDelayMonth) &&
-                Objects.equals(netArea, supplier.netArea) &&
-                Objects.equals(fixedStorageCost, supplier.fixedStorageCost) &&
-                Objects.equals(contractStorageArea, supplier.contractStorageArea) &&
-                Objects.equals(taxpayerNumber, supplier.taxpayerNumber) &&
-                Objects.equals(address, supplier.address) &&
-                Objects.equals(tel, supplier.tel) &&
-                Objects.equals(bankName, supplier.bankName) &&
-                Objects.equals(bankAccount, supplier.bankAccount) &&
-                Objects.equals(bankNo, supplier.bankNo) &&
-                Objects.equals(zipCode, supplier.zipCode) &&
-                Objects.equals(recipientName, supplier.recipientName) &&
-                Objects.equals(contractState, supplier.contractState) &&
-                Objects.equals(newestSupplierId, supplier.newestSupplierId) &&
-                Objects.equals(createTime, supplier.createTime) &&
-                Objects.equals(lastUpdatePersonId, supplier.lastUpdatePersonId) &&
-                Objects.equals(lastUpdateTime, supplier.lastUpdateTime);
+        SupplierView that = (SupplierView) o;
+        return id == that.id &&
+                warehouseId == that.warehouseId &&
+                isHistory == that.isHistory &&
+                createPersonId == that.createPersonId &&
+                enabled == that.enabled &&
+                Objects.equals(no, that.no) &&
+                Objects.equals(fullName, that.fullName) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(enterpriseCode, that.enterpriseCode) &&
+                Objects.equals(contractNo, that.contractNo) &&
+                Objects.equals(contractStartTime, that.contractStartTime) &&
+                Objects.equals(contractEndTime, that.contractEndTime) &&
+                Objects.equals(invoiceDelayMonth, that.invoiceDelayMonth) &&
+                Objects.equals(balanceDelayMonth, that.balanceDelayMonth) &&
+                Objects.equals(netArea, that.netArea) &&
+                Objects.equals(fixedStorageCost, that.fixedStorageCost) &&
+                Objects.equals(contractStorageArea, that.contractStorageArea) &&
+                Objects.equals(taxpayerNumber, that.taxpayerNumber) &&
+                Objects.equals(address, that.address) &&
+                Objects.equals(tel, that.tel) &&
+                Objects.equals(bankName, that.bankName) &&
+                Objects.equals(bankAccount, that.bankAccount) &&
+                Objects.equals(bankNo, that.bankNo) &&
+                Objects.equals(zipCode, that.zipCode) &&
+                Objects.equals(recipientName, that.recipientName) &&
+                Objects.equals(contractState, that.contractState) &&
+                Objects.equals(newestSupplierId, that.newestSupplierId) &&
+                Objects.equals(createTime, that.createTime) &&
+                Objects.equals(lastUpdatePersonId, that.lastUpdatePersonId) &&
+                Objects.equals(lastUpdateTime, that.lastUpdateTime) &&
+                Objects.equals(warehouseName, that.warehouseName) &&
+                Objects.equals(createPersonName, that.createPersonName) &&
+                Objects.equals(lastUpdatePersonName, that.lastUpdatePersonName);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, warehouseId, no, fullName, name, enterpriseCode, contractNo, contractStartTime, contractEndTime, invoiceDelayMonth, balanceDelayMonth, netArea, fixedStorageCost, contractStorageArea, taxpayerNumber, address, tel, bankName, bankAccount, bankNo, zipCode, recipientName, contractState, isHistory, newestSupplierId, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime, enabled);
+        return Objects.hash(id, warehouseId, no, fullName, name, enterpriseCode, contractNo, contractStartTime, contractEndTime, invoiceDelayMonth, balanceDelayMonth, netArea, fixedStorageCost, contractStorageArea, taxpayerNumber, address, tel, bankName, bankAccount, bankNo, zipCode, recipientName, contractState, isHistory, newestSupplierId, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime, warehouseName, createPersonName, lastUpdatePersonName, enabled);
     }
 }

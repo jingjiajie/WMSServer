@@ -7,13 +7,13 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class StorageArea {
+public class TaxView {
     private int id;
-    private String no;
     private String name;
-    private int enabled;
+    private String no;
 
     @Id
+    @Basic
     @Column(name = "ID", nullable = false)
     public int getId() {
         return id;
@@ -21,6 +21,16 @@ public class StorageArea {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Basic
+    @Column(name = "Name", nullable = false, length = 64)
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Basic
@@ -33,40 +43,19 @@ public class StorageArea {
         this.no = no;
     }
 
-    @Basic
-    @Column(name = "Name", nullable = true, length = 64)
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Basic
-    @Column(name = "Enabled", nullable = false)
-    public int getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(int enabled) {
-        this.enabled = enabled;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StorageArea that = (StorageArea) o;
-        return id == that.id &&
-                enabled == that.enabled &&
-                Objects.equals(no, that.no) &&
-                Objects.equals(name, that.name);
+        TaxView taxView = (TaxView) o;
+        return id == taxView.id &&
+                Objects.equals(name, taxView.name) &&
+                Objects.equals(no, taxView.no);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, no, name, enabled);
+        return Objects.hash(id, name, no);
     }
 }

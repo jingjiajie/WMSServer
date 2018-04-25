@@ -7,14 +7,14 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class StorageLocation {
+public class StorageAreaView {
     private int id;
-    private int storageAreaId;
     private String no;
     private String name;
     private int enabled;
 
     @Id
+    @Basic
     @Column(name = "ID", nullable = false)
     public int getId() {
         return id;
@@ -22,16 +22,6 @@ public class StorageLocation {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    @Basic
-    @Column(name = "StorageAreaID", nullable = false)
-    public int getStorageAreaId() {
-        return storageAreaId;
-    }
-
-    public void setStorageAreaId(int storageAreaId) {
-        this.storageAreaId = storageAreaId;
     }
 
     @Basic
@@ -68,9 +58,8 @@ public class StorageLocation {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StorageLocation that = (StorageLocation) o;
+        StorageAreaView that = (StorageAreaView) o;
         return id == that.id &&
-                storageAreaId == that.storageAreaId &&
                 enabled == that.enabled &&
                 Objects.equals(no, that.no) &&
                 Objects.equals(name, that.name);
@@ -79,6 +68,6 @@ public class StorageLocation {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, storageAreaId, no, name, enabled);
+        return Objects.hash(id, no, name, enabled);
     }
 }

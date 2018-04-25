@@ -7,14 +7,15 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class StorageLocation {
+public class PackageView {
     private int id;
-    private int storageAreaId;
-    private String no;
+    private int warehouseId;
     private String name;
     private int enabled;
+    private String warehouseName;
 
     @Id
+    @Basic
     @Column(name = "ID", nullable = false)
     public int getId() {
         return id;
@@ -25,27 +26,17 @@ public class StorageLocation {
     }
 
     @Basic
-    @Column(name = "StorageAreaID", nullable = false)
-    public int getStorageAreaId() {
-        return storageAreaId;
+    @Column(name = "WarehouseID", nullable = false)
+    public int getWarehouseId() {
+        return warehouseId;
     }
 
-    public void setStorageAreaId(int storageAreaId) {
-        this.storageAreaId = storageAreaId;
-    }
-
-    @Basic
-    @Column(name = "No", nullable = false, length = 64)
-    public String getNo() {
-        return no;
-    }
-
-    public void setNo(String no) {
-        this.no = no;
+    public void setWarehouseId(int warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
     @Basic
-    @Column(name = "Name", nullable = true, length = 64)
+    @Column(name = "Name", nullable = false, length = 64)
     public String getName() {
         return name;
     }
@@ -64,21 +55,31 @@ public class StorageLocation {
         this.enabled = enabled;
     }
 
+    @Basic
+    @Column(name = "WarehouseName", nullable = true, length = 64)
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        StorageLocation that = (StorageLocation) o;
+        PackageView that = (PackageView) o;
         return id == that.id &&
-                storageAreaId == that.storageAreaId &&
+                warehouseId == that.warehouseId &&
                 enabled == that.enabled &&
-                Objects.equals(no, that.no) &&
-                Objects.equals(name, that.name);
+                Objects.equals(name, that.name) &&
+                Objects.equals(warehouseName, that.warehouseName);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, storageAreaId, no, name, enabled);
+        return Objects.hash(id, warehouseId, name, enabled, warehouseName);
     }
 }

@@ -7,15 +7,17 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class Material {
+public class MaterialView {
     private int id;
     private String name;
     private int warehouseId;
     private String no;
+    private String warehouseName;
     private String productLine;
     private int enabled;
 
     @Id
+    @Basic
     @Column(name = "ID", nullable = false)
     public int getId() {
         return id;
@@ -56,6 +58,16 @@ public class Material {
     }
 
     @Basic
+    @Column(name = "WarehouseName", nullable = false, length = 64)
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
+    }
+
+    @Basic
     @Column(name = "ProductLine", nullable = false, length = 64)
     public String getProductLine() {
         return productLine;
@@ -79,18 +91,19 @@ public class Material {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Material material = (Material) o;
-        return id == material.id &&
-                warehouseId == material.warehouseId &&
-                enabled == material.enabled &&
-                Objects.equals(name, material.name) &&
-                Objects.equals(no, material.no) &&
-                Objects.equals(productLine, material.productLine);
+        MaterialView that = (MaterialView) o;
+        return id == that.id &&
+                warehouseId == that.warehouseId &&
+                enabled == that.enabled &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(no, that.no) &&
+                Objects.equals(warehouseName, that.warehouseName) &&
+                Objects.equals(productLine, that.productLine);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, name, warehouseId, no, productLine, enabled);
+        return Objects.hash(id, name, warehouseId, no, warehouseName, productLine, enabled);
     }
 }

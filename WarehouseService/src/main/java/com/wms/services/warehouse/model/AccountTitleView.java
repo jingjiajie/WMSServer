@@ -7,15 +7,16 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-public class Material {
+public class AccountTitleView {
     private int id;
     private String name;
-    private int warehouseId;
     private String no;
-    private String productLine;
+    private int type;
+    private int direction;
     private int enabled;
 
     @Id
+    @Basic
     @Column(name = "ID", nullable = false)
     public int getId() {
         return id;
@@ -36,16 +37,6 @@ public class Material {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
-    public int getWarehouseId() {
-        return warehouseId;
-    }
-
-    public void setWarehouseId(int warehouseId) {
-        this.warehouseId = warehouseId;
-    }
-
-    @Basic
     @Column(name = "No", nullable = false, length = 64)
     public String getNo() {
         return no;
@@ -56,13 +47,23 @@ public class Material {
     }
 
     @Basic
-    @Column(name = "ProductLine", nullable = false, length = 64)
-    public String getProductLine() {
-        return productLine;
+    @Column(name = "Type", nullable = false)
+    public int getType() {
+        return type;
     }
 
-    public void setProductLine(String productLine) {
-        this.productLine = productLine;
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    @Basic
+    @Column(name = "Direction", nullable = false)
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 
     @Basic
@@ -79,18 +80,18 @@ public class Material {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Material material = (Material) o;
-        return id == material.id &&
-                warehouseId == material.warehouseId &&
-                enabled == material.enabled &&
-                Objects.equals(name, material.name) &&
-                Objects.equals(no, material.no) &&
-                Objects.equals(productLine, material.productLine);
+        AccountTitleView that = (AccountTitleView) o;
+        return id == that.id &&
+                type == that.type &&
+                direction == that.direction &&
+                enabled == that.enabled &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(no, that.no);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, name, warehouseId, no, productLine, enabled);
+        return Objects.hash(id, name, no, type, direction, enabled);
     }
 }

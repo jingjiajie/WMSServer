@@ -1,16 +1,13 @@
-package com.wms.services.ledger.model;
-
-import javafx.util.converter.TimeStringConverter;
+package com.wms.services.warehouse.model;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.sql.Time;
-import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity
-public class Person {
+public class PersonView {
     private int id;
     private String name;
     private String password;
@@ -18,6 +15,7 @@ public class Person {
     private String authorityString;
 
     @Id
+    @Basic
     @Column(name = "ID", nullable = false)
     public int getId() {
         return id;
@@ -71,26 +69,17 @@ public class Person {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        Person person = (Person) o;
-
-        if (id != person.id) return false;
-        if (name != null ? !name.equals(person.name) : person.name != null) return false;
-        if (password != null ? !password.equals(person.password) : person.password != null) return false;
-        if (role != null ? !role.equals(person.role) : person.role != null) return false;
-        if (authorityString != null ? !authorityString.equals(person.authorityString) : person.authorityString != null)
-            return false;
-
-        return true;
+        PersonView that = (PersonView) o;
+        return id == that.id &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(password, that.password) &&
+                Objects.equals(role, that.role) &&
+                Objects.equals(authorityString, that.authorityString);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (role != null ? role.hashCode() : 0);
-        result = 31 * result + (authorityString != null ? authorityString.hashCode() : 0);
-        return result;
+
+        return Objects.hash(id, name, password, role, authorityString);
     }
 }
