@@ -23,35 +23,35 @@ String key;
         MinValidatorCondition minValidatorCondition=new MinValidatorCondition();
         minValidatorCondition.setKey(key);
         minValidatorCondition.dateDeliver(object);
-        conditions.add(1,minValidatorCondition);
+        conditions.add(minValidatorCondition);
     }
     public void max(Object object){
         MaxValidatorCondition maxValidatorCondition=new MaxValidatorCondition();
         maxValidatorCondition.setKey(key);
         maxValidatorCondition.dateDeliver(object);
-        conditions.add(1,maxValidatorCondition);
+        conditions.add(maxValidatorCondition);
     }
     public void in(int[] object){
         InValidatorCondition inValidatorCondition=new InValidatorCondition();
         inValidatorCondition.setKey(key);
         inValidatorCondition.dateDeliver(object);
-        conditions.add(1,inValidatorCondition);
+        conditions.add(inValidatorCondition);
     }
     public void length(Object object){
         LengthValidatorCondition lengthValidatorCondition=new LengthValidatorCondition();
         lengthValidatorCondition.setKey(key);
         lengthValidatorCondition.dateDeliver(object);
-        conditions.add(1,lengthValidatorCondition);
+        conditions.add(lengthValidatorCondition);
     }
     public void notnull(){
         NotnullValidatorCondition notnullValidatorCondition=new NotnullValidatorCondition();
         notnullValidatorCondition.setKey(key);
-        conditions.add(1,notnullValidatorCondition);
+        conditions.add(notnullValidatorCondition);
     }
     public void notEmpty(){
         NotEmptyValidatorCondition notEmptyValidatorCondition=new NotEmptyValidatorCondition();
         notEmptyValidatorCondition.setKey(key);
-        conditions.add(1,notEmptyValidatorCondition);
+        conditions.add(notEmptyValidatorCondition);
     }
 }
 class ValidatorCondition {
