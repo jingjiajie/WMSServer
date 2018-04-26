@@ -1,12 +1,14 @@
 package com.wms.services.warehouse.dao;
 
+import com.wms.services.warehouse.controller.PersonController;
 import com.wms.services.warehouse.model.WarehouseEntry;
+import com.wms.services.warehouse.model.WarehouseEntryView;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.List;
 
@@ -14,36 +16,31 @@ import java.util.List;
 public class WarehouseEntryDAOImpl implements WarehouseEntryDAO {
     @Autowired
     SessionFactory sessionFactory;
-    @Autowired
-    WarehouseServiceDAOTemplateFactory daoTemplateFactory;
+
+    private WarehouseServiceDAOTemplate<WarehouseEntry,WarehouseEntryView> getDAOTemplate(){
+        return new WarehouseServiceDAOTemplate<>
+                (this.sessionFactory,"WarehouseEntry","WarehouseEntryView", WarehouseEntry::getId);
+    }
 
     @Override
     public int[] add(String database, WarehouseEntry[] warehouseEntries) throws WMSDAOException {
-        WarehouseServiceDAOTemplate<WarehouseEntry> daoTemplate =
-                daoTemplateFactory.createWarehouseServiceDAOTemplate("WarehouseEntry", WarehouseEntry::getId);
-        return daoTemplate.add(database, warehouseEntries);
+        return this.getDAOTemplate().add(database, warehouseEntries);
     }
 
     @Override
     public void update(String database, WarehouseEntry[] warehouseEntries) throws WMSDAOException {
-        WarehouseServiceDAOTemplate<WarehouseEntry> daoTemplate =
-                daoTemplateFactory.createWarehouseServiceDAOTemplate("WarehouseEntry", WarehouseEntry::getId);
-        daoTemplate.update(database, warehouseEntries);
+        this.getDAOTemplate().update(database, warehouseEntries);
     }
 
     @Override
     public void remove(String database, int[] ids) throws WMSDAOException {
-        WarehouseServiceDAOTemplate<WarehouseEntry> daoTemplate =
-                daoTemplateFactory.createWarehouseServiceDAOTemplate("WarehouseEntry", WarehouseEntry::getId);
-        daoTemplate.remove(database, ids);
+        this.getDAOTemplate().remove(database, ids);
     }
 
     @Override
-    public WarehouseEntry[] find(String database, Condition cond) throws WMSDAOException {
-        WarehouseServiceDAOTemplate<WarehouseEntry> daoTemplate =
-                daoTemplateFactory.createWarehouseServiceDAOTemplate("WarehouseEntry", WarehouseEntry::getId);
-        List<WarehouseEntry> resultList = daoTemplate.find(database, cond);
-        WarehouseEntry[] resultArray = new WarehouseEntry[resultList.size()];
+    public WarehouseEntryView[] find(String database, Condition cond) throws WMSDAOException {
+        List<WarehouseEntryView> resultList = this.getDAOTemplate().find(database, cond);
+        WarehouseEntryView[] resultArray = new WarehouseEntryView[resultList.size()];
         resultList.toArray(resultArray);
         return resultArray;
     }

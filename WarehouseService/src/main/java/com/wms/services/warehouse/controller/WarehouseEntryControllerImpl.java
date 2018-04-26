@@ -3,6 +3,7 @@ package com.wms.services.warehouse.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.model.WarehouseEntry;
+import com.wms.services.warehouse.model.WarehouseEntryView;
 import com.wms.services.warehouse.service.WarehouseEntryService;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @Override
     public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook,
-                                     @RequestBody WarehouseEntry[] warehouseEntries) {
+                                     @RequestBody WarehouseEntryView[] warehouseEntries) {
         int[] ids = warehouseEntryService.add(accountBook, warehouseEntries);
         return new ResponseEntity<>(ids, HttpStatus.OK);
     }
@@ -28,8 +29,8 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public void update(@PathVariable("accountBook") String accountBook,
-                       @RequestBody WarehouseEntry[] warehouseEntries) {
-        warehouseEntryService.update(accountBook, warehouseEntries);
+                       @RequestBody WarehouseEntryView[] warehouseEntryViews) {
+        warehouseEntryService.update(accountBook, warehouseEntryViews);
     }
 
     @Override
@@ -45,9 +46,9 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
 
     @Override
     @RequestMapping(value = "/{strCond}",method = RequestMethod.GET)
-    public ResponseEntity<WarehouseEntry[]> find(@PathVariable("accountBook") String accountBook,
+    public ResponseEntity<WarehouseEntryView[]> find(@PathVariable("accountBook") String accountBook,
                                                  @PathVariable("strCond") String condStr) {
-        WarehouseEntry[] results = warehouseEntryService.find(accountBook, Condition.fromJson(condStr));
+        WarehouseEntryView[] results = warehouseEntryService.find(accountBook, Condition.fromJson(condStr));
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
 }

@@ -18,39 +18,35 @@ public class PersonServiceImpl implements PersonService {
     PersonDAO personDAO;
 
     @Transactional
-    public int[] add(String accountBook, Person[] persons) throws WMSServiceException{
+    public int[] add(String accountBook, Person[] persons) throws WMSServiceException {
 
-        for (int i = 0;i < persons.length;i ++) {
+        for (int i = 0; i < persons.length; i++) {
 
             String personName = persons[i].getName();
-            if (personName == null && personName.trim().length() <=0) {       //判断是否输入姓名
+            if (personName == null && personName.trim().length() <= 0) {       //判断是否输入姓名
                 throw new WMSServiceException("人员姓名不能为空!");
             }
 
             String personPassword = persons[i].getPassword();
-            if (personPassword == null &&personPassword.trim().length() <=0) {       //判断是否输入密码
+            if (personPassword == null && personPassword.trim().length() <= 0) {       //判断是否输入密码
                 throw new WMSServiceException("密码不能为空!");
             }
 
             String personRole = persons[i].getRole();
-            if (personRole == null && personRole.trim().length() <=0) {       //判断是否输入角色
+            if (personRole == null && personRole.trim().length() <= 0) {       //判断是否输入角色
                 throw new WMSServiceException("角色不能为空!");
             }
 
             persons[i].setAuthorityString("asd");//预设权限字符串
 
         }
-        try{
-            return personDAO.add(accountBook,persons);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
-        }
+        return personDAO.add(accountBook, persons);
     }
 
     @Transactional
-    public void update(String accountBook, Person[] persons) throws WMSServiceException{
+    public void update(String accountBook, Person[] persons) throws WMSServiceException {
 
-        for (int i = 0;i < persons.length;i ++) {
+        for (int i = 0; i < persons.length; i++) {
 
             int actid = persons[i].getId();//获取要修改信息的Id
             if (actid == 0) {       //判断id，参考AccountTitle
@@ -58,44 +54,32 @@ public class PersonServiceImpl implements PersonService {
             }
 
             String personName = persons[i].getName();
-            if (personName == null && personName.trim().length() <=0) {       //判断是否输入姓名
+            if (personName == null && personName.trim().length() <= 0) {       //判断是否输入姓名
                 throw new WMSServiceException("人员姓名不能为空!");
             }
 
             String personPassword = persons[i].getPassword();
-            if (personPassword == null &&personPassword.trim().length() <=0) {       //判断是否输入密码
+            if (personPassword == null && personPassword.trim().length() <= 0) {       //判断是否输入密码
                 throw new WMSServiceException("密码不能为空!");
             }
 
             String personRole = persons[i].getRole();
-            if (personRole == null && personRole.trim().length() <=0) {       //判断是否输入角色
+            if (personRole == null && personRole.trim().length() <= 0) {       //判断是否输入角色
                 throw new WMSServiceException("角色不能为空!");
             }
 
         }
 
-        try {
-            personDAO.update(accountBook, persons);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
-        }
+        personDAO.update(accountBook, persons);
     }
 
     @Transactional
-    public void remove(String accountBook, int[] ids) throws WMSServiceException{
-        try {
-            personDAO.remove(accountBook, ids);
-        } catch (DatabaseNotFoundException ex) {
-            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
-        }
+    public void remove(String accountBook, int[] ids) throws WMSServiceException {
+        personDAO.remove(accountBook, ids);
     }
 
     @Transactional
-    public Person[] find(String accountBook, Condition cond) throws WMSServiceException{
-        try {
-            return this.personDAO.find(accountBook, cond);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
-        }
+    public Person[] find(String accountBook, Condition cond) throws WMSServiceException {
+        return this.personDAO.find(accountBook, cond);
     }
 }
