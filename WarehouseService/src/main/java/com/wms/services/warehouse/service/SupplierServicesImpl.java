@@ -24,9 +24,9 @@ public class SupplierServicesImpl implements SupplierServices{
     @Transactional
     public int[] add(String accountBook, Supplier[] suppliers) throws WMSServiceException
     {
-
-
-
+Validator validator=new Validator("ffaas");
+validator.min(100);
+validator.validate(20);
 
         for (int i=0;i<suppliers.length;i++) {
             if(suppliers[i].getName()==null)
