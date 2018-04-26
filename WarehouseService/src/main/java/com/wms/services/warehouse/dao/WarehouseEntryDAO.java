@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.dao;
 
 import com.wms.services.warehouse.model.WarehouseEntry;
+import com.wms.services.warehouse.model.WarehouseEntryView;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
 
@@ -11,5 +12,5 @@ public interface WarehouseEntryDAO {
 
     void remove(String database, int ids[]) throws WMSDAOException;
 
-    WarehouseEntry[] find(String database, Condition cond) throws WMSDAOException;
+    WarehouseEntryView[] find(String database, Condition cond) throws WMSDAOException;
 }

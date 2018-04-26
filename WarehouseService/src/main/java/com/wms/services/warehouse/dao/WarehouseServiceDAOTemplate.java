@@ -1,6 +1,5 @@
 package com.wms.services.warehouse.dao;
 
-import com.wms.services.warehouse.model.WarehouseEntry;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
@@ -12,18 +11,20 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class WarehouseServiceDAOTemplate<T> {
+public class WarehouseServiceDAOTemplate<TTable, TView> {
     private SessionFactory sessionFactory;
-    String tableName;
-    Function<T, Integer> methodGetPK;
+    private String tableName;
+    private String viewName;
+    private Function<TTable, Integer> methodGetPK;
 
-    public WarehouseServiceDAOTemplate(SessionFactory sessionFactory,String tableName, Function<T, Integer> methodGetPK) {
+    public WarehouseServiceDAOTemplate(SessionFactory sessionFactory, String tableName, String viewName, Function<TTable, Integer> methodGetPK) {
         this.methodGetPK = methodGetPK;
         this.tableName = tableName;
+        this.viewName = viewName;
         this.sessionFactory = sessionFactory;
     }
 
-    public int[] add(String database, T[] objs) {
+    public int[] add(String database, TTable[] objs) {
         if (objs.length == 0) {
             return new int[0];
         }
@@ -35,7 +36,7 @@ public class WarehouseServiceDAOTemplate<T> {
             throw new DatabaseNotFoundException(database);
         }
         try {
-            for (T obj : objs) {
+            for (TTable obj : objs) {
                 session.save(obj);
             }
             int ids[] = Stream.of(objs).mapToInt(this.methodGetPK::apply).toArray();
@@ -45,7 +46,7 @@ public class WarehouseServiceDAOTemplate<T> {
         }
     }
 
-    public void update(String database, T objs[]) throws WMSDAOException {
+    public void update(String database, TTable objs[]) throws WMSDAOException {
         Session session = sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + database + ";").executeUpdate();
@@ -54,7 +55,7 @@ public class WarehouseServiceDAOTemplate<T> {
         }
 
         try {
-            for (T obj : objs) {
+            for (TTable obj : objs) {
                 session.update(obj);
             }
         } catch (Throwable ex) {
@@ -62,14 +63,14 @@ public class WarehouseServiceDAOTemplate<T> {
         }
     }
 
-    public void remove(String database, int ids[]) throws WMSDAOException{
-        if(ids.length == 0){
+    public void remove(String database, int ids[]) throws WMSDAOException {
+        if (ids.length == 0) {
             return;
         }
         Session session = sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
+        } catch (Throwable ex) {
             throw new DatabaseNotFoundException(database);
         }
         try {
@@ -79,12 +80,12 @@ public class WarehouseServiceDAOTemplate<T> {
             }
             idStr.setLength(idStr.length() - 1);
             session.createQuery(String.format("delete from " + this.tableName + " where ID in(%s)", idStr.toString())).executeUpdate();
-        }catch (Throwable ex){
+        } catch (Throwable ex) {
             throw new WMSDAOException(ex.getMessage());
         }
     }
 
-    public List<T> find(String database, Condition cond) throws WMSDAOException {
+    public List<TView> find(String database, Condition cond) throws WMSDAOException {
         Session session = sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + database + ";").executeUpdate();
@@ -92,8 +93,8 @@ public class WarehouseServiceDAOTemplate<T> {
             throw new DatabaseNotFoundException(database);
         }
         try {
-            Query query = cond.createQuery(this.tableName, session);
-            List<T> resultList = query.list();
+            Query query = cond.createQuery(this.viewName, session);
+            List<TView> resultList = query.list();
             return resultList;
         } catch (Throwable ex) {
             throw new WMSDAOException(ex.getMessage());

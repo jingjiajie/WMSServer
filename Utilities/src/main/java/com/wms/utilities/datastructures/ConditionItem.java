@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class ConditionItem {
     public enum Relation{
-        EQUAL,GREATER_THAN,LESS_THAN,BETWEEN
+        EQUAL,NOT_EQUAL,GREATER_THAN,LESS_THAN,BETWEEN
     }
 
     private String key;
