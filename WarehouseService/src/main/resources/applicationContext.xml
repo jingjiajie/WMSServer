@@ -11,6 +11,7 @@
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                <prop key="hbm2ddl.auto">validate</prop>
             </props>
         </property>
         <property name="annotatedClasses">

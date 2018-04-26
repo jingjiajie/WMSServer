@@ -2,14 +2,14 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.model.StorageArea;
 import com.wms.services.warehouse.service.StorageAreaService;
-import com.wms.services.warehouse.service.StorageLocationService;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.wms.services.warehouse.model.StorageArea;
+
 @RestController
 @RequestMapping("/{accountBook}/storageArea")
 public class StorageAreaControllerImpl implements StorageAreaController{

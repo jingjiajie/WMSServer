@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.controller;
-import org.springframework.http.ResponseEntity;
 import com.wms.services.warehouse.model.Supplier;
+import org.springframework.http.ResponseEntity;
+
 public interface SupplierController {
     ResponseEntity<int[]> add(String accountBook, Supplier[] suppliers);
     void update(String accountBook,Supplier[] suppliers);
