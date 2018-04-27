@@ -1,4 +1,5 @@
 package com.wms.services.warehouse;
+import com.wms.utilities.vaildator.Validator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +18,10 @@ public class WarehouseService {
     public static void main(java.lang.String args[]){
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class,args);
         System.out.println("仓库服务启动...");
-//
+
+        Validator validator=new Validator("123");
+        validator.min(12);
+        validator.validate("1");
 //        SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
 //       // SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
 //        Supplier supplier=new Supplier();
