@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface WarehouseEntryController {
 
-        ResponseEntity<int[]> add(String accountBook, WarehouseEntryView[] warehouseEntryViews);
+        ResponseEntity<int[]> add(String accountBook, WarehouseEntry[] warehouseEntries);
 
-        void update(String accountBook, WarehouseEntryView[] warehouseEntryViews);
+        void update(String accountBook, WarehouseEntry[] warehouseEntries);
 
         void remove(String accountBook, String strIDs);
 

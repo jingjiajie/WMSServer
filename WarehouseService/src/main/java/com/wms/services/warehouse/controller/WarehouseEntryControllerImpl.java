@@ -20,7 +20,7 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @Override
     public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook,
-                                     @RequestBody WarehouseEntryView[] warehouseEntries) {
+                                     @RequestBody WarehouseEntry[] warehouseEntries) {
         int[] ids = warehouseEntryService.add(accountBook, warehouseEntries);
         return new ResponseEntity<>(ids, HttpStatus.OK);
     }
@@ -29,8 +29,8 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @RequestMapping(value = "/", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public void update(@PathVariable("accountBook") String accountBook,
-                       @RequestBody WarehouseEntryView[] warehouseEntryViews) {
-        warehouseEntryService.update(accountBook, warehouseEntryViews);
+                       @RequestBody WarehouseEntry[] warehouseEntries) {
+        warehouseEntryService.update(accountBook, warehouseEntries);
     }
 
     @Override

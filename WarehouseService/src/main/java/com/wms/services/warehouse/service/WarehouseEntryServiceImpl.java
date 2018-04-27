@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.Stream;
+
 @Service
 @Transactional
 public class WarehouseEntryServiceImpl implements WarehouseEntryService {
@@ -23,59 +25,34 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     PersonController personController;
 
     @Override
-    public int[] add(String accountBook, WarehouseEntryView[] warehouseEntryViews) throws WMSServiceException {
+    public int[] add(String accountBook, WarehouseEntry[] warehouseEntries) throws WMSServiceException {
         //编号查重
-        for(int i=0;i<warehouseEntryViews.length;i++){
+        Stream.of(warehouseEntries).forEach((warehouseEntry)->{
             Condition cond = new Condition();
-            cond.addCondition("no",new String[]{warehouseEntryViews[i].getNo()});
+            cond.addCondition("no",new String[]{warehouseEntry.getNo()});
             if(warehouseEntryDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("入库单单号重复："+warehouseEntryViews[i].getNo());
+                throw new WMSServiceException("入库单单号重复："+warehouseEntry.getNo());
             }
-        }
+        });
 
-        //视图转基本表对象
-        WarehouseEntry[] warehouseEntries = ReflectHelper.createAndCopyFields(warehouseEntryViews,WarehouseEntry.class);
-        //将创建人姓名转为创建人ID
-        for(int i=0;i<warehouseEntries.length;i++){
-            WarehouseEntryView warehouseEntryView = warehouseEntryViews[i];
-            Condition cond = new Condition();
-            cond.addCondition("name",new String[]{warehouseEntryView.getCreatePersonName()});
-            Person[] persons = personController.find(accountBook,cond.toJson());
-            if(persons.length == 0){
-                throw new WMSServiceException("无法找到对应人员："+warehouseEntryView.getCreatePersonName());
-            }
-            warehouseEntries[i].setCreatePersonId(persons[0].getId());
-            warehouseEntries[i].setCreateTime(new java.sql.Timestamp(System.currentTimeMillis()));
-        }
+        //生成创建时间
+        Stream.of(warehouseEntries).forEach((w)->w.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
+
         return warehouseEntryDAO.add(accountBook, warehouseEntries);
     }
 
     @Override
-    public void update(String accountBook, WarehouseEntryView[] warehouseEntryViews) throws WMSServiceException {
+    public void update(String accountBook, WarehouseEntry[] warehouseEntries) throws WMSServiceException {
         //编号查重
-        for(int i=0;i<warehouseEntryViews.length;i++){
-            Condition cond = new Condition();
-            cond.addCondition("no",new String[]{warehouseEntryViews[i].getNo()});
-            cond.addCondition("id",new Integer[]{warehouseEntryViews[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
-            if(warehouseEntryDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("入库单单号重复："+warehouseEntryViews[i].getNo());
-            }
-        }
-        //视图转基本表对象
-        WarehouseEntry[] warehouseEntries = ReflectHelper.createAndCopyFields(warehouseEntryViews,WarehouseEntry.class);
-
-        //将最后修改人姓名转为创建人ID
         for(int i=0;i<warehouseEntries.length;i++){
-            WarehouseEntryView warehouseEntryView = warehouseEntryViews[i];
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{warehouseEntryView.getLastUpdatePersonName()});
-            Person[] persons = personController.find(accountBook,cond.toJson());
-            if(persons.length == 0){
-                throw new WMSServiceException("修改入库单失败，无法找到对应人员："+warehouseEntryView.getLastUpdatePersonName());
+            cond.addCondition("no",new String[]{warehouseEntries[i].getNo()});
+            cond.addCondition("id",new Integer[]{warehouseEntries[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            if(warehouseEntryDAO.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("入库单单号重复："+warehouseEntries[i].getNo());
             }
-            warehouseEntries[i].setLastUpdatePersonId(persons[0].getId());
-            warehouseEntries[i].setLastUpdateTime(new java.sql.Timestamp(System.currentTimeMillis()));
         }
+
         warehouseEntryDAO.update(accountBook, warehouseEntries);
     }
 
