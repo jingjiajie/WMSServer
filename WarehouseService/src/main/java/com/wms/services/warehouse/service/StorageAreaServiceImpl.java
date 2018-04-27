@@ -6,6 +6,7 @@ import com.wms.services.warehouse.model.StorageLocation;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,14 +49,11 @@ public class StorageAreaServiceImpl implements StorageAreaService{
     public void update(String accountBook, StorageArea[] storageAreas) throws WMSServiceException{
         for(int j=0;j<storageAreas.length;j++)
         {
-            if(storageAreas[j].getName()==null)
-            {
-                throw new WMSServiceException("库区名不能为空！");
-            }
-            if(storageAreas[j].getNo()==null)
-            {
-                throw new WMSServiceException("库区代号不能为空！");
-            }
+            Validator validator=new Validator("库区名");
+            validator.notnull().validate(storageAreas[j].getName());
+            Validator validator1=new Validator("库区代号");
+            validator1.notnull().validate(storageAreas[j].getNo());
+
             StorageArea[] storageAreas1=null;
             String storageAreaNoUpdate=storageAreas[j].getNo();
             Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageAreaNoUpdate+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");

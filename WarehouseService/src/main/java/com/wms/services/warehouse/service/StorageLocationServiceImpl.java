@@ -5,6 +5,7 @@ import com.wms.services.warehouse.model.StorageArea;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +27,10 @@ public class StorageLocationServiceImpl implements StorageLocationService{
 
         for(int i=0;i<storageLocations.length;i++) {
 
-            if (storageLocations[i].getName() == null) {
-                throw new WMSServiceException("库位名不能为空！");
-            }
-            if (storageLocations[i].getNo() == null) {
-                throw new WMSServiceException("库位代号不能为空！");
-            }
+            Validator validator=new Validator("库位名");
+            validator.notnull().validate(storageLocations[i].getName());
+            Validator validator1=new Validator("库位代号");
+            validator.notnull().validate(storageLocations[i].getNo());
             if (storageLocations[i].getStorageAreaId() == 0) {
                 throw new WMSServiceException("库区信息不能为空！");
             }
@@ -62,14 +61,10 @@ public class StorageLocationServiceImpl implements StorageLocationService{
 
         for(int i=0;i<storageLocations.length;i++)
         {
-            if(storageLocations[i].getName()==null)
-            {
-                throw new WMSServiceException("库位名不能为空！");
-            }
-            if(storageLocations[i].getNo()==null)
-            {
-                throw new WMSServiceException("库位代号不能为空！");
-            }
+            Validator validator=new Validator("库位名");
+            validator.notnull().validate(storageLocations[i].getName());
+            Validator validator1=new Validator("库位代号");
+            validator.notnull().validate(storageLocations[i].getNo());
             String storageLocationNo=storageLocations[i].getNo();
             StorageLocation[] storageLocations1=null;
             Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageLocationNo+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");

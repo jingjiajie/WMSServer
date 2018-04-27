@@ -22,7 +22,7 @@ public class WarehouseService {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class,args);
         System.out.println("仓库服务启动...");
 
-        Validator validator=new Validator("123");
+        //Validator validator=new Validator("123");
 /*
         int a[]={1 ,200};
         validator.in(a);
@@ -37,6 +37,7 @@ public class WarehouseService {
         Supplier supplier=new Supplier();
         supplier.setName("1234566");
         supplier.setNo("aaaaa");
+        supplier.setWarehouseId(12);
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       supplierServices.add("WMS_Template",new Supplier[]{supplier});
 //        Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
