@@ -5,6 +5,7 @@ import com.wms.services.warehouse.model.Supply;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,20 +28,18 @@ public class SupplyServiceImpl implements SupplyService {
 
 
             //判断物料ID是否为空
-            String materialID = supplies[i].getMaterialId().toString();//
-            ;//获取供货物料名称
-            if (materialID == null || materialID.trim().length() <= 0) {       //判断是否为空，trim()去除字符串两边空格
-                throw new WMSServiceException("物料不能为空！");
-            }
+            Validator validator=new Validator("物料名称");
+            validator.notnull().notEmpty().validate(supplies[i].getMaterialId());
+
+            //获取供货物料名称
             //判断供货商ID是否为空
-            String supplierId = supplies[i].getSupplierId().toString();
-            ;//获取供货商名称
-            if (supplierId == null || supplierId.trim().length() <= 0) {       //判断是否为空
-                throw new WMSServiceException("供货商不能为空！");
-            }
+            Validator validator1=new Validator("供货商名称");
+            validator1.notnull().notEmpty().validate(supplies[i].getSupplierId());
 
 
             Supply[] suppliesRepeat = null;//新建一个数组，物料复述
+            int supplierId=supplies[i].getSupplierId();
+            int materialID=supplies[i].getMaterialId();
             Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['" + supplierId + "'],'relation':'EQUAL'},{'key':'MaterialId','values':['" + materialID + "'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
             //添加供货商-物料关联查询条件，按供货商ID排序
             try {
@@ -82,19 +81,16 @@ public class SupplyServiceImpl implements SupplyService {
             }
 
             //判断物料ID是否为空
-            String materialID = supplies[i].getMaterialId().toString();
-            ;//获取供货物料名称
-            if (materialID == null || materialID.trim().length() <= 0) {       //判断是否为空，trim()去除字符串两边空格
-                throw new WMSServiceException("物料不能为空！");
-            }
-            //判断供货商ID是否为空
-            String SupplierId = supplies[i].getSupplierId().toString();
-            ;//获取供货商名称
-            if (SupplierId == null || SupplierId.trim().length() <= 0) {       //判断是否为空
-                throw new WMSServiceException("供货商不能为空！");
-            }
+            Validator validator=new Validator("物料名称");
+            validator.notnull().notEmpty().validate(supplies[i].getMaterialId());
 
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['" + SupplierId + "'],'relation':'EQUAL'}],[{'key':'MaterialId','values':['" + materialID + "'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
+            //获取供货物料名称
+            //判断供货商ID是否为空
+            Validator validator1=new Validator("供货商名称");
+            validator1.notnull().notEmpty().validate(supplies[i].getSupplierId());
+            int supplierId=supplies[i].getSupplierId();
+            int materialID=supplies[i].getMaterialId();
+            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['" + supplierId + "'],'relation':'EQUAL'}],[{'key':'MaterialId','values':['" + materialID + "'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
             //添加供货商-物料关联查询条件，按供货商ID排序
             try {
                 suppliesRepeat = supplyDAO.find(accountBook, condition);
@@ -102,7 +98,7 @@ public class SupplyServiceImpl implements SupplyService {
                 throw new WMSServiceException("Accountbook " + accountBook + " not found!");
             }
             if (suppliesRepeat.length > 0) {
-                throw new WMSServiceException("物料-供货商组合 " + materialID + SupplierId + " 存在！");
+                throw new WMSServiceException("物料-供货商组合 " + materialID + supplierId + " 存在！");
             }
             //判断物料-供货商组合是否已经存在，不存在则往下执行
             supplies[i].setWarehouseId(1);

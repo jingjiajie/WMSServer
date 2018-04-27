@@ -7,6 +7,7 @@ import com.wms.services.warehouse.model.Supply;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,17 +25,11 @@ public class MaterialServiceImpl implements MaterialService {
         for (int i=0;i<materials.length;i++) {
             //判断物料是否为空
             String materialName = materials[i].getName();;//获取供货物料名称
-            if (materialName == null || materialName.trim().length() <=0) {       //判断是否为空，trim()去除字符串两边空格
-                throw new WMSServiceException("物料名称不能为空！");
-            }
-            String materialNo = materials[i].getNo();//获取供货物料代号
-            if (materialNo == null || materialNo.trim().length() <=0) {       //判断是否为空，trim()去除字符串两边空格
-                throw new WMSServiceException("物料代号不能为空！");
-            }
-            int materialWarehouseId =  materials[i].getWarehouseId();//获取供货物料代号
-            if (materialWarehouseId == 0) {       //判断是否为空
-                throw new WMSServiceException("仓库ID不能为空！");
-            }
+            Validator validator=new Validator("物料名称");
+            validator.notnull().notEmpty().validate(materials[i].getName());
+            validator.notnull().notEmpty().validate(materials[i].getNo());
+            validator.notnull().notEmpty().validate(materials[i].getWarehouseId());
+
 
             Supply[] materialsRepeat=null;//新建一个数组，物料复述
             Condition condition = Condition.fromJson("{’conditions':[{'key':'Name','values':['"+materialName+"'],'relation':'EQUAL'}],'orders':[{'key':'Name','order':'ASC'}]}");
@@ -73,18 +68,10 @@ public class MaterialServiceImpl implements MaterialService {
 
             //判断物料是否为空
             String materialName = materials[i].getName();;//获取供货物料名称
-            if (materialName == null || materialName.trim().length() <=0) {       //判断是否为空，trim()去除字符串两边空格
-                throw new WMSServiceException("物料名称不能为空！");
-            }
-            String materialNo = materials[i].getNo();//获取供货物料代号
-            if (materialNo == null || materialNo.trim().length() <=0) {       //判断是否为空，trim()去除字符串两边空格
-                throw new WMSServiceException("物料代号不能为空！");
-            }
-
-            int materialWarehouseId =  materials[i].getWarehouseId();//获取供货物料代号
-            if (materialWarehouseId == 0) {       //判断是否为空
-                throw new WMSServiceException("仓库ID不能为空！");
-            }
+            Validator validator=new Validator("物料名称");
+            validator.notnull().notEmpty().validate(materials[i].getName());
+            validator.notnull().notEmpty().validate(materials[i].getNo());
+            validator.notnull().notEmpty().validate(materials[i].getWarehouseId());
             /*
             Condition condition1 = Condition.fromJson("{'conditions':[{'key':'Id','values':['"+materialWarehouseId+"'],'relation':'EQUAL'}],'orders':[{'key':'Id','order':'ASC'}]}");
             Warehouse[] judgeWarehouseId = null;
