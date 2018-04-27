@@ -20,8 +20,9 @@ public class WarehouseService {
         System.out.println("仓库服务启动...");
 
         Validator validator=new Validator("123");
-        validator.max(111).min(1);
-        validator.validate(-1000);
+        int a[]={1 ,200};
+        validator.in(a);
+        validator.validate("1000.1");
 //        SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
 //       // SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
 //        Supplier supplier=new Supplier();

@@ -75,7 +75,7 @@ class ValidatorCondition {
 
 class MinValidatorCondition extends ValidatorCondition {
     private int min;
-    private int actualValue;
+    private double actualValue;
     private String key;
 
     public void dateDeliver(int min1) {
@@ -87,8 +87,7 @@ class MinValidatorCondition extends ValidatorCondition {
 
     public void validate(Object value) {
         try {
-            actualValue = Integer.parseInt(String.valueOf(value));
-
+            actualValue =  Double.parseDouble((String.valueOf(value)));
         } catch (NumberFormatException e) {
             throw new WMSServiceException("检查的数据无法转换为数字类型");
         }
@@ -105,7 +104,7 @@ class MinValidatorCondition extends ValidatorCondition {
 }
 class MaxValidatorCondition extends ValidatorCondition {
     private int max;
-    private int actualValue;
+    private double actualValue;
     private String key;
 
     public void dateDeliver(int max1) {
@@ -118,7 +117,7 @@ class MaxValidatorCondition extends ValidatorCondition {
 
     public void validate(Object value) {
         try {
-            actualValue = Integer.parseInt(String.valueOf(value));
+            actualValue =  Double.parseDouble((String.valueOf(value)));
 
         } catch (NumberFormatException e) {
             throw new WMSServiceException("检查的数据无法转换为数字类型");
@@ -136,7 +135,7 @@ class MaxValidatorCondition extends ValidatorCondition {
 }class InValidatorCondition extends ValidatorCondition {
     private int min;
     private int max;
-    private int actualValue;
+    private double actualValue;
     private String key;
 
     public void dateDeliver(int[] object) {
@@ -148,7 +147,7 @@ class MaxValidatorCondition extends ValidatorCondition {
 
     public void validate(Object value) {
         try {
-            actualValue = Integer.parseInt(String.valueOf(value));
+            actualValue =  Double.parseDouble((String.valueOf(value)));
 
         } catch (NumberFormatException e) {
             throw new WMSServiceException("检查的数据无法转换为数字类型");
