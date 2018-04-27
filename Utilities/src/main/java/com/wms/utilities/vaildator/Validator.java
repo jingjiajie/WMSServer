@@ -178,8 +178,8 @@ class MaxValidatorCondition extends ValidatorCondition {
         try {
             actualValue = String.valueOf(value).length();
 
-        } catch (NumberFormatException e) {
-            throw new WMSServiceException("检查的数据无法转换为数字类型");
+        } catch (Exception e) {
+            throw new WMSServiceException("检查的数据无法获取长度");
         }
         if (actualValue > length) {
             throw new WMSServiceException(key+ "字符串长度超过上限！");
@@ -200,8 +200,8 @@ class NotnullValidatorCondition extends ValidatorCondition {
         try {
             actualValue = String.valueOf(value).length();
 
-        } catch (NumberFormatException e) {
-            throw new WMSServiceException("检查的数据无法转换为数字类型");
+        } catch (Exception e) {
+            throw new WMSServiceException("检查的数据无法获取长度");
         }
         if (actualValue == 0) {
             throw new WMSServiceException(key+ "的值不能为空");
@@ -222,8 +222,8 @@ class NotEmptyValidatorCondition extends ValidatorCondition {
         try {
             actualValue = String.valueOf(value);
 
-        } catch (NumberFormatException e) {
-            throw new WMSServiceException("检查的数据无法转换为数字类型");
+        } catch (Exception e) {
+
         }
         if (actualValue == "") {
             throw new WMSServiceException(key+ "的值不能为空");
