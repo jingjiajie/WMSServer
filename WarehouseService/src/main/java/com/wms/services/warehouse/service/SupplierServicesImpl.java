@@ -27,7 +27,7 @@ public class SupplierServicesImpl implements SupplierServices{
 Validator validator=new Validator("ffaas");
 validator.min(100);
 int[] a={10 ,20};
-
+validator.notEmpty();
 validator.in(a);
         validator.notnull();
 validator.validate(20);
