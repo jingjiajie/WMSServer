@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.dao;
 
+import com.wms.services.warehouse.model.WarehouseEntryView;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
@@ -7,6 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -99,5 +101,12 @@ public class WarehouseServiceDAOTemplate<TTable, TView> {
         } catch (Throwable ex) {
             throw new WMSDAOException(ex.getMessage());
         }
+    }
+
+    public TView[] find(String database,Condition cond,Class<TView> viewClass) throws WMSDAOException{
+        List<TView> resultList = this.find(database, cond);
+        TView[] resultArray = (TView[]) Array.newInstance(viewClass,resultList.size());
+        resultList.toArray(resultArray);
+        return resultArray;
     }
 }

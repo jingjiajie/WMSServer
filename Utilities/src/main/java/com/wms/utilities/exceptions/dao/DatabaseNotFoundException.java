@@ -12,7 +12,7 @@ public class DatabaseNotFoundException extends WMSDAOException {
     private String databaseName;
 
     public DatabaseNotFoundException(String databaseName) {
-        super("Database \"" + databaseName + "\" not found!");
+        super("数据库：\"" + databaseName + "\"不存在！");
         this.setDatabaseName(databaseName);
     }
 }

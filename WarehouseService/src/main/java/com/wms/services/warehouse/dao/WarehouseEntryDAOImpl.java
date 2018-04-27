@@ -1,6 +1,5 @@
 package com.wms.services.warehouse.dao;
 
-import com.wms.services.warehouse.controller.PersonController;
 import com.wms.services.warehouse.model.WarehouseEntry;
 import com.wms.services.warehouse.model.WarehouseEntryView;
 import com.wms.utilities.datastructures.Condition;
@@ -8,18 +7,15 @@ import com.wms.utilities.exceptions.dao.WMSDAOException;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.List;
 
 @Repository
 public class WarehouseEntryDAOImpl implements WarehouseEntryDAO {
     @Autowired
     SessionFactory sessionFactory;
 
-    private WarehouseServiceDAOTemplate<WarehouseEntry,WarehouseEntryView> getDAOTemplate(){
+    private WarehouseServiceDAOTemplate<WarehouseEntry, WarehouseEntryView> getDAOTemplate() {
         return new WarehouseServiceDAOTemplate<>
-                (this.sessionFactory,"WarehouseEntry","WarehouseEntryView", WarehouseEntry::getId);
+                (this.sessionFactory, "WarehouseEntry", "WarehouseEntryView", WarehouseEntry::getId);
     }
 
     @Override
@@ -39,9 +35,6 @@ public class WarehouseEntryDAOImpl implements WarehouseEntryDAO {
 
     @Override
     public WarehouseEntryView[] find(String database, Condition cond) throws WMSDAOException {
-        List<WarehouseEntryView> resultList = this.getDAOTemplate().find(database, cond);
-        WarehouseEntryView[] resultArray = new WarehouseEntryView[resultList.size()];
-        resultList.toArray(resultArray);
-        return resultArray;
+        return this.getDAOTemplate().find(database, cond, WarehouseEntryView.class);
     }
 }

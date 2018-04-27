@@ -1,15 +1,12 @@
 package com.wms.services.warehouse.service;
 
-import com.sun.jmx.snmp.Timestamp;
-import com.wms.services.warehouse.controller.PersonController;
 import com.wms.services.warehouse.dao.WarehouseEntryDAO;
-import com.wms.services.warehouse.model.Person;
 import com.wms.services.warehouse.model.WarehouseEntry;
 import com.wms.services.warehouse.model.WarehouseEntryView;
-import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +19,21 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     @Autowired
     WarehouseEntryDAO warehouseEntryDAO;
     @Autowired
-    PersonController personController;
+    PersonService personService;
+    @Autowired
+    SupplierServices supplierService;
+    @Autowired
+    WarehouseService warehouseService;
 
     @Override
     public int[] add(String accountBook, WarehouseEntry[] warehouseEntries) throws WMSServiceException {
+        //数据验证
+        Stream.of(warehouseEntries).forEach(
+                (warehouseEntry)->{
+                    new Validator("创建用户").notnull().validate(warehouseEntry.getCreatePersonId());
+                }
+        );
+
         //编号查重
         Stream.of(warehouseEntries).forEach((warehouseEntry)->{
             Condition cond = new Condition();
@@ -34,6 +42,25 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                 throw new WMSServiceException("入库单单号重复："+warehouseEntry.getNo());
             }
         });
+
+        //外键检测
+        Stream.of(warehouseEntries).forEach(
+                (warehouseEntry)->{
+                    if(this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id",warehouseEntry.getWarehouseId())).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",warehouseEntry.getWarehouseId()));
+                    }else if(this.supplierService.find(accountBook,
+                            new Condition().addCondition("id",warehouseEntry.getSupplierId())).length == 0){
+                        throw new WMSServiceException(String.format("供应商不存在，请重新提交！(%d)",warehouseEntry.getSupplierId()));
+                    }else if(this.personService.find(accountBook,
+                            new Condition().addCondition("id",warehouseEntry.getCreatePersonId())).length == 0){
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",warehouseEntry.getCreatePersonId()));
+                    } if(warehouseEntry.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+                            new Condition().addCondition("id",warehouseEntry.getLastUpdatePersonId())).length == 0){
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",warehouseEntry.getLastUpdatePersonId()));
+                    }
+                }
+        );
 
         //生成创建时间
         Stream.of(warehouseEntries).forEach((w)->w.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));

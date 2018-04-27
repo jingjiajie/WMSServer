@@ -39,15 +39,14 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     public void remove(@PathVariable("accountBook") String accountBook,
                        @PathVariable("strIDs") String strIDs) {
         Gson gson = new Gson();
-        int ids[] = gson.fromJson(strIDs, new TypeToken<int[]>() {
-        }.getType());
+        int ids[] = gson.fromJson(strIDs, new TypeToken<int[]>() {}.getType());
         warehouseEntryService.remove(accountBook, ids);
     }
 
     @Override
-    @RequestMapping(value = "/{strCond}",method = RequestMethod.GET)
+    @RequestMapping(value = "/{strCond}", method = RequestMethod.GET)
     public ResponseEntity<WarehouseEntryView[]> find(@PathVariable("accountBook") String accountBook,
-                                                 @PathVariable("strCond") String condStr) {
+                                                     @PathVariable("strCond") String condStr) {
         WarehouseEntryView[] results = warehouseEntryService.find(accountBook, Condition.fromJson(condStr));
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
