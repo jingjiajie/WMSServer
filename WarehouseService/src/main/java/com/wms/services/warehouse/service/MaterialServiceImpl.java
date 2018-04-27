@@ -1,15 +1,12 @@
 package com.wms.services.warehouse.service;
 
-import com.wms.services.warehouse.WarehouseService;
 import com.wms.services.warehouse.dao.MaterialDAO;
 import com.wms.services.warehouse.model.Material;
 import com.wms.services.warehouse.dao.SupplyDAO;
 import com.wms.services.warehouse.model.Supply;
-import com.wms.services.warehouse.model.Warehouse;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
