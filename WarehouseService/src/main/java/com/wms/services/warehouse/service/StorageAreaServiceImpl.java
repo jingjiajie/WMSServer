@@ -75,40 +75,13 @@ public class StorageAreaServiceImpl implements StorageAreaService{
 
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
-        if(storageLocationService==null)
-        {
-            System.out.println("storageLocationService为空");
-        }
-        for(int i=0;i<ids.length;i++)
-        {
-            int storageAreaID;
-            storageAreaID=ids[i];
-            StorageLocation[] storageLocations=null;
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'storageAreaID','values':["+storageAreaID+"],'relation':'EQUAL'}]}");
-            try {
-                storageLocations= storageLocationService.find(accountBook, condition);
-            } catch (DatabaseNotFoundException ex) {
-                throw new WMSServiceException("Accountbook " + accountBook + " not found!");
-            }
-
-            if(storageLocations.length>0)
-            {
-                StorageArea[] storageAreas=null;
-                Condition condition1 = Condition.fromJson("{'conditions':[{'key':'id','values':["+storageAreaID+"],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
-                try {
-                    storageAreas= storageAreaDAO.find(accountBook, condition1);
-
-                } catch (DatabaseNotFoundException ex) {
-                    throw new WMSServiceException("Accountbook " + accountBook + " not found!");
-                }
-                throw new WMSServiceException("库位信息 " + storageAreas[0].getName() + " 被引用无法删除");
-            }
-
-        }
         try {
             storageAreaDAO.remove(accountBook, ids);
         } catch (DatabaseNotFoundException ex) {
             throw new WMSServiceException("Accountbook " + accountBook + " not found!");
+        }
+        catch (Throwable ex){
+            throw new WMSServiceException("删除库位信息失败，如果供库位已经被引用，需要先删除引用的内容，才能删除该供库位信息");
         }
     }
 

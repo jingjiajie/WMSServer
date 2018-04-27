@@ -102,6 +102,7 @@ class MinValidatorCondition extends ValidatorCondition {
         this.key = key;
     }
 }
+
 class MaxValidatorCondition extends ValidatorCondition {
     private int max;
     private double actualValue;
@@ -126,12 +127,15 @@ class MaxValidatorCondition extends ValidatorCondition {
             throw new WMSServiceException(key+ "的值大于最大值");
         }
     }
+
     public String getKey() {
         return key;
     }
+
     public void setKey(String key) {
         this.key = key;
     }
+
 }class InValidatorCondition extends ValidatorCondition {
     private int min;
     private int max;
@@ -156,13 +160,18 @@ class MaxValidatorCondition extends ValidatorCondition {
             throw new WMSServiceException(key+ "的值不在指定的区间范围内");
         }
     }
+
     public String getKey() {
         return key;
     }
+
     public void setKey(String key) {
         this.key = key;
     }
-}class LengthValidatorCondition extends ValidatorCondition {
+
+}
+
+class LengthValidatorCondition extends ValidatorCondition {
     private int length;
     private int actualValue;
     private String key;
@@ -184,35 +193,43 @@ class MaxValidatorCondition extends ValidatorCondition {
             throw new WMSServiceException(key+ "字符串长度超过上限！");
         }
     }
+
     public String getKey() {
         return key;
     }
+
     public void setKey(String key) {
         this.key = key;
     }
+
 }
+
 class NotnullValidatorCondition extends ValidatorCondition {
-    private int actualValue;
+    // private int actualValue;
     private String key;
-
+    private Object  actualValue;
     public void validate(Object value) {
-        try {
-            actualValue = String.valueOf(value).length();
-
-        } catch (Exception e) {
-            throw new WMSServiceException("检查的数据无法获取长度");
-        }
-        if (actualValue == 0) {
+         //  try {
+         //   actualValue = String.valueOf(value).length();
+         // } catch (Exception e) {
+         //     throw new WMSServiceException("检查的数据无法获取长度");
+         // }
+        actualValue =value;
+        if (actualValue == null) {
             throw new WMSServiceException(key+ "的值不能为空");
         }
     }
+
     public String getKey() {
         return key;
     }
+
     public void setKey(String key) {
         this.key = key;
     }
+
 }
+
 class NotEmptyValidatorCondition extends ValidatorCondition {
     private String actualValue;
     private String key;
@@ -220,7 +237,6 @@ class NotEmptyValidatorCondition extends ValidatorCondition {
     public void validate(Object value) {
         try {
             actualValue = String.valueOf(value);
-
         } catch (Exception e) {
 
         }

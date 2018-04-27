@@ -1,4 +1,6 @@
 package com.wms.services.warehouse;
+import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -8,6 +10,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
+import com.wms.services.warehouse.model.Supplier;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -20,15 +23,22 @@ public class WarehouseService {
         System.out.println("仓库服务启动...");
 
         Validator validator=new Validator("123");
+/*
         int a[]={1 ,200};
         validator.in(a);
-        validator.validate("1000.1");
-//        SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
-//       // SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
-//        Supplier supplier=new Supplier();
-//        supplier.setName("1234566");
+        validator.min(5).in(a).validate(1);
+        validator.notnull();
+        validator.notEmpty();
+        validator.length(1);
+       validator.validate("1000.1");
+       */
+        SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
+        SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
+        Supplier supplier=new Supplier();
+        supplier.setName("1234566");
+        supplier.setNo("aaaaa");
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-//        supplierServices.add("WMS_Template",new Supplier[]{supplier});
+      supplierServices.add("WMS_Template",new Supplier[]{supplier});
 //        Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
         //suppliers=supplierServices.find("WMS_Template",condition);
         //System.out.println(suppliers.length+"22929292929292929292929292929");

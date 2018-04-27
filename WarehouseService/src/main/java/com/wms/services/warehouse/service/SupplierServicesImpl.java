@@ -24,33 +24,23 @@ public class SupplierServicesImpl implements SupplierServices{
     @Transactional
     public int[] add(String accountBook, Supplier[] suppliers) throws WMSServiceException
     {
-Validator validator=new Validator("ffaas");
-validator.min(100);
-int[] a={10 ,20};
-validator.notEmpty();
-validator.in(a);
-        validator.notnull();
-validator.validate(20);
-
         for (int i=0;i<suppliers.length;i++) {
-            if(suppliers[i].getName()==null)
-            {
-                throw new WMSServiceException("供应商名不能为空！");
-            }
-            if(suppliers[i].getNo()==null)
-            {
-                throw new WMSServiceException("供应商代号不能为空！");
-            }
-            if(suppliers[i].getCreatePersonId()==0)
-            {
-                throw new WMSServiceException("人员信息无法找到！");
-            }
+
+            Validator validator=new Validator("供应商名称");
+            validator.notnull().validate(suppliers[i].getName());
+
+            Validator validator1=new Validator("供应商代号");
+            validator1.notnull().validate(suppliers[i].getNo());
+
+            //Validator validator2=new Validator("人员信息");
+            //validator2.min(5).validate(suppliers[i].getCreatePersonId());
+
             if(suppliers[i].getWarehouseId()==0)
             {
                 throw new WMSServiceException("仓库信息无法找到！");
             }
             Supplier[] suppliersRepeat=null;
-            String supplierName = suppliers[i].getName();;
+            String supplierName = suppliers[i].getName();
             Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['"+supplierName+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
             try {
                 suppliersRepeat = supplierDAO.find(accountBook, condition);
@@ -115,26 +105,14 @@ validator.validate(20);
 
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
-        int idLength=ids.length;
-        int[] idsModify=null;
-        List<int[]>  idsList = Arrays.asList(ids);
-        Supply[] supplies;
-        for (int i=0;i<idLength;i++)
-        {
-            Supplier[] supplierRefference=null;
-            int SupplierID=ids[i];
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'supplierID','values':[" + SupplierID + "],'relation':'EQUAL'}]}");
-            supplies =supplyService.find(accountBook,condition);
-            if(supplies.length>0){
-                Condition conditionSupplier= Condition.fromJson("{'conditions':[{'key':'id','values':[" + SupplierID + "],'relation':'EQUAL'}]}");
-                supplierRefference=supplierDAO.find(accountBook,conditionSupplier);
-                throw new WMSServiceException("供应商名 " +supplierRefference[0].getName() + " 被引用无法删除!");
-            }
-        }
+
         try {
             supplierDAO.remove(accountBook, ids);
         } catch (DatabaseNotFoundException ex) {
             throw new WMSServiceException("Accountbook " + accountBook + " not found!");
+        }
+        catch (Throwable ex){
+            throw new WMSServiceException("删除供应商失败，如果供应商已经被引用，需要先删除引用的内容，才能删除该供应商");
         }
     }
     @Transactional
