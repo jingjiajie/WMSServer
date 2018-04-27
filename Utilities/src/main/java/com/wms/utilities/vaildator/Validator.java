@@ -24,54 +24,48 @@ String key;
     }
 
     public Validator min(int min){
-        Validator validator=new Validator(key);
         MinValidatorCondition minValidatorCondition=new MinValidatorCondition();
         minValidatorCondition.setKey(key);
         minValidatorCondition.dateDeliver(min);
         conditions.add(minValidatorCondition);
-        return  validator;
+        return  this;
     }
 
     public Validator max(int max){
-        Validator validator=new Validator(key);
         MaxValidatorCondition maxValidatorCondition=new MaxValidatorCondition();
         maxValidatorCondition.setKey(key);
         maxValidatorCondition.dateDeliver(max);
         conditions.add(maxValidatorCondition);
-        return validator;
+        return this;
     }
 
     public Validator in(int[] object){
-        Validator validator=new Validator(key);
         InValidatorCondition inValidatorCondition=new InValidatorCondition();
         inValidatorCondition.setKey(key);
         inValidatorCondition.dateDeliver(object);
         conditions.add(inValidatorCondition);
-        return validator;
+        return this;
     }
     public Validator length(int length){
-        Validator validator=new Validator(key);
         LengthValidatorCondition lengthValidatorCondition=new LengthValidatorCondition();
         lengthValidatorCondition.setKey(key);
         lengthValidatorCondition.dateDeliver(length);
         conditions.add(lengthValidatorCondition);
-        return validator;
+        return this;
     }
 
     public Validator notnull(){
-        Validator validator=new Validator(key);
         NotnullValidatorCondition notnullValidatorCondition=new NotnullValidatorCondition();
         notnullValidatorCondition.setKey(key);
         conditions.add(notnullValidatorCondition);
-        return validator;
+        return this;
     }
 
     public  Validator notEmpty(){
-        Validator validator=new Validator(key);
         NotEmptyValidatorCondition notEmptyValidatorCondition=new NotEmptyValidatorCondition();
         notEmptyValidatorCondition.setKey(key);
         conditions.add(notEmptyValidatorCondition);
-        return validator;
+        return this;
     }
 }
 
@@ -223,7 +217,6 @@ class NotnullValidatorCondition extends ValidatorCondition {
 class NotEmptyValidatorCondition extends ValidatorCondition {
     private String actualValue;
     private String key;
-
 
     public void validate(Object value) {
         try {
