@@ -3,6 +3,7 @@ package com.wms.utilities.datastructures;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.wms.utilities.exceptions.ConditionException;
+import javafx.application.ConditionalFeature;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -15,17 +16,18 @@ public class Condition {
 
     public static Condition fromJson(String jsonStr) throws ConditionException {
         Gson gson = new Gson();
-        Condition result = gson.fromJson(jsonStr, new TypeToken<Condition>() {}.getType());
+        Condition result = gson.fromJson(jsonStr, new TypeToken<Condition>() {
+        }.getType());
         return result;
     }
 
-    public String toJson(){
+    public String toJson() {
         Gson gson = new Gson();
         return gson.toJson(this);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return this.toJson();
     }
 
@@ -44,12 +46,12 @@ public class Condition {
                 ConditionItem cond = conditionItems.get(i);
                 //将double的value，如果是整数的，转换成整数。避免id这种INT字段被赋double值造成错误
                 Object[] condValues = cond.getValues();
-                for(int j=0;j<condValues.length;j++){
-                    if(condValues[j] instanceof Double){
-                        Double doubleValue = (Double)condValues[j];
-                        if(doubleValue.intValue() == doubleValue){
+                for (int j = 0; j < condValues.length; j++) {
+                    if (condValues[j] instanceof Double) {
+                        Double doubleValue = (Double) condValues[j];
+                        if (doubleValue.intValue() == doubleValue) {
                             condValues[j] = doubleValue.intValue();
-                        }else if(doubleValue.longValue() == doubleValue){
+                        } else if (doubleValue.longValue() == doubleValue) {
                             condValues[j] = doubleValue.longValue();
                         }
                     }
@@ -117,20 +119,35 @@ public class Condition {
         return results;
     }
 
-    public void addCondition(String key,Object[] values, ConditionItem.Relation relation){
+    public Condition addCondition(String key, Object[] values, ConditionItem.Relation relation) {
         ConditionItem conditionItem = new ConditionItem();
         conditionItem.setKey(key);
         conditionItem.setRelation(relation);
         conditionItem.setValues(values);
         this.conditions.add(conditionItem);
+        return this;
     }
 
-    public void addCondition(String key,Object[] values){
-        this.addCondition(key,values, ConditionItem.Relation.EQUAL);
+    public Condition addCondition(String key, Object value, ConditionItem.Relation relation) {
+        ConditionItem conditionItem = new ConditionItem();
+        conditionItem.setKey(key);
+        conditionItem.setRelation(relation);
+        conditionItem.setValues(new Object[]{value});
+        this.conditions.add(conditionItem);
+        return this;
     }
 
-    public void setConditions(ConditionItem[] conditions) {
+    public Condition addCondition(String key, Object[] values) {
+        return this.addCondition(key, values, ConditionItem.Relation.EQUAL);
+    }
+
+    public Condition addCondition(String key, Object value) {
+        return this.addCondition(key, value, ConditionItem.Relation.EQUAL);
+    }
+
+    public Condition setConditions(ConditionItem[] conditions) {
         this.conditions = new ArrayList<ConditionItem>(Arrays.asList(conditions));
+        return this;
     }
 
     public OrderItem[] getOrders() {
@@ -139,18 +156,21 @@ public class Condition {
         return result;
     }
 
-    public void setOrders(OrderItem[] orders) {
+    public Condition setOrders(OrderItem[] orders) {
         OrderItem[] orderItems = new OrderItem[this.orders.size()];
         this.orders = new ArrayList<>(Arrays.asList(orders));
+        return this;
     }
 
-    public void addOrder(String key,OrderItem.Order order){
+    public Condition addOrder(String key, OrderItem.Order order) {
         OrderItem orderItem = new OrderItem();
         orderItem.setKey(key);
         orderItem.setOrder(order);
+        return this;
     }
 
-    public void addOrder(String key){
+    public Condition addOrder(String key) {
         this.addOrder(key, OrderItem.Order.ASC);
+        return this;
     }
 }
