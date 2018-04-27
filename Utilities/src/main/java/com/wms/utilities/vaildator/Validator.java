@@ -89,7 +89,7 @@ class MinValidatorCondition extends ValidatorCondition {
         try {
             actualValue =  Double.parseDouble((String.valueOf(value)));
         } catch (NumberFormatException e) {
-            throw new WMSServiceException("检查的数据无法转换为数字类型");
+            throw new WMSServiceException(key+"检查的数据无法转换为数字类型");
         }
         if (actualValue < min) {
             throw new WMSServiceException(key+ "的值小于最低值");
@@ -121,7 +121,7 @@ class MaxValidatorCondition extends ValidatorCondition {
             actualValue =  Double.parseDouble((String.valueOf(value)));
 
         } catch (NumberFormatException e) {
-            throw new WMSServiceException("检查的数据无法转换为数字类型");
+            throw new WMSServiceException(key+"检查的数据无法转换为数字类型");
         }
         if (actualValue > max) {
             throw new WMSServiceException(key+ "的值大于最大值");
@@ -154,7 +154,7 @@ class MaxValidatorCondition extends ValidatorCondition {
             actualValue =  Double.parseDouble((String.valueOf(value)));
 
         } catch (NumberFormatException e) {
-            throw new WMSServiceException("检查的数据无法转换为数字类型");
+            throw new WMSServiceException(key+"检查的数据无法转换为数字类型");
         }
         if (actualValue < min||actualValue>max) {
             throw new WMSServiceException(key+ "的值不在指定的区间范围内");
@@ -187,7 +187,7 @@ class LengthValidatorCondition extends ValidatorCondition {
             actualValue = String.valueOf(value).length();
 
         } catch (Exception e) {
-            throw new WMSServiceException("检查的数据无法获取长度");
+            throw new WMSServiceException(key+"检查的数据无法获取长度");
         }
         if (actualValue > length) {
             throw new WMSServiceException(key+ "字符串长度超过上限！");
