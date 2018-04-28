@@ -2,6 +2,7 @@ package com.wms.services.warehouse.controller;
 
 
 import com.wms.services.warehouse.model.Warehouse;
+import com.wms.services.warehouse.model.WarehouseView;
 import org.springframework.http.ResponseEntity;
 public interface WarehouseController {
 
@@ -11,6 +12,6 @@ public interface WarehouseController {
 
         void remove(String accountBook, String strIDs);
 
-        ResponseEntity<Warehouse[]> find(String accountBook, String condStr);
+        ResponseEntity<WarehouseView[]> find(String accountBook, String condStr);
 
 }

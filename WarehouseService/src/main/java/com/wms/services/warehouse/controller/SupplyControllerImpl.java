@@ -1,9 +1,8 @@
 package com.wms.services.warehouse.controller;
-
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.model.Supply;
+import com.wms.services.warehouse.model.SupplyView;
 import com.wms.services.warehouse.service.SupplyService;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +37,11 @@ public class SupplyControllerImpl implements SupplyController {
         supplyService.remove(accountBook,ids);
     }
     @RequestMapping("/{condStr}")
-    public ResponseEntity<Supply[]> find(@PathVariable("accountBook") String accountBook,
+    public ResponseEntity<SupplyView[]> find(@PathVariable("accountBook") String accountBook,
                                            @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
-        Supply[] supplies = supplyService.find(accountBook, cond);
-        return new ResponseEntity<Supply[]>(supplies, HttpStatus.OK);
+        SupplyView[] supplies = supplyService.find(accountBook, cond);
+        return new ResponseEntity<SupplyView[]>(supplies, HttpStatus.OK);
     }
 
 }

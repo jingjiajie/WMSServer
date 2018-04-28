@@ -1,7 +1,8 @@
 package com.wms.services.warehouse;
-import com.thoughtworks.xstream.converters.basic.BigDecimalConverter;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.model.SupplierView;
 import com.wms.services.warehouse.service.SupplierServices;
+import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -13,8 +14,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 import com.wms.services.warehouse.model.Supplier;
 
-import java.math.BigDecimal;
-
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
@@ -24,32 +23,30 @@ public class WarehouseService {
     public static void main(java.lang.String args[]){
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class,args);
         System.out.println("仓库服务启动...");
-        Supplier supplier=new Supplier();
-        BigDecimal a = new BigDecimal(10.111111111);
-        supplier.setInvoiceDelayMonth(a);
-        Validator validator=new Validator("123");
 
-        validator.min(11).validate(supplier.getInvoiceDelayMonth());
-/*
+        //Validator validator=new Validator("123");
+        //int a[]={1 ,200};
+        //validator.in(a);
+        //validator.min(5).in(a).validate(1);
+        //validator.validate("1000.1");
 
-        int a[]={1 ,200};
-        validator.in(a);
-        validator.min(5).in(a).validate(1);
-        validator.notnull();
-        validator.notEmpty();
-        validator.length(1);
-       validator.validate("1000.1");
-       */
-        //SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
-        //SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
+        SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
+       // SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
        // Supplier supplier=new Supplier();
-       // supplier.setName("1234566");
-       // supplier.setNo("aaaaa");
+        //supplier.setName("12345667777777");
+      //  supplier.setNo("aaaaa7777111111");
+        //supplier.setWarehouseId(1);
+        //supplier.setCreatePersonId(19);
        // supplier.setWarehouseId(12);
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-    //  supplierServices.add("WMS_Template",new Supplier[]{supplier});
-//        Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
-        //suppliers=supplierServices.find("WMS_Template",condition);
+      //supplierServices.add("WMS_Template",new Supplier[]{supplier});
+        int[] a={31, 32};
+        supplierServices.remove("WMS_Template",a);
+        //Condition condition = new Condition();
+       // condition.addCondition("name",new String[]{"asdadsads11"});
+        //suppliers=supplierDAO.find("WMS_Template",condition);
+       // Validator validator=new Validator("qqq");
+        //validator.min(111).validate(suppliers[0].getInvoiceDelayMonth());
         //System.out.println(suppliers.length+"22929292929292929292929292929");
 
 /*

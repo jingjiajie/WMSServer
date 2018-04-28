@@ -1,8 +1,8 @@
 package com.wms.services.warehouse.controller;
-
-import com.wms.services.warehouse.model.Material;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.model.Material;
+import com.wms.services.warehouse.model.MaterialView;
 import com.wms.services.warehouse.service.MaterialService;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,8 @@ public class MaterialControllerImpl implements MaterialController{
     @Autowired
     MaterialService materialService;
 
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value="/",method = RequestMethod.POST)
     public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook,
                                      @RequestBody Material[] materials) {
@@ -23,8 +25,17 @@ public class MaterialControllerImpl implements MaterialController{
         return new ResponseEntity<int[]>(ids, HttpStatus.OK);
     }
 
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/",method = RequestMethod.PUT)
+    public void update(@PathVariable("accountBook") String accountBook,
+                       @RequestBody Material[] materials) {
+        materialService.update(accountBook,materials);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
-    @ResponseBody
     public void remove(@PathVariable("accountBook") String accountBook,
                        @PathVariable("strIDs") String strIDs) {
         Gson gson = new Gson();
@@ -32,19 +43,14 @@ public class MaterialControllerImpl implements MaterialController{
         materialService.remove(accountBook,ids);
     }
 
-    @RequestMapping(value = "/",method = RequestMethod.PUT)
-    @ResponseBody
-    public void update(@PathVariable("accountBook") String accountBook,
-                       @RequestBody Material[] materials) {
-        materialService.update(accountBook,materials);
-    }
-
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping("/{condStr}")
-    public ResponseEntity<Material[]> find(@PathVariable("accountBook") String accountBook,
-                                         @PathVariable("condStr") String condStr) {
+    public ResponseEntity<MaterialView[]> find(@PathVariable("accountBook") String accountBook,
+                                               @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
-        Material[] materials = materialService.find(accountBook,cond);
-        return new ResponseEntity<Material[]>(materials, HttpStatus.OK);
+        MaterialView[] materials = materialService.find(accountBook, cond);
+        return new ResponseEntity<MaterialView[]>(materials, HttpStatus.OK);
     }
 
 }

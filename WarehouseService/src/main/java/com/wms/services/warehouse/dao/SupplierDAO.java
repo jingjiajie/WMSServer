@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.dao;
 
 import com.wms.services.warehouse.model.Supplier;
+import com.wms.services.warehouse.model.SupplierView;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
 
@@ -11,8 +12,8 @@ public interface SupplierDAO {
 
     void remove(String database, int ids[]) throws WMSDAOException;
 
-    Supplier[] find(String database, Condition cond) throws WMSDAOException;
+    SupplierView[] find(String database, Condition cond) throws WMSDAOException;
 
-  //  List<Supplier> findInside(String database, String sql) throws WMSDAOException;
+
 
 }

@@ -1,17 +1,23 @@
 package com.wms.services.warehouse.service;
 
+import com.wms.services.warehouse.dao.SupplierDAO;
 import com.wms.services.warehouse.dao.SupplyDAO;
-import com.wms.services.warehouse.model.Supply;
+import com.wms.services.warehouse.model.*;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @Service
+@Transactional
 public class SupplyServiceImpl implements SupplyService {
     @Autowired
     SupplyDAO supplyDAO;
@@ -19,142 +25,113 @@ public class SupplyServiceImpl implements SupplyService {
     SupplierServices supplierServices;
     @Autowired
     MaterialService materialService;
+    @Autowired
+    PersonService personService;
+    @Autowired
+    WarehouseService warehouseService;
 
-    @Transactional
-    public int[] add(String accountBook, Supply[] supplies) throws WMSServiceException {
+    @Override
+    public int[] add(String accountBook, Supply[] supplies) throws WMSServiceException
+    {
+        for (int i=0;i<supplies.length;i++) {
 
-        for (int i = 0; i < supplies.length; i++) {
-
-
-            //判断物料ID是否为空
-            String materialID = supplies[i].getMaterialId().toString();//
-            ;//获取供货物料名称
-            if (materialID == null || materialID.trim().length() <= 0) {       //判断是否为空，trim()去除字符串两边空格
-                throw new WMSServiceException("物料不能为空！");
-            }
-            //判断供货商ID是否为空
-            String supplierId = supplies[i].getSupplierId().toString();
-            ;//获取供货商名称
-            if (supplierId == null || supplierId.trim().length() <= 0) {       //判断是否为空
-                throw new WMSServiceException("供货商不能为空！");
-            }
-
-
-            Supply[] suppliesRepeat = null;//新建一个数组，物料复述
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['" + supplierId + "'],'relation':'EQUAL'},{'key':'MaterialId','values':['" + materialID + "'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
-            //添加供货商-物料关联查询条件，按供货商ID排序
-            try {
-                suppliesRepeat = supplyDAO.find(accountBook, condition);
-            } catch (DatabaseNotFoundException ex) {
-                throw new WMSServiceException("Accountbook " + accountBook + " not found!");
-            }
-            if (suppliesRepeat.length > 0) {
-                throw new WMSServiceException("物料-供货商组合 " + materialID + " 已经存在！");
-            }
-            //判断物料-供货商组合是否唯一
+            Validator validator=new Validator("供应商ID");
+            validator.notnull().validate(supplies[i].getSupplierId());
+            Validator validator1=new Validator("物料ID");
+            validator1.notnull().validate(supplies[i].getMaterialId());
 
         }
 
-        for (int i = 0; i < supplies.length; i++) {
-            supplies[i].setWarehouseId(4);//先添加一个仓库ID，后面修正
-            supplies[i].setCreatePersonId(19);//先添加一个创建人员ID，后面修正
-            supplies[i].setCreateTime(new Timestamp(System.currentTimeMillis()));//添加创建时间
+
+        //外键检测
+        Stream.of(supplies).forEach(
+                (supply)->{
+                    if(this.warehouseService.find(accountBook,
+                            new Condition().addCondition("warehouseId",supply.getWarehouseId())).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supply.getWarehouseId()));
+                    }else if(this.personService.find(accountBook,
+                            new Condition().addCondition("personId",supply.getCreatePersonId())).length == 0){
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getCreatePersonId()));
+                    }else if(this.supplierServices.find(accountBook,
+                            new Condition().addCondition("supplierId",supply.getSupplierId())).length == 0){
+                        throw new WMSServiceException(String.format("供货商不存在，请重新提交！(%d)",supply.getSupplierId()));
+                    } else if(this.materialService.find(accountBook,
+                            new Condition().addCondition("materialId",supply.getMaterialId())).length == 0){
+                        throw new WMSServiceException(String.format("物料不存在，请重新提交！(%d)",supply.getMaterialId()));
+                    }if(supply.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+                            new Condition().addCondition("lsatUpdateId",supply.getLastUpdatePersonId())).length == 0){
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getLastUpdatePersonId()));
+                    }
+                }
+        );
+
+        for(int i=0;i<supplies.length;i++){
+            MaterialView[] curMsterial =this.materialService.find(accountBook, new Condition().addCondition("materialId",supplies[i].getMaterialId()));
+            SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("supplierId",supplies[i].getMaterialId()));
+
+            Condition cond = new Condition();
+            cond.addCondition("supplierId",new Integer[]{supplies[i].getSupplierId()});
+            cond.addCondition("materialId",new Integer[]{supplies[i].getMaterialId()});
+
+
+            if(supplyDAO.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMsterial[0].getName());
+            }
         }
 
-
-        try {
-            return supplyDAO.add(accountBook, supplies);
-        } catch (DatabaseNotFoundException ex) {
-            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
-        }
-    }
-
-    @Transactional
-    public void update(String accountBook, Supply[] supplies) throws WMSServiceException {
-
-        for (int i = 0; i < supplies.length; i++) {
-
-            Supply[] suppliesRepeat = null;//新建一个数组，物料复述
-            int actid = supplies[i].getId();//获取要修改供货信息的Id
-
-            if (actid == 0) {       //判断是否输入所要查询科目的ID int类型默认为0 数据库id默认从1开始 所以可以用0判断，参考AccountTitle
-                throw new WMSServiceException("所选供货信息条目不存在!");
-            }
-
-            //判断物料ID是否为空
-            String materialID = supplies[i].getMaterialId().toString();
-            ;//获取供货物料名称
-            if (materialID == null || materialID.trim().length() <= 0) {       //判断是否为空，trim()去除字符串两边空格
-                throw new WMSServiceException("物料不能为空！");
-            }
-            //判断供货商ID是否为空
-            String SupplierId = supplies[i].getSupplierId().toString();
-            ;//获取供货商名称
-            if (SupplierId == null || SupplierId.trim().length() <= 0) {       //判断是否为空
-                throw new WMSServiceException("供货商不能为空！");
-            }
-
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplierId','values':['" + SupplierId + "'],'relation':'EQUAL'}],[{'key':'MaterialId','values':['" + materialID + "'],'relation':'EQUAL'}],'orders':[{'key':'SupplierId','order':'ASC'}]}");
-            //添加供货商-物料关联查询条件，按供货商ID排序
-            try {
-                suppliesRepeat = supplyDAO.find(accountBook, condition);
-            } catch (DatabaseNotFoundException ex) {
-                throw new WMSServiceException("Accountbook " + accountBook + " not found!");
-            }
-            if (suppliesRepeat.length > 0) {
-                throw new WMSServiceException("物料-供货商组合 " + materialID + SupplierId + " 存在！");
-            }
-            //判断物料-供货商组合是否已经存在，不存在则往下执行
-            supplies[i].setWarehouseId(1);
-            supplies[i].setLastUpdatePersonId(19);//预设值
-            supplies[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));//更新时间
-        }
-
-        try {
-            supplyDAO.update(accountBook, supplies);
-        } catch (DatabaseNotFoundException ex) {
-            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
-        }
-    }
-
-    @Transactional
-    public void remove(String accountBook, int[] ids) throws WMSServiceException {
-
-/*
-        Supply[] supplies;
-        ReceiptTicketItem[] receiptTicketItems;//收货单零件条目
-        int idLength=ids.length;//取要删除的Id个数
-        int[] idsModify=null;//定义修改的数组ID
-        List<int[]> idsList = Arrays.asList(ids);//百度一下用法
-
-        List<int[]> IDRemove=null;//定义删除的数组ID
-        for (int i=0;i<idLength;i++)
+        for (int i=0;i<supplies.length;i++)
         {
-            Supply[] supplyRefference=null;
-            int SupplyID=ids[i];
+            supplies[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
+            supplies[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+        }
+        return supplyDAO.add(accountBook,supplies);
+    }
 
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'SupplyID','values':['" + SupplyID + "'],'relation':'EQUAL'}]}");
-            receiptTicketItems =receiptTicketItemService.find(accountBook,condition);
-            if(receiptTicketItems.length>0){
-                Condition conditionSupplier= Condition.fromJson("{'conditions':[{'key':'id','values':['" + SupplyID + "'],'relation':'EQUAL'}]}");
-                supplyRefference=supplyDAO.find("WMS_Template",conditionSupplier);
-                throw new WMSServiceException("供应信息被引用无法删除!");
+    @Override
+    public void update(String accountBook, Supply[] supplies) throws WMSServiceException{
+
+        for (int i=0;i<supplies.length;i++) {
+            Validator validator=new Validator("供应商ID");
+            validator.notnull().validate(supplies[i].getSupplierId());
+            Validator validator1=new Validator("物料ID");
+            validator1.notnull().validate(supplies[i].getMaterialId());
+        }
+
+        for(int i=0;i<supplies.length;i++){
+            MaterialView[] curMsterial =this.materialService.find(accountBook, new Condition().addCondition("materialId",supplies[i].getMaterialId()));
+            SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("supplierId",supplies[i].getMaterialId()));
+            Condition cond = new Condition();
+            cond.addCondition("supplierId",new Integer[]{supplies[i].getSupplierId()});
+            cond.addCondition("materialId",new Integer[]{supplies[i].getMaterialId()});
+            cond.addCondition("materialId",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+
+
+            if(supplyDAO.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMsterial[0].getName());
             }
         }
-*/
+        for (int i=0;i<supplies.length;i++)
+        {
+            supplies[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+        }
+        supplyDAO.update(accountBook, supplies);
+
+    }
+
+    @Override
+    public void remove(String accountBook, int[] ids) throws WMSServiceException{
+
         try {
             supplyDAO.remove(accountBook, ids);
-        } catch (DatabaseNotFoundException ex) {
-            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
+        }
+        catch (Throwable ex){
+            throw new WMSServiceException("删除供货信息失败，如果供货信息已经被引用，需要先删除引用的内容，才能删除该供货信息");
         }
     }
 
-    @Transactional
-    public Supply[] find(String accountBook, Condition cond) throws WMSServiceException {
-        try {
-            return this.supplyDAO.find(accountBook, cond);
-        } catch (DatabaseNotFoundException ex) {
-            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
-        }
+    @Override
+    public SupplyView[] find(String accountBook, Condition cond) throws WMSServiceException{
+        return this.supplyDAO.find(accountBook, cond);
     }
 }
+
