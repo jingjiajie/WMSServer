@@ -25,23 +25,21 @@ public class WarehouseService {
         System.out.println("仓库服务启动...");
 
         //Validator validator=new Validator("123");
-/*
-        int a[]={1 ,200};
-        validator.in(a);
-        validator.min(5).in(a).validate(1);
-        validator.notnull();
-        validator.notEmpty();
-        validator.length(1);
-       validator.validate("1000.1");
-       */
-        //SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
-        //SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
-         //SupplierView[] suppliers=null;
-        //supplier.setName("1234566");
-       // supplier.setNo("aaaaa");
+        //int a[]={1 ,200};
+        //validator.in(a);
+        //validator.min(5).in(a).validate(1);
+        //validator.validate("1000.1");
+
+        SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
+       // SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
+        Supplier supplier=new Supplier();
+        supplier.setName("12345667777777");
+        supplier.setNo("aaaaa7777111111");
+        supplier.setWarehouseId(1);
+        supplier.setCreatePersonId(19);
        // supplier.setWarehouseId(12);
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-      //supplierServices.add("WMS_Template",new Supplier[]{supplier});
+      supplierServices.add("WMS_Template",new Supplier[]{supplier});
         //Condition condition = new Condition();
        // condition.addCondition("name",new String[]{"asdadsads11"});
         //suppliers=supplierDAO.find("WMS_Template",condition);
