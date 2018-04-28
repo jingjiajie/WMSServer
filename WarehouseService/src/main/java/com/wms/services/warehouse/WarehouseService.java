@@ -1,4 +1,5 @@
 package com.wms.services.warehouse;
+import com.thoughtworks.xstream.converters.basic.BigDecimalConverter;
 import com.wms.services.warehouse.dao.SupplierDAO;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.vaildator.Validator;
@@ -12,6 +13,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
 import com.wms.services.warehouse.model.Supplier;
 
+import java.math.BigDecimal;
+
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
@@ -21,9 +24,14 @@ public class WarehouseService {
     public static void main(java.lang.String args[]){
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class,args);
         System.out.println("仓库服务启动...");
+        Supplier supplier=new Supplier();
+        BigDecimal a = new BigDecimal(10.111111111);
+        supplier.setInvoiceDelayMonth(a);
+        Validator validator=new Validator("123");
 
-        //Validator validator=new Validator("123");
+        validator.min(11).validate(supplier.getInvoiceDelayMonth());
 /*
+
         int a[]={1 ,200};
         validator.in(a);
         validator.min(5).in(a).validate(1);
@@ -32,14 +40,14 @@ public class WarehouseService {
         validator.length(1);
        validator.validate("1000.1");
        */
-        SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
-        SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
-        Supplier supplier=new Supplier();
-        supplier.setName("1234566");
-        supplier.setNo("aaaaa");
-        supplier.setWarehouseId(12);
+        //SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
+        //SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
+       // Supplier supplier=new Supplier();
+       // supplier.setName("1234566");
+       // supplier.setNo("aaaaa");
+       // supplier.setWarehouseId(12);
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-      supplierServices.add("WMS_Template",new Supplier[]{supplier});
+    //  supplierServices.add("WMS_Template",new Supplier[]{supplier});
 //        Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
         //suppliers=supplierServices.find("WMS_Template",condition);
         //System.out.println(suppliers.length+"22929292929292929292929292929");
