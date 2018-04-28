@@ -1,6 +1,8 @@
 package com.wms.services.warehouse;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.model.SupplierView;
 import com.wms.services.warehouse.service.SupplierServices;
+import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -32,16 +34,19 @@ public class WarehouseService {
         validator.length(1);
        validator.validate("1000.1");
        */
-        SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
-        SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
-        Supplier supplier=new Supplier();
-        supplier.setName("1234566");
-        supplier.setNo("aaaaa");
-        supplier.setWarehouseId(12);
+        //SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
+        //SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
+         //SupplierView[] suppliers=null;
+        //supplier.setName("1234566");
+       // supplier.setNo("aaaaa");
+       // supplier.setWarehouseId(12);
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-      supplierServices.add("WMS_Template",new Supplier[]{supplier});
-//        Condition condition = Condition.fromJson("{'conditions':[{'key':'Name','values':['1'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
-        //suppliers=supplierServices.find("WMS_Template",condition);
+      //supplierServices.add("WMS_Template",new Supplier[]{supplier});
+        //Condition condition = new Condition();
+       // condition.addCondition("name",new String[]{"asdadsads11"});
+        //suppliers=supplierDAO.find("WMS_Template",condition);
+       // Validator validator=new Validator("qqq");
+        //validator.min(111).validate(suppliers[0].getInvoiceDelayMonth());
         //System.out.println(suppliers.length+"22929292929292929292929292929");
 
 /*
