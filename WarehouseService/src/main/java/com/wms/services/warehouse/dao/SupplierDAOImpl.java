@@ -1,5 +1,4 @@
 package com.wms.services.warehouse.dao;
-
 import com.wms.services.warehouse.model.Supplier;
 import com.wms.services.warehouse.model.SupplierView;
 import com.wms.services.warehouse.model.WarehouseEntry;
