@@ -66,17 +66,16 @@ public class SupplyServiceImpl implements SupplyService {
         );
 
         for(int i=0;i<supplies.length;i++){
-            Material[] curMsterial =this.materialService.find(accountBook, new Condition().addCondition("materialId",supplies[i].getMaterialId()));
+            MaterialView[] curMsterial =this.materialService.find(accountBook, new Condition().addCondition("materialId",supplies[i].getMaterialId()));
             SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("supplierId",supplies[i].getMaterialId()));
 
             Condition cond = new Condition();
             cond.addCondition("supplierId",new Integer[]{supplies[i].getSupplierId()});
             cond.addCondition("materialId",new Integer[]{supplies[i].getMaterialId()});
-            cond.addCondition("materialId",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
 
 
             if(supplyDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier.getClass().getName()+curMsterial.getClass().getName());
+                throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMsterial[0].getName());
             }
         }
 
@@ -92,7 +91,6 @@ public class SupplyServiceImpl implements SupplyService {
     public void update(String accountBook, Supply[] supplies) throws WMSServiceException{
 
         for (int i=0;i<supplies.length;i++) {
-
             Validator validator=new Validator("供应商ID");
             validator.notnull().validate(supplies[i].getSupplierId());
             Validator validator1=new Validator("物料ID");
@@ -100,11 +98,16 @@ public class SupplyServiceImpl implements SupplyService {
         }
 
         for(int i=0;i<supplies.length;i++){
+            MaterialView[] curMsterial =this.materialService.find(accountBook, new Condition().addCondition("materialId",supplies[i].getMaterialId()));
+            SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("supplierId",supplies[i].getMaterialId()));
             Condition cond = new Condition();
-            cond.addCondition("supplierId",new Integer[]{supplies[i].getSupplierId()}, ConditionItem.Relation.NOT_EQUAL);
-            cond.addCondition("materialId",new Integer[]{supplies[i].getMaterialId()}, ConditionItem.Relation.NOT_EQUAL);
+            cond.addCondition("supplierId",new Integer[]{supplies[i].getSupplierId()});
+            cond.addCondition("materialId",new Integer[]{supplies[i].getMaterialId()});
+            cond.addCondition("materialId",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+
+
             if(supplyDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("供应商-物料关联条目重复："+supplies[i].getSupplierId()+supplies[i].getMaterialId());
+                throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMsterial[0].getName());
             }
         }
         for (int i=0;i<supplies.length;i++)
