@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 public class SupplierControllerImpl implements SupplierController {
     @Autowired
     SupplierServices supplierServices;
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value="/",method = RequestMethod.POST)
     public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook,
                                      @RequestBody Supplier[] suppliers) {
@@ -22,20 +25,26 @@ public class SupplierControllerImpl implements SupplierController {
         return new ResponseEntity<int[]>(ids, HttpStatus.OK);
     }
 
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/",method = RequestMethod.PUT)
-    @ResponseBody
     public void update(@PathVariable("accountBook") String accountBook,
                        @RequestBody Supplier[] suppliers) {
         supplierServices.update(accountBook,suppliers);
     }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
-    @ResponseBody
     public void remove(@PathVariable("accountBook") String accountBook,
                        @PathVariable("strIDs") String strIDs) {
         Gson gson = new Gson();
         int ids[] = gson.fromJson(strIDs,new TypeToken<int[]>(){}.getType());
         supplierServices.remove(accountBook,ids);
     }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping("/{condStr}")
     public ResponseEntity<SupplierView[]> find(@PathVariable("accountBook") String accountBook,
                                            @PathVariable("condStr") String condStr) {
