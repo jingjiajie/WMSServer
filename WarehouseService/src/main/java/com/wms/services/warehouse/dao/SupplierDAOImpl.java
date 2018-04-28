@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 @Repository
-@Transactional
+
 public class SupplierDAOImpl implements SupplierDAO {
     @Autowired
     SessionFactory sessionFactory;

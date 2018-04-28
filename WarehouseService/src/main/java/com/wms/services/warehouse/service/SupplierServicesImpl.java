@@ -53,13 +53,14 @@ public class SupplierServicesImpl implements SupplierServices{
         Stream.of(suppliers).forEach(
                 (supplier)->{
                     if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("warehouseId",supplier.getWarehouseId())).length == 0){
+                            new Condition().addCondition("id",supplier.getWarehouseId())).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supplier.getWarehouseId()));
                     }else if(this.personService.find(accountBook,
-                            new Condition().addCondition("personId",supplier.getCreatePersonId())).length == 0){
+                            new Condition().addCondition("id",supplier.getCreatePersonId())).length == 0){
                         throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supplier.getCreatePersonId()));
-                    } if(supplier.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-                            new Condition().addCondition("lsatUpdateId",supplier.getLastUpdatePersonId())).length == 0){
+                    }
+                    if(supplier.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+                            new Condition().addCondition("id",supplier.getLastUpdatePersonId())).length == 0){
                         throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supplier.getLastUpdatePersonId()));
                     }
                 }
@@ -70,6 +71,7 @@ public class SupplierServicesImpl implements SupplierServices{
             suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
             suppliers[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
         }
+
         return supplierDAO.add(accountBook,suppliers);
     }
 
@@ -77,7 +79,6 @@ public class SupplierServicesImpl implements SupplierServices{
     public void update(String accountBook, Supplier[] suppliers) throws WMSServiceException{
 
     for (int i=0;i<suppliers.length;i++) {
-
         Validator validator=new Validator("供应商名称");
         validator.notnull().validate(suppliers[i].getName());
         Validator validator1=new Validator("供应商代号");
@@ -102,7 +103,6 @@ public class SupplierServicesImpl implements SupplierServices{
 
 @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
-
         try {
             supplierDAO.remove(accountBook, ids);
         }
