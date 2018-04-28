@@ -3,6 +3,7 @@ package com.wms.services.warehouse.service;
 import com.wms.services.warehouse.dao.StorageLocationDAO;
 import com.wms.services.warehouse.model.StorageArea;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.vaildator.Validator;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.model.StorageLocation;
+
+import java.util.stream.Stream;
 
 @Service
 public class StorageLocationServiceImpl implements StorageLocationService{
@@ -27,58 +30,50 @@ public class StorageLocationServiceImpl implements StorageLocationService{
 
         for(int i=0;i<storageLocations.length;i++) {
 
-            Validator validator=new Validator("库位名");
+            Validator validator = new Validator("库位名");
             validator.notnull().validate(storageLocations[i].getName());
-            Validator validator1=new Validator("库位代号");
+            Validator validator1 = new Validator("库位代号");
             validator.notnull().validate(storageLocations[i].getNo());
-            if (storageLocations[i].getStorageAreaId() == 0) {
-                throw new WMSServiceException("库区信息不能为空！");
-            }
-            StorageArea[] storageAreas = null;
-            Condition condition1 = Condition.fromJson("{'conditions':[{'key':'id','values':["+storageLocations[i].getStorageAreaId()+"],'relation':'EQUAL'}]}");
-            storageAreas = storageAreaService.find(accountBook, condition1);
-            if (storageAreas.length == 0) {
-                throw new WMSServiceException("所选库位不存在！");
+
+        }
+            for(int i=0;i<storageLocations.length;i++){
+                Condition cond = new Condition();
+                cond.addCondition("name",new String[]{storageLocations[i].getName()});
+                if(storageAreaService.find(accountBook,cond).length > 0){
+                    throw new WMSServiceException("库区名称重复："+storageLocations[i].getName());
+                }
             }
 
-            String storageLocationNo=storageLocations[i].getNo();
-            StorageLocation[] storageLocations1=null;
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageLocationNo+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
-             storageLocations1=storageLocationDAO.find(accountBook,condition);
-            if(storageLocations1.length>0)
-            {
-                throw new WMSServiceException("库位代号 " + storageLocationNo + " 已经存在！");
-            }
-        }
-        try{
+        //外键检测
+        Stream.of(storageLocations).forEach(
+                (storageLocation)->{
+                    if(this.storageAreaService.find(accountBook,
+                            new Condition().addCondition("id",storageLocation.getStorageAreaId())).length == 0){
+                        throw new WMSServiceException(String.format("库区不存在，请重新提交！(%d)",storageLocation.getStorageAreaId()));
+                }}
+        );
             return storageLocationDAO.add(accountBook,storageLocations);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
-        }
     }
     @Transactional
     public void update(String accountBook, StorageLocation[] storageLocations) throws WMSServiceException{
 
-        for(int i=0;i<storageLocations.length;i++)
-        {
-            Validator validator=new Validator("库位名");
+        for(int i=0;i<storageLocations.length;i++) {
+            Validator validator = new Validator("库位名");
             validator.notnull().validate(storageLocations[i].getName());
-            Validator validator1=new Validator("库位代号");
+            Validator validator1 = new Validator("库位代号");
             validator.notnull().validate(storageLocations[i].getNo());
-            String storageLocationNo=storageLocations[i].getNo();
-            StorageLocation[] storageLocations1=null;
-            Condition condition = Condition.fromJson("{'conditions':[{'key':'no','values':['"+storageLocationNo+"'],'relation':'EQUAL'}],'orders':[{'key':'name','order':'ASC'}]}");
-            storageLocations1=storageLocationDAO.find(accountBook,condition);
-            if(storageLocations1.length>0)
-            {if(storageLocations1[0].getId()!=storageLocations[i].getId()){
-                throw new WMSServiceException("库位代号 " + storageLocationNo + " 已经存在！");}
+            String storageLocationNo = storageLocations[i].getNo();
+        }
+
+        for(int i=0;i<storageLocations.length;i++){
+            Condition cond = new Condition();
+            cond.addCondition("name",new String[]{storageLocations[i].getName()});
+            cond.addCondition("id",new Integer[]{storageLocations[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            if(storageLocationDAO.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("库位名称重复："+storageLocations[i].getName());
             }
         }
-        try {
             storageLocationDAO.update(accountBook, storageLocations);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
-        }
     }
 
     @Transactional

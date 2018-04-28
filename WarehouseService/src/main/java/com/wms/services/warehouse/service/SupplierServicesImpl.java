@@ -53,13 +53,13 @@ public class SupplierServicesImpl implements SupplierServices{
         Stream.of(suppliers).forEach(
                 (supplier)->{
                     if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("id",supplier.getWarehouseId())).length == 0){
+                            new Condition().addCondition("warehouseId",supplier.getWarehouseId())).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supplier.getWarehouseId()));
                     }else if(this.personService.find(accountBook,
-                            new Condition().addCondition("id",supplier.getCreatePersonId())).length == 0){
+                            new Condition().addCondition("personId",supplier.getCreatePersonId())).length == 0){
                         throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supplier.getCreatePersonId()));
                     } if(supplier.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-                            new Condition().addCondition("id",supplier.getLastUpdatePersonId())).length == 0){
+                            new Condition().addCondition("lsatUpdateId",supplier.getLastUpdatePersonId())).length == 0){
                         throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supplier.getLastUpdatePersonId()));
                     }
                 }
