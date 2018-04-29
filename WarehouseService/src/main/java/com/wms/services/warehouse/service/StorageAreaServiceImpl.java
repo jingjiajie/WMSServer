@@ -1,8 +1,8 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.StorageAreaDAO;
-import com.wms.services.warehouse.model.StorageArea;
-import com.wms.services.warehouse.model.StorageLocation;
+import com.wms.utilities.model.StorageArea;
+import com.wms.utilities.model.StorageLocation;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;

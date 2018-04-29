@@ -1,6 +1,6 @@
 package com.wms.services.warehouse;
 import com.wms.services.warehouse.dao.SupplierDAO;
-import com.wms.services.warehouse.model.SupplierView;
+import com.wms.utilities.model.SupplierView;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.vaildator.Validator;
@@ -12,7 +12,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportResource;
-import com.wms.services.warehouse.model.Supplier;
+import com.wms.utilities.model.Supplier;
 
 @SpringBootApplication
 @EnableDiscoveryClient

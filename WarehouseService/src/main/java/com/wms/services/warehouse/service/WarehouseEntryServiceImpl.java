@@ -1,8 +1,8 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.WarehouseEntryDAO;
-import com.wms.services.warehouse.model.WarehouseEntry;
-import com.wms.services.warehouse.model.WarehouseEntryView;
+import com.wms.utilities.model.WarehouseEntry;
+import com.wms.utilities.model.WarehouseEntryView;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;

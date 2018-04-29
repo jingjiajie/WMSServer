@@ -1,7 +1,7 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.StorageLocationDAO;
-import com.wms.services.warehouse.model.StorageArea;
+import com.wms.utilities.model.StorageArea;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
@@ -10,7 +10,7 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.wms.services.warehouse.model.StorageLocation;
+import com.wms.utilities.model.StorageLocation;
 
 import java.util.stream.Stream;
 

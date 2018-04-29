@@ -1,7 +1,7 @@
 package com.wms.services.warehouse.dao;
 
-import com.wms.services.warehouse.model.Material;
-import com.wms.services.warehouse.model.MaterialView;
+import com.wms.utilities.model.Material;
+import com.wms.utilities.model.MaterialView;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
 import org.hibernate.SessionFactory;

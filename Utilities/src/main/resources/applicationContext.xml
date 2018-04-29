@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <import resource="classpath:dataSourceBean.xml"/>
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" lazy-init="false">
+        <!--<property name="configLocation" value="classpath:hibernate.cfg.xml"/>-->
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                <prop key="hbm2ddl.auto">validate</prop>
+            </props>
+        </property>
+        <property name="annotatedClasses">
+            <list>
+                <value>com.wms.utilities.model.AccountTitle</value>
+                <value>com.wms.utilities.model.BarCode</value>
+                <value>com.wms.utilities.model.DeliveryOrder</value>
+                <value>com.wms.utilities.model.DeliveryOrderItem</value>
+                <value>com.wms.utilities.model.InspectionNote</value>
+                <value>com.wms.utilities.model.InspectionNoteItem</value>
+                <value>com.wms.utilities.model.Material</value>
+                <value>com.wms.utilities.model.Package</value>
+                <value>com.wms.utilities.model.PackageItem</value>
+                <value>com.wms.utilities.model.Person</value>
+                <value>com.wms.utilities.model.SafetyStock</value>
+                <value>com.wms.utilities.model.StockRecord</value>
+                <value>com.wms.utilities.model.StockTakingOrder</value>
+                <value>com.wms.utilities.model.StockTakingOrderItem</value>
+                <value>com.wms.utilities.model.StorageArea</value>
+                <value>com.wms.utilities.model.StorageLocation</value>
+                <value>com.wms.utilities.model.Supplier</value>
+                <value>com.wms.utilities.model.Supply</value>
+                <value>com.wms.utilities.model.Tax</value>
+                <value>com.wms.utilities.model.TaxItem</value>
+                <value>com.wms.utilities.model.TransferOrder</value>
+                <value>com.wms.utilities.model.TransferOrderItem</value>
+                <value>com.wms.utilities.model.TransferRecord</value>
+                <value>com.wms.utilities.model.Warehouse</value>
+                <value>com.wms.utilities.model.WarehouseEntry</value>
+                <value>com.wms.utilities.model.WarehouseEntryItem</value>
+                <value>com.wms.utilities.model.AccountTitleView</value>
+                <value>com.wms.utilities.model.BarCodeView</value>
+                <value>com.wms.utilities.model.DeliveryOrderItemView</value>
+                <value>com.wms.utilities.model.DeliveryOrderView</value>
+                <value>com.wms.utilities.model.InspectionNoteItemView</value>
+                <value>com.wms.utilities.model.InspectionNoteView</value>
+                <value>com.wms.utilities.model.MaterialView</value>
+                <value>com.wms.utilities.model.PackageItemView</value>
+                <value>com.wms.utilities.model.PackageView</value>
+                <value>com.wms.utilities.model.PersonView</value>
+                <value>com.wms.utilities.model.SafetyStockView</value>
+                <value>com.wms.utilities.model.StockRecordView</value>
+                <value>com.wms.utilities.model.StockTakingOrderItemView</value>
+                <value>com.wms.utilities.model.StockTakingOrderView</value>
+                <value>com.wms.utilities.model.StorageAreaView</value>
+                <value>com.wms.utilities.model.StorageLocationView</value>
+                <value>com.wms.utilities.model.SupplierView</value>
+                <value>com.wms.utilities.model.SupplyView</value>
+                <value>com.wms.utilities.model.TaxItemView</value>
+                <value>com.wms.utilities.model.TaxView</value>
+                <value>com.wms.utilities.model.TransferOrderItemView</value>
+                <value>com.wms.utilities.model.TransferOrderView</value>
+                <value>com.wms.utilities.model.TransferRecordView</value>
+                <value>com.wms.utilities.model.WarehouseEntryItemView</value>
+                <value>com.wms.utilities.model.WarehouseEntryView</value>
+                <value>com.wms.utilities.model.WarehouseView</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <!--启动注解用注解来管理事务-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>

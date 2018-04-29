@@ -12,21 +12,10 @@
       <configuration>
         <webroots />
         <sourceRoots>
-          <root url="file://$MODULE_DIR$/../Parent/src/main/resources" />
+          <root url="file://$MODULE_DIR$/../Utilities/src/main/resources" />
           <root url="file://$MODULE_DIR$/src/main/java" />
           <root url="file://$MODULE_DIR$/src/main/resources" />
         </sourceRoots>
-      </configuration>
-    </facet>
-    <facet type="hibernate" name="Hibernate">
-      <configuration>
-        <datasource-map>
-          <unit-entry name="a.xml" value="90b67ad7-19f9-4c5c-964c-d0752e4c1166" />
-          <unit-entry name="hibernate1.cfg.xml" />
-          <unit-entry name="sessionFactory" />
-        </datasource-map>
-        <naming-strategy-map />
-        <deploymentDescriptor name="hibernate.cfg.xml" url="file://$MODULE_DIR$/src/main/resources/hibernate1.cfg.xml" />
       </configuration>
     </facet>
   </component>

@@ -1,6 +1,6 @@
 package com.wms.services.warehouse.service;
 
-import com.wms.services.warehouse.model.Person;
+import com.wms.utilities.model.Person;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;

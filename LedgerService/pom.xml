@@ -15,8 +15,9 @@
     <build>
         <resources>
             <resource>
-                <directory>../Parent/src/main/resources</directory>
+                <directory>../Utilities/src/main/resources</directory>
                 <includes>
+                    <include>applicationContext.xml</include>
                     <include>dataSourceBean.xml</include>
                 </includes>
             </resource>

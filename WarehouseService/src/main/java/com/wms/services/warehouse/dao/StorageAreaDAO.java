@@ -1,6 +1,6 @@
 package com.wms.services.warehouse.dao;
 
-import com.wms.services.warehouse.model.StorageArea;
+import com.wms.utilities.model.StorageArea;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
 

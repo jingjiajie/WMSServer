@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.wms.services.warehouse.model.StorageLocation;
+import com.wms.utilities.model.StorageLocation;
 @RestController
 @RequestMapping("/{accountBook}/storageLocation")
 public class StorageLocationControllerImpl implements StorageLocationController{

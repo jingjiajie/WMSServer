@@ -1,6 +1,6 @@
 package com.wms.services.warehouse.dao;
 
-import com.wms.services.warehouse.model.Supplier;
+import com.wms.utilities.model.Supplier;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.stream.Stream;
-import com.wms.services.warehouse.model.StorageLocation;
+import com.wms.utilities.model.StorageLocation;
 @Repository
 public class StorageLocationDAOImpl implements StorageLocationDAO {
     public SessionFactory getSessionFactory() {
