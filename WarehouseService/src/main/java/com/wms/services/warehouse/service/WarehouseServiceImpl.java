@@ -5,6 +5,7 @@ import com.wms.utilities.model.Supply;
 import com.wms.utilities.model.Warehouse;
 import com.wms.utilities.model.WarehouseView;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.vaildator.Validator;
@@ -48,11 +49,24 @@ public class WarehouseServiceImpl implements WarehouseService{
                 throw new WMSServiceException("仓库名不能为空!");
             }
         }
-        try {
-            warehouseDAO.update(accountBook, warehouses);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
+
+        Stream.of(warehouses).forEach(
+                (supplier)->{
+                    if(this.warehouseDAO.find(accountBook,
+                            new Condition().addCondition("id",supplier.getId())).length == 0){
+                        throw new WMSServiceException(String.format("要修改的项目不存在请确认后修改(%d)",supplier.getId()));
+                    }
+                }
+        );
+        for(int i=0;i<warehouses.length;i++){
+            Condition cond = new Condition();
+            cond.addCondition("name",new String[]{warehouses[i].getName()});
+            cond.addCondition("id",new Integer[]{warehouses[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            if(warehouseDAO.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("仓库名称重复："+warehouses[i].getName());
+            }
         }
+            warehouseDAO.update(accountBook, warehouses);
     }
 
     @Transactional
