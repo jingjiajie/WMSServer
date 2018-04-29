@@ -103,7 +103,7 @@ public class StorageAreaServiceImpl implements StorageAreaService{
             storageAreaDAO.remove(accountBook, ids);
         }
         catch (Throwable ex){
-            throw new WMSServiceException("删除库位信息失败，如果供库位已经被引用，需要先删除引用的内容，才能删除该供库位信息");
+            throw new WMSServiceException("删除库取信息失败，如果供库区已经被引用，需要先删除引用的内容，才能删除该供库区信息");
         }
     }
 

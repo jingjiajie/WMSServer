@@ -2,6 +2,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.model.StorageLocationView;
 import com.wms.services.warehouse.service.StorageLocationService;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,11 @@ public class StorageLocationControllerImpl implements StorageLocationController{
        storageLocationService.remove(accountBook,ids);
     }
     @RequestMapping("/{condStr}")
-    public ResponseEntity<StorageLocation[]> find(@PathVariable("accountBook") String accountBook,
+    public ResponseEntity<StorageLocationView[]> find(@PathVariable("accountBook") String accountBook,
                                            @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
-       StorageLocation[] storageLocations = storageLocationService.find(accountBook, cond);
-        return new ResponseEntity<StorageLocation[]>(storageLocations, HttpStatus.OK);
+       StorageLocationView[] storageLocations = storageLocationService.find(accountBook, cond);
+        return new ResponseEntity<StorageLocationView[]>(storageLocations, HttpStatus.OK);
     }
 }
 

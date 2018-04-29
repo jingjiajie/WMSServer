@@ -19,87 +19,22 @@ public class StorageLocationDAOImpl implements StorageLocationDAO {
     SessionFactory sessionFactory;
     private WarehouseServiceDAOTemplate<StorageLocation, StorageLocationView> getDAOTemplate() {
         return new WarehouseServiceDAOTemplate<>
-                (this.sessionFactory, "Supplier", "SupplierView", StorageLocation::getId);
+                (this.sessionFactory, "StorageLocation", "StorageLocationView", StorageLocation::getId);
     }
 
     public int[] add(String database,StorageLocation[] storageLocations) throws WMSDAOException {
-        if(storageLocations.length == 0){
-            return new int[0];
-        }
-        if(sessionFactory==null){
-            System.out.println("sessionFactory 为空");
-        }
-        Session session = sessionFactory.getCurrentSession();
-        try {
-            session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
-            throw new DatabaseNotFoundException(database);
-        }
-        try {
-            for (StorageLocation storageLocation : storageLocations) {
-                session.save(storageLocation);
-            }
-            int ids[] = Stream.of(storageLocations).mapToInt((p) -> p.getId()).toArray();
-            return ids;
-        }catch (Throwable ex){
-            throw new WMSDAOException(ex.getMessage());
-        }
+        return this.getDAOTemplate().add(database, storageLocations);
     }
-    public void update(String database, StorageLocation storageLocations[]) throws WMSDAOException{
-        Session session = sessionFactory.getCurrentSession();
-        try {
-            session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
-            throw new DatabaseNotFoundException(database);
-        }
 
-        try {
-            for (StorageLocation storageLocation : storageLocations) {
-                StringBuffer sbHQLString = new StringBuffer();
-                session.update(storageLocation);
-            }
-        }catch (Throwable ex){
-            throw new WMSDAOException(ex.getMessage());
-        }
+    public void update(String database, StorageLocation storageLocations[]) throws WMSDAOException{
+        this.getDAOTemplate().update(database, storageLocations);
     }
 
     public void remove(String database, int ids[]) throws WMSDAOException{
-        if(ids.length == 0){
-            return;
-        }
-        Session session = sessionFactory.getCurrentSession();
-        try {
-            session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
-            throw new DatabaseNotFoundException(database);
-        }
-        try {
-            StringBuffer idStr = new StringBuffer();
-            for (int id : ids) {
-                idStr.append(String.format("%d,", id));
-            }
-            idStr.setLength(idStr.length() - 1);
-            session.createQuery(String.format("delete from StorageLocation where ID in(%s)", idStr.toString())).executeUpdate();
-        }catch (Throwable ex){
-            throw new WMSDAOException(ex.getMessage());
-        }
+        this.getDAOTemplate().remove(database, ids);
     }
-    public StorageLocation[] find(String database,Condition cond) throws WMSDAOException{
-        Session session = sessionFactory.getCurrentSession();
-        try {
-            session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
-            throw new DatabaseNotFoundException(database);
-        }
-        try {
-            Query query = cond.createQuery("StorageLocation", session);
-            List<Supplier> listSupplier = query.list();
-           StorageLocation[] arrStorageLocation = new StorageLocation[listSupplier.size()];
-            listSupplier.toArray(arrStorageLocation);
-            return arrStorageLocation;
-        }catch (Throwable ex){
-            throw new WMSDAOException(ex.getMessage());
-        }
+    public StorageLocationView[] find(String database,Condition cond) throws WMSDAOException{
+        return this.getDAOTemplate().find(database, cond,StorageLocationView.class);
     }
 
 
