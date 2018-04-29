@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.dao;
 
+import com.wms.utilities.dao.BaseDAOImpl;
 import com.wms.utilities.model.WarehouseEntry;
 import com.wms.utilities.model.WarehouseEntryView;
 import com.wms.utilities.datastructures.Condition;
@@ -9,32 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class WarehouseEntryDAOImpl implements WarehouseEntryDAO {
-    @Autowired
-    SessionFactory sessionFactory;
+public class WarehouseEntryDAOImpl
+        extends BaseDAOImpl<WarehouseEntry, WarehouseEntryView>
+        implements WarehouseEntryDAO {
 
-    private WarehouseServiceDAOTemplate<WarehouseEntry, WarehouseEntryView> getDAOTemplate() {
-        return new WarehouseServiceDAOTemplate<>
-                (this.sessionFactory, "WarehouseEntry", "WarehouseEntryView", WarehouseEntry::getId);
-    }
-
-    @Override
-    public int[] add(String database, WarehouseEntry[] warehouseEntries) throws WMSDAOException {
-        return this.getDAOTemplate().add(database, warehouseEntries);
-    }
-
-    @Override
-    public void update(String database, WarehouseEntry[] warehouseEntries) throws WMSDAOException {
-        this.getDAOTemplate().update(database, warehouseEntries);
-    }
-
-    @Override
-    public void remove(String database, int[] ids) throws WMSDAOException {
-        this.getDAOTemplate().remove(database, ids);
-    }
-
-    @Override
-    public WarehouseEntryView[] find(String database, Condition cond) throws WMSDAOException {
-        return this.getDAOTemplate().find(database, cond, WarehouseEntryView.class);
+    public WarehouseEntryDAOImpl(){
+        super(WarehouseEntry.class,WarehouseEntryView.class,WarehouseEntry::getId);
     }
 }
