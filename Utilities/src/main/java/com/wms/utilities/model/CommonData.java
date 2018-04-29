@@ -1,7 +1,5 @@
 package com.wms.utilities.model;
 
-import org.omg.CORBA.portable.IDLEntity;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -25,7 +23,7 @@ public class CommonData {
     }
 
     @Basic
-    @Column(name = "Key", nullable = false, length = 64)
+    @Column(name = "`Key`", nullable = false, length = 64)
     public String getKey() {
         return key;
     }

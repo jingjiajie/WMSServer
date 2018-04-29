@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.wms.services.ledger.model.Person;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.PersonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,10 +42,10 @@ public class PersonControllerImpl implements PersonController {
     }
 
     @RequestMapping(value = "/{condStr}", method = RequestMethod.GET)
-    public ResponseEntity<Person[]> find(@PathVariable("accountBook") String accountBook,
+    public ResponseEntity<PersonView[]> find(@PathVariable("accountBook") String accountBook,
                                          @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
-        Person[] persons = personService.find(accountBook, cond);
-        return new ResponseEntity<Person[]>(persons, HttpStatus.OK);
+        PersonView[] persons = personService.find(accountBook, cond);
+        return new ResponseEntity<>(persons, HttpStatus.OK);
     }
 }

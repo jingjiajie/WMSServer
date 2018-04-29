@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.WarehouseEntryDAO;
+import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.model.WarehouseEntry;
 import com.wms.utilities.model.WarehouseEntryView;
 import com.wms.utilities.datastructures.Condition;
@@ -19,11 +20,15 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     @Autowired
     WarehouseEntryDAO warehouseEntryDAO;
     @Autowired
+    OrderNoGenerator orderNoGenerator;
+    @Autowired
     PersonService personService;
     @Autowired
     SupplierServices supplierService;
     @Autowired
     WarehouseService warehouseService;
+
+    private static final String NO_PREFIX = "R";
 
     @Override
     public int[] add(String accountBook, WarehouseEntry[] warehouseEntries) throws WMSServiceException {
@@ -33,15 +38,6 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                     new Validator("创建用户").notnull().validate(warehouseEntry.getCreatePersonId());
                 }
         );
-
-        //编号查重
-        Stream.of(warehouseEntries).forEach((warehouseEntry)->{
-            Condition cond = new Condition();
-            cond.addCondition("no",new String[]{warehouseEntry.getNo()});
-            if(warehouseEntryDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("入库单单号重复："+warehouseEntry.getNo());
-            }
-        });
 
         //外键检测
         Stream.of(warehouseEntries).forEach(
@@ -64,6 +60,20 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
         //生成创建时间
         Stream.of(warehouseEntries).forEach((w)->w.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
+
+        //生成/检测单号
+        Stream.of(warehouseEntries).forEach((warehouseEntry)->{
+            //如果单号留空则自动生成
+            if(warehouseEntry.getNo() == null){
+                warehouseEntry.setNo(this.orderNoGenerator.GenerateNextNo(accountBook,  WarehouseEntryServiceImpl.NO_PREFIX));
+            }else { //否则检查单号是否重复
+                Condition cond = new Condition();
+                cond.addCondition("no", new String[]{warehouseEntry.getNo()});
+                if (warehouseEntryDAO.find(accountBook, cond).length > 0) {
+                    throw new WMSServiceException("入库单单号重复：" + warehouseEntry.getNo());
+                }
+            }
+        });
 
         return warehouseEntryDAO.add(accountBook, warehouseEntries);
     }

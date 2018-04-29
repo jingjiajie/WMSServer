@@ -6,6 +6,7 @@ import com.wms.services.ledger.model.Person;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.PersonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +80,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Transactional
-    public Person[] find(String accountBook, Condition cond) throws WMSServiceException {
+    public PersonView[] find(String accountBook, Condition cond) throws WMSServiceException {
         return this.personDAO.find(accountBook, cond);
     }
 }

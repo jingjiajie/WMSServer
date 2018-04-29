@@ -2,6 +2,8 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.netflix.discovery.converters.Auto;
+import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.model.WarehouseEntry;
 import com.wms.utilities.model.WarehouseEntryView;
 import com.wms.services.warehouse.service.WarehouseEntryService;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @Autowired
     WarehouseEntryService warehouseEntryService;
+    @Autowired
+    OrderNoGenerator orderNoGenerator;
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @Override
@@ -39,7 +43,8 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     public void remove(@PathVariable("accountBook") String accountBook,
                        @PathVariable("strIDs") String strIDs) {
         Gson gson = new Gson();
-        int ids[] = gson.fromJson(strIDs, new TypeToken<int[]>() {}.getType());
+        int ids[] = gson.fromJson(strIDs, new TypeToken<int[]>() {
+        }.getType());
         warehouseEntryService.remove(accountBook, ids);
     }
 
@@ -49,5 +54,11 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
                                                      @PathVariable("strCond") String condStr) {
         WarehouseEntryView[] results = warehouseEntryService.find(accountBook, Condition.fromJson(condStr));
         return new ResponseEntity<>(results, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/generateNo", method = RequestMethod.GET)
+    public ResponseEntity<String> testGenerateNo(@PathVariable("accountBook") String accountBook) {
+        String no = orderNoGenerator.GenerateNextNo(accountBook, "S");
+        return new ResponseEntity<>(no, HttpStatus.OK);
     }
 }

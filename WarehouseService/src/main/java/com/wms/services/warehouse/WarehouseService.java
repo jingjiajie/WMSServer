@@ -6,11 +6,14 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import com.wms.utilities.model.Supplier;
 
@@ -18,6 +21,7 @@ import com.wms.utilities.model.Supplier;
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableAutoConfiguration(exclude={HibernateJpaAutoConfiguration.class})
+@ComponentScan("com.wms")
 @ImportResource({"classpath:applicationContext.xml"})
 public class WarehouseService {
     public static void main(java.lang.String args[]){
