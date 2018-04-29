@@ -29,19 +29,20 @@ public class WarehouseService {
         //validator.in(a);
         //validator.min(5).in(a).validate(1);
         //validator.validate("1000.1");
-
+/*
         SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
-       // SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
-       // Supplier supplier=new Supplier();
-        //supplier.setName("12345667777777");
-      //  supplier.setNo("aaaaa7777111111");
-        //supplier.setWarehouseId(1);
-        //supplier.setCreatePersonId(19);
-       // supplier.setWarehouseId(12);
+        SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
+        Supplier supplier=new Supplier();
+        supplier.setName("12345667777777");
+        supplier.setNo("aaaaa7777111111");
+        supplier.setWarehouseId(1);
+        supplier.setCreatePersonId(19);
+        supplier.setWarehouseId(12);
+        */
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       //supplierServices.add("WMS_Template",new Supplier[]{supplier});
-        int[] a={31, 32};
-        supplierServices.remove("WMS_Template",a);
+        //int[] a={31, 32};
+        //supplierServices.remove("WMS_Template",a);
         //Condition condition = new Condition();
        // condition.addCondition("name",new String[]{"asdadsads11"});
         //suppliers=supplierDAO.find("WMS_Template",condition);

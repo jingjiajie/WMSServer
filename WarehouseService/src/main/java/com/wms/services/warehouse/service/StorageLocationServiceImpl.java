@@ -1,11 +1,11 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.StorageLocationDAO;
-import com.wms.utilities.model.StorageArea;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.StorageLocationView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,23 +24,24 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     @Transactional
     public int[] add(String accountBook, StorageLocation[] storageLocations )throws WMSServiceException {
 
-        if(storageAreaService==null){
-            System.out.printf("a");
-        }
-
         for(int i=0;i<storageLocations.length;i++) {
 
             Validator validator = new Validator("库位名");
             validator.notnull().validate(storageLocations[i].getName());
             Validator validator1 = new Validator("库位代号");
             validator.notnull().validate(storageLocations[i].getNo());
-
         }
+
             for(int i=0;i<storageLocations.length;i++){
                 Condition cond = new Condition();
                 cond.addCondition("name",new String[]{storageLocations[i].getName()});
-                if(storageAreaService.find(accountBook,cond).length > 0){
-                    throw new WMSServiceException("库区名称重复："+storageLocations[i].getName());
+                if(storageLocationDAO.find(accountBook,cond).length > 0) {
+                    throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());
+                }
+                    Condition cond1= new Condition();
+                    cond1.addCondition("no",new String[]{storageLocations[i].getNo()});
+                    if(storageLocationDAO.find(accountBook,cond1).length > 0){
+                        throw new WMSServiceException("库位代号重复："+storageLocations[i].getNo());
                 }
             }
 
@@ -54,6 +55,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
         );
             return storageLocationDAO.add(accountBook,storageLocations);
     }
+
     @Transactional
     public void update(String accountBook, StorageLocation[] storageLocations) throws WMSServiceException{
 
@@ -62,8 +64,15 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             validator.notnull().validate(storageLocations[i].getName());
             Validator validator1 = new Validator("库位代号");
             validator.notnull().validate(storageLocations[i].getNo());
-            String storageLocationNo = storageLocations[i].getNo();
         }
+        Stream.of(storageLocations).forEach(
+                (storageArea)->{
+                    if(this.storageLocationDAO.find(accountBook,
+                            new Condition().addCondition("id",storageArea.getId())).length == 0){
+                        throw new WMSServiceException(String.format("要修改的项目不存在请确认后修改(%d)",storageArea.getId()));
+                    }
+                }
+        );
 
         for(int i=0;i<storageLocations.length;i++){
             Condition cond = new Condition();
@@ -72,6 +81,13 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             if(storageLocationDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("库位名称重复："+storageLocations[i].getName());
             }
+            Condition cond1= new Condition();
+            cond1.addCondition("no",new String[]{storageLocations[i].getNo()});
+            cond1.addCondition("id",new Integer[]{storageLocations[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            if(storageLocationDAO.find(accountBook,cond1).length > 0){
+                throw new WMSServiceException("库位代号重复："+storageLocations[i].getNo());
+            }
+
         }
             storageLocationDAO.update(accountBook, storageLocations);
     }
@@ -80,13 +96,13 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
         try {
             storageLocationDAO.remove(accountBook, ids);
-        } catch (DatabaseNotFoundException ex) {
-            throw new WMSServiceException("Accountbook " + accountBook + " not found!");
+        } catch (Exception ex) {
+            throw new WMSServiceException("删除库位信息失败，如果供库位已经被引用，需要先删除引用的内容，才能删除该供库位信息");
         }
     }
 
     @Transactional
-    public StorageLocation[] find(String accountBook, Condition cond) throws WMSServiceException{
+    public StorageLocationView[] find(String accountBook, Condition cond) throws WMSServiceException{
         try {
             return this.storageLocationDAO.find(accountBook, cond);
         }catch (DatabaseNotFoundException ex){

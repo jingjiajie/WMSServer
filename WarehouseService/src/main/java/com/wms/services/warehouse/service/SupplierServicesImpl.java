@@ -50,7 +50,7 @@ public class SupplierServicesImpl implements SupplierServices{
             Condition cond = new Condition();
             cond.addCondition("no",new String[]{supplier.getNo()});
             if(supplierDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
+                throw new WMSServiceException("供应商代号："+supplier.getNo()+"已经存在!");
             }
         });
 
@@ -92,6 +92,16 @@ public class SupplierServicesImpl implements SupplierServices{
         validator1.notnull().validate(suppliers[i].getNo());
     }
 
+    Stream.of(suppliers).forEach(
+            (supplier)->{
+                if(this.supplierDAO.find(accountBook,
+                        new Condition().addCondition("id",supplier.getId())).length == 0){
+                    throw new WMSServiceException(String.format("要修改的项目不存在请确认后修改(%d)",supplier.getId()));
+                }
+            }
+    );
+
+
     for(int i=0;i<suppliers.length;i++){
         Condition cond = new Condition();
         cond.addCondition("name",new String[]{suppliers[i].getName()});
@@ -103,6 +113,7 @@ public class SupplierServicesImpl implements SupplierServices{
     Stream.of(suppliers).forEach((supplier)->{
         Condition cond = new Condition();
         cond.addCondition("no",new String[]{supplier.getNo()});
+        cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
         if(supplierDAO.find(accountBook,cond).length > 0){
             throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
         }
@@ -113,7 +124,27 @@ public class SupplierServicesImpl implements SupplierServices{
                 //
                 suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
         }
+
+      //外键检测
+    Stream.of(suppliers).forEach(
+            (supplier)->{
+                if(this.warehouseService.find(accountBook,
+                        new Condition().addCondition("id",supplier.getWarehouseId())).length == 0){
+                    throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supplier.getWarehouseId()));
+                }
+                else  if(this.personService.find(accountBook,
+                        new Condition().addCondition("id",supplier.getCreatePersonId())).length == 0)
+                {
+                    throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supplier.getCreatePersonId()));
+                }
+                if(supplier.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+                        new Condition().addCondition("id",supplier.getLastUpdatePersonId())).length == 0){
+                    throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supplier.getLastUpdatePersonId()));
+                }
+            }
+            );
             supplierDAO.update(accountBook, suppliers);
+
     }
 
 @Override

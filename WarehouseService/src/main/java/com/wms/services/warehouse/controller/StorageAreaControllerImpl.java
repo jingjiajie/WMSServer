@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.wms.utilities.model.StorageArea;
 import com.wms.services.warehouse.service.StorageAreaService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.StorageAreaView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,11 +41,11 @@ public class StorageAreaControllerImpl implements StorageAreaController{
     }
 
     @RequestMapping("/{condStr}")
-    public ResponseEntity<StorageArea[]> find(@PathVariable("accountBook") String accountBook,
-                                         @PathVariable("condStr") String condStr) {
+    public ResponseEntity<StorageAreaView[]> find(@PathVariable("accountBook") String accountBook,
+                                                  @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
-        StorageArea[] storageAreas = storageAreaService.find(accountBook,cond);
-        return new ResponseEntity<StorageArea[]>(storageAreas, HttpStatus.OK);
+        StorageAreaView[] storageAreas = storageAreaService.find(accountBook,cond);
+        return new ResponseEntity<StorageAreaView[]>(storageAreas, HttpStatus.OK);
     }
 }
 
