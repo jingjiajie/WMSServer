@@ -1,10 +1,10 @@
 package com.wms.services.warehouse.dao;
 
-import com.wms.services.warehouse.model.StorageArea;
-import com.wms.services.warehouse.model.StorageAreaView;
+import com.wms.utilities.model.StorageArea;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
+import com.wms.utilities.model.StorageAreaView;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;

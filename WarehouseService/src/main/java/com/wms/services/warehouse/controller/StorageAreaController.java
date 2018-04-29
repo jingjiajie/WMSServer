@@ -1,8 +1,9 @@
 package com.wms.services.warehouse.controller;
 
-import com.wms.services.warehouse.model.StorageArea;
+import com.wms.utilities.model.StorageArea;
+import com.wms.utilities.model.StorageAreaView;
 import org.springframework.http.ResponseEntity;
-import com.wms.services.warehouse.model.StorageAreaView;
+
 public interface StorageAreaController {
     ResponseEntity<int[]> add(String accountBook,StorageArea[] storageAreas);
     void remove(String accountBook,String strIDs);

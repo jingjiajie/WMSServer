@@ -1,7 +1,7 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.MaterialDAO;
-import com.wms.services.warehouse.model.*;
+import com.wms.utilities.model.*;
 import com.wms.services.warehouse.dao.SupplyDAO;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;

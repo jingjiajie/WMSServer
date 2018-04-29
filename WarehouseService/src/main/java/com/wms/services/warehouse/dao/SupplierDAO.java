@@ -1,7 +1,7 @@
 package com.wms.services.warehouse.dao;
 
-import com.wms.services.warehouse.model.Supplier;
-import com.wms.services.warehouse.model.SupplierView;
+import com.wms.utilities.model.Supplier;
+import com.wms.utilities.model.SupplierView;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
 

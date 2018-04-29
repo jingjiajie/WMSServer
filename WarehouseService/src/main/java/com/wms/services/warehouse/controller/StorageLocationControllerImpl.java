@@ -2,14 +2,15 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.services.warehouse.model.StorageLocationView;
 import com.wms.services.warehouse.service.StorageLocationService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.StorageLocationView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.wms.services.warehouse.model.StorageLocation;
+import com.wms.utilities.model.StorageLocation;
+
 @RestController
 @RequestMapping("/{accountBook}/storageLocation")
 public class StorageLocationControllerImpl implements StorageLocationController{
@@ -37,7 +38,7 @@ public class StorageLocationControllerImpl implements StorageLocationController{
     }
     @RequestMapping("/{condStr}")
     public ResponseEntity<StorageLocationView[]> find(@PathVariable("accountBook") String accountBook,
-                                           @PathVariable("condStr") String condStr) {
+                                                      @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
        StorageLocationView[] storageLocations = storageLocationService.find(accountBook, cond);
         return new ResponseEntity<StorageLocationView[]>(storageLocations, HttpStatus.OK);

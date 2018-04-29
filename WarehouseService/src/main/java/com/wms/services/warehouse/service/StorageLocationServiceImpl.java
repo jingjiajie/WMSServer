@@ -5,12 +5,13 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.StorageLocationView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.wms.services.warehouse.model.StorageLocation;
-import com.wms.services.warehouse.model.StorageLocationView;
+import com.wms.utilities.model.StorageLocation;
+
 import java.util.stream.Stream;
 
 @Service

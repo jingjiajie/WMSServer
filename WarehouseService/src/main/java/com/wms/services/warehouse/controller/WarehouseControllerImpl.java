@@ -2,8 +2,8 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.services.warehouse.model.Warehouse;
-import com.wms.services.warehouse.model.WarehouseView;
+import com.wms.utilities.model.Warehouse;
+import com.wms.utilities.model.WarehouseView;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;

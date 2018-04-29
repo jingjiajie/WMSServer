@@ -1,7 +1,7 @@
 package com.wms.services.warehouse.controller;
 
-import com.wms.services.warehouse.model.Supply;
-import com.wms.services.warehouse.model.SupplyView;
+import com.wms.utilities.model.Supply;
+import com.wms.utilities.model.SupplyView;
 import org.springframework.http.ResponseEntity;
 
 public interface SupplyController {
