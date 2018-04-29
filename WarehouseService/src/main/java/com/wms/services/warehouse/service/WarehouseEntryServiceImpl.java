@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.stream.Stream;
 
 @Service
@@ -35,6 +36,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         //数据验证
         Stream.of(warehouseEntries).forEach(
                 (warehouseEntry)->{
+                    new Validator("状态").min(0).max(5).validate(warehouseEntry.getState());
                     new Validator("创建用户").notnull().validate(warehouseEntry.getCreatePersonId());
                 }
         );
@@ -80,6 +82,11 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
     @Override
     public void update(String accountBook, WarehouseEntry[] warehouseEntries) throws WMSServiceException {
+        //数据验证
+        Stream.of(warehouseEntries).forEach((warehouseEntry)->{
+            new Validator("状态").min(0).max(5).validate(warehouseEntry.getState());
+        });
+
         //编号查重
         for(int i=0;i<warehouseEntries.length;i++){
             Condition cond = new Condition();
@@ -90,11 +97,21 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
             }
         }
 
+        Stream.of(warehouseEntries).forEach((warehouseEntry -> {
+            warehouseEntry.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+        }));
+
         warehouseEntryDAO.update(accountBook, warehouseEntries);
     }
 
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
+        for(int id : ids){
+            if(warehouseEntryDAO.find(accountBook,new Condition().addCondition("id",id)).length == 0){
+                throw new WMSServiceException(String.format("删除入库单不存在，请重新查询！(%d)",id));
+            }
+        }
+
         try {
             warehouseEntryDAO.remove(accountBook, ids);
         }catch (Throwable ex){

@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @Autowired
     WarehouseEntryService warehouseEntryService;
-    @Autowired
-    OrderNoGenerator orderNoGenerator;
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @Override
@@ -56,9 +54,4 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/generateNo", method = RequestMethod.GET)
-    public ResponseEntity<String> testGenerateNo(@PathVariable("accountBook") String accountBook) {
-        String no = orderNoGenerator.GenerateNextNo(accountBook, "S");
-        return new ResponseEntity<>(no, HttpStatus.OK);
-    }
 }
