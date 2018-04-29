@@ -11,6 +11,8 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.wms.services.warehouse.model.StorageAreaView;
+import java.util.stream.Stream;
 
 @Service
 public class StorageAreaServiceImpl implements StorageAreaService{
@@ -24,17 +26,29 @@ public class StorageAreaServiceImpl implements StorageAreaService{
             Validator validator=new Validator("库区名称");
             validator.notnull().validate(storageAreas[i].getName());
             Validator validator1=new Validator("库区代号");
-            validator1.notnull().validate(storageAreas[i].getName());
+            validator1.notnull().validate(storageAreas[i].getNo());
         }
         for(int i=0;i<storageAreas.length;i++){
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{storageAreas[i].getName()});
-            //cond.addCondition("no",new String[]{storageAreas[i].getNo()});
-            if(storageAreaDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("库区名称重复："+storageAreas[i].getName());
+            if(storageAreaDAO.find(accountBook,cond).length > 0) {
+                throw new WMSServiceException("库区名称重复：" + storageAreas[i].getName());
+            }
+                Condition cond1 = new Condition();
+                cond1.addCondition("no",new String[]{storageAreas[i].getNo()});
+            if(storageAreaDAO.find(accountBook,cond1).length > 0) {
+                throw new WMSServiceException("库区代号重复：" + storageAreas[i].getNo());
             }
         }
-
+        //外键
+        Stream.of(storageAreas).forEach(
+                (storageArea)->{
+                    if(this.storageAreaDAO.find(accountBook,
+                            new Condition().addCondition("id",storageArea.getWarehouseId())).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",storageArea.getWarehouseId()));
+                    }
+                }
+        );
          return storageAreaDAO.add(accountBook,storageAreas);
     }
 
@@ -47,6 +61,16 @@ public class StorageAreaServiceImpl implements StorageAreaService{
             Validator validator1=new Validator("库区代号");
             validator1.notnull().validate(storageAreas[i].getName());
         }
+
+        Stream.of(storageAreas).forEach(
+                (storageArea)->{
+                    if(this.storageAreaDAO.find(accountBook,
+                            new Condition().addCondition("id",storageArea.getId())).length == 0){
+                        throw new WMSServiceException(String.format("要修改的项目不存在请确认后修改(%d)",storageArea.getId()));
+                    }
+                }
+        );
+
         for(int i=0;i<storageAreas.length;i++){
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{storageAreas[i].getName()});
@@ -54,9 +78,23 @@ public class StorageAreaServiceImpl implements StorageAreaService{
             if(storageAreaDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("库区名称重复："+storageAreas[i].getName());
             }
+            Condition cond1 = new Condition();
+            cond1.addCondition("no",new String[]{storageAreas[i].getNo()});
+            cond1.addCondition("id",new Integer[]{storageAreas[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            if(storageAreaDAO.find(accountBook,cond1).length > 0) {
+                throw new WMSServiceException("库区代号重复：" + storageAreas[i].getNo());
+            }
         }
+        //外键
+        Stream.of(storageAreas).forEach(
+                (storageArea)->{
+                    if(this.storageAreaDAO.find(accountBook,
+                            new Condition().addCondition("id",storageArea.getWarehouseId())).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",storageArea.getWarehouseId()));
+                    }
+                }
+        );
             storageAreaDAO.update(accountBook, storageAreas);
-
     }
 
     @Transactional
@@ -70,7 +108,7 @@ public class StorageAreaServiceImpl implements StorageAreaService{
     }
 
     @Transactional
-    public StorageArea[] find(String accountBook, Condition cond) throws WMSServiceException{
+    public StorageAreaView[] find(String accountBook, Condition cond) throws WMSServiceException{
         try {
             return this.storageAreaDAO.find(accountBook, cond);
         }catch (DatabaseNotFoundException ex){

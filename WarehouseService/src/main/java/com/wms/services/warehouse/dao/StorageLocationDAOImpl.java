@@ -9,20 +9,19 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
+import com.wms.services.warehouse.model.StorageLocationView;
 import java.util.List;
 import java.util.stream.Stream;
 import com.wms.services.warehouse.model.StorageLocation;
 @Repository
 public class StorageLocationDAOImpl implements StorageLocationDAO {
-    public SessionFactory getSessionFactory() {
-        return sessionFactory;
-    }
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
     @Autowired
-    private SessionFactory sessionFactory;
+    SessionFactory sessionFactory;
+    private WarehouseServiceDAOTemplate<StorageLocation, StorageLocationView> getDAOTemplate() {
+        return new WarehouseServiceDAOTemplate<>
+                (this.sessionFactory, "Supplier", "SupplierView", StorageLocation::getId);
+    }
+
     public int[] add(String database,StorageLocation[] storageLocations) throws WMSDAOException {
         if(storageLocations.length == 0){
             return new int[0];

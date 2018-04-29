@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.wms.services.warehouse.model.StorageAreaView;
 @RestController
 @RequestMapping("/{accountBook}/storageArea")
 public class StorageAreaControllerImpl implements StorageAreaController{
@@ -40,11 +40,11 @@ public class StorageAreaControllerImpl implements StorageAreaController{
     }
 
     @RequestMapping("/{condStr}")
-    public ResponseEntity<StorageArea[]> find(@PathVariable("accountBook") String accountBook,
+    public ResponseEntity<StorageAreaView[]> find(@PathVariable("accountBook") String accountBook,
                                          @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
-        StorageArea[] storageAreas = storageAreaService.find(accountBook,cond);
-        return new ResponseEntity<StorageArea[]>(storageAreas, HttpStatus.OK);
+        StorageAreaView[] storageAreas = storageAreaService.find(accountBook,cond);
+        return new ResponseEntity<StorageAreaView[]>(storageAreas, HttpStatus.OK);
     }
 }
 
