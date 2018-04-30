@@ -67,7 +67,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         Stream.of(warehouseEntries).forEach((warehouseEntry)->{
             //如果单号留空则自动生成
             if(warehouseEntry.getNo() == null){
-                warehouseEntry.setNo(this.orderNoGenerator.GenerateNextNo(accountBook,  WarehouseEntryServiceImpl.NO_PREFIX));
+                warehouseEntry.setNo(this.orderNoGenerator.generateNextNo(accountBook,  WarehouseEntryServiceImpl.NO_PREFIX));
             }else { //否则检查单号是否重复
                 Condition cond = new Condition();
                 cond.addCondition("no", new String[]{warehouseEntry.getNo()});

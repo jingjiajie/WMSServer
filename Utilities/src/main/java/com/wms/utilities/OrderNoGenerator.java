@@ -18,7 +18,7 @@ public class OrderNoGenerator {
     CommonDataService commonDataService;
 
     @Transactional
-    public <TOrder> String GenerateNextNo(String accountBook, String prefix) {
+    public <TOrder> String generateNextNo(String accountBook, String prefix) {
         if(prefix == null || prefix.isEmpty()){
             throw new WMSServiceException("GenerateNextNo的prefix参数长度必须大于0！");
         }
