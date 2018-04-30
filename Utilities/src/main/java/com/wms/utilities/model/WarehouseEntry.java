@@ -11,7 +11,7 @@ public class WarehouseEntry {
     private int supplierId;
     private String no;
     private String description;
-    private Integer state;
+    private int state;
     private String deliverOrderNoSrm;
     private String inboundDeliveryOrderNo;
     private String outboundDeliveryOrderNo;
@@ -73,12 +73,12 @@ public class WarehouseEntry {
     }
 
     @Basic
-    @Column(name = "State", nullable = true)
-    public Integer getState() {
+    @Column(name = "State", nullable = false)
+    public int getState() {
         return state;
     }
 
-    public void setState(Integer state) {
+    public void setState(int state) {
         this.state = state;
     }
 
