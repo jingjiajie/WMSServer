@@ -33,7 +33,7 @@ public class BaseDAOImpl<TTable, TView> {
         this.classView = classView;
     }
 
-    public int[] add(String database, TTable[] objs) {
+    public int[] add(String database, TTable[] objs) throws WMSDAOException{
         if (objs.length == 0) {
             return new int[0];
         }
