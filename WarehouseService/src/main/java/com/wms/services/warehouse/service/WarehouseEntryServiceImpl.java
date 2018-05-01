@@ -1,9 +1,13 @@
 package com.wms.services.warehouse.service;
 
+import com.netflix.discovery.converters.Auto;
 import com.wms.services.warehouse.dao.WarehouseEntryDAO;
+import com.wms.services.warehouse.datastructures.InspectArgs;
+import com.wms.services.warehouse.datastructures.InspectItem;
+import com.wms.utilities.IDChecker;
 import com.wms.utilities.OrderNoGenerator;
-import com.wms.utilities.model.WarehouseEntry;
-import com.wms.utilities.model.WarehouseEntryView;
+import com.wms.utilities.ReflectHelper;
+import com.wms.utilities.model.*;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -12,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.stream.Stream;
 
@@ -28,6 +33,14 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     SupplierServices supplierService;
     @Autowired
     WarehouseService warehouseService;
+    @Autowired
+    WarehouseEntryItemService warehouseEntryItemService;
+    @Autowired
+    IDChecker idChecker;
+    @Autowired
+    InspectionNoteService inspectionNoteService;
+    @Autowired
+    InspectionNoteItemService inspectionNoteItemService;
 
     private static final String NO_PREFIX = "R";
 
@@ -35,7 +48,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     public int[] add(String accountBook, WarehouseEntry[] warehouseEntries) throws WMSServiceException {
         //数据验证
         Stream.of(warehouseEntries).forEach(
-                (warehouseEntry)->{
+                (warehouseEntry) -> {
                     new Validator("状态").min(0).max(5).validate(warehouseEntry.getState());
                     new Validator("创建用户").notnull().validate(warehouseEntry.getCreatePersonId());
                 }
@@ -43,32 +56,33 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
         //外键检测
         Stream.of(warehouseEntries).forEach(
-                (warehouseEntry)->{
-                    if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("id",warehouseEntry.getWarehouseId())).length == 0){
-                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",warehouseEntry.getWarehouseId()));
-                    }else if(this.supplierService.find(accountBook,
-                            new Condition().addCondition("id",warehouseEntry.getSupplierId())).length == 0){
-                        throw new WMSServiceException(String.format("供应商不存在，请重新提交！(%d)",warehouseEntry.getSupplierId()));
-                    }else if(this.personService.find(accountBook,
-                            new Condition().addCondition("id",warehouseEntry.getCreatePersonId())).length == 0){
-                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",warehouseEntry.getCreatePersonId()));
-                    } if(warehouseEntry.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-                            new Condition().addCondition("id",warehouseEntry.getLastUpdatePersonId())).length == 0){
-                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",warehouseEntry.getLastUpdatePersonId()));
+                (warehouseEntry) -> {
+                    if (this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id", warehouseEntry.getWarehouseId())).length == 0) {
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)", warehouseEntry.getWarehouseId()));
+                    } else if (this.supplierService.find(accountBook,
+                            new Condition().addCondition("id", warehouseEntry.getSupplierId())).length == 0) {
+                        throw new WMSServiceException(String.format("供应商不存在，请重新提交！(%d)", warehouseEntry.getSupplierId()));
+                    } else if (this.personService.find(accountBook,
+                            new Condition().addCondition("id", warehouseEntry.getCreatePersonId())).length == 0) {
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)", warehouseEntry.getCreatePersonId()));
+                    }
+                    if (warehouseEntry.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+                            new Condition().addCondition("id", warehouseEntry.getLastUpdatePersonId())).length == 0) {
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)", warehouseEntry.getLastUpdatePersonId()));
                     }
                 }
         );
 
         //生成创建时间
-        Stream.of(warehouseEntries).forEach((w)->w.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
+        Stream.of(warehouseEntries).forEach((w) -> w.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
 
         //生成/检测单号
-        Stream.of(warehouseEntries).forEach((warehouseEntry)->{
+        Stream.of(warehouseEntries).forEach((warehouseEntry) -> {
             //如果单号留空则自动生成
-            if(warehouseEntry.getNo() == null){
-                warehouseEntry.setNo(this.orderNoGenerator.generateNextNo(accountBook,  WarehouseEntryServiceImpl.NO_PREFIX));
-            }else { //否则检查单号是否重复
+            if (warehouseEntry.getNo() == null) {
+                warehouseEntry.setNo(this.orderNoGenerator.generateNextNo(accountBook, WarehouseEntryServiceImpl.NO_PREFIX));
+            } else { //否则检查单号是否重复
                 Condition cond = new Condition();
                 cond.addCondition("no", new String[]{warehouseEntry.getNo()});
                 if (warehouseEntryDAO.find(accountBook, cond).length > 0) {
@@ -83,17 +97,17 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     @Override
     public void update(String accountBook, WarehouseEntry[] warehouseEntries) throws WMSServiceException {
         //数据验证
-        Stream.of(warehouseEntries).forEach((warehouseEntry)->{
+        Stream.of(warehouseEntries).forEach((warehouseEntry) -> {
             new Validator("状态").min(0).max(5).validate(warehouseEntry.getState());
         });
 
         //编号查重
-        for(int i=0;i<warehouseEntries.length;i++){
+        for (int i = 0; i < warehouseEntries.length; i++) {
             Condition cond = new Condition();
-            cond.addCondition("no",new String[]{warehouseEntries[i].getNo()});
-            cond.addCondition("id",new Integer[]{warehouseEntries[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
-            if(warehouseEntryDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("入库单单号重复："+warehouseEntries[i].getNo());
+            cond.addCondition("no", new String[]{warehouseEntries[i].getNo()});
+            cond.addCondition("id", new Integer[]{warehouseEntries[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            if (warehouseEntryDAO.find(accountBook, cond).length > 0) {
+                throw new WMSServiceException("入库单单号重复：" + warehouseEntries[i].getNo());
             }
         }
 
@@ -106,15 +120,15 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
-        for(int id : ids){
-            if(warehouseEntryDAO.find(accountBook,new Condition().addCondition("id",id)).length == 0){
-                throw new WMSServiceException(String.format("删除入库单不存在，请重新查询！(%d)",id));
+        for (int id : ids) {
+            if (warehouseEntryDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
+                throw new WMSServiceException(String.format("删除入库单不存在，请重新查询！(%d)", id));
             }
         }
 
         try {
             warehouseEntryDAO.remove(accountBook, ids);
-        }catch (Throwable ex){
+        } catch (Throwable ex) {
             throw new WMSServiceException("删除入库单失败，如果入库单已经被引用，需要先删除引用该入库单的内容，才能删除该入库单");
         }
     }
@@ -122,5 +136,22 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     @Override
     public WarehouseEntryView[] find(String accountBook, Condition cond) throws WMSServiceException {
         return warehouseEntryDAO.find(accountBook, cond);
+    }
+
+    public void inspect(String accountBook, InspectArgs inspectArgs) {
+        InspectItem[] inspectItems = inspectArgs.getInspectItems();
+        Stream.of(inspectItems).forEach((inspectItem) -> {
+            //创建新的送检单
+            InspectionNote inspectionNote = inspectItem.getInspectionNote();
+            new Validator("送检单信息").notnull().validate(inspectionNote);
+            int newInspectionNoteID = this.inspectionNoteService.add(accountBook, new InspectionNote[]{inspectionNote})[0];
+
+            //将每一条入库单条目生成送检单条目
+            Stream.of(inspectItem.getInspectionNoteItems()).forEach((inspectionNoteItem)->{
+                //创建新的送检单条目（会自动更新入库单条目送检数量）
+                inspectionNoteItem.setInspectionNoteId(newInspectionNoteID);
+                this.inspectionNoteItemService.add(accountBook,new InspectionNoteItem[]{inspectionNoteItem});
+            });
+        });
     }
 }

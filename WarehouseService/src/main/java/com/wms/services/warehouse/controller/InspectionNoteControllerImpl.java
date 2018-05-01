@@ -2,7 +2,6 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.netflix.discovery.converters.Auto;
 import com.wms.services.warehouse.service.InspectionNoteService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.InspectionNote;
@@ -16,14 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class InspectionNoteControllerImpl implements InspectionNoteController {
     @Autowired
     InspectionNoteService inspectionNoteService;
-
-    @Override
-    @RequestMapping(value = "/",method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public int[] add(@PathVariable("accountBook") String accountBook,
-                     @RequestBody InspectionNote[] objs) {
-        return this.inspectionNoteService.add(accountBook,objs);
-    }
 
     @Override
     @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)

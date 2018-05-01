@@ -38,7 +38,8 @@ public class ReflectHelper {
         }
     }
 
-    public static <TSource, TTarget> TTarget[] createAndCopyFields(TSource[] sources,Class targetType){
+    @SuppressWarnings("unchecked")
+    public static <TSource, TTarget> TTarget[] createAndCopyFields(TSource[] sources,Class<TTarget> targetType){
         TTarget[] targetArray = (TTarget[]) Array.newInstance(targetType,sources.length);
         try {
             for (int i = 0; i < targetArray.length; i++) {
@@ -49,5 +50,12 @@ public class ReflectHelper {
         }
         copyFields(sources,targetArray);
         return targetArray;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <TSource, TTarget> TTarget createAndCopyFields(TSource source,Class<TTarget> targetType){
+        TSource[] sourceArray = (TSource[]) Array.newInstance(source.getClass(),1);
+        sourceArray[0] = source;
+        return createAndCopyFields(sourceArray,targetType)[0];
     }
 }

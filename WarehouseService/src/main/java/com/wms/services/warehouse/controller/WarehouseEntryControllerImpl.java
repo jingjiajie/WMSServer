@@ -3,6 +3,7 @@ package com.wms.services.warehouse.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.netflix.discovery.converters.Auto;
+import com.wms.services.warehouse.datastructures.InspectArgs;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.model.WarehouseEntry;
 import com.wms.utilities.model.WarehouseEntryView;
@@ -20,11 +21,11 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     WarehouseEntryService warehouseEntryService;
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
     @Override
-    public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook,
+    public int[] add(@PathVariable("accountBook") String accountBook,
                                      @RequestBody WarehouseEntry[] warehouseEntries) {
-        int[] ids = warehouseEntryService.add(accountBook, warehouseEntries);
-        return new ResponseEntity<>(ids, HttpStatus.OK);
+        return warehouseEntryService.add(accountBook, warehouseEntries);
     }
 
     @Override
@@ -47,11 +48,18 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     }
 
     @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{strCond}", method = RequestMethod.GET)
-    public ResponseEntity<WarehouseEntryView[]> find(@PathVariable("accountBook") String accountBook,
+    public WarehouseEntryView[] find(@PathVariable("accountBook") String accountBook,
                                                      @PathVariable("strCond") String condStr) {
-        WarehouseEntryView[] results = warehouseEntryService.find(accountBook, Condition.fromJson(condStr));
-        return new ResponseEntity<>(results, HttpStatus.OK);
+        return warehouseEntryService.find(accountBook, Condition.fromJson(condStr));
     }
 
+    @Override
+    @RequestMapping(value = "/inspect",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void inspect(@PathVariable("accountBook") String accountBook,
+                        @RequestBody InspectArgs inspectArgs){
+        this.warehouseEntryService.inspect(accountBook,inspectArgs);
+    }
 }

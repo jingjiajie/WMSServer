@@ -19,14 +19,6 @@ public class InspectionNoteItemControllerImpl
     InspectionNoteItemService inspectionNoteItemService;
 
     @Override
-    @RequestMapping(value = "/",method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public int[] add(@PathVariable("accountBook") String accountBook,
-                     @RequestBody InspectionNoteItem[] objs) {
-        return this.inspectionNoteItemService.add(accountBook,objs);
-    }
-
-    @Override
     @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)
     public void remove(@PathVariable("accountBook") String accountBook,
