@@ -1,8 +1,6 @@
 package com.wms.services.warehouse.dao;
-import com.wms.utilities.model.Supplier;
-import com.wms.utilities.model.SupplierView;
-import com.wms.utilities.model.WarehouseEntry;
-import com.wms.utilities.model.WarehouseEntryView;
+import com.wms.utilities.dao.BaseDAOImpl;
+import com.wms.utilities.model.*;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.dao.WMSDAOException;
@@ -20,53 +18,9 @@ import java.util.stream.Stream;
 
 @Repository
 
-public class SupplierDAOImpl implements SupplierDAO {
-    @Autowired
-    SessionFactory sessionFactory;
-
-    private WarehouseServiceDAOTemplate<Supplier, SupplierView> getDAOTemplate() {
-        return new WarehouseServiceDAOTemplate<>
-                (this.sessionFactory, "Supplier", "SupplierView", Supplier::getId);
-    }
-
-    @Override
-    public int[] add(String database,Supplier[] suppliers) throws WMSDAOException{
-        return this.getDAOTemplate().add(database, suppliers);
-    }
-
-    @Override
-    public void update(String database, Supplier suppliers[]) throws WMSDAOException{
-        this.getDAOTemplate().update(database, suppliers);
-    }
-
-    public void remove(String database, int ids[]) throws WMSDAOException{
-        this.getDAOTemplate().remove(database, ids);
-    }
-
-    @Override
-    public SupplierView[] find(String database,Condition cond) throws WMSDAOException{
-        return this.getDAOTemplate().find(database, cond, SupplierView.class);
-    }
-/*
-    public List<Supplier> findInside(String database,String sql ) throws WMSDAOException{
-        Session session = sessionFactory.getCurrentSession();
-        String entityName="Supplier";
-        StringBuffer hqlString = new StringBuffer("from "+entityName+" ");
-        Map<String,Object> queryParams = new HashMap<String, Object>();
-        String SQL=sql ;
-         try {
-            session.createNativeQuery("USE " + database + ";").executeUpdate();
-        }catch (Throwable ex){
-            throw new DatabaseNotFoundException(database);
-        }
-        Query query = session.createQuery(SQL);
-        for(Map.Entry<String,Object> entry : queryParams.entrySet()){
-            query.setParameter(entry.getKey(),entry.getValue());
-        }
-        List<Supplier> listSupplier = query.list();
-        return listSupplier;
-    }
-*/
+public class SupplierDAOImpl
+        extends BaseDAOImpl<Supplier, SupplierView> implements SupplierDAO {
+    public SupplierDAOImpl() { super(Supplier.class, SupplierView.class,Supplier::getId); }
 }
 
 
