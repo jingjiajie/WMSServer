@@ -57,11 +57,15 @@ public class InspectionNoteItemServiceImpl
     public void update(String accountBook, InspectionNoteItem[] objs) throws WMSServiceException {
         this.validateEntities(accountBook, objs);
         Stream.of(objs).forEach((inspectionNoteItem -> {
-            //如果送检数量变化，反映到关联入库单条目上
+            //如果送检数量变化，反映到关联入库单条目和库存上
+            //TODO 库存API还没做
             InspectionNoteItemView[] oriItemViews = this.inspectionNoteItemDAO.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getId()));
             if (oriItemViews.length == 0) {
                 throw new WMSServiceException(String.format("送检单条目不存在，修改失败(%d)", inspectionNoteItem.getId()));
             }
+            //如果返回数量变化，反映到库存中
+            //TODO 库存API还没做
+
             InspectionNoteItemView oriItemView = oriItemViews[0];//原对象
             BigDecimal oriAmount = oriItemView.getAmount(); //原送检数量
             BigDecimal deltaAmount = inspectionNoteItem.getAmount().subtract(oriAmount); //变化送检数量
