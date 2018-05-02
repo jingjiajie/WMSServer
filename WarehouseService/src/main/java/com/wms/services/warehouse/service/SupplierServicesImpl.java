@@ -159,6 +159,6 @@ public class SupplierServicesImpl implements SupplierServices{
 
     @Override
     public SupplierView[] find(String accountBook, Condition cond) throws WMSServiceException{
-            return this.supplierDAO.find(accountBook, cond);
+        return this.supplierDAO.find(accountBook, cond);
     }
 }
