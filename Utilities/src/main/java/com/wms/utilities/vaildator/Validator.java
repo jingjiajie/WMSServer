@@ -23,7 +23,7 @@ String key;
         }
     }
 
-    public Validator min(int min){
+    public Validator min(Object min){
         MinValidatorCondition minValidatorCondition=new MinValidatorCondition();
         minValidatorCondition.setKey(key);
         minValidatorCondition.dateDeliver(min);
@@ -31,7 +31,7 @@ String key;
         return  this;
     }
 
-    public Validator max(int max){
+    public Validator max(Object max){
         MaxValidatorCondition maxValidatorCondition=new MaxValidatorCondition();
         maxValidatorCondition.setKey(key);
         maxValidatorCondition.dateDeliver(max);
@@ -78,11 +78,11 @@ class MinValidatorCondition extends ValidatorCondition {
     private double actualValue;
     private String key;
 
-    public void dateDeliver(int min1) {
-       // try {
-        //    min = Integer.parseInt(String.valueOf(object));
-       // } catch (NumberFormatException e) {
-        min=min1;
+    public void dateDeliver(Object min1) {
+        try {
+            min = Integer.parseInt(String.valueOf(min1));
+        } catch (NumberFormatException e) {
+        }
     }
 
     public void validate(Object value) {
@@ -108,12 +108,12 @@ class MaxValidatorCondition extends ValidatorCondition {
     private double actualValue;
     private String key;
 
-    public void dateDeliver(int max1) {
-        //try {
-        //    max = Integer.parseInt(String.valueOf(object));
-       // } catch (NumberFormatException e) {
-        //}
-        max=max1;
+    public void dateDeliver(Object max1) {
+        try {
+           max = Integer.parseInt(String.valueOf(max1));
+       } catch (NumberFormatException e) {
+        }
+
     }
 
     public void validate(Object value) {
