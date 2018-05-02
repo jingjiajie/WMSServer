@@ -32,9 +32,9 @@ for(int i=0;i<stockRecords.length;i++) {
     Validator validator = new Validator("数量");
     validator.notnull().validate(stockRecords[i].getAmount());
     Validator validator1 = new Validator("单位");
-    validator.notnull().validate(stockRecords[i].getUnit());
+    validator1.notnull().validate(stockRecords[i].getUnit());
     Validator validator2 = new Validator("单位数量");
-    validator.notnull().validate(stockRecords[i].getUnitAmount());
+    validator2.notnull().validate(stockRecords[i].getUnitAmount());
 }
         //外键检测
         Stream.of(stockRecords).forEach(

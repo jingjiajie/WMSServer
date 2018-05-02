@@ -50,10 +50,10 @@ public class WarehouseService {
         stockRecord.setWarehouseId(-100);
         stockRecord.setStorageLocationId( 1);
         BigDecimal a=new BigDecimal(111);
-        stockRecord.setAmount(a);
-        stockRecord.setUnit("aaa");
+       stockRecord.setAmount(a);
+        //stockRecord.setUnit("aaa");
         stockRecord.setUnitAmount(a);
-        stockRecordService.add("WMS_Template",new StockRecord[]{stockRecord});
+       // stockRecordService.add("WMS_Template",new StockRecord[]{stockRecord});
 
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       //supplierServices.add("WMS_Template",new Supplier[]{supplier});
