@@ -1,5 +1,7 @@
 package com.wms.services.warehouse;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.service.StockRecordService;
+import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.SupplierView;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.datastructures.Condition;
@@ -17,6 +19,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import com.wms.utilities.model.Supplier;
 
+import java.math.BigDecimal;
+
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
@@ -33,16 +37,24 @@ public class WarehouseService {
         //validator.in(a);
         //validator.min(5).in(a).validate(1);
         //validator.validate("1000.1");
-/*
-        SupplierServices supplierServices= applicationContext.getBean(SupplierServices.class);
-        SupplierDAO supplierDAO=applicationContext.getBean(SupplierDAO.class);
-        Supplier supplier=new Supplier();
-        supplier.setName("12345667777777");
-        supplier.setNo("aaaaa7777111111");
-        supplier.setWarehouseId(1);
-        supplier.setCreatePersonId(19);
-        supplier.setWarehouseId(12);
-        */
+
+        StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
+        //Supplier supplier=new Supplier();
+        //supplier.setName("12345667777777");
+        //supplier.setNo("aaaaa7777111111");
+        //supplier.setWarehouseId(1);
+        //supplier.setCreatePersonId(19);
+        //supplier.setWarehouseId(12);
+        StockRecord stockRecord=new StockRecord();
+        stockRecord.setSupplyId(5);
+        stockRecord.setWarehouseId(-100);
+        stockRecord.setStorageLocationId( 1);
+        BigDecimal a=new BigDecimal(111);
+        stockRecord.setAmount(a);
+        stockRecord.setUnit("aaa");
+        stockRecord.setUnitAmount(a);
+        stockRecordService.add("WMS_Template",new StockRecord[]{stockRecord});
+
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
       //supplierServices.add("WMS_Template",new Supplier[]{supplier});
         //int[] a={31, 32};
