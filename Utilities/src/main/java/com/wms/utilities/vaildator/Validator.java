@@ -74,13 +74,13 @@ class ValidatorCondition {
 }
 
 class MinValidatorCondition extends ValidatorCondition {
-    private int min;
+    private double min;
     private double actualValue;
     private String key;
 
     public void dateDeliver(Object min1) {
         try {
-            min = Integer.parseInt(String.valueOf(min1));
+            min = Double.parseDouble(String.valueOf(min1));
         } catch (NumberFormatException e) {
         }
     }
@@ -104,13 +104,13 @@ class MinValidatorCondition extends ValidatorCondition {
 }
 
 class MaxValidatorCondition extends ValidatorCondition {
-    private int max;
+    private double max;
     private double actualValue;
     private String key;
 
     public void dateDeliver(Object max1) {
         try {
-           max = Integer.parseInt(String.valueOf(max1));
+           max = Double.parseDouble(String.valueOf(max1));
        } catch (NumberFormatException e) {
         }
 
@@ -137,15 +137,15 @@ class MaxValidatorCondition extends ValidatorCondition {
     }
 
 }class InValidatorCondition extends ValidatorCondition {
-    private int min;
-    private int max;
+    private double min;
+    private double max;
     private double actualValue;
     private String key;
 
     public void dateDeliver(int[] object) {
         try {
-            min = Integer.parseInt(String.valueOf(object[0]));
-            max = Integer.parseInt(String.valueOf(object[1]));
+            min = Double.parseDouble(String.valueOf(object[0]));
+            max = Double.parseDouble(String.valueOf(object[1]));
         } catch (NumberFormatException e) {
         }}
 
