@@ -77,14 +77,14 @@ public class PackageServiceImpl implements PackageService {
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
         for (int id : ids) {
             if (packageDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
-                throw new WMSServiceException(String.format("删除入库单不存在，请重新查询！(%d)", id));
+                throw new WMSServiceException(String.format("删除发货套餐不存在，请重新查询！(%d)", id));
             }
         }
 
         try {
             packageDAO.remove(accountBook, ids);
         } catch (Throwable ex) {
-            throw new WMSServiceException("删除入库单失败，如果入库单已经被引用，需要先删除引用该入库单的内容，才能删除该入库单");
+            throw new WMSServiceException("删除发货套餐失败，如果发货套餐已经被引用，需要先删除引用该发货套餐的内容，才能删除该发货套餐");
         }
     }
 
