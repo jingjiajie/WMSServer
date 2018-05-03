@@ -37,7 +37,7 @@ public class InspectionNoteServiceImpl
 
     @Override
     public int[] add(String accountBook, InspectionNote[] objs) throws WMSServiceException {
-        Stream.of(objs).forEach((obj)->{
+        Stream.of(objs).forEach(obj->{
             if(obj.getNo() == null || obj.getNo().isEmpty()) {
                 obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX));
             }
