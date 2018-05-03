@@ -25,16 +25,14 @@ public class StockRecordServiceImpl implements StockRecordService {
     @Autowired
     SupplyService supplyService;
 
-@Override
+    @Override
     public int[] add(String accountBook, StockRecord[] stockRecords) throws WMSServiceException {
 
 for(int i=0;i<stockRecords.length;i++) {
-    Validator validator = new Validator("数量");
-    validator.notnull().validate(stockRecords[i].getAmount());
-    Validator validator1 = new Validator("单位");
-    validator1.notnull().validate(stockRecords[i].getUnit());
-    Validator validator2 = new Validator("单位数量");
-    validator2.notnull().validate(stockRecords[i].getUnitAmount());
+    new Validator("数量").notnull().notEmpty().min(0);
+    new Validator("单位").notnull().notEmpty();
+    new Validator("单位数量").notnull().notEmpty().min(0);
+
 }
         //外键检测
         Stream.of(stockRecords).forEach(
@@ -65,12 +63,9 @@ for(int i=0;i<stockRecords.length;i++) {
 
 public  void update(String accountBook,StockRecord[] stockRecords) throws WMSServiceException {
     for(int i=0;i<stockRecords.length;i++) {
-        Validator validator = new Validator("数量");
-        validator.notnull().validate(stockRecords[i].getAmount());
-        Validator validator1 = new Validator("单位");
-        validator.notnull().validate(stockRecords[i].getUnit());
-        Validator validator2 = new Validator("单位数量");
-        validator.notnull().validate(stockRecords[i].getUnitAmount());
+        new Validator("数量").notnull().notEmpty().min(0);
+        new Validator("单位").notnull().notEmpty();
+        new Validator("单位数量").notnull().notEmpty().min(0);
     }
         //外键检测
         Stream.of(stockRecords).forEach(
@@ -90,6 +85,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     }
                 }
         );
+
         for (int i=0;i<stockRecords.length;i++)
         {
             stockRecords[i].setTime(new Timestamp(System.currentTimeMillis()));
