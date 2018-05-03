@@ -108,4 +108,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         return this.stockRecordDAO.find(accountBook, cond);
     }
 
+    @Override
+    public void transformStock(String accountBook,int sourceStockRecordID,int newStockRecordID){
+
+    }
 }
