@@ -5,12 +5,13 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.StockRecordView;
-import com.wms.utilities.model.SupplierView;
+import com.wms.utilities.model.StorageLocationView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.stream.Stream;
 
 @Service
@@ -24,6 +25,9 @@ public class StockRecordServiceImpl implements StockRecordService {
     StorageLocationService storageLocationService;
     @Autowired
     SupplyService supplyService;
+    @Autowired
+    TransferRecordService transformRecordService;
+
 
     @Override
     public int[] add(String accountBook, StockRecord[] stockRecords) throws WMSServiceException {
@@ -109,7 +113,44 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     @Override
-    public void transformStock(String accountBook,int sourceStockRecordID,int newStockRecordID){
+    public void transformStock(String accountBook,int sourceStockRecordId,int newStockLocationId,int amount)
+    {
+        //先查出源库存记录和新库位
+        StockRecordView[] stockRecordSource= stockRecordDAO.find(accountBook,new Condition().addCondition("id",new int[]{sourceStockRecordId}));
+        if(stockRecordSource.length!=1)
+        {
+            throw new WMSServiceException("请检查输入的源库存id，没有找到相关记录");
+        }
+        StorageLocationView[] storageLocationNew= storageLocationService.find(accountBook,new Condition().addCondition("id",new int[]{newStockLocationId}));
+        if(storageLocationNew.length!=1)
+        {
+            throw new WMSServiceException("请检查输入的新库位id，没有找到相关记录");
+        }
+        //查到新库位上最新的相同供货的记录
+        int supplyId=stockRecordSource[0].getSupplyId();
+        StockRecordView[] stockRecordViews=stockRecordDAO.find(accountBook, new Condition().addCondition(accountBook, new Condition().addCondition("storageLocationId",new int[]{newStockLocationId})).
+                addCondition("supplyId",new int[]{supplyId}));
+        StockRecordView stockRecordNew= new StockRecordView();
+        if(stockRecordViews.length>0) {
+            stockRecordNew = stockRecordViews[0];
+            long newestTime = stockRecordNew.getTime().getTime();
+            for (int i = 1; i < stockRecordViews.length; i++) {
+                if (newestTime < stockRecordViews[i].getTime().getTime()) {
+                    newestTime = stockRecordViews[i].getTime().getTime();
+                    stockRecordNew = stockRecordViews[i];
+                }
+            }
+        }
+        //如果没有则直接新建记录
+        else
+            {
+
+            }
+
+
+
+
 
     }
+
 }

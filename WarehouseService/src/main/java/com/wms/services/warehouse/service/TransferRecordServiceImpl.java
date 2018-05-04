@@ -3,18 +3,15 @@ package com.wms.services.warehouse.service;
 import com.wms.services.warehouse.dao.TransferRecordDAO;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.StorageLocationView;
 import com.wms.utilities.model.TransferRecord;
 import com.wms.utilities.model.TransferRecordView;
-import com.wms.utilities.model.WarehouseEntryItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Stream;
 
-public class TransformRecordServiceImpl implements  TransformRecordService {
+public class TransferRecordServiceImpl implements TransferRecordService {
 
     @Autowired
     TransferRecordDAO transferRecordDAO;
