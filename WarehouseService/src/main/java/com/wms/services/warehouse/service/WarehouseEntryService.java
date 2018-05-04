@@ -8,10 +8,12 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.service.BaseService;
 
 public interface WarehouseEntryService
-        extends BaseService<WarehouseEntry,WarehouseEntryView>{
+        extends BaseService<WarehouseEntry, WarehouseEntryView> {
+
     /**
-     * 收货单送检
-     * @param accountBook 账套名
+     * 送检
+     *
+     * @param accountBook 账套
      * @param inspectArgs 送检参数
      * @see InspectArgs
      */

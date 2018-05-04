@@ -103,10 +103,6 @@ public class StorageLocationServiceImpl implements StorageLocationService{
 
     @Transactional
     public StorageLocationView[] find(String accountBook, Condition cond) throws WMSServiceException{
-        try {
             return this.storageLocationDAO.find(accountBook, cond);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
-        }
     }
 }

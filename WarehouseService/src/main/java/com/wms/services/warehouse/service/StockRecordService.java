@@ -8,4 +8,5 @@ import com.wms.utilities.service.BaseService;
 public interface StockRecordService
         extends   BaseService<StockRecord,StockRecordView>
 {
+    public void transformStock(String accountBook,int sourceStockRecordID,int newStockRecordID,int amount);
 }

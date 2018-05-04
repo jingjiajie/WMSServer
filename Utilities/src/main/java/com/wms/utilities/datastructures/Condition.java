@@ -6,8 +6,11 @@ import com.wms.utilities.exceptions.ConditionException;
 import javafx.application.ConditionalFeature;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Condition {
@@ -44,9 +47,10 @@ public class Condition {
 
             for (int i = 0; i < conditionItems.size(); i++, valueNum++) {
                 ConditionItem cond = conditionItems.get(i);
-                //将double的value，如果是整数的，转换成整数。避免id这种INT字段被赋double值造成错误
                 Object[] condValues = cond.getValues();
                 for (int j = 0; j < condValues.length; j++) {
+                    if(condValues[j] == null) continue;
+                    //将double的value，如果是整数的，转换成整数。避免id这种INT字段被赋double值造成错误
                     if (condValues[j] instanceof Double) {
                         Double doubleValue = (Double) condValues[j];
                         if (doubleValue.intValue() == doubleValue) {
@@ -55,6 +59,26 @@ public class Condition {
                             condValues[j] = doubleValue.longValue();
                         }
                     }
+                    //如果有日期字符串，转换为日期类型，避免SQL查询类型错误
+                    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    try {
+                        condValues[j]  = sdf1.parse(condValues[j].toString());
+                    } catch (Exception e) {
+                        //do nothing
+                    }
+                    try{
+                        condValues[j]  = sdf2.parse(condValues[j].toString());
+                    }catch (ParseException e){
+                        //do nothing
+                    }
+                    try{
+                        condValues[j]  = sdf3.parse(condValues[j].toString());
+                    }catch (ParseException e){
+                        //do nothing
+                    }
+
                 }
                 switch (cond.getRelation()) {
                     case EQUAL:

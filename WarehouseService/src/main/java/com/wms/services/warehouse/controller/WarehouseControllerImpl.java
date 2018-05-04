@@ -37,7 +37,7 @@ public class WarehouseControllerImpl implements WarehouseController {
         int ids[] = gson.fromJson(strIDs,new TypeToken<int[]>(){}.getType());
         warehouseService.remove(accountBook,ids);
     }
-    @RequestMapping("/{condStr}")
+    @RequestMapping(value = "/{condStr}",method = RequestMethod.GET)
     public ResponseEntity<WarehouseView[]> find(@PathVariable("accountBook") String accountBook,
                                            @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
