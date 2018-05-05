@@ -2,6 +2,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.*;
@@ -51,4 +52,15 @@ public class StockRecordControllerImpl implements StockRecordController {
                                   @PathVariable("strCond") String condStr) {
         return stockRecordService.find(accountBook, Condition.fromJson(condStr));
     }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/{transfer}", method = RequestMethod.POST)
+    public void transferStock(@PathVariable("accountBook") String accountBook,
+                              @RequestBody TransferStock transferStock){
+
+         stockRecordService.transformStock(accountBook,transferStock);
+    }
+
+
 }

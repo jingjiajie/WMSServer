@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.sun.xml.internal.bind.v2.TODO;
 import com.wms.services.warehouse.dao.StockRecordDAO;
+import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.StockRecord;
@@ -117,8 +118,17 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     @Override
-    public void transformStock(String accountBook,int sourceStockRecordId,int newStockLocationId,int amount,String unit,int unitAmount,String relatedOrderNo)
+    public void transformStock(String accountBook, TransferStock transferStock)
     {
+
+        int sourceStockRecordId=transferStock.getSourceStockRecordId();
+        int newStockLocationId=transferStock.getNewStockLocationId();
+        int amount=transferStock.getAmount();
+        String unit=transferStock.getUnit();
+        int unitAmount=transferStock.getUnitAmount();
+        String relatedOrderNo=transferStock.getRelatedOrderNo();
+
+
 
         //先查出源库存记录和新库位
         StockRecordView[] stockRecordSource= stockRecordDAO.find(accountBook,new Condition().addCondition("id",new int[]{sourceStockRecordId}));
