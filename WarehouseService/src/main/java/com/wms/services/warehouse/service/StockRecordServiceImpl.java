@@ -6,10 +6,13 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.StockRecordView;
 import com.wms.utilities.model.StorageLocationView;
+import com.wms.utilities.model.TransferRecord;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.stream.Stream;
@@ -113,7 +116,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     @Override
-    public void transformStock(String accountBook,int sourceStockRecordId,int newStockLocationId,int amount)
+    public void transformStock(String accountBook,int sourceStockRecordId,int newStockLocationId,int amount,String unit,int unitAmount)
     {
         //先查出源库存记录和新库位
         StockRecordView[] stockRecordSource= stockRecordDAO.find(accountBook,new Condition().addCondition("id",new int[]{sourceStockRecordId}));
@@ -129,17 +132,41 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         //查到新库位上最新的相同供货的记录
         int supplyId=stockRecordSource[0].getSupplyId();
         StockRecordView[] stockRecordViews=stockRecordDAO.find(accountBook, new Condition().addCondition(accountBook, new Condition().addCondition("storageLocationId",new int[]{newStockLocationId})).
-                addCondition("supplyId",new int[]{supplyId}));
+                addCondition("supplyId",new int[]{supplyId}).addCondition("unit",new String[]{unit}));
         StockRecordView stockRecordNew= new StockRecordView();
         if(stockRecordViews.length>0) {
             stockRecordNew = stockRecordViews[0];
-            long newestTime = stockRecordNew.getTime().getTime();
+            Timestamp newestTime = stockRecordNew.getTime();
             for (int i = 1; i < stockRecordViews.length; i++) {
-                if (newestTime < stockRecordViews[i].getTime().getTime()) {
-                    newestTime = stockRecordViews[i].getTime().getTime();
+                if (newestTime.compareTo(stockRecordViews[i].getTime())==-1) {
+                    newestTime = stockRecordViews[i].getTime();
                     stockRecordNew = stockRecordViews[i];
                 }
             }
+            //已经找到最新的可以叠加的记录
+            //添加一条移位记录
+            TransferRecord transferRecord=new TransferRecord();
+            transferRecord.setNewStockRecordId(newStockLocationId);
+            transferRecord.setSourceStockRecordId(sourceStockRecordId);
+            transferRecord.setWarehouseId(stockRecordSource[0].getWarehouseId());
+            transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
+            //新建两条库存记录
+            StockRecord stockRecordSourceSave=new StockRecord();
+            StockRecord stockRecordNewSave=new StockRecord();
+
+            stockRecordSourceSave.setWarehouseId(stockRecordSource[0].getWarehouseId());
+            stockRecordNewSave.setStorageLocationId(stockRecordSource[0].getStorageLocationId());
+            stockRecordSourceSave.setSupplyId(stockRecordSource[0].getSupplyId());
+            stockRecordNewSave.setExpiryDate(stockRecordSource[0].getExpiryDate());
+            stockRecordNewSave.setInventoryDate(stockRecordSource[0].getInventoryDate());
+            stockRecordNewSave.setManufactureDate(stockRecordSource[0].getManufactureDate());
+            stockRecordSourceSave.setUnitAmount(stockRecordSource[0].getUnitAmount());
+            stockRecordSourceSave.setUnit(stockRecordSource[0].getUnit());
+            BigDecimal amountBig = new BigDecimal(amount);
+            stockRecordSourceSave.setAmount(stockRecordSource[0].getAmount().subtract(amountBig));
+            stockRecordNewSave.setRelatedOrderNo(stockRecordSource[0].getRelatedOrderNo());
+            stockRecordSourceSave.setTime(new Timestamp(System.currentTimeMillis()));
+
         }
         //如果没有则直接新建记录
         else
