@@ -55,7 +55,7 @@ public class StockRecordControllerImpl implements StockRecordController {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/{transfer}", method = RequestMethod.POST)
+    @RequestMapping(value = "/transfer", method = RequestMethod.POST)
     public void transferStock(@PathVariable("accountBook") String accountBook,
                               @RequestBody TransferStock transferStock){
 
