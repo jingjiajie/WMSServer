@@ -1,12 +1,14 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.DeliveryOrderDAO;
+import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.DeliveryOrderView;
 import com.wms.utilities.model.DeliveryOrder;
 import com.wms.utilities.vaildator.Validator;
+import com.wms.utilities.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,11 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     @Autowired
     DeliveryOrderDAO deliveryOrderDAO;
     @Autowired
+    OrderNoGenerator orderNoGenerator;
+    @Autowired
     PersonService personService;
+
+    private static final String NO_PREFIX = "R";
 
     @Override
     public int[] add(String accountBook, DeliveryOrder[] deliveryOrders) throws WMSServiceException {
@@ -57,7 +63,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         Stream.of(deliveryOrders).forEach((deliveryOrder) -> {
             //如果单号留空则自动生成
             if (deliveryOrder.getNo() == null) {
-                //deliveryOrder.setNo(this.deliveryOrderDAO.generateNextNo(accountBook, WarehouseEntryServiceImpl.NO_PREFIX));
+                deliveryOrder.setNo(this.orderNoGenerator.generateNextNo(accountBook, DeliveryOrderServiceImpl.NO_PREFIX));
             } else { //否则检查单号是否重复
                 Condition cond = new Condition();
                 cond.addCondition("no", new String[]{deliveryOrder.getNo()});

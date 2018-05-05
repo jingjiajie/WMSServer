@@ -68,7 +68,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 (deliveryOrderItem) -> {
                     if (this.deliveryOrderService.find(accountBook,
                             new Condition().addCondition("id", deliveryOrderItem.getDeliveryOrderId())).length == 0) {
-                        throw new WMSServiceException(String.format("入库单不存在，请重新提交！(%d)", deliveryOrderItem.getDeliveryOrderId()));
+                        throw new WMSServiceException(String.format("出库单不存在，请重新提交！(%d)", deliveryOrderItem.getDeliveryOrderId()));
                     } else if (supplyService.find(accountBook,
                             new Condition().addCondition("id", deliveryOrderItem.getSupplyId())).length == 0) {
                         throw new WMSServiceException(String.format("供货信息不存在，请重新提交！(%d)", deliveryOrderItem.getSupplyId()));
