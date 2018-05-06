@@ -5,7 +5,11 @@ import com.wms.utilities.model.TransferRecord;
 import com.wms.utilities.model.TransferRecordView;
 import com.wms.utilities.model.Warehouse;
 import com.wms.utilities.model.WarehouseView;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+@Repository
+@Transactional
 public class TransferRecordDAOImpl
         extends BaseDAOImpl<TransferRecord, TransferRecordView>
 implements TransferRecordDAO{

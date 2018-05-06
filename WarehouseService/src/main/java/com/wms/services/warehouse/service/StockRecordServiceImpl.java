@@ -31,7 +31,6 @@ public class StockRecordServiceImpl implements StockRecordService {
     @Autowired
     TransferRecordService transformRecordService;
 
-
     @Override
     public int[] add(String accountBook, StockRecord[] stockRecords) throws WMSServiceException {
 
