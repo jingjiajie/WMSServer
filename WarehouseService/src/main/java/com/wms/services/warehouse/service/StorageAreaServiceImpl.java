@@ -17,6 +17,8 @@ import java.util.stream.Stream;
 public class StorageAreaServiceImpl implements StorageAreaService{
     @Autowired
     StorageAreaDAO storageAreaDAO;
+    @Autowired
+    WarehouseService warehouseService;
 
     @Transactional
     public int[] add(String accountBook,StorageArea[] storageAreas) throws WMSServiceException {
@@ -42,7 +44,7 @@ public class StorageAreaServiceImpl implements StorageAreaService{
         //外键
         Stream.of(storageAreas).forEach(
                 (storageArea)->{
-                    if(this.storageAreaDAO.find(accountBook,
+                    if(this.warehouseService.find(accountBook,
                             new Condition().addCondition("id",storageArea.getWarehouseId())).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",storageArea.getWarehouseId()));
                     }
@@ -87,7 +89,7 @@ public class StorageAreaServiceImpl implements StorageAreaService{
         //外键
         Stream.of(storageAreas).forEach(
                 (storageArea)->{
-                    if(this.storageAreaDAO.find(accountBook,
+                    if(this.warehouseService.find(accountBook,
                             new Condition().addCondition("id",storageArea.getWarehouseId())).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",storageArea.getWarehouseId()));
                     }

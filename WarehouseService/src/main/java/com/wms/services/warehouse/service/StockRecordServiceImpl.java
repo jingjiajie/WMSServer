@@ -120,15 +120,17 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     @Override
     public void transformStock(String accountBook, TransferStock transferStock)
     {
-
+        new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
+        if (transferStock.amount==0)
+        {
+            throw new WMSServiceException("移动的数量不能的0");
+        }
         int sourceStockRecordId=transferStock.getSourceStockRecordId();
         int newStockLocationId=transferStock.getNewStockLocationId();
         int amount=transferStock.getAmount();
         String unit=transferStock.getUnit();
         int unitAmount=transferStock.getUnitAmount();
         String relatedOrderNo=transferStock.getRelatedOrderNo();
-
-
 
         //先查出源库存记录和新库位
         StockRecordView[] stockRecordSource= stockRecordDAO.find(accountBook,new Condition().addCondition("id",new int[]{sourceStockRecordId}));
