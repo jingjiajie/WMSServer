@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.stream.Stream;
 
 @Service
@@ -52,6 +53,9 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
                     }
                 }
         );
+        for(int i=0;i<stockTakingOrders.length;i++){
+            stockTakingOrders[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
+        }
         return stockTakingOrderDAO.add(accountBook,stockTakingOrders);
     }
 
@@ -91,7 +95,9 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
                     }
                 }
         );
-
+        for(int i=0;i<stockTakingOrders.length;i++){
+            stockTakingOrders[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+        }
         stockTakingOrderDAO.update(accountBook,stockTakingOrders);
     }
 

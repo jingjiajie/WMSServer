@@ -121,7 +121,7 @@ public class SupplierServicesImpl implements SupplierServices{
         for (int i=0;i<suppliers.length;i++)
         {
                 suppliers[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
-                //
+                //TODO
                 suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
         }
 
