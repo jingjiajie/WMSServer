@@ -2,12 +2,12 @@ package com.wms.services.warehouse.datastructures;
 
 public class TransferStock {
 
-    public int getSourceStockRecordId() {
-        return sourceStockRecordId;
+    public int getSupplyId() {
+        return supplyId;
     }
 
-    public int getNewStockLocationId() {
-        return newStockLocationId;
+    public int getNewStorageLocationId() {
+        return newStorageLocationId;
     }
 
     public int getAmount() {
@@ -26,12 +26,12 @@ public class TransferStock {
         return relatedOrderNo;
     }
 
-    public void setSourceStockRecordId(int sourceStockRecordId) {
-        this.sourceStockRecordId = sourceStockRecordId;
+    public void setSupplyId(int supplyId) {
+        this.supplyId = supplyId;
     }
 
-    public void setNewStockLocationId(int newStockLocationId) {
-        this.newStockLocationId = newStockLocationId;
+    public void setNewStorageLocationId(int newStorageLocationId) {
+        this.newStorageLocationId = newStorageLocationId;
     }
 
     public void setAmount(int amount) {
@@ -50,8 +50,18 @@ public class TransferStock {
         this.relatedOrderNo = relatedOrderNo;
     }
 
-    public int sourceStockRecordId;
-  public int newStockLocationId;
+    public int supplyId;
+
+    public int getSourceStorageLocationId() {
+        return sourceStorageLocationId;
+    }
+
+    public void setSourceStorageLocationId(int sourceStorageLocationId) {
+        this.sourceStorageLocationId = sourceStorageLocationId;
+    }
+
+    public int sourceStorageLocationId;
+  public int newStorageLocationId;
   public int amount;
   public String unit;
     public int unitAmount;
