@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.wms.utilities.model.StorageLocation;
 
 @RestController
-@RequestMapping("/{accountBook}/storageLocation")
+@RequestMapping("/{accountBook}/storage_location")
 public class StorageLocationControllerImpl implements StorageLocationController{
     @Autowired
     StorageLocationService storageLocationService;

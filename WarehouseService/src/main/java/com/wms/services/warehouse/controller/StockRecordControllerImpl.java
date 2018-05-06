@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/{accountBook}/stockRecord")
+@RequestMapping("/{accountBook}/stock_record")
 
 public class StockRecordControllerImpl implements StockRecordController {
 

@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/{accountBook}/storageArea")
+@RequestMapping("/{accountBook}/storage_area")
 public class StorageAreaControllerImpl implements StorageAreaController{
     @Autowired
     StorageAreaService storageAreaService;
