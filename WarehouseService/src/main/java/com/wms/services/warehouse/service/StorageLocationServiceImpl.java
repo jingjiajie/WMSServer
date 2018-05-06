@@ -5,13 +5,14 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.StorageArea;
 import com.wms.utilities.model.StorageLocationView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.utilities.model.StorageLocation;
-
+import com.wms.utilities.model.StorageAreaView;
 import java.util.stream.Stream;
 
 @Service
@@ -25,11 +26,8 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     public int[] add(String accountBook, StorageLocation[] storageLocations )throws WMSServiceException {
 
         for(int i=0;i<storageLocations.length;i++) {
-
-            Validator validator = new Validator("库位名");
-            validator.notnull().validate(storageLocations[i].getName());
-            Validator validator1 = new Validator("库位代号");
-            validator.notnull().validate(storageLocations[i].getNo());
+            new Validator("库位名").notnull().validate(storageLocations[i].getName());
+            new Validator("库位代号").notnull().validate(storageLocations[i].getNo());
         }
 
             for(int i=0;i<storageLocations.length;i++){
@@ -45,14 +43,21 @@ public class StorageLocationServiceImpl implements StorageLocationService{
                 }
             }
 
+        String storageAreaName;
+        StorageAreaView[] storageAreaViews=null;
+
         //外键检测
-        Stream.of(storageLocations).forEach(
-                (storageLocation)->{
-                    if(this.storageAreaService.find(accountBook,
-                            new Condition().addCondition("id",storageLocation.getStorageAreaId())).length == 0){
-                        throw new WMSServiceException(String.format("库区不存在，请重新提交！(%d)",storageLocation.getStorageAreaId()));
-                }}
-        );
+        for(int i=0;i<storageLocations.length;i++) {
+            storageAreaViews = this.storageAreaService.find(accountBook,
+                    new Condition().addCondition("id", storageLocations[i].getStorageAreaId()));
+            if (storageAreaViews.length == 0) {
+                throw new WMSServiceException(String.format("库区不存在，请重新提交！(%d)", storageLocations[i].getStorageAreaId()));
+            }
+            storageAreaName=storageAreaViews[i].getName();
+            if(storageLocations[i].getName()!=storageAreaName.substring(0,storageAreaName.length())) {
+                throw new WMSServiceException("库区名"+storageLocations[i].getName()+"不符合要求，必须以库区名为开头");
+            }
+        }
             return storageLocationDAO.add(accountBook,storageLocations);
     }
 

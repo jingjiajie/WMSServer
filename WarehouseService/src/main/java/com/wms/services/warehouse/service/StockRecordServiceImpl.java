@@ -135,10 +135,11 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         //先查出源库存记录和新库位
         StockRecordView[] stockRecordSource= stockRecordDAO.find(accountBook,new Condition().addCondition("supplyId",new Integer[]{supplyId}).
                 addCondition("storageLocationId",new Integer[]{sourceStorageLocationId}).addCondition("unit",unit).addCondition("unitAmount",unitAmount));
-        new Validator("数量").min(0);
+        new Validator("数量").min(0).validate(amount);
+        new Validator("单位数量").min(0);
         if(stockRecordSource.length!=1)
         {
-            throw new WMSServiceException("没查到相关源库存记录，请检查相关信息！");
+            throw new WMSServiceException("没查到符合要求的源库存记录，请检查相关信息！");
         }
         if(stockRecordSource[0].getAmount().compareTo(new BigDecimal(amount))==-1)
         {
@@ -170,6 +171,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordSourceSave.setAmount(stockRecordSource[0].getAmount().subtract(amountBig));
         stockRecordSourceSave.setRelatedOrderNo(stockRecordSource[0].getRelatedOrderNo());
         stockRecordSourceSave.setTime(new Timestamp(System.currentTimeMillis()));
+
         if(stockRecordViews.length>0) {
             stockRecordNewest = stockRecordViews[0];
             Timestamp newestTime = stockRecordNewest.getTime();
@@ -199,6 +201,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             stockRecordNewSave.setSupplyId(supplyId);
             stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
         }
+
         //如果没有则直接新建记录
         else
             {
