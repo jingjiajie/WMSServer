@@ -69,7 +69,7 @@ for(int i=0;i<stockRecords.length;i++) {
         return stockRecordDAO.add(accountBook,stockRecords);
     }
 
-
+@Override
 public  void update(String accountBook,StockRecord[] stockRecords) throws WMSServiceException {
     for(int i=0;i<stockRecords.length;i++) {
         new Validator("数量").notnull().notEmpty().min(0);
