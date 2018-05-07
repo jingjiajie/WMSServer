@@ -62,5 +62,11 @@ public class StockRecordControllerImpl implements StockRecordController {
          stockRecordService.transformStock(accountBook,transferStock);
     }
 
-
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/modify_amount", method = RequestMethod.POST)
+    public void modifyAmount(@PathVariable("accountBook") String accountBook,
+    @RequestBody TransferStock transferStock){
+        stockRecordService.modifyAmount(accountBook,transferStock);
+    }
 }

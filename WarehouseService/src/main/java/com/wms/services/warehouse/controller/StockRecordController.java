@@ -8,4 +8,5 @@ import com.wms.utilities.model.StockRecordView;
 public interface StockRecordController
 extends BaseController<StockRecord,StockRecordView> {
   void transferStock(String accountbook, TransferStock transferStock);
+  void modifyAmount(String accountbook, TransferStock transferStock);
 }
