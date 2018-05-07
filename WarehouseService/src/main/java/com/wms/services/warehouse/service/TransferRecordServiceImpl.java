@@ -26,7 +26,7 @@ public class TransferRecordServiceImpl implements TransferRecordService {
         Stream.of(transferRecords).forEach(transferRecord -> {
             this.idChecker.check(WarehouseService.class,accountBook,transferRecord.getWarehouseId(),"仓库").
                     check(StockRecordService.class,accountBook,transferRecord.getSourceStockRecordId(),"原库存").
-                    check(StockRecordService.class,accountBook,transferRecord.getNewStockRecordId(),"新库存");
+                    check(StockRecordService.class,accountBook,transferRecord.getNewStockRecordId(),"新库位");
         });
         return this.transferRecordDAO.add(accountBook,transferRecords);
 

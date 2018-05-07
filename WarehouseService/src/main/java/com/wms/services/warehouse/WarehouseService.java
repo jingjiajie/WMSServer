@@ -1,5 +1,6 @@
 package com.wms.services.warehouse;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.SupplierView;
@@ -39,20 +40,30 @@ public class WarehouseService {
         //validator.validate("1000.1");
 
         StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
+        TransferStock transferStock=new TransferStock();
+        transferStock.setAmount(100);
+        transferStock.setUnit("个");
+        transferStock.setUnitAmount(new BigDecimal(5));
+        transferStock.setSupplyId(5);
+        transferStock.setRelatedOrderNo("46416512653101");
+        transferStock.setSourceStorageLocationId(1);
+        transferStock.setNewStorageLocationId(5);
+        //stockRecordService.modifyAmount("WMS_Template",transferStock);
+        stockRecordService.transformStock("WMS_Template",transferStock);
         //Supplier supplier=new Supplier();
         //supplier.setName("12345667777777");
         //supplier.setNo("aaaaa7777111111");
         //supplier.setWarehouseId(1);
         //supplier.setCreatePersonId(19);
         //supplier.setWarehouseId(12);
-        StockRecord stockRecord=new StockRecord();
-        stockRecord.setSupplyId(5);
-        stockRecord.setWarehouseId(-100);
-        stockRecord.setStorageLocationId( 1);
-        BigDecimal a=new BigDecimal(111);
-       stockRecord.setAmount(a);
+       // StockRecord stockRecord=new StockRecord();
+       // stockRecord.setSupplyId(5);
+        //stockRecord.setWarehouseId(-100);
+       // stockRecord.setStorageLocationId( 1);
+        //BigDecimal a=new BigDecimal(111);
+       //stockRecord.setAmount(a);
         //stockRecord.setUnit("aaa");
-        stockRecord.setUnitAmount(a);
+        //stockRecord.setUnitAmount(a);
        // stockRecordService.add("WMS_Template",new StockRecord[]{stockRecord});
 
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");

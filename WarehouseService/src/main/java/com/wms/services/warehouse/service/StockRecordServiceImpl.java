@@ -158,15 +158,15 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         {
             throw new WMSServiceException("移动的数量不能大于原有数量！");
         }
-        StorageLocationView[] storageLocationNew= storageLocationService.find(accountBook,new Condition().addCondition("id",new int[]{newStorageLocationId}));
+        StorageLocationView[] storageLocationNew= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{newStorageLocationId}));
         if(storageLocationNew.length!=1)
         {
             throw new WMSServiceException("请检查输入的新库位id，没有找到相关记录");
         }
         int sourceStockRecordId=stockRecordSource[0].getId();
         //查到新库位上最新的相同供货的记录
-        StockRecordView[] stockRecordViews=stockRecordDAO.find(accountBook, new Condition().addCondition(accountBook, new Condition().addCondition("storageLocationId",new int[]{newStorageLocationId})).
-                addCondition("supplyId",new int[]{supplyId}).addCondition("unit",new String[]{unit}).addCondition("unitAmount",new BigDecimal[]{unitAmount}));
+        StockRecordView[] stockRecordViews=stockRecordDAO.find(accountBook, new Condition().addCondition( "storageLocationId",new Integer[]{newStorageLocationId}).
+                addCondition("supplyId",new Integer[]{supplyId}).addCondition("unit",new String[]{unit}).addCondition("unitAmount",new BigDecimal[]{unitAmount}));
         StockRecordView stockRecordNewest= new StockRecordView();
         //新建两条库存记录
         StockRecord stockRecordSourceSave=new StockRecord();
@@ -182,7 +182,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordSourceSave.setUnitAmount(stockRecordSource[0].getUnitAmount());
         stockRecordSourceSave.setUnit(stockRecordSource[0].getUnit());
         stockRecordSourceSave.setAmount(stockRecordSource[0].getAmount().subtract(amountBig));
-        stockRecordSourceSave.setRelatedOrderNo(stockRecordSource[0].getRelatedOrderNo());
+        stockRecordSourceSave.setRelatedOrderNo(relatedOrderNo);
         stockRecordSourceSave.setTime(new Timestamp(System.currentTimeMillis()));
 
         if(stockRecordViews.length>0) {
@@ -195,13 +195,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 }
             }
             //已经找到最新的可以叠加的记录，则第二条为叠加
-            //添加一条移位记录
-            TransferRecord transferRecord=new TransferRecord();
-            transferRecord.setNewStockRecordId(newStorageLocationId);
-            transferRecord.setSourceStockRecordId(sourceStockRecordId);
-            transferRecord.setWarehouseId(stockRecordSource[0].getWarehouseId());
-            transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
+
+
             //增加第二条库存记录
+
             stockRecordNewSave.setAmount(amountBig.add(stockRecordNewest.getAmount()));
             stockRecordNewSave.setUnit(stockRecordNewest.getUnit());
             stockRecordNewSave.setUnitAmount(unitAmount);
@@ -229,11 +226,21 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecordNewSave.setWarehouseId(stockRecordSource[0].getWarehouseId());
                 stockRecordNewSave.setSupplyId(supplyId);
                 stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+
             }
-        if(amountBig.compareTo(stockRecordSource[0].getAmount())==0)//TODO
-            stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNewSave});
-        else
-            stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNewSave,stockRecordSourceSave});
+
+        stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordSourceSave});
+        int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNewSave});
+        if(newStockRecordId.length!=1)
+        {
+            throw new WMSServiceException("添加失败！");
+        }
+        //添加一条移位记录
+        TransferRecord transferRecord=new TransferRecord();
+        transferRecord.setNewStockRecordId(newStockRecordId[0]);
+        transferRecord.setSourceStockRecordId(sourceStockRecordId);
+        transferRecord.setWarehouseId(stockRecordSource[0].getWarehouseId());
+        transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
     }
 
     @Override
