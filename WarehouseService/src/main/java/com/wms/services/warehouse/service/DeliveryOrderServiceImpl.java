@@ -28,7 +28,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     @Autowired
     PersonService personService;
 
-    private static final String NO_PREFIX = "R";
+    private static final String NO_PREFIX = "D";
 
     @Override
     public int[] add(String accountBook, DeliveryOrder[] deliveryOrders) throws WMSServiceException {
