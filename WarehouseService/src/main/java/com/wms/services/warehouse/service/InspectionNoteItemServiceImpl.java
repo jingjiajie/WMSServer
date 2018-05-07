@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.InspectionNoteItemDAO;
+import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
@@ -24,6 +25,10 @@ public class InspectionNoteItemServiceImpl
     @Autowired
     WarehouseEntryItemService warehouseEntryItemService;
     @Autowired
+    InspectionNoteService inspectionNoteService;
+    @Autowired
+    StockRecordService stockRecordService;
+    @Autowired
     IDChecker idChecker;
 
     @Override
@@ -40,13 +45,30 @@ public class InspectionNoteItemServiceImpl
                     new Condition().addCondition("id",warehouseEntryItemID))[0];
             new Validator("送检数量")
                     .min(0)
-                    //TODO max不支持BigDecimal
-                    /*.max(warehouseEntryItemView.getRealAmount().subtract(warehouseEntryItemView.getInspectionAmount()))*/
+                    .max(warehouseEntryItemView.getRealAmount().subtract(warehouseEntryItemView.getInspectionAmount()))
                     .validate(inspectAmount);
             //更新入库单条目的送检数量
             WarehouseEntryItem warehouseEntryItem = ReflectHelper.createAndCopyFields(warehouseEntryItemView,WarehouseEntryItem.class);
             warehouseEntryItem.setInspectionAmount(warehouseEntryItem.getInspectionAmount().add(inspectAmount));
             warehouseEntryItemService.update(accountBook,new WarehouseEntryItem[]{warehouseEntryItem});
+
+            //获取送检单
+            int inspectionNoteID = inspectionNoteItem.getInspectionNoteId();
+            InspectionNoteView[] foundInspectionNotes = this.inspectionNoteService.find(accountBook,new Condition().addCondition("id",inspectionNoteID));
+            if(foundInspectionNotes.length == 0){
+                throw new WMSServiceException(String.format("送检单不存在，请重新提交！(%d)",inspectionNoteID));
+            }
+            InspectionNoteView inspectionNoteView = foundInspectionNotes[0];
+            //更新库存
+            TransferStock transferStock = new TransferStock();
+            //TODO TransferStock该字段不应该是整型 transferStock.setAmount(inspectionNoteItem.getAmount());
+            transferStock.setNewStorageLocationId(inspectionNoteItem.getInspectionStorageLocationId());
+            transferStock.setRelatedOrderNo(inspectionNoteView.getNo());
+            transferStock.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId());
+            transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
+            transferStock.setUnit(inspectionNoteItem.getUnit());
+            //TODO TransferStock该字段不应该是整型 transferStock.setUnitAmount(inspectionNoteItem.getUnitAmount());
+            this.stockRecordService.transformStock(accountBook, transferStock);
         });
 
         this.validateEntities(accountBook, objs);
@@ -98,8 +120,7 @@ public class InspectionNoteItemServiceImpl
             new Validator("送检数量").min(0).validate(inspectionNoteItem.getAmount());
             new Validator("送检单位数量").min(0).validate(inspectionNoteItem.getUnitAmount());
             if (inspectionNoteItem.getReturnAmount() != null) {
-                //TODO max不支持double以及bigDecimal?
-                new Validator("送检返回数量").min(0)/*.max(inspectionNoteItem.getAmount())*/.validate(inspectionNoteItem.getAmount());
+                new Validator("送检返回数量").min(0).max(inspectionNoteItem.getAmount()).validate(inspectionNoteItem.getAmount());
             }
             if (inspectionNoteItem.getReturnUnitAmount() != null) {
                 new Validator("送检返回单位数量").min(0).validate(inspectionNoteItem.getReturnUnitAmount());
