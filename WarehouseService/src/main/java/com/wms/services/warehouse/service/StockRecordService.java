@@ -10,4 +10,5 @@ public interface StockRecordService
         extends   BaseService<StockRecord,StockRecordView>
 {
     public void transformStock(String accountBook,TransferStock transferStock);
+    public void modifyAmount(String accountBook,TransferStock transferStock );
 }
