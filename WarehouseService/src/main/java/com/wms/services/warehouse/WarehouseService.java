@@ -1,6 +1,8 @@
 package com.wms.services.warehouse;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.service.SafetyStockService;
 import com.wms.services.warehouse.service.StockRecordService;
+import com.wms.utilities.model.SafetyStock;
 import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.SupplierView;
 import com.wms.services.warehouse.service.SupplierServices;
@@ -38,21 +40,22 @@ public class WarehouseService {
         //validator.min(5).in(a).validate(1);
         //validator.validate("1000.1");
 
-        StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
+        SafetyStockService safetyStockService= applicationContext.getBean(SafetyStockService.class);
         //Supplier supplier=new Supplier();
         //supplier.setName("12345667777777");
         //supplier.setNo("aaaaa7777111111");
         //supplier.setWarehouseId(1);
         //supplier.setCreatePersonId(19);
         //supplier.setWarehouseId(12);
-        StockRecord stockRecord=new StockRecord();
-        stockRecord.setSupplyId(5);
-        stockRecord.setWarehouseId(-100);
-        stockRecord.setStorageLocationId( 1);
+        SafetyStock safetyStock=new SafetyStock();
+        safetyStock.setSupplyId(5);
+        safetyStock.setWarehouseId(4);
+        safetyStock.setStorageLocationId( 1);
         BigDecimal a=new BigDecimal(111);
-       stockRecord.setAmount(a);
-        //stockRecord.setUnit("aaa");
-        stockRecord.setUnitAmount(a);
+        safetyStock.setAmount(a);
+        safetyStock.setUnitAmount(a);
+        safetyStock.setUnit("箱");
+        safetyStockService.add("WMS_Template",new SafetyStock[]{safetyStock});
        // stockRecordService.add("WMS_Template",new StockRecord[]{stockRecord});
 
 //        supplier.setAddress("Asaddsadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
