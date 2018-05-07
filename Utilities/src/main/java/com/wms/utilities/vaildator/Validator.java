@@ -86,6 +86,9 @@ class MinValidatorCondition extends ValidatorCondition {
     }
 
     public void validate(Object value) {
+        if (value == null) {
+            throw new WMSServiceException("请填写"+key);
+        }
         try {
             actualValue =  Double.parseDouble((String.valueOf(value)));
         } catch (NumberFormatException e) {
@@ -117,6 +120,9 @@ class MaxValidatorCondition extends ValidatorCondition {
     }
 
     public void validate(Object value) {
+        if (value == null) {
+            throw new WMSServiceException("请填写"+key);
+        }
         try {
             actualValue =  Double.parseDouble((String.valueOf(value)));
 
