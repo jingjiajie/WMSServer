@@ -1,5 +1,7 @@
 package com.wms.services.warehouse.datastructures;
 
+import java.math.BigDecimal;
+
 public class TransferStock {
 
     public int getSupplyId() {
@@ -10,17 +12,10 @@ public class TransferStock {
         return newStorageLocationId;
     }
 
-    public int getAmount() {
-        return amount;
-    }
-
     public String getUnit() {
         return unit;
     }
 
-    public int getUnitAmount() {
-        return unitAmount;
-    }
 
     public String getRelatedOrderNo() {
         return relatedOrderNo;
@@ -34,17 +29,12 @@ public class TransferStock {
         this.newStorageLocationId = newStorageLocationId;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
+
 
     public void setUnit(String unit) {
         this.unit = unit;
     }
 
-    public void setUnitAmount(int unitAmount) {
-        this.unitAmount = unitAmount;
-    }
 
     public void setRelatedOrderNo(String relatedOrderNo) {
         this.relatedOrderNo = relatedOrderNo;
@@ -62,8 +52,26 @@ public class TransferStock {
 
     public int sourceStorageLocationId;
   public int newStorageLocationId;
-  public int amount;
-  public String unit;
-    public int unitAmount;
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public BigDecimal getUnitAmount() {
+        return unitAmount;
+    }
+
+    public int amount;
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public void setUnitAmount(BigDecimal unitAmount) {
+        this.unitAmount = unitAmount;
+    }
+
+    public String unit;
+    public BigDecimal unitAmount;
     public String relatedOrderNo;
 }
