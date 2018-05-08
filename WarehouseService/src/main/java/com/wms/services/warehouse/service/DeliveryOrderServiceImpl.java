@@ -32,30 +32,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
     @Override
     public int[] add(String accountBook, DeliveryOrder[] deliveryOrders) throws WMSServiceException {
-        //数据验证
-        Stream.of(deliveryOrders).forEach(
-                (deliveryOrder) -> {
-                    new Validator("状态").min(0).max(5).validate(deliveryOrder.getState());
-                }
-        );
-
-        //外键检测
-        Stream.of(deliveryOrders).forEach(
-                (deliveryOrder) -> {
-                    if (this.warehouseService.find(accountBook,
-                            new Condition().addCondition("id", deliveryOrder.getWarehouseId())).length == 0) {
-                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)", deliveryOrder.getWarehouseId()));
-                    }else if (this.personService.find(accountBook,
-                            new Condition().addCondition("id", deliveryOrder.getCreatePersonId())).length == 0) {
-                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)", deliveryOrder.getCreatePersonId()));
-                    }
-                    if (deliveryOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-                            new Condition().addCondition("id", deliveryOrder.getLastUpdatePersonId())).length == 0) {
-                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)", deliveryOrder.getLastUpdatePersonId()));
-                    }
-                }
-        );
-
+        //验证结构
+        this.validateEntities(accountBook,deliveryOrders);
         //生成创建时间
         Stream.of(deliveryOrders).forEach((deliveryOrder) -> deliveryOrder.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
 
@@ -117,5 +95,30 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     @Override
     public DeliveryOrderView[] find(String accountBook, Condition cond) throws WMSServiceException {
         return deliveryOrderDAO.find(accountBook, cond);
+    }
+
+    private void validateEntities(String accountBook, DeliveryOrder[] deliveryOrders) {
+        //数据验证
+        Stream.of(deliveryOrders).forEach(
+                (deliveryOrder) -> {
+                    new Validator("状态").min(0).max(5).validate(deliveryOrder.getState());
+                }
+        );
+
+        //外键检测
+        Stream.of(deliveryOrders).forEach(
+                (deliveryOrder) -> {
+                    if (this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id", deliveryOrder.getWarehouseId())).length == 0) {
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)", deliveryOrder.getWarehouseId()));
+                    }else if (this.personService.find(accountBook,
+                            new Condition().addCondition("id", deliveryOrder.getCreatePersonId())).length == 0) {
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)", deliveryOrder.getCreatePersonId()));
+                    }if (deliveryOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+                            new Condition().addCondition("id", deliveryOrder.getLastUpdatePersonId())).length == 0) {
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)", deliveryOrder.getLastUpdatePersonId()));
+                    }
+                }
+        );
     }
 }

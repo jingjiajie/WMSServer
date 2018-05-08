@@ -45,12 +45,13 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
             //更新库存
             TransferStock transferStock = new TransferStock();
-            //TODO TransferStock该字段不应该是整型 transferStock.setAmount(inspectionNoteItem.getAmount());
+            //TODO 请求数据类型有问题 transferStock.setAmount(transferOrderItem.getRealAmount());
+            //transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId);
             transferStock.setNewStorageLocationId(transferOrderItem.getTargetStorageLocationId());
             transferStock.setRelatedOrderNo(transferOrderView.getNo());
             transferStock.setSupplyId(transferOrderItem.getSupplyId());
             transferStock.setUnit(transferOrderItem.getUnit());
-            //TODO TransferStock该字段不应该是整型 transferStock.setUnitAmount(inspectionNoteItem.getUnitAmount());
+            //TODO 该字段不应该是整型 transferStock.setUnitAmount(transferOrderItem.getUnitAmount());
             this.stockRecordService.transformStock(accountBook, transferStock);
         });
 
