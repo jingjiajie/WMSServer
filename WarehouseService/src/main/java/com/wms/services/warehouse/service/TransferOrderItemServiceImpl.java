@@ -11,6 +11,8 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.wms.utilities.model.TransferOrderItem;
+import com.wms.utilities.model.TransferOrderItemView;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
@@ -31,7 +33,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
     @Override
     public int[] add(String accountBook, TransferOrderItem[] transferOrderItems) throws WMSServiceException {
-        //根据每条移库单条目，更新入库单条目的送检数量
+        //根据每条移库单条目，更新移库单条目的移货数量
         Stream.of(transferOrderItems).forEach(transferOrderItem -> {
 
 
@@ -45,12 +47,13 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
             //更新库存
             TransferStock transferStock = new TransferStock();
-            //TODO TransferStock该字段不应该是整型 transferStock.setAmount(inspectionNoteItem.getAmount());
+            transferStock.setAmount(transferOrderItem.getRealAmount());
+            transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());
             transferStock.setNewStorageLocationId(transferOrderItem.getTargetStorageLocationId());
             transferStock.setRelatedOrderNo(transferOrderView.getNo());
             transferStock.setSupplyId(transferOrderItem.getSupplyId());
             transferStock.setUnit(transferOrderItem.getUnit());
-            //TODO TransferStock该字段不应该是整型 transferStock.setUnitAmount(inspectionNoteItem.getUnitAmount());
+            transferStock.setUnitAmount(transferOrderItem.getUnitAmount());
             this.stockRecordService.transformStock(accountBook, transferStock);
         });
 

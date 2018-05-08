@@ -3,10 +3,8 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 public class TransferOrderItemView {
@@ -30,10 +28,12 @@ public class TransferOrderItemView {
     private String personName;
     private String targetStorageLocationNo;
     private String targetStorageLocationName;
+    private int sourceStorageLocationId;
+    private String sourceStorageLocationNo;
+    private String sourceStorageLocationName;
 
-    @Id
     @Basic
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -43,7 +43,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "TransferOrderID", nullable = false)
+    @Column(name = "TransferOrderID")
     public int getTransferOrderId() {
         return transferOrderId;
     }
@@ -53,7 +53,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "SupplyID", nullable = false)
+    @Column(name = "SupplyID")
     public int getSupplyId() {
         return supplyId;
     }
@@ -63,7 +63,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "TargetStorageLocationID", nullable = false)
+    @Column(name = "TargetStorageLocationID")
     public int getTargetStorageLocationId() {
         return targetStorageLocationId;
     }
@@ -73,7 +73,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "State", nullable = false)
+    @Column(name = "State")
     public int getState() {
         return state;
     }
@@ -83,7 +83,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "ScheduledAmount", nullable = false, precision = 3)
+    @Column(name = "ScheduledAmount")
     public BigDecimal getScheduledAmount() {
         return scheduledAmount;
     }
@@ -93,7 +93,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "RealAmount", nullable = false, precision = 3)
+    @Column(name = "RealAmount")
     public BigDecimal getRealAmount() {
         return realAmount;
     }
@@ -103,7 +103,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "Unit", nullable = false, length = 64)
+    @Column(name = "Unit")
     public String getUnit() {
         return unit;
     }
@@ -113,7 +113,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "UnitAmount", nullable = false, precision = 3)
+    @Column(name = "UnitAmount")
     public BigDecimal getUnitAmount() {
         return unitAmount;
     }
@@ -123,7 +123,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "Comment", nullable = true, length = 64)
+    @Column(name = "Comment")
     public String getComment() {
         return comment;
     }
@@ -133,7 +133,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "OperateTime", nullable = true)
+    @Column(name = "OperateTime")
     public Timestamp getOperateTime() {
         return operateTime;
     }
@@ -143,7 +143,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "PersonID", nullable = true)
+    @Column(name = "PersonID")
     public Integer getPersonId() {
         return personId;
     }
@@ -153,7 +153,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "TransferOrderNo", nullable = true, length = 64)
+    @Column(name = "TransferOrderNo")
     public String getTransferOrderNo() {
         return transferOrderNo;
     }
@@ -163,7 +163,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "MaterialNo", nullable = true, length = 64)
+    @Column(name = "MaterialNo")
     public String getMaterialNo() {
         return materialNo;
     }
@@ -173,7 +173,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "MaterialName", nullable = true, length = 64)
+    @Column(name = "MaterialName")
     public String getMaterialName() {
         return materialName;
     }
@@ -183,7 +183,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "SupplierNo", nullable = true, length = 64)
+    @Column(name = "SupplierNo")
     public String getSupplierNo() {
         return supplierNo;
     }
@@ -193,7 +193,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "SupplierName", nullable = true, length = 64)
+    @Column(name = "SupplierName")
     public String getSupplierName() {
         return supplierName;
     }
@@ -203,7 +203,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "PersonName", nullable = true, length = 64)
+    @Column(name = "PersonName")
     public String getPersonName() {
         return personName;
     }
@@ -213,7 +213,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "TargetStorageLocationNo", nullable = true, length = 64)
+    @Column(name = "TargetStorageLocationNo")
     public String getTargetStorageLocationNo() {
         return targetStorageLocationNo;
     }
@@ -223,7 +223,7 @@ public class TransferOrderItemView {
     }
 
     @Basic
-    @Column(name = "TargetStorageLocationName", nullable = true, length = 64)
+    @Column(name = "TargetStorageLocationName")
     public String getTargetStorageLocationName() {
         return targetStorageLocationName;
     }
@@ -232,36 +232,101 @@ public class TransferOrderItemView {
         this.targetStorageLocationName = targetStorageLocationName;
     }
 
+    @Basic
+    @Column(name = "SourceStorageLocationID")
+    public int getSourceStorageLocationId() {
+        return sourceStorageLocationId;
+    }
+
+    public void setSourceStorageLocationId(int sourceStorageLocationId) {
+        this.sourceStorageLocationId = sourceStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "SourceStorageLocationNo")
+    public String getSourceStorageLocationNo() {
+        return sourceStorageLocationNo;
+    }
+
+    public void setSourceStorageLocationNo(String sourceStorageLocationNo) {
+        this.sourceStorageLocationNo = sourceStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "SourceStorageLocationName")
+    public String getSourceStorageLocationName() {
+        return sourceStorageLocationName;
+    }
+
+    public void setSourceStorageLocationName(String sourceStorageLocationName) {
+        this.sourceStorageLocationName = sourceStorageLocationName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         TransferOrderItemView that = (TransferOrderItemView) o;
-        return id == that.id &&
-                transferOrderId == that.transferOrderId &&
-                supplyId == that.supplyId &&
-                targetStorageLocationId == that.targetStorageLocationId &&
-                state == that.state &&
-                Objects.equals(scheduledAmount, that.scheduledAmount) &&
-                Objects.equals(realAmount, that.realAmount) &&
-                Objects.equals(unit, that.unit) &&
-                Objects.equals(unitAmount, that.unitAmount) &&
-                Objects.equals(comment, that.comment) &&
-                Objects.equals(operateTime, that.operateTime) &&
-                Objects.equals(personId, that.personId) &&
-                Objects.equals(transferOrderNo, that.transferOrderNo) &&
-                Objects.equals(materialNo, that.materialNo) &&
-                Objects.equals(materialName, that.materialName) &&
-                Objects.equals(supplierNo, that.supplierNo) &&
-                Objects.equals(supplierName, that.supplierName) &&
-                Objects.equals(personName, that.personName) &&
-                Objects.equals(targetStorageLocationNo, that.targetStorageLocationNo) &&
-                Objects.equals(targetStorageLocationName, that.targetStorageLocationName);
+
+        if (id != that.id) return false;
+        if (transferOrderId != that.transferOrderId) return false;
+        if (supplyId != that.supplyId) return false;
+        if (targetStorageLocationId != that.targetStorageLocationId) return false;
+        if (state != that.state) return false;
+        if (sourceStorageLocationId != that.sourceStorageLocationId) return false;
+        if (scheduledAmount != null ? !scheduledAmount.equals(that.scheduledAmount) : that.scheduledAmount != null)
+            return false;
+        if (realAmount != null ? !realAmount.equals(that.realAmount) : that.realAmount != null) return false;
+        if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+        if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
+        if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
+        if (operateTime != null ? !operateTime.equals(that.operateTime) : that.operateTime != null) return false;
+        if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
+        if (transferOrderNo != null ? !transferOrderNo.equals(that.transferOrderNo) : that.transferOrderNo != null)
+            return false;
+        if (materialNo != null ? !materialNo.equals(that.materialNo) : that.materialNo != null) return false;
+        if (materialName != null ? !materialName.equals(that.materialName) : that.materialName != null) return false;
+        if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
+        if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
+        if (personName != null ? !personName.equals(that.personName) : that.personName != null) return false;
+        if (targetStorageLocationNo != null ? !targetStorageLocationNo.equals(that.targetStorageLocationNo) : that.targetStorageLocationNo != null)
+            return false;
+        if (targetStorageLocationName != null ? !targetStorageLocationName.equals(that.targetStorageLocationName) : that.targetStorageLocationName != null)
+            return false;
+        if (sourceStorageLocationNo != null ? !sourceStorageLocationNo.equals(that.sourceStorageLocationNo) : that.sourceStorageLocationNo != null)
+            return false;
+        if (sourceStorageLocationName != null ? !sourceStorageLocationName.equals(that.sourceStorageLocationName) : that.sourceStorageLocationName != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, transferOrderId, supplyId, targetStorageLocationId, state, scheduledAmount, realAmount, unit, unitAmount, comment, operateTime, personId, transferOrderNo, materialNo, materialName, supplierNo, supplierName, personName, targetStorageLocationNo, targetStorageLocationName);
+        int result = id;
+        result = 31 * result + transferOrderId;
+        result = 31 * result + supplyId;
+        result = 31 * result + targetStorageLocationId;
+        result = 31 * result + state;
+        result = 31 * result + (scheduledAmount != null ? scheduledAmount.hashCode() : 0);
+        result = 31 * result + (realAmount != null ? realAmount.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (operateTime != null ? operateTime.hashCode() : 0);
+        result = 31 * result + (personId != null ? personId.hashCode() : 0);
+        result = 31 * result + (transferOrderNo != null ? transferOrderNo.hashCode() : 0);
+        result = 31 * result + (materialNo != null ? materialNo.hashCode() : 0);
+        result = 31 * result + (materialName != null ? materialName.hashCode() : 0);
+        result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
+        result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
+        result = 31 * result + (personName != null ? personName.hashCode() : 0);
+        result = 31 * result + (targetStorageLocationNo != null ? targetStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (targetStorageLocationName != null ? targetStorageLocationName.hashCode() : 0);
+        result = 31 * result + sourceStorageLocationId;
+        result = 31 * result + (sourceStorageLocationNo != null ? sourceStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (sourceStorageLocationName != null ? sourceStorageLocationName.hashCode() : 0);
+        return result;
     }
 }

@@ -2,7 +2,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.services.warehouse.datastructures.InspectFinishArgs;
+import com.wms.services.warehouse.datastructures.TransferFinishArgs;
 import com.wms.services.warehouse.service.TransferOrderService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.TransferOrder;
@@ -48,7 +48,7 @@ public class TransferOrderControllerImpl implements  TransferOrderController{
     @RequestMapping(value = "/transfer_finish", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public void transferFinish(@PathVariable("accountBook") String accountBook,
-                              @RequestBody InspectFinishArgs inspectFinishArgs) {
-        this.transferOrderService.transferFinish(accountBook, inspectFinishArgs);
+                              @RequestBody TransferFinishArgs transferFinishArgs) {
+        this.transferOrderService.transferFinish(accountBook, transferFinishArgs);
     }
 }

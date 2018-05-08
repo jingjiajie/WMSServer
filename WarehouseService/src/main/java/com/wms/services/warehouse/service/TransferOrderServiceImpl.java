@@ -2,17 +2,14 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.InspectionNoteDAO;
 import com.wms.services.warehouse.dao.TransferOrderDAO;
-import com.wms.services.warehouse.datastructures.InspectFinishArgs;
-import com.wms.services.warehouse.datastructures.InspectFinishItem;
+import com.wms.services.warehouse.datastructures.TransferFinishArgs;
+import com.wms.services.warehouse.datastructures.TransferFinishItem;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.TransferOrder;
-import com.wms.utilities.model.InspectionNoteItem;
-import com.wms.utilities.model.InspectionNoteItemView;
-import com.wms.utilities.model.TransferOrderView;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +24,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
     @Autowired
     TransferOrderDAO transferOrderDAO;
     @Autowired
-    InspectionNoteItemService inspectionNoteItemService;
+    TransferOrderItemService transferOrderItemService;
     @Autowired
     IDChecker idChecker;
     @Autowired
@@ -35,7 +32,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
     @Autowired
     PersonService personService;
 
-    private static final String PREFIX = "J";
+    private static final String PREFIX = "T";
 
     @Override
     public int[] add(String accountBook, TransferOrder[] objs) throws WMSServiceException {
@@ -75,56 +72,60 @@ public class TransferOrderServiceImpl implements TransferOrderService{
     }
 
     @Override
-    public void transferFinish(String accountBook, InspectFinishArgs inspectFinishArgs) throws WMSServiceException{
-        if(inspectFinishArgs.isAllFinish()){ //整单完成
-            InspectionNoteItemView[] inspectionNoteItemViews = this.inspectionNoteItemService.find(accountBook,new Condition().addCondition("inspectionNoteId",inspectFinishArgs.getInspectionNoteId()));
-            InspectionNoteItem[] inspectionNoteItems = ReflectHelper.createAndCopyFields(inspectionNoteItemViews,InspectionNoteItem.class);
+    public void transferFinish(String accountBook, TransferFinishArgs transferFinishArgs) throws WMSServiceException{
+        if(transferFinishArgs.isAllFinish()){ //整单完成
+            TransferOrderItemView[] transferOrderItemViews = this.transferOrderItemService.find(accountBook,new Condition().addCondition("inspectionNoteId",transferFinishArgs.getTransferOrderId()));
+            TransferOrderItem[] transferOrderItems = ReflectHelper.createAndCopyFields(transferOrderItemViews,TransferOrderItem.class);
+
             //如果设置了返回库位，则将每个条目返回到相应库位上。否则遵循各个条目原设置。
-            if(inspectFinishArgs.getReturnStorageLocationId() != -1){
-                idChecker.check(StorageLocationService.class,accountBook,inspectFinishArgs.getReturnStorageLocationId(),"返回库位");
-                Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> {
-                    inspectionNoteItem.setReturnStorageLocationId(inspectFinishArgs.getReturnStorageLocationId());
+            if(transferFinishArgs.getTargetStorageLocationId() != -1){
+                idChecker.check(StorageLocationService.class,accountBook,transferFinishArgs.getTargetStorageLocationId(),"目标库位");
+                Stream.of(transferOrderItems).forEach(inspectionNoteItem -> {
+                    inspectionNoteItem.setTargetStorageLocationId(transferFinishArgs.getTargetStorageLocationId());
                 });
             }
             //如果设置了人员，将每个条目的人员设置为相应人员。否则遵循各个条目原设置
-            if(inspectFinishArgs.getPersonId() != -1){
-                idChecker.check(PersonService.class,accountBook,inspectFinishArgs.getPersonId(),"作业人员");
-                Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setPersonId(inspectFinishArgs.getPersonId()));
+            if(transferFinishArgs.getPersonId() != -1){
+                idChecker.check(PersonService.class,accountBook,transferFinishArgs.getPersonId(),"作业人员");//外检检测
+                Stream.of(transferOrderItems).forEach(transferOrderItem -> transferOrderItem.setPersonId(transferFinishArgs.getPersonId()));
             }
-            //将每一条的返回数量设置为满额，单位设置成送检相同单位
-            Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> {
-                inspectionNoteItem.setReturnAmount(inspectionNoteItem.getAmount());
-                inspectionNoteItem.setReturnUnit(inspectionNoteItem.getUnit());
-                inspectionNoteItem.setReturnUnitAmount(inspectionNoteItem.getUnitAmount());
+            //将每一条的实际移动数量同步成计划移动数量
+            Stream.of(transferOrderItems).forEach(transferOrderItem -> {
+                transferOrderItem.setRealAmount(transferOrderItem.getScheduledAmount());
             });
-            //如果是合格，则将每一项状态更新为合格，否则为不合格
-            if(inspectFinishArgs.isQualified()){
-                Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.STATE_QUALIFIED));
-            }else{
-                Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.STATE_UNQUALIFIED));
-            }
-            this.inspectionNoteItemService.update(accountBook, inspectionNoteItems);
-        }else { //部分完成
-            InspectFinishItem[] inspectFinishItems = inspectFinishArgs.getInspectFinishItems();
-            Stream.of(inspectFinishItems).forEach(inspectFinishItem -> {
-                this.idChecker.check(InspectionNoteItemService.class, accountBook, inspectFinishItem.getInspectionNoteItemId(), "送检单条目");
-                InspectionNoteItemView inspectionNoteItemView = this.inspectionNoteItemService.find(accountBook, new Condition().addCondition("id", inspectFinishItem.getInspectionNoteItemId()))[0];
-                InspectionNoteItem inspectionNoteItem = ReflectHelper.createAndCopyFields(inspectionNoteItemView, InspectionNoteItem.class);
-                inspectionNoteItem.setReturnAmount(inspectFinishItem.getReturnAmount());
-                inspectionNoteItem.setReturnUnit(inspectFinishItem.getReturnUnit());
-                inspectionNoteItem.setReturnUnitAmount(inspectFinishItem.getReturnAmount());
-                if(inspectFinishItem.getReturnStorageLocationId() != -1) {
-                    inspectionNoteItem.setReturnStorageLocationId(inspectFinishItem.getReturnStorageLocationId());
+            //整单完成所有状态变更为移库完成 2
+
+            Stream.of(transferOrderItems).forEach(transferOrderItem -> transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH));
+
+            this.transferOrderItemService.update(accountBook, transferOrderItems);
+        }
+        else { //部分完成
+            TransferFinishItem[] transferFinishItems = transferFinishArgs.getTransferFinishItems();
+            Stream.of(transferFinishItems).forEach(transferFinishItem -> {
+                this.idChecker.check(TransferOrderItemService.class, accountBook, transferFinishArgs.getTransferOrderId(), "移库单条目");
+
+
+                TransferOrderItemView transferOrderItemView = this.transferOrderItemService.find(accountBook, new Condition().addCondition("id", transferFinishItem.getTransferOrderItemId()))[0];
+                TransferOrderItem transferOrderItem = ReflectHelper.createAndCopyFields(transferOrderItemView, TransferOrderItem.class);
+
+                transferOrderItem.setRealAmount(transferFinishItem.getTransferAmount());
+                transferOrderItem.setUnit(transferFinishItem.getTransferUnit());
+                transferOrderItem.setUnitAmount(transferFinishItem.getTransferUnitAmount());
+
+
+                if(transferFinishItem.getTargetStorageLocationId() != -1) {
+                    transferOrderItem.setTargetStorageLocationId(transferFinishItem.getTargetStorageLocationId());
                 }
-                if(inspectFinishItem.getPersonId() != -1){
-                    inspectionNoteItem.setPersonId(inspectFinishItem.getPersonId());
+                if(transferFinishItem.getPersonId() != -1){
+                    transferOrderItem.setPersonId(transferFinishItem.getPersonId());
                 }
-                if (inspectFinishItem.isQualified()) {
-                    inspectionNoteItem.setState(InspectionNoteItemService.STATE_QUALIFIED);
+                //部分完成移库操作
+                if (transferFinishItem.isQualified()) {
+                    transferOrderItem.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
                 } else {
-                    inspectionNoteItem.setState(InspectionNoteItemService.STATE_UNQUALIFIED);
+                    transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
                 }
-                this.inspectionNoteItemService.update(accountBook, new InspectionNoteItem[]{inspectionNoteItem});
+                this.transferOrderItemService.update(accountBook, new TransferOrderItem[]{transferOrderItem});
             });
         }
     }

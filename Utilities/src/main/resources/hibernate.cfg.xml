@@ -4,9 +4,13 @@
     "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
   <session-factory>
-    <property name="connection.url"/>
-    <property name="connection.driver_class"/>
-    <!-- <property name="connection.username"/> -->
+    <property name="connection.url">jdbc:mysql://linuxserver.jingjiajie.com:3306/WMS_Template</property>
+    <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+      <mapping class="com.wms.utilities.model.SafetyStock"/>
+      <mapping class="com.wms.utilities.model.TransferOrderItem"/>
+      <mapping class="com.wms.utilities.model.SafetyStockView"/>
+      <mapping class="com.wms.utilities.model.TransferOrderItemView"/>
+      <!-- <property name="connection.username"/> -->
     <!-- <property name="connection.password"/> -->
 
     <!-- DB schema will be updated if needed -->
