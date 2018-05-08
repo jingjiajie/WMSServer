@@ -43,7 +43,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             TransferStock transferStock=new TransferStock();
             BigDecimal amount =new BigDecimal(0);
             BigDecimal realAmount=amount.subtract(deliveryOrderItem.getScheduledAmount());//计划出库数量or实际出库数量
-            transferStock.setAmount(Integer.getInteger(String.valueOf(realAmount)));//TODO 待修改
+            transferStock.setAmount(realAmount);
             transferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
             transferStock.setRelatedOrderNo(deliveryOrderView.getNo());
             transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
@@ -74,7 +74,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 TransferStock transferStock=new TransferStock();
                 BigDecimal amount =new BigDecimal(0);
                 BigDecimal realAmount=amount.subtract(deliveryOrderItem.getRealAmount());
-                transferStock.setAmount(Integer.getInteger(String.valueOf(realAmount)));//TODO 待修改
+                transferStock.setAmount(realAmount);//TODO 待定
                 transferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
                 transferStock.setRelatedOrderNo(deliveryOrderView.getNo());
                 transferStock.setSupplyId(deliveryOrderItem.getSupplyId());

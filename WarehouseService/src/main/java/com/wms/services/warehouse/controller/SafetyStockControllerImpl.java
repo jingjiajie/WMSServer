@@ -5,10 +5,10 @@ import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.service.SafetyStockService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.SafetyStock;
-import com.wms.utilities.model.SafetyStockView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import com.wms.utilities.model.SafetyStockView;
 
 @RestController
 @RequestMapping("/{accountBook}/safety_stock")

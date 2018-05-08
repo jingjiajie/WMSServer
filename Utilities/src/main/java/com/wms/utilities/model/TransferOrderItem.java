@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 public class TransferOrderItem {
@@ -22,9 +21,10 @@ public class TransferOrderItem {
     private String comment;
     private Timestamp operateTime;
     private Integer personId;
+    private int sourceStorageLocationId;
 
     @Id
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -34,7 +34,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "TransferOrderID", nullable = false)
+    @Column(name = "TransferOrderID")
     public int getTransferOrderId() {
         return transferOrderId;
     }
@@ -44,7 +44,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "SupplyID", nullable = false)
+    @Column(name = "SupplyID")
     public int getSupplyId() {
         return supplyId;
     }
@@ -54,7 +54,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "TargetStorageLocationID", nullable = false)
+    @Column(name = "TargetStorageLocationID")
     public int getTargetStorageLocationId() {
         return targetStorageLocationId;
     }
@@ -64,7 +64,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "State", nullable = false)
+    @Column(name = "State")
     public int getState() {
         return state;
     }
@@ -74,7 +74,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "ScheduledAmount", nullable = false, precision = 3)
+    @Column(name = "ScheduledAmount")
     public BigDecimal getScheduledAmount() {
         return scheduledAmount;
     }
@@ -84,7 +84,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "RealAmount", nullable = false, precision = 3)
+    @Column(name = "RealAmount")
     public BigDecimal getRealAmount() {
         return realAmount;
     }
@@ -94,7 +94,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "Unit", nullable = false, length = 64)
+    @Column(name = "Unit")
     public String getUnit() {
         return unit;
     }
@@ -104,7 +104,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "UnitAmount", nullable = false, precision = 3)
+    @Column(name = "UnitAmount")
     public BigDecimal getUnitAmount() {
         return unitAmount;
     }
@@ -114,7 +114,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "Comment", nullable = true, length = 64)
+    @Column(name = "Comment")
     public String getComment() {
         return comment;
     }
@@ -124,7 +124,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "OperateTime", nullable = true)
+    @Column(name = "OperateTime")
     public Timestamp getOperateTime() {
         return operateTime;
     }
@@ -134,7 +134,7 @@ public class TransferOrderItem {
     }
 
     @Basic
-    @Column(name = "PersonID", nullable = true)
+    @Column(name = "PersonID")
     public Integer getPersonId() {
         return personId;
     }
@@ -143,28 +143,56 @@ public class TransferOrderItem {
         this.personId = personId;
     }
 
+    @Basic
+    @Column(name = "SourceStorageLocationID")
+    public int getSourceStorageLocationId() {
+        return sourceStorageLocationId;
+    }
+
+    public void setSourceStorageLocationId(int sourceStorageLocationId) {
+        this.sourceStorageLocationId = sourceStorageLocationId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         TransferOrderItem that = (TransferOrderItem) o;
-        return id == that.id &&
-                transferOrderId == that.transferOrderId &&
-                supplyId == that.supplyId &&
-                targetStorageLocationId == that.targetStorageLocationId &&
-                state == that.state &&
-                Objects.equals(scheduledAmount, that.scheduledAmount) &&
-                Objects.equals(realAmount, that.realAmount) &&
-                Objects.equals(unit, that.unit) &&
-                Objects.equals(unitAmount, that.unitAmount) &&
-                Objects.equals(comment, that.comment) &&
-                Objects.equals(operateTime, that.operateTime) &&
-                Objects.equals(personId, that.personId);
+
+        if (id != that.id) return false;
+        if (transferOrderId != that.transferOrderId) return false;
+        if (supplyId != that.supplyId) return false;
+        if (targetStorageLocationId != that.targetStorageLocationId) return false;
+        if (state != that.state) return false;
+        if (sourceStorageLocationId != that.sourceStorageLocationId) return false;
+        if (scheduledAmount != null ? !scheduledAmount.equals(that.scheduledAmount) : that.scheduledAmount != null)
+            return false;
+        if (realAmount != null ? !realAmount.equals(that.realAmount) : that.realAmount != null) return false;
+        if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+        if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
+        if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
+        if (operateTime != null ? !operateTime.equals(that.operateTime) : that.operateTime != null) return false;
+        if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, transferOrderId, supplyId, targetStorageLocationId, state, scheduledAmount, realAmount, unit, unitAmount, comment, operateTime, personId);
+        int result = id;
+        result = 31 * result + transferOrderId;
+        result = 31 * result + supplyId;
+        result = 31 * result + targetStorageLocationId;
+        result = 31 * result + state;
+        result = 31 * result + (scheduledAmount != null ? scheduledAmount.hashCode() : 0);
+        result = 31 * result + (realAmount != null ? realAmount.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (operateTime != null ? operateTime.hashCode() : 0);
+        result = 31 * result + (personId != null ? personId.hashCode() : 0);
+        result = 31 * result + sourceStorageLocationId;
+        return result;
     }
 }
