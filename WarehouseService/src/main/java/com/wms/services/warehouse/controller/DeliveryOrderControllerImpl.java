@@ -3,6 +3,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.TransferArgs;
 import com.wms.services.warehouse.service.DeliveryOrderService;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,14 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     public DeliveryOrderView[] find(@PathVariable("accountBook") String accountBook,
                                      @PathVariable("strCond") String condStr) {
         return deliveryOrderService.find(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value = "/transfer",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void transferPakage(@PathVariable("accountBook") String accountBook,
+                        @RequestBody TransferArgs transferArgs){
+        this.deliveryOrderService.transferPakage(accountBook,transferArgs);
     }
 
 }
