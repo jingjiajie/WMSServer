@@ -1,29 +1,23 @@
 package com.wms.services.warehouse;
-import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
-import com.wms.services.warehouse.datastructures.TransferStock;
-import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.services.warehouse.service.StockTakingOrderItemService;
-import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.StockTakingOrderItem;
-import com.wms.utilities.model.SupplierView;
-import com.wms.services.warehouse.service.SupplierServices;
-import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.vaildator.Validator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfigurationImportSelector;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
-import com.wms.utilities.model.Supplier;
 
-import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -52,10 +46,25 @@ public class WarehouseService {
 
         StockTakingOrderItem stockTakingOrderItem=new StockTakingOrderItem();
         stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
-        stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
-        stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
-        stockTakingOrderItemService.addStockTakingOrderItemSingle("WMS_Template", stockTakingOrderItemAdd);
-
+       // stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
+       // stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
+        //stockTakingOrderItemService.addStockTakingOrderItemSingle("WMS_Template", stockTakingOrderItemAdd);
+        StockRecordFind stockRecordFind=new StockRecordFind();
+        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.set(Calendar.YEAR,2013);//设置年
+        gc.set(Calendar.MONTH, 8);//这里0是1月..以此向后推
+        gc.set(Calendar.DAY_OF_MONTH, 29);//设置天
+        gc.set(Calendar.HOUR_OF_DAY,5);//设置小时
+        gc.set(Calendar.MINUTE, 7);//设置分
+        gc.set(Calendar.SECOND, 6);//设置秒
+        gc.set(Calendar.MILLISECOND,200);//设置毫秒
+        date = gc.getTime();
+        long a=date.getTime();
+        String timestamp = String.valueOf(date.getTime()/1000);
+        Timestamp time2 =null;
+        time2.setTime(a);
         //TransferStock transferStock=new TransferStock();
        // transferStock.setAmount(100);
        // transferStock.setUnit("个");

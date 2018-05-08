@@ -5,6 +5,7 @@ import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.StockRecordView;
 
+
 public interface StockRecordController
 extends BaseController<StockRecord,StockRecordView> {
   void transferStock(String accountbook, TransferStock transferStock);

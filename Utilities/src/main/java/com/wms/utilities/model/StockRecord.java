@@ -1,9 +1,11 @@
 package com.wms.utilities.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 public class StockRecord {
@@ -19,11 +21,11 @@ public class StockRecord {
     private Timestamp manufactureDate;
     private Timestamp expiryDate;
     private Timestamp time;
+    private String batchNo;
+    private BigDecimal availableAmount;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
-
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -33,7 +35,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
@@ -43,7 +45,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "StorageLocationID", nullable = false)
+    @Column(name = "StorageLocationID")
     public int getStorageLocationId() {
         return storageLocationId;
     }
@@ -53,7 +55,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "SupplyID", nullable = false)
+    @Column(name = "SupplyID")
     public int getSupplyId() {
         return supplyId;
     }
@@ -63,7 +65,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "Amount", nullable = false, precision = 3)
+    @Column(name = "Amount")
     public BigDecimal getAmount() {
         return amount;
     }
@@ -73,7 +75,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "Unit", nullable = false, length = 64)
+    @Column(name = "Unit")
     public String getUnit() {
         return unit;
     }
@@ -83,7 +85,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "UnitAmount", nullable = false, precision = 3)
+    @Column(name = "UnitAmount")
     public BigDecimal getUnitAmount() {
         return unitAmount;
     }
@@ -93,7 +95,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "RelatedOrderNo", nullable = true, length = 64)
+    @Column(name = "RelatedOrderNo")
     public String getRelatedOrderNo() {
         return relatedOrderNo;
     }
@@ -103,7 +105,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "InventoryDate", nullable = true)
+    @Column(name = "InventoryDate")
     public Timestamp getInventoryDate() {
         return inventoryDate;
     }
@@ -113,7 +115,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "ManufactureDate", nullable = true)
+    @Column(name = "ManufactureDate")
     public Timestamp getManufactureDate() {
         return manufactureDate;
     }
@@ -123,7 +125,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "ExpiryDate", nullable = true)
+    @Column(name = "ExpiryDate")
     public Timestamp getExpiryDate() {
         return expiryDate;
     }
@@ -133,7 +135,7 @@ public class StockRecord {
     }
 
     @Basic
-    @Column(name = "Time", nullable = false)
+    @Column(name = "Time")
     public Timestamp getTime() {
         return time;
     }
@@ -142,28 +144,71 @@ public class StockRecord {
         this.time = time;
     }
 
+    @Basic
+    @Column(name = "BatchNo")
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
+
+    @Basic
+    @Column(name = "AvailableAmount")
+    public BigDecimal getAvailableAmount() {
+        return availableAmount;
+    }
+
+    public void setAvailableAmount(BigDecimal availableAmount) {
+        this.availableAmount = availableAmount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         StockRecord that = (StockRecord) o;
-        return id == that.id &&
-                warehouseId == that.warehouseId &&
-                storageLocationId == that.storageLocationId &&
-                supplyId == that.supplyId &&
-                Objects.equals(amount, that.amount) &&
-                Objects.equals(unit, that.unit) &&
-                Objects.equals(unitAmount, that.unitAmount) &&
-                Objects.equals(relatedOrderNo, that.relatedOrderNo) &&
-                Objects.equals(inventoryDate, that.inventoryDate) &&
-                Objects.equals(manufactureDate, that.manufactureDate) &&
-                Objects.equals(expiryDate, that.expiryDate) &&
-                Objects.equals(time, that.time);
+
+        if (id != that.id) return false;
+        if (warehouseId != that.warehouseId) return false;
+        if (storageLocationId != that.storageLocationId) return false;
+        if (supplyId != that.supplyId) return false;
+        if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
+        if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+        if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
+        if (relatedOrderNo != null ? !relatedOrderNo.equals(that.relatedOrderNo) : that.relatedOrderNo != null)
+            return false;
+        if (inventoryDate != null ? !inventoryDate.equals(that.inventoryDate) : that.inventoryDate != null)
+            return false;
+        if (manufactureDate != null ? !manufactureDate.equals(that.manufactureDate) : that.manufactureDate != null)
+            return false;
+        if (expiryDate != null ? !expiryDate.equals(that.expiryDate) : that.expiryDate != null) return false;
+        if (time != null ? !time.equals(that.time) : that.time != null) return false;
+        if (batchNo != null ? !batchNo.equals(that.batchNo) : that.batchNo != null) return false;
+        if (availableAmount != null ? !availableAmount.equals(that.availableAmount) : that.availableAmount != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, warehouseId, storageLocationId, supplyId, amount, unit, unitAmount, relatedOrderNo, inventoryDate, manufactureDate, expiryDate, time);
+        int result = id;
+        result = 31 * result + warehouseId;
+        result = 31 * result + storageLocationId;
+        result = 31 * result + supplyId;
+        result = 31 * result + (amount != null ? amount.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
+        result = 31 * result + (relatedOrderNo != null ? relatedOrderNo.hashCode() : 0);
+        result = 31 * result + (inventoryDate != null ? inventoryDate.hashCode() : 0);
+        result = 31 * result + (manufactureDate != null ? manufactureDate.hashCode() : 0);
+        result = 31 * result + (expiryDate != null ? expiryDate.hashCode() : 0);
+        result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + (batchNo != null ? batchNo.hashCode() : 0);
+        result = 31 * result + (availableAmount != null ? availableAmount.hashCode() : 0);
+        return result;
     }
 }

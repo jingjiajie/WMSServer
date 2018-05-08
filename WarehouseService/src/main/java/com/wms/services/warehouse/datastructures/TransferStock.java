@@ -40,7 +40,7 @@ public class TransferStock {
         this.relatedOrderNo = relatedOrderNo;
     }
 
-    public int supplyId;
+    private int supplyId;
 
     public int getSourceStorageLocationId() {
         return sourceStorageLocationId;
@@ -50,8 +50,8 @@ public class TransferStock {
         this.sourceStorageLocationId = sourceStorageLocationId;
     }
 
-    public int sourceStorageLocationId;
-  public int newStorageLocationId;
+    private int sourceStorageLocationId;
+  private int newStorageLocationId;
 
     public BigDecimal getAmount() {
         return amount;
@@ -71,7 +71,18 @@ public class TransferStock {
         this.unitAmount = unitAmount;
     }
 
-    public String unit;
-    public BigDecimal unitAmount;
+    private String unit;
+    private BigDecimal unitAmount;
     public String relatedOrderNo;
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
+
+    private String batchNo;
+
 }
