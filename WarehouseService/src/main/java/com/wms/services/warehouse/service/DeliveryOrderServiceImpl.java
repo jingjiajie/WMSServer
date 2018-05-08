@@ -12,6 +12,8 @@ import com.wms.utilities.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.wms.services.warehouse.datastructures.TransferArgs;
+import com.wms.services.warehouse.datastructures.TransferItem;
 
 import java.sql.Timestamp;
 import java.util.stream.Stream;
@@ -27,6 +29,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     OrderNoGenerator orderNoGenerator;
     @Autowired
     PersonService personService;
+    @Autowired
+    TransferOrderService transferOrderService;
+    @Autowired
+    TransferOrderItemService transferOrderItemService;
 
     private static final String NO_PREFIX = "D";
 
@@ -120,5 +126,25 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     }
                 }
         );
+    }
+
+    //翻包备货作业，生成移库单
+    public void transferPakage(String accountBook, TransferArgs transferArgs) {
+        TransferItem[] transferItems = transferArgs.getTransferItems();
+        Stream.of(transferItems).forEach((transferItem) -> {
+            //创建新的移库单
+            TransferOrder transferOrder = transferItem.getTransferOrder();
+            new Validator("移库单信息").notnull().validate(transferOrder);
+
+            int newInspectionNoteID = this.transferOrderService.add(accountBook, new TransferOrder[]{transferOrder})[0];
+
+            //按照安全库存信息，生成移库单条目
+            Stream.of(transferItem.getTransferOrderItems()).forEach((transferOrderItem)->{
+                //创建新的移库单条目
+                // todo （会按照安全库存自动更新移库数量）
+                transferOrderItem.setTransferOrderId(newInspectionNoteID);
+                this.transferOrderItemService.add(accountBook,new TransferOrderItem[]{transferOrderItem});
+            });
+        });
     }
 }
