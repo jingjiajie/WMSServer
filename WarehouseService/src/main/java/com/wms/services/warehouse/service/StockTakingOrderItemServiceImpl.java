@@ -4,15 +4,15 @@ import com.wms.services.warehouse.dao.StockTakingOrderItemDAO;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.StockRecord;
-import com.wms.utilities.model.StockRecordView;
-import com.wms.utilities.model.StockTakingOrderItem;
-import com.wms.utilities.model.StockTakingOrderItemView;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
+
+import java.math.BigDecimal;
+
 @Service
 @Transactional
 public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemService{
@@ -25,6 +25,12 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
     IDChecker idChecker;
     @Autowired
     StockRecordService stockRecordService;
+    @Autowired
+    StockTakingOrderItemService stockTakingOrderItemService;
+    @Autowired
+    StorageLocationService storageLocationService;
+    @Autowired
+    StorageAreaService storageAreaService;
     @Override
     public int[] add(String accountBook, StockTakingOrderItem[] stockTakingOrderItems) throws WMSServiceException {
 
@@ -76,7 +82,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
     {
         int mode=stockTakingOrderItemAdd.getMode();
 
-        //TODO
+        //TODO 只显示最新的记录
         StockRecordView[] stockRecord=stockRecordService.find(accountBook,new Condition().addCondition("supplyId",new Integer[]{stockTakingOrderItemAdd.getSupplyId()}).
                 addCondition("warehouseId",new Integer[]{stockTakingOrderItemAdd.getWarehouseId()}));
 
@@ -84,16 +90,57 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         {
             throw new WMSServiceException("没有查到此供货的任何库存信息");
         }
-        //添加所有信息条目
-        if (mode==0){
 
 
+        //把stockRecord改为分库区的数量
+        String storageArea;
+        for(int i=0;i<stockRecord.length;i++)
+        {
+            for(int j=i+1;j<stockRecord.length;j++)
+            {
+             StorageAreaView[] storageAreaViews= storageAreaService.find(accountBook,new Condition().addCondition("storageLocationId",new Integer[]{stockRecord[i].getStorageLocationId()}));
+
+             if(storageAreaViews.length!=1)
+             {
+                 throw new WMSServiceException("没有找到相关库位信息");
+             }
+             storageArea=storageAreaViews[0].getName();
+            }
         }
-        //只添加总数量条目
-        if(mode==1){
 
 
-        }
+        BigDecimal warehouseAmount=new BigDecimal(0);
+        StockTakingOrderItem stockTakingOrderItem=new StockTakingOrderItem();
+        stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
+        stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
+        stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
+            for(int i=0;i<stockRecord.length;i++)
+            {
+                //分不同单位单位数量添加所有库位信息条目
+                if (mode==0) {
+                    //已经建好盘点单
+                    stockTakingOrderItem.setComment("各个库区详细信息");
+                    stockTakingOrderItem.setStorageLocationId(stockRecord[i].getStorageLocationId());
+                    stockTakingOrderItem.setUnitAmount(stockRecord[i].getUnitAmount());
+                    stockTakingOrderItem.setUnit(stockRecord[i].getUnit());
+                    stockTakingOrderItem.setAmount(stockRecord[i].getAmount());
+                    stockTakingOrderItemService.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
+                }
+                //得到同一供货、同一仓库内的数量总和
+                warehouseAmount=warehouseAmount.add(stockRecord[i].getAmount());
+            }
+            //添加总数量条目
+        stockTakingOrderItem.setComment("总数");
+        stockTakingOrderItem.setUnit("无");
+        Integer integerNull=null;
+        BigDecimal bigDecimalNull=null;
+        stockTakingOrderItem.setStorageLocationId(integerNull);
+        stockTakingOrderItem.setUnitAmount(bigDecimalNull);
+        stockTakingOrderItem.setAmount(warehouseAmount);
+        stockTakingOrderItemService.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
+
+
+
     }
 
 

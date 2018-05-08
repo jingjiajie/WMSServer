@@ -53,7 +53,7 @@ public class TransferStock {
     public int sourceStorageLocationId;
   public int newStorageLocationId;
 
-    public int getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
@@ -61,9 +61,9 @@ public class TransferStock {
         return unitAmount;
     }
 
-    public int amount;
+    public BigDecimal amount;
 
-    public void setAmount(int amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
