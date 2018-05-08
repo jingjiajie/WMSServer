@@ -1,5 +1,7 @@
 package com.wms.services.warehouse.datastructures;
 
+import org.omg.CORBA.INTERNAL;
+
 import java.sql.Timestamp;
 
 public class StockTakingOrderItemAdd {
@@ -11,7 +13,7 @@ public class StockTakingOrderItemAdd {
         return supplyId;
     }
 
-    public int getPersonId() {
+    public Integer getPersonId() {
         return personId;
     }
 
@@ -27,7 +29,7 @@ public class StockTakingOrderItemAdd {
         this.supplyId = supplyId;
     }
 
-    public void setPersonId(int personId) {
+    public void setPersonId(Integer personId) {
         this.personId = personId;
     }
 
@@ -38,7 +40,7 @@ public class StockTakingOrderItemAdd {
 
     int supplyId;
 
-    int personId;
+    Integer personId;
 
     Timestamp checkTime=new Timestamp(System.currentTimeMillis());
 

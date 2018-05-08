@@ -120,14 +120,14 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     {
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
 
-        if (transferStock.amount==0)
+        if (transferStock.amount.equals(new BigDecimal(0)))
         {
             throw new WMSServiceException("移动的数量不能的0");
         }
         int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
         int supplyId=transferStock.getSupplyId();
         int newStorageLocationId=transferStock.getNewStorageLocationId();
-        int amount=transferStock.getAmount();
+        BigDecimal amount=transferStock.getAmount();
         String unit=transferStock.getUnit();
         BigDecimal unitAmount=transferStock.getUnitAmount();
         String relatedOrderNo=transferStock.getRelatedOrderNo();
@@ -154,7 +154,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
         StockRecordView[] stockRecordSource=new StockRecordView[] {stockRecordNewest1};
 
-        if(stockRecordSource[0].getAmount().compareTo(new BigDecimal(amount))==-1)
+        if(stockRecordSource[0].getAmount().compareTo(amount)==-1)
         {
             throw new WMSServiceException("移动的数量不能大于原有数量！");
         }
@@ -172,7 +172,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         StockRecord stockRecordSourceSave=new StockRecord();
         StockRecord stockRecordNewSave=new StockRecord();
         //第一条和源记录相同 只改变数量和相关单号
-        BigDecimal amountBig = new BigDecimal(amount);
+        BigDecimal amountBig = amount;
         stockRecordSourceSave.setWarehouseId(stockRecordSource[0].getWarehouseId());
         stockRecordSourceSave.setStorageLocationId(stockRecordSource[0].getStorageLocationId());
         stockRecordSourceSave.setSupplyId(stockRecordSource[0].getSupplyId());
@@ -246,14 +246,14 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     @Override
     public void modifyAmount(String accountBook,TransferStock transferStock )
     {
-        if (transferStock.amount==0)
+        if (transferStock.amount.equals(new BigDecimal(0)))
         {
             throw new WMSServiceException("修改的数量不能为0");
         }
 
         int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
         int supplyId=transferStock.getSupplyId();
-        BigDecimal amount=new BigDecimal(transferStock.getAmount());
+        BigDecimal amount=transferStock.getAmount();
         String unit=transferStock.getUnit();
         BigDecimal unitAmount=transferStock.getUnitAmount();
         //先查出源库存记录

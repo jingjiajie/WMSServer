@@ -5,6 +5,7 @@ import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.services.warehouse.service.StockTakingOrderItemService;
 import com.wms.utilities.model.StockRecord;
+import com.wms.utilities.model.StockTakingOrderItem;
 import com.wms.utilities.model.SupplierView;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.datastructures.Condition;
@@ -40,14 +41,21 @@ public class WarehouseService {
         //validator.in(a);
         //validator.min(5).in(a).validate(1);
         //validator.validate("1000.1");
-
         //StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
         StockTakingOrderItemService stockTakingOrderItemService=applicationContext.getBean(StockTakingOrderItemService.class);
        StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
        stockTakingOrderItemAdd.setWarehouseId(-1);
        stockTakingOrderItemAdd.setMode(0);
+       stockTakingOrderItemAdd.setStockTakingOrderId(1);
        stockTakingOrderItemAdd.setSupplyId(5);
+
+
+        StockTakingOrderItem stockTakingOrderItem=new StockTakingOrderItem();
+        stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
+        stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
+        stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
         stockTakingOrderItemService.addStockTakingOrderItemSingle("WMS_Template", stockTakingOrderItemAdd);
+
         //TransferStock transferStock=new TransferStock();
        // transferStock.setAmount(100);
        // transferStock.setUnit("个");
