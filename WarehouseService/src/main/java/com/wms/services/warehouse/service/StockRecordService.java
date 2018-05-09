@@ -10,7 +10,8 @@ import com.wms.utilities.service.BaseService;
 public interface StockRecordService
         extends   BaseService<StockRecord,StockRecordView>
 {
-    public void transformStock(String accountBook,TransferStock transferStock);
-    public void modifyAmount(String accountBook,TransferStock transferStock );
+    public void RealTransformStock(String accountBook,TransferStock transferStock);
+    public void addAmount(String accountBook,TransferStock transferStock );
     public StockRecordView[] find(String accountBook, StockRecordFind stockRecordFind);
+    public void modifyAvailableAmount(String accountBook,TransferStock transferStock);
 }

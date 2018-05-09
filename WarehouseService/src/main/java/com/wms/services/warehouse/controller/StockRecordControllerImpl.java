@@ -56,17 +56,17 @@ public class StockRecordControllerImpl implements StockRecordController {
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
-    public void transferStock(@PathVariable("accountBook") String accountBook,
+    public void RealTransferStock(@PathVariable("accountBook") String accountBook,
                               @RequestBody TransferStock transferStock){
 
-         stockRecordService.transformStock(accountBook,transferStock);
+         stockRecordService.RealTransformStock(accountBook,transferStock);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/modify_amount", method = RequestMethod.POST)
-    public void modifyAmount(@PathVariable("accountBook") String accountBook,
+    public void addAmount(@PathVariable("accountBook") String accountBook,
     @RequestBody TransferStock transferStock){
-        stockRecordService.modifyAmount(accountBook,transferStock);
+        stockRecordService.addAmount(accountBook,transferStock);
     }
 }

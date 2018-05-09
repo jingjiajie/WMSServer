@@ -99,4 +99,14 @@ public class TransferStock {
 
     private Timestamp inventoryDate;
 
+    public BigDecimal getModifyAvailableAmount() {
+        return modifyAvailableAmount;
+    }
+
+    public void setModifyAvailableAmount(BigDecimal modifyAvailableAmount) {
+        this.modifyAvailableAmount = modifyAvailableAmount;
+    }
+
+    private BigDecimal modifyAvailableAmount;
+
 }
