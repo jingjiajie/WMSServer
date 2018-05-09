@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -328,12 +330,46 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     @Override
      public  StockRecordView[] find(String accountBook, StockRecordFind stockRecordFind)
     {
-        Timestamp timestamp=stockRecordFind.getTimestamp();
-        Condition condition= stockRecordFind.getCondition();
-        condition.addCondition("time",timestamp, ConditionItem.Relation.LESS_THAN);
-        condition.addOrder("time", OrderItem.Order.DESC);
-        return stockRecordDAO.find(accountBook,condition);
+        Condition condition=stockRecordFind.getCondition();
+         List<StockRecordView> stockRecordViews=new ArrayList<StockRecordView>();
+        if(stockRecordFind.getTimestamp()!=null) {
+            condition.addCondition("time", new Timestamp[]{stockRecordFind.getTimestamp()}, ConditionItem.Relation.LESS_THAN).
+                    addOrder("time", OrderItem.Order.DESC);
+        }
+        if(stockRecordFind.getStorageLocationId()!=null)
+        {condition.addCondition("storageLocationId",new Integer[]{stockRecordFind.getStorageLocationId()});}
+        if(stockRecordFind.getSupplyId()!=null)
+        { condition.addCondition("supplyId",new Integer[]{stockRecordFind.getSupplyId()});}
+        if(stockRecordFind.getWarehouseId()!=null)
+        {condition.addCondition("warehouseId",new Integer[]{stockRecordFind.getWarehouseId()});}
+        if(stockRecordFind.getUnit()!=null)
+        {condition.addCondition("unit",new String[]{stockRecordFind.getUnit()});}
+        if(stockRecordFind.getUnitAomunt()!=null)
+        {condition.addCondition("unitAmount",new BigDecimal[]{stockRecordFind.getUnitAomunt()});}
+
+        while(stockRecordDAO.find(accountBook,condition).length>0) {
+            StockRecordView[] stockRecordTemp = stockRecordDAO.find(accountBook, condition);
+            stockRecordViews.add(stockRecordTemp[0]);
+            if(stockRecordFind.getStorageLocationId()!=null)
+            {condition.addCondition("storageLocationId",new Integer[]{stockRecordFind.getStorageLocationId()}, ConditionItem.Relation.NOT_EQUAL);}
+            if(stockRecordFind.getSupplyId()!=null)
+            { condition.addCondition("supplyId",new Integer[]{stockRecordFind.getSupplyId()}, ConditionItem.Relation.NOT_EQUAL);}
+            if(stockRecordFind.getWarehouseId()!=null)
+            {condition.addCondition("warehouseId",new Integer[]{stockRecordFind.getWarehouseId()}, ConditionItem.Relation.NOT_EQUAL);}
+            if(stockRecordFind.getUnit()!=null)
+            {condition.addCondition("unit",new String[]{stockRecordFind.getUnit()}, ConditionItem.Relation.NOT_EQUAL);}
+            if(stockRecordFind.getUnitAomunt()!=null)
+            {condition.addCondition("unitAmount",new BigDecimal[]{stockRecordFind.getUnitAomunt()}, ConditionItem.Relation.NOT_EQUAL);}
+        }
+        StockRecordView[] stockRecordViews1=new StockRecordView[stockRecordViews.size()];
+        StockRecordView[] stockRecordViews2=stockRecordViews.toArray(stockRecordViews1);
+        return stockRecordViews2;
     }
+
+
+
+
+
 
     private Integer[] warehouseIdFind(String accountBook,int storageLocationId) {
         StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{storageLocationId}));
@@ -353,7 +389,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
         new Validator("存货时间").notnull().validate(transferStock.getInventoryDate());
-        idChecker.check(StorageLocationService.class,accountBook,transferStock.getNewStorageLocationId(),"库位");
+        idChecker.check(StorageLocationService.class,accountBook,transferStock.getSourceStorageLocationId(),"库位");
         idChecker.check(SupplyService.class,accountBook,transferStock.getSupplyId(),"供货信息");
 
         //先查出源库存记录

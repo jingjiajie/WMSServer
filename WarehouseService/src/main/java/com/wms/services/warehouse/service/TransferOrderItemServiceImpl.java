@@ -54,7 +54,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             transferStock.setSupplyId(transferOrderItem.getSupplyId());
             transferStock.setUnit(transferOrderItem.getUnit());
             transferStock.setUnitAmount(transferOrderItem.getUnitAmount());
-            this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
+            this.stockRecordService.RealTransformStock(accountBook, transferStock);
         });
 
         this.validateEntities(accountBook, transferOrderItems);
