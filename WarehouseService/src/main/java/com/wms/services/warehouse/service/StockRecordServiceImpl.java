@@ -4,14 +4,12 @@ package com.wms.services.warehouse.service;
 import com.wms.services.warehouse.dao.StockRecordDAO;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.TransferStock;
+import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.datastructures.OrderItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.StockRecord;
-import com.wms.utilities.model.StockRecordView;
-import com.wms.utilities.model.StorageLocationView;
-import com.wms.utilities.model.TransferRecord;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.stream.Stream;
 
 @Service
@@ -34,6 +34,10 @@ public class StockRecordServiceImpl implements StockRecordService {
     SupplyService supplyService;
     @Autowired
     TransferRecordService transformRecordService;
+    @Autowired
+    StorageAreaService storageAreaService;
+    @Autowired
+    IDChecker idChecker;
 
     @Override
     public int[] add(String accountBook, StockRecord[] stockRecords) throws WMSServiceException {
@@ -124,7 +128,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     public void transformStock(String accountBook, TransferStock transferStock)
     {
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
-        new Validator("批号").notEmpty().notnull().validate(transferStock.getBatchNo());
+        new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
+        new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
+        new Validator("数量").notnull().validate(transferStock.getAmount());
+        //new Validator("存货时间").notnull().validate(transferStock.getInventoryDate());
 
         int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
         int supplyId=transferStock.getSupplyId();
@@ -137,10 +144,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         //先查出最新源库存记录和新库位
         StockRecordView[] stockRecordSource1= stockRecordDAO.find(accountBook,new Condition().addCondition("supplyId",new Integer[]{supplyId}).
                 addCondition("storageLocationId",new Integer[]{sourceStorageLocationId}).addCondition("unit",unit).addCondition("unitAmount",unitAmount).
-                addCondition("batchNo",new String[] {transferStock.getBatchNo()}));
-        new Validator("数量").min(0).validate(amount);
-        new Validator("单位数量").notnull().min(0).validate(unitAmount);
-        //TODO 应该为最新的一条
+                addCondition("inventoryDate",new String[] {transferStock.getBatchNo()}));
+
         if(stockRecordSource1.length==0)
         {
             throw new WMSServiceException("没查到符合要求的源库存记录，请检查相关信息！");
@@ -161,20 +166,25 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         {
             throw new WMSServiceException("移动的数量不能大于原有数量！");
         }
+
         StorageLocationView[] storageLocationNew= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{newStorageLocationId}));
+
         if(storageLocationNew.length!=1)
         {
             throw new WMSServiceException("请检查输入的新库位id，没有找到相关记录");
         }
+
         int sourceStockRecordId=stockRecordSource[0].getId();
         //查到新库位上最新的相同供货的记录
         StockRecordView[] stockRecordViews=stockRecordDAO.find(accountBook, new Condition().addCondition( "storageLocationId",new Integer[]{newStorageLocationId}).
-                addCondition("supplyId",new Integer[]{supplyId}).addCondition("unit",new String[]{unit}).addCondition("unitAmount",new BigDecimal[]{unitAmount}));
+                addCondition("supplyId",new Integer[]{supplyId}).addCondition("unit",new String[]{unit}).addCondition("unitAmount",new BigDecimal[]{unitAmount})
+        .addCondition("inventoryDate",new Timestamp[]{transferStock.getInventoryDate()}));
         StockRecordView stockRecordNewest= null;
         //新建两条库存记录
         StockRecord stockRecordSourceSave=new StockRecord();
         StockRecord stockRecordNewSave=new StockRecord();
         //第一条和源记录相同 只改变数量和相关单号
+
         stockRecordSourceSave.setWarehouseId(stockRecordSource[0].getWarehouseId());
         stockRecordSourceSave.setStorageLocationId(stockRecordSource[0].getStorageLocationId());
         stockRecordSourceSave.setSupplyId(stockRecordSource[0].getSupplyId());
@@ -185,6 +195,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordSourceSave.setUnit(stockRecordSource[0].getUnit());
         stockRecordSourceSave.setAmount(stockRecordSource[0].getAmount().subtract(amount));
         stockRecordSourceSave.setRelatedOrderNo(relatedOrderNo);
+        stockRecordSourceSave.setBatchNo(stockRecordSource[0].getBatchNo());
         stockRecordSourceSave.setTime(new Timestamp(System.currentTimeMillis()));
 
         if(stockRecordViews.length>0) {
@@ -196,6 +207,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewest = stockRecordViews[i];
                 }
             }
+
             //增加第二条库存记录
             //已经找到最新的可以叠加的记录，则第二条为叠加
             stockRecordNewSave.setAmount(amount.add(stockRecordNewest.getAmount()));
@@ -208,7 +220,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             stockRecordNewSave.setStorageLocationId(newStorageLocationId);
             stockRecordNewSave.setWarehouseId(stockRecordSource[0].getWarehouseId());
             stockRecordNewSave.setSupplyId(supplyId);
-            stockRecordNewSave.setBatchNo(transferStock.getBatchNo());
+            stockRecordNewSave.setBatchNo(stockRecordSource[0].getBatchNo());
             stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
         }
         //如果没有数量直接为新数量
@@ -221,7 +233,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNewSave});
         if(newStockRecordId.length!=1)
         {
-            throw new WMSServiceException("添加失败！");
+            throw new WMSServiceException("添加新库存记录失败！");
         }
         //添加一条移位记录
         TransferRecord transferRecord=new TransferRecord();
@@ -235,13 +247,16 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     public void modifyAmount(String accountBook,TransferStock transferStock )
     {
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
-        new Validator("批号").notnull().notEmpty().validate(transferStock.getBatchNo());
-        if (transferStock.amount.equals(new BigDecimal(0)))
-        {
-            throw new WMSServiceException("修改的数量不能为0");
-        }
-
+        //new Validator("批号").notnull().notEmpty().validate(transferStock.getBatchNo());
+        new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
+        new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
+        new Validator("数量").notnull().validate(transferStock.getAmount());
+        new Validator("存货时间").notnull().validate(transferStock.getInventoryDate());
+        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd");
+        String batchNo=format.format(transferStock.getInventoryDate());
         int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
+        Integer[] warehouseId=warehouseIdFind(accountBook,sourceStorageLocationId);//至少能返回一个
+        idChecker.check(WarehouseService.class,accountBook,warehouseId[0],"仓库");
         int supplyId=transferStock.getSupplyId();
         BigDecimal amount=transferStock.getAmount();
         String unit=transferStock.getUnit();
@@ -249,58 +264,61 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         //先查出源库存记录
         StockRecordView[] stockRecordSource= stockRecordDAO.find(accountBook,new Condition().addCondition("supplyId",new Integer[]{supplyId}).
                 addCondition("storageLocationId",new Integer[]{sourceStorageLocationId}).addCondition("unit",unit).addCondition("unitAmount",unitAmount)
-        .addCondition("batchNo",new String[]{transferStock.getBatchNo()}));
+        .addCondition("inventoryDate",new Timestamp[]{transferStock.getInventoryDate()}).addOrder("time",OrderItem.Order.DESC ));
+        // 降序第一条就为最新的
 
-        if(stockRecordSource.length==0||stockRecordSource[0].getAmount().compareTo(new BigDecimal(0))==0)
+        //如果没找到原纪录 或原纪录数量为0且为移出
+        if (stockRecordSource.length==0||(stockRecordSource[0].getAmount().compareTo(new BigDecimal(0)) == 0))
         {
-            if(amount.compareTo(new BigDecimal(0))==-1){
+            if (amount.compareTo(new BigDecimal(0)) == -1) {
                 throw new WMSServiceException("所选库位无相关物料，无法移出!");
             }
-
-            if(stockRecordSource.length==0) {
-                //如果为移入且没有则新建一条记录
-                StockRecord stockRecord = new StockRecord();
-                stockRecord.setAmount(amount);
-                stockRecord.setUnit(unit);
-                stockRecord.setUnitAmount(unitAmount);
-                stockRecord.setRelatedOrderNo(transferStock.getRelatedOrderNo());
-                stockRecord.setWarehouseId(1);//TODO 仓库id还没查出来
-               // stockRecord.setManufactureDate(stockRecordNewest.getManufactureDate());
-               // stockRecord.setExpiryDate(stockRecordNewest.getExpiryDate());
-              //  stockRecord.setInventoryDate(stockRecordNewest.getInventoryDate());
-                stockRecord.setStorageLocationId(sourceStorageLocationId);
-                stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
-                stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
-            }
         }
 
+        //其余情况无错误
+        StockRecord stockRecord = new StockRecord();
+        //如果没有原纪录
+        if(stockRecordSource.length==0){
+            stockRecord.setUnit(unit);
+            stockRecord.setUnitAmount(unitAmount);
+            stockRecord.setRelatedOrderNo(transferStock.getRelatedOrderNo());
+            stockRecord.setWarehouseId(warehouseId[0]);
+            stockRecord.setBatchNo(batchNo);
+            stockRecord.setInventoryDate(transferStock.getInventoryDate());
+            stockRecord.setStorageLocationId(sourceStorageLocationId);
+            stockRecord.setSupplyId(supplyId);
+            stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+            stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+            stockRecord.setAmount(amount);
+        }
+        //如果有原纪录
+        else {
         if(amount.add(stockRecordSource[0].getAmount()).compareTo(new BigDecimal(0))!=1)
         {
-            throw new WMSServiceException("移动数量不能比原有数量大");
+            throw new WMSServiceException("移出数量不能比原有数量大");
         }
-
         StockRecordView stockRecordNewest= stockRecordSource[0];
         Timestamp newestTime = stockRecordNewest.getTime();
-        for (int i = 1; i < stockRecordSource.length; i++) {
+        for (int i = 0; i < stockRecordSource.length; i++) {
             if (newestTime.compareTo(stockRecordSource[i].getTime())==-1) {
                 newestTime = stockRecordSource[i].getTime();
                 stockRecordNewest = stockRecordSource[i];
             }
         }
-        StockRecord stockRecord=new StockRecord();
-        stockRecord.setAmount(stockRecordNewest.getAmount().add(amount));
-        stockRecord.setUnit(unit);
-        stockRecord.setUnitAmount(unitAmount);
-        stockRecord.setRelatedOrderNo(stockRecordNewest.getRelatedOrderNo());
-        stockRecord.setWarehouseId(stockRecordNewest.getWarehouseId());
-        stockRecord.setManufactureDate(stockRecordNewest.getManufactureDate());
-        stockRecord.setExpiryDate(stockRecordNewest.getExpiryDate());
-        stockRecord.setInventoryDate(stockRecordNewest.getInventoryDate());
-        stockRecord.setStorageLocationId(stockRecordNewest.getStorageLocationId());
-        stockRecord.setSupplyId(supplyId);
-        stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
-        stockRecordDAO.add(accountBook,new StockRecord[]{stockRecord});
+        StockRecord stockRecord1=new StockRecord();
+        stockRecord1.setAmount(stockRecordNewest.getAmount().add(amount));
+        stockRecord1.setUnit(unit);
+        stockRecord1.setUnitAmount(unitAmount);
+        stockRecord1.setRelatedOrderNo(stockRecordNewest.getRelatedOrderNo());
+        stockRecord1.setWarehouseId(stockRecordNewest.getWarehouseId());
+        stockRecord1.setManufactureDate(stockRecordNewest.getManufactureDate());
+        stockRecord1.setExpiryDate(stockRecordNewest.getExpiryDate());
+        stockRecord1.setInventoryDate(stockRecordNewest.getInventoryDate());
+        stockRecord1.setStorageLocationId(stockRecordNewest.getStorageLocationId());
+        stockRecord1.setSupplyId(supplyId);
+        stockRecord1.setTime(new Timestamp(System.currentTimeMillis()));
+        stockRecordDAO.add(accountBook,new StockRecord[]{stockRecord1});
+        }
     }
 
     @Override
@@ -313,4 +331,14 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         return stockRecordDAO.find(accountBook,condition);
     }
 
+    private Integer[] warehouseIdFind(String accountBook,int storageLocationId) {
+        StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{storageLocationId}));
+        if (storageLocationViews.length != 1) {
+            throw new WMSServiceException("没有找到相关库位！");}
+            StorageAreaView[] storageAreaViews = storageAreaService.find(accountBook, new Condition().addCondition("id", new Integer[]{storageLocationViews[0].getStorageAreaId()}));
+            if (storageAreaViews.length != 1) {
+                throw new WMSServiceException("没有找到相关库区!");
+            }
+        return    new Integer[] {storageAreaViews[0].getWarehouseId()};
+    }
 }

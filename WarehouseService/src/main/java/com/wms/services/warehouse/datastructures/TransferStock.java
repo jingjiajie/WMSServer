@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.datastructures;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 public class TransferStock {
 
@@ -51,7 +52,8 @@ public class TransferStock {
     }
 
     private int sourceStorageLocationId;
-  private int newStorageLocationId;
+
+    private int newStorageLocationId;
 
     public BigDecimal getAmount() {
         return amount;
@@ -72,7 +74,9 @@ public class TransferStock {
     }
 
     private String unit;
+
     private BigDecimal unitAmount;
+
     public String relatedOrderNo;
 
     public String getBatchNo() {
@@ -84,5 +88,15 @@ public class TransferStock {
     }
 
     private String batchNo;
+
+    public Timestamp getInventoryDate() {
+        return inventoryDate;
+    }
+
+    public void setInventoryDate(Timestamp inventoryDate) {
+        this.inventoryDate = inventoryDate;
+    }
+
+    private Timestamp inventoryDate;
 
 }
