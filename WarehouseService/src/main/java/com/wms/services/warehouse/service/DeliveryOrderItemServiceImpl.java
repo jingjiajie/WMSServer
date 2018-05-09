@@ -48,7 +48,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
             transferStock.setUnit(deliveryOrderItem.getUnit());
             transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
-            this.stockRecordService.modifyAmount(accountBook, transferStock);
+            this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
         });
         //添加到数据库中
         int[] ids = this.deliveryOrderItemDAO.add(accountBook, deliveryOrderItems);
@@ -79,7 +79,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                 transferStock.setUnit(deliveryOrderItem.getUnit());
                 transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
-                this.stockRecordService.modifyAmount(accountBook, transferStock);
+                this.stockRecordService.RealTransformStock(accountBook, transferStock);
             }
         });
         this.deliveryOrderItemDAO.update(accountBook,deliveryOrderItems);

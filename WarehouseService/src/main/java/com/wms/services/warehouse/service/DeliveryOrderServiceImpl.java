@@ -33,6 +33,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     TransferOrderService transferOrderService;
     @Autowired
     TransferOrderItemService transferOrderItemService;
+    @Autowired
+    SafetyStockService safetyStockService;
+    @Autowired
+    StockRecordService stockRecordService;
 
     private static final String NO_PREFIX = "D";
 
@@ -136,14 +140,27 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             TransferOrder transferOrder = transferItem.getTransferOrder();
             new Validator("移库单信息").notnull().validate(transferOrder);
 
-            int newInspectionNoteID = this.transferOrderService.add(accountBook, new TransferOrder[]{transferOrder})[0];
+            int newTransferOrderID = this.transferOrderService.add(accountBook, new TransferOrder[]{transferOrder})[0];
 
             //按照安全库存信息，生成移库单条目
             Stream.of(transferItem.getTransferOrderItems()).forEach((transferOrderItem)->{
                 //创建新的移库单条目
-                // todo （会按照安全库存自动更新移库数量）
-                transferOrderItem.setTransferOrderId(newInspectionNoteID);
-                this.transferOrderItemService.add(accountBook,new TransferOrderItem[]{transferOrderItem});
+                // todo 等数据库修改确定
+                //找到对应供货对应库位的安全库存信息
+                SafetyStockView[] safetyStockViews=safetyStockService.find(accountBook,
+                        new Condition().addCondition("targetStorageLocationId",transferOrderItem.getTargetStorageLocationId()).addCondition("supplyID",transferOrderItem.getSupplyId()).addCondition("type",1));
+                StockRecordView[] stockRecordViews=stockRecordService.find(accountBook,
+                        new Condition().addCondition("storageLocationID",transferOrderItem.getTargetStorageLocationId()).addCondition("supplyID",transferOrderItem.getSupplyId()));
+                if(stockRecordViews[0].getAmount().compareTo(safetyStockViews[0].getAmount())==-1)//如果库存数量小于安全库存数量
+                {
+                    transferOrderItem.setTransferOrderId(newTransferOrderID);
+                    this.transferOrderItemService.add(accountBook,new TransferOrderItem[]{transferOrderItem});
+                }
+                else{
+                    //库存充足取消备货
+                    throw new WMSServiceException(String.format("当前备货区(%s)库存充足，不需要备货", safetyStockViews[0].getStorageLocationName()));
+                }
+
             });
         });
     }

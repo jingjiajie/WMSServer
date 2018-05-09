@@ -42,6 +42,7 @@ public class SafetyStockServiceImpl implements SafetyStockService{
                     new Validator("安全库存数量(个)").min(0).validate(safetyStock.getAmount());
                     new Validator("单位").notnull().validate(safetyStock.getUnit());
                     new Validator("单位数量").min(0).validate(safetyStock.getUnitAmount());
+                    new Validator("类型").min(0).max(2).validate(safetyStock.getType());
                 }
         );
 
@@ -73,6 +74,7 @@ public class SafetyStockServiceImpl implements SafetyStockService{
             new Validator("安全库存数量(个)").min(0).validate(safetyStock.getAmount());
             new Validator("单位").notnull().validate(safetyStock.getUnit());
             new Validator("单位数量").min(0).validate(safetyStock.getUnitAmount());
+            new Validator("类型").min(0).max(2).validate(safetyStock.getType());
         });
 
 
