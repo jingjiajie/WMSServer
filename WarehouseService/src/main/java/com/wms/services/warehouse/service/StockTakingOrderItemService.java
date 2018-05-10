@@ -7,5 +7,6 @@ import com.wms.utilities.service.BaseService;
 
 public interface StockTakingOrderItemService
         extends BaseService<StockTakingOrderItem, StockTakingOrderItemView> {
-    public void addStockTakingOrderItemSingle(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
+    void addStockTakingOrderItemSingle(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
+    void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
 }

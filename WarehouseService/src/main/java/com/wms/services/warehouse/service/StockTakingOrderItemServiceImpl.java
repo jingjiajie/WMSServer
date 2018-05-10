@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
-
-
+import com.wms.services.warehouse.service.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.sun.xml.internal.bind.v2.TODO;
 import com.wms.services.warehouse.dao.StockTakingOrderItemDAO;
 import com.wms.utilities.IDChecker;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
     DeliveryOrderItemService deliveryOrderItemService;
     @Autowired
     DeliveryOrderService deliveryOrderService;
+    @Autowired
+    SupplyService supplyService;
 
     @Override
     public int[] add(String accountBook, StockTakingOrderItem[] stockTakingOrderItems) throws WMSServiceException {
@@ -84,6 +88,25 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
     @Override
     public StockTakingOrderItemView[] find(String accountBook, Condition cond) throws WMSServiceException {
         return this.stockTakingOrderItemDAO.find(accountBook, cond);
+    }
+
+    @Override
+    public void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd) {
+
+        SupplyView[] supplyView=supplyService.find(accountBook,new Condition());
+        
+        if(supplyView.length==0){throw new WMSServiceException("无任何供货记录！");}
+       // Integer[] supplyIdAll=new Integer[supplyView.length];
+        for(int i=0;i<supplyView.length;i++){
+            StockTakingOrderItemAdd stockTakingOrderItemAddAll=new StockTakingOrderItemAdd();
+            stockTakingOrderItemAddAll.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
+            stockTakingOrderItemAddAll.setMode(stockTakingOrderItemAdd.getMode());
+            stockTakingOrderItemAddAll.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
+            stockTakingOrderItemAddAll.setCheckTime(stockTakingOrderItemAdd.getCheckTime());
+            stockTakingOrderItemAddAll.setPersonId(stockTakingOrderItemAdd.getPersonId());
+            stockTakingOrderItemAddAll.setSupplyId(supplyView[i].getId());
+            this.addStockTakingOrderItemSingle(accountBook,stockTakingOrderItemAddAll);
+        }
     }
 
     @Override
