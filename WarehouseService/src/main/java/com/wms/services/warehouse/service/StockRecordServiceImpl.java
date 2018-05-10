@@ -163,9 +163,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
         StockRecordView[] stockRecordSource=new StockRecordView[] {stockRecordNewest1};
 
-        if(stockRecordSource[0].getAmount().compareTo(amount)==-1)
+        if(stockRecordSource[0].getAvailableAmount().compareTo(amount)==-1)
         {
-            throw new WMSServiceException("移动的数量不能大于原有数量！");
+            throw new WMSServiceException("移动的数量不能大于可用数量！");
         }
 
         StorageLocationView[] storageLocationNew= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{newStorageLocationId}));
@@ -195,7 +195,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordSourceSave.setUnitAmount(stockRecordSource[0].getUnitAmount());
         stockRecordSourceSave.setUnit(stockRecordSource[0].getUnit());
         stockRecordSourceSave.setAmount(stockRecordSource[0].getAmount().subtract(amount));
-        stockRecordSourceSave.setAvailableAmount(stockRecordSource[0].getAmount().subtract(amount));
+        stockRecordSourceSave.setAvailableAmount(stockRecordSource[0].getAvailableAmount().subtract(amount));
         stockRecordSourceSave.setRelatedOrderNo(relatedOrderNo);
         stockRecordSourceSave.setBatchNo(stockRecordSource[0].getBatchNo());
         stockRecordSourceSave.setTime(new Timestamp(System.currentTimeMillis()));
@@ -213,7 +213,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             //增加第二条库存记录
             //已经找到最新的可以叠加的记录，则第二条为叠加
             stockRecordNewSave.setAmount(amount.add(stockRecordNewest.getAmount()));
-            stockRecordNewSave.setAvailableAmount(amount.add(stockRecordNewest.getAmount()));
+            stockRecordNewSave.setAvailableAmount(stockRecordSource[0].getAvailableAmount().add(stockRecordNewest.getAmount()));
             stockRecordNewSave.setUnit(stockRecordNewest.getUnit());
             stockRecordNewSave.setUnitAmount(unitAmount);
             stockRecordNewSave.setRelatedOrderNo(relatedOrderNo);
@@ -272,7 +272,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         // 降序第一条就为最新的
 
         //如果没找到原纪录或原纪录数量为0且为移出
-        if (stockRecordSource.length==0||(stockRecordSource[0].getAmount().compareTo(new BigDecimal(0)) == 0))
+        if (stockRecordSource.length==0||(stockRecordSource[0].getAvailableAmount().compareTo(new BigDecimal(0)) == 0))
         {
             if (amount.compareTo(new BigDecimal(0)) == -1) {
                 throw new WMSServiceException("所选库位无相关物料，无法移出!");
@@ -281,7 +281,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
         //其余情况无错误
         StockRecord stockRecord = new StockRecord();
-        //如果没有原纪录由于以上判断也不可能为移出所有直接新建一条
+        //如果没有原纪录由于以上判断也不可能为移出所以直接新建一条
         if(stockRecordSource.length==0){
             stockRecord.setUnit(unit);
             stockRecord.setUnitAmount(unitAmount);
@@ -298,9 +298,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         }
         //如果有原纪录
         else {
-        if(amount.add(stockRecordSource[0].getAmount()).compareTo(new BigDecimal(0))!=1)
+        if(amount.add(stockRecordSource[0].getAvailableAmount()).compareTo(new BigDecimal(0))!=1)
         {
-            throw new WMSServiceException("移出数量不能比实际数量大");
+            throw new WMSServiceException("移出数量不能比可用数量大");
         }
         StockRecordView stockRecordNewest= stockRecordSource[0];
         Timestamp newestTime = stockRecordNewest.getTime();
