@@ -312,7 +312,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         }
         StockRecord stockRecord1=new StockRecord();
         stockRecord1.setAmount(stockRecordNewest.getAmount().add(amount));
-        stockRecord1.setAvailableAmount(stockRecordNewest.getAmount().add(amount));
+        stockRecord1.setAvailableAmount(stockRecordNewest.getAvailableAmount().add(amount));
         stockRecord1.setUnit(unit);
         stockRecord1.setUnitAmount(unitAmount);
         stockRecord1.setRelatedOrderNo(stockRecordNewest.getRelatedOrderNo());
