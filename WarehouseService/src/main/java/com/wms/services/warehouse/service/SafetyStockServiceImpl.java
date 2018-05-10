@@ -55,10 +55,11 @@ public class SafetyStockServiceImpl implements SafetyStockService{
                     } else if (this.supplyService.find(accountBook,
                             new Condition().addCondition("id", safetyStock.getSupplyId())).length == 0) {
                         throw new WMSServiceException(String.format("供应信息不存在，请重新提交！(%d)", safetyStock.getSupplyId()));
-                    } else if (this.storageLocationService.find(accountBook,
-                            new Condition().addCondition("id", safetyStock.getStorageLocationId())).length == 0) {
-                        throw new WMSServiceException(String.format("库位不存在，请重新提交！(%d)", safetyStock.getStorageLocationId()));
                     }
+                    //TODO else if (this.storageLocationService.find(accountBook,
+                         //TODO   new Condition().addCondition("id", safetyStock.getStorageLocationId())).length == 0) {
+                       //TODO throw new WMSServiceException(String.format("库位不存在，请重新提交！(%d)", safetyStock.getStorageLocationId()));
+                    //}
                 }
         );
 

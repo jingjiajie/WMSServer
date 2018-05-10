@@ -433,7 +433,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
        new Validator("新单位").notnull().validate(transferStock.getNewUnit());
        new Validator("新单位数量").notnull().notEmpty().validate(transferStock.getNewUnitAmount());
 
-
        int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
        int supplyId=transferStock.getSupplyId();
        int newStorageLocationId=transferStock.getNewStorageLocationId();

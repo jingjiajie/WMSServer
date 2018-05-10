@@ -6,7 +6,7 @@
   <session-factory>
     <property name="connection.url">jdbc:mysql://linuxserver.jingjiajie.com:3306</property>
     <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-      <mapping class="com.wms.utilities.model.SafetyStock"/>
+    <mapping class="com.wms.utilities.model.SafetyStock"/>
       <mapping class="com.wms.utilities.model.TransferOrderItem"/>
       <mapping class="com.wms.utilities.model.SafetyStockView"/>
       <mapping class="com.wms.utilities.model.TransferOrderItemView"/>
@@ -14,6 +14,8 @@
       <mapping resource="com/wms/utilities/model/StockRecord.hbm.xml"/>
       <mapping class="com.wms.utilities.model.StockRecordView"/>
       <mapping resource="com/wms/utilities/model/StockRecordView.hbm.xml"/>
+      <mapping resource="com/wms/utilities/model/SafetyStock.hbm.xml"/>
+      <mapping resource="com/wms/utilities/model/SafetyStockView.hbm.xml"/>
       <!-- <property name="connection.username"/> -->
     <!-- <property name="connection.password"/> -->
 

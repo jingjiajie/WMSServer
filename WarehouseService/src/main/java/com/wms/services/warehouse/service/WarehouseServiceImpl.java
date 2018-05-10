@@ -19,8 +19,7 @@ import java.util.stream.Stream;
 public class WarehouseServiceImpl implements WarehouseService{
     @Autowired
     WarehouseDAO warehouseDAO;
-    @Autowired
-    SupplyService supplyService;
+
     @Transactional
     public int[] add(String accountBook, Warehouse[] warehouses) throws WMSServiceException
     {

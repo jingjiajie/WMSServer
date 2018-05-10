@@ -5,6 +5,7 @@ import com.wms.utilities.model.Warehouse;
 import com.wms.utilities.model.WarehouseView;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class WarehouseDAOImpl

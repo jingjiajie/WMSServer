@@ -10,7 +10,6 @@ public class SafetyStockView {
     private int id;
     private int warehouseId;
     private int supplyId;
-    private int storageLocationId;
     private BigDecimal amount;
     private String unit;
     private BigDecimal unitAmount;
@@ -19,9 +18,15 @@ public class SafetyStockView {
     private String materialName;
     private String supplierNo;
     private String supplierName;
-    private String storageLocationNo;
-    private String storageLocationName;
     private int type;
+    private int targetStorageLocationId;
+    private int sourceStorageLocationId;
+    private String sourceStorageLocationNo;
+    private String sourceStorageLocationName;
+    private String targetStorageLocationNo;
+    private String targetStorageLocationName;
+    private String sourceUnit;
+    private BigDecimal sourceUnitAmount;
 
     @Basic
     @Column(name = "ID")
@@ -51,16 +56,6 @@ public class SafetyStockView {
 
     public void setSupplyId(int supplyId) {
         this.supplyId = supplyId;
-    }
-
-    @Basic
-    @Column(name = "StorageLocationID")
-    public int getStorageLocationId() {
-        return storageLocationId;
-    }
-
-    public void setStorageLocationId(int storageLocationId) {
-        this.storageLocationId = storageLocationId;
     }
 
     @Basic
@@ -144,26 +139,6 @@ public class SafetyStockView {
     }
 
     @Basic
-    @Column(name = "StorageLocationNo")
-    public String getStorageLocationNo() {
-        return storageLocationNo;
-    }
-
-    public void setStorageLocationNo(String storageLocationNo) {
-        this.storageLocationNo = storageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "StorageLocationName")
-    public String getStorageLocationName() {
-        return storageLocationName;
-    }
-
-    public void setStorageLocationName(String storageLocationName) {
-        this.storageLocationName = storageLocationName;
-    }
-
-    @Basic
     @Column(name = "Type")
     public int getType() {
         return type;
@@ -171,6 +146,86 @@ public class SafetyStockView {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    @Basic
+    @Column(name = "TargetStorageLocationID")
+    public int getTargetStorageLocationId() {
+        return targetStorageLocationId;
+    }
+
+    public void setTargetStorageLocationId(int targetStorageLocationId) {
+        this.targetStorageLocationId = targetStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "SourceStorageLocationID")
+    public int getSourceStorageLocationId() {
+        return sourceStorageLocationId;
+    }
+
+    public void setSourceStorageLocationId(int sourceStorageLocationId) {
+        this.sourceStorageLocationId = sourceStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "SourceStorageLocationNo")
+    public String getSourceStorageLocationNo() {
+        return sourceStorageLocationNo;
+    }
+
+    public void setSourceStorageLocationNo(String sourceStorageLocationNo) {
+        this.sourceStorageLocationNo = sourceStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "SourceStorageLocationName")
+    public String getSourceStorageLocationName() {
+        return sourceStorageLocationName;
+    }
+
+    public void setSourceStorageLocationName(String sourceStorageLocationName) {
+        this.sourceStorageLocationName = sourceStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "TargetStorageLocationNo")
+    public String getTargetStorageLocationNo() {
+        return targetStorageLocationNo;
+    }
+
+    public void setTargetStorageLocationNo(String targetStorageLocationNo) {
+        this.targetStorageLocationNo = targetStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "TargetStorageLocationName")
+    public String getTargetStorageLocationName() {
+        return targetStorageLocationName;
+    }
+
+    public void setTargetStorageLocationName(String targetStorageLocationName) {
+        this.targetStorageLocationName = targetStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "SourceUnit")
+    public String getSourceUnit() {
+        return sourceUnit;
+    }
+
+    public void setSourceUnit(String sourceUnit) {
+        this.sourceUnit = sourceUnit;
+    }
+
+    @Basic
+    @Column(name = "SourceUnitAmount")
+    public BigDecimal getSourceUnitAmount() {
+        return sourceUnitAmount;
+    }
+
+    public void setSourceUnitAmount(BigDecimal sourceUnitAmount) {
+        this.sourceUnitAmount = sourceUnitAmount;
     }
 
     @Override
@@ -183,8 +238,9 @@ public class SafetyStockView {
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
         if (supplyId != that.supplyId) return false;
-        if (storageLocationId != that.storageLocationId) return false;
         if (type != that.type) return false;
+        if (targetStorageLocationId != that.targetStorageLocationId) return false;
+        if (sourceStorageLocationId != that.sourceStorageLocationId) return false;
         if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
         if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
         if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
@@ -194,9 +250,16 @@ public class SafetyStockView {
         if (materialName != null ? !materialName.equals(that.materialName) : that.materialName != null) return false;
         if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
         if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
-        if (storageLocationNo != null ? !storageLocationNo.equals(that.storageLocationNo) : that.storageLocationNo != null)
+        if (sourceStorageLocationNo != null ? !sourceStorageLocationNo.equals(that.sourceStorageLocationNo) : that.sourceStorageLocationNo != null)
             return false;
-        if (storageLocationName != null ? !storageLocationName.equals(that.storageLocationName) : that.storageLocationName != null)
+        if (sourceStorageLocationName != null ? !sourceStorageLocationName.equals(that.sourceStorageLocationName) : that.sourceStorageLocationName != null)
+            return false;
+        if (targetStorageLocationNo != null ? !targetStorageLocationNo.equals(that.targetStorageLocationNo) : that.targetStorageLocationNo != null)
+            return false;
+        if (targetStorageLocationName != null ? !targetStorageLocationName.equals(that.targetStorageLocationName) : that.targetStorageLocationName != null)
+            return false;
+        if (sourceUnit != null ? !sourceUnit.equals(that.sourceUnit) : that.sourceUnit != null) return false;
+        if (sourceUnitAmount != null ? !sourceUnitAmount.equals(that.sourceUnitAmount) : that.sourceUnitAmount != null)
             return false;
 
         return true;
@@ -207,7 +270,6 @@ public class SafetyStockView {
         int result = id;
         result = 31 * result + warehouseId;
         result = 31 * result + supplyId;
-        result = 31 * result + storageLocationId;
         result = 31 * result + (amount != null ? amount.hashCode() : 0);
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
         result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
@@ -216,9 +278,15 @@ public class SafetyStockView {
         result = 31 * result + (materialName != null ? materialName.hashCode() : 0);
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
         result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
-        result = 31 * result + (storageLocationNo != null ? storageLocationNo.hashCode() : 0);
-        result = 31 * result + (storageLocationName != null ? storageLocationName.hashCode() : 0);
         result = 31 * result + type;
+        result = 31 * result + targetStorageLocationId;
+        result = 31 * result + sourceStorageLocationId;
+        result = 31 * result + (sourceStorageLocationNo != null ? sourceStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (sourceStorageLocationName != null ? sourceStorageLocationName.hashCode() : 0);
+        result = 31 * result + (targetStorageLocationNo != null ? targetStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (targetStorageLocationName != null ? targetStorageLocationName.hashCode() : 0);
+        result = 31 * result + (sourceUnit != null ? sourceUnit.hashCode() : 0);
+        result = 31 * result + (sourceUnitAmount != null ? sourceUnitAmount.hashCode() : 0);
         return result;
     }
 }

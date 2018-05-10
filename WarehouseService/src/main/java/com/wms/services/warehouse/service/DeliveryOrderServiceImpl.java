@@ -158,7 +158,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 }
                 else{
                     //库存充足取消备货
-                    throw new WMSServiceException(String.format("当前备货区(%s)库存充足，不需要备货", safetyStockViews[0].getStorageLocationName()));
+                   //TODO  throw new WMSServiceException(String.format("当前备货区(%s)库存充足，不需要备货", safetyStockViews[0].getStorageLocationName()));
                 }
 
             });
