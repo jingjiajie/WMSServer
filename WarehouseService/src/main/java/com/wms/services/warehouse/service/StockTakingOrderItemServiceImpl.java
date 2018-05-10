@@ -162,5 +162,17 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         }
         DeliveryOrderItemView[] deliveryOrderItemCheckTemp=new DeliveryOrderItemView[deliveryOrderItemViewList.size()];
         DeliveryOrderItemView[] deliveryOrderItemCheck=deliveryOrderItemViewList.toArray(deliveryOrderItemCheckTemp);
+        StockTakingOrderItem stockTakingOrderItem1 = new StockTakingOrderItem();
+        stockTakingOrderItem1.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
+        stockTakingOrderItem1.setPersonId(stockTakingOrderItemAdd.getPersonId());
+        stockTakingOrderItem1.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
+        stockTakingOrderItem1.setComment("在途数量");
+        stockTakingOrderItem1.setUnit("个");
+        stockTakingOrderItem1.setStorageLocationId(null);
+        stockTakingOrderItem1.setUnitAmount(new BigDecimal(1));
+        stockTakingOrderItem1.setAmount(warehouseAmount);
+        stockTakingOrderItem1.setRealAmount(warehouseAmount);
+        stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
+
     }
 }
