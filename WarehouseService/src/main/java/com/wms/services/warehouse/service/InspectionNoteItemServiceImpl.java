@@ -68,7 +68,7 @@ public class InspectionNoteItemServiceImpl
             transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
             transferStock.setUnit(inspectionNoteItem.getUnit());
             //TODO TransferStock该字段不应该是整型 transferStock.setUnitAmount(inspectionNoteItem.getUnitAmount());
-            this.stockRecordService.transformStock(accountBook, transferStock);
+           //TODO 改了函数名 this.stockRecordService.transformStock(accountBook, transferStock);
         });
 
         this.validateEntities(accountBook, objs);

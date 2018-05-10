@@ -109,4 +109,23 @@ public class TransferStock {
 
     private BigDecimal modifyAvailableAmount;
 
+    public String getNewUnit() {
+        return newUnit;
+    }
+
+    public BigDecimal getNewUnitAmount() {
+        return newUnitAmount;
+    }
+
+    public void setNewUnit(String newUnit) {
+        this.newUnit = newUnit;
+    }
+
+    public void setNewUnitAmount(BigDecimal newUnitAmount) {
+        this.newUnitAmount = newUnitAmount;
+    }
+
+    private String newUnit;
+
+    private BigDecimal newUnitAmount;
 }
