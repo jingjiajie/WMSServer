@@ -102,6 +102,7 @@ public class InspectionNoteItemServiceImpl
 
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
+        //TODO 没同步库存
         for (int id : ids) {
             idChecker.check(this.getClass(), accountBook, id, "删除的送检单条目");
         }

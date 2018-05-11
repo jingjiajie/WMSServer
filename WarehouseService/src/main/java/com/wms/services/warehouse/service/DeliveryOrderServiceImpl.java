@@ -141,7 +141,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             //按照安全库存信息，生成移库单条目
             Stream.of(transferItem.getTransferOrderItems()).forEach((transferOrderItem)->{
                 //创建新的移库单条目
-                // todo （会按照安全库存自动更新移库数量）
+                // todo （会按照安全库存自动移库数量）
                 transferOrderItem.setTransferOrderId(newInspectionNoteID);
                 this.transferOrderItemService.add(accountBook,new TransferOrderItem[]{transferOrderItem});
             });

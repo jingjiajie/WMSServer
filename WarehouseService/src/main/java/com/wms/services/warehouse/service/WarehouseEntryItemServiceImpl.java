@@ -48,6 +48,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             stockRecord.setStorageLocationId(warehouseEntryItem.getStorageLocationId());
             stockRecord.setSupplyId(warehouseEntryItem.getSupplyId());
             stockRecord.setWarehouseId(warehouseEntryView.getWarehouseId());
+            //TODO 这里应该用modify
             this.stockRecordService.add(accountBook, new StockRecord[]{stockRecord});
         });
         //添加到数据库中
@@ -72,33 +73,34 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             }
             //修改实收数量，更新库存
             if(!deltaRealAmount.equals(new BigDecimal(0))){
-                //TODO 不能用add 冲抵原库存
-                StockRecord stockRecordAgainst = new StockRecord();
-                stockRecordAgainst.setAmount(oriItemView.getRealAmount().multiply(new BigDecimal(-1)));
-                stockRecordAgainst.setUnit(oriItemView.getUnit());
-                stockRecordAgainst.setUnitAmount(oriItemView.getUnitAmount());
-                stockRecordAgainst.setInventoryDate(oriItemView.getInventoryDate());
-                stockRecordAgainst.setExpiryDate(oriItemView.getExpiryDate());
-                stockRecordAgainst.setManufactureDate(oriItemView.getManufactureDate());
-                stockRecordAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
-                stockRecordAgainst.setStorageLocationId(oriItemView.getStorageLocationId());
-                stockRecordAgainst.setSupplyId(oriItemView.getSupplyId());
-                stockRecordAgainst.setWarehouseId(warehouseEntryView.getWarehouseId());
-                this.stockRecordService.add(accountBook, new StockRecord[]{stockRecordAgainst});
-
-                //TODO 不能用add 增加新库存
-                StockRecord newStockRecord = new StockRecord();
-                newStockRecord.setAmount(warehouseEntryItem.getRealAmount());
-                newStockRecord.setUnit(warehouseEntryItem.getUnit());
-                newStockRecord.setUnitAmount(warehouseEntryItem.getUnitAmount());
-                newStockRecord.setInventoryDate(warehouseEntryItem.getInventoryDate());
-                newStockRecord.setExpiryDate(warehouseEntryItem.getExpiryDate());
-                newStockRecord.setManufactureDate(warehouseEntryItem.getManufactureDate());
-                newStockRecord.setRelatedOrderNo(warehouseEntryView.getNo());
-                newStockRecord.setStorageLocationId(warehouseEntryItem.getStorageLocationId());
-                newStockRecord.setSupplyId(warehouseEntryItem.getSupplyId());
-                newStockRecord.setWarehouseId(warehouseEntryView.getWarehouseId());
-                this.stockRecordService.add(accountBook, new StockRecord[]{newStockRecord});
+                //TODO Modify变化数量 不冲抵
+//                //TODO 不能用add 冲抵原库存
+//                StockRecord stockRecordAgainst = new StockRecord();
+//                stockRecordAgainst.setAmount(oriItemView.getRealAmount().multiply(new BigDecimal(-1)));
+//                stockRecordAgainst.setUnit(oriItemView.getUnit());
+//                stockRecordAgainst.setUnitAmount(oriItemView.getUnitAmount());
+//                stockRecordAgainst.setInventoryDate(oriItemView.getInventoryDate());
+//                stockRecordAgainst.setExpiryDate(oriItemView.getExpiryDate());
+//                stockRecordAgainst.setManufactureDate(oriItemView.getManufactureDate());
+//                stockRecordAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
+//                stockRecordAgainst.setStorageLocationId(oriItemView.getStorageLocationId());
+//                stockRecordAgainst.setSupplyId(oriItemView.getSupplyId());
+//                stockRecordAgainst.setWarehouseId(warehouseEntryView.getWarehouseId());
+//                this.stockRecordService.add(accountBook, new StockRecord[]{stockRecordAgainst});
+//
+//                //TODO 不能用add 增加新库存
+//                StockRecord newStockRecord = new StockRecord();
+//                newStockRecord.setAmount(warehouseEntryItem.getRealAmount());
+//                newStockRecord.setUnit(warehouseEntryItem.getUnit());
+//                newStockRecord.setUnitAmount(warehouseEntryItem.getUnitAmount());
+//                newStockRecord.setInventoryDate(warehouseEntryItem.getInventoryDate());
+//                newStockRecord.setExpiryDate(warehouseEntryItem.getExpiryDate());
+//                newStockRecord.setManufactureDate(warehouseEntryItem.getManufactureDate());
+//                newStockRecord.setRelatedOrderNo(warehouseEntryView.getNo());
+//                newStockRecord.setStorageLocationId(warehouseEntryItem.getStorageLocationId());
+//                newStockRecord.setSupplyId(warehouseEntryItem.getSupplyId());
+//                newStockRecord.setWarehouseId(warehouseEntryView.getWarehouseId());
+//                this.stockRecordService.add(accountBook, new StockRecord[]{newStockRecord});
             }
         });
         this.warehouseEntryItemDAO.update(accountBook, warehouseEntryItems);
