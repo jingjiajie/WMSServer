@@ -1,22 +1,21 @@
 package com.wms.services.warehouse.datastructures;
 
 import com.wms.utilities.datastructures.Condition;
-import javafx.beans.binding.IntegerExpression;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class StockRecordFind {
 
-    public Timestamp getTimestamp() {
-        return timestamp;
+    public Timestamp getTimeEnd() {
+        return timeEnd;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
+    public void setTimeEnd(Timestamp timeEnd) {
+        this.timeEnd = timeEnd;
     }
 
-    private Timestamp timestamp=new Timestamp(System.currentTimeMillis());
+    private Timestamp timeEnd =new Timestamp(System.currentTimeMillis());
 
     public Integer getSupplyId() {
         return supplyId;
@@ -28,6 +27,15 @@ public class StockRecordFind {
 
     private Integer supplyId;
 
+    public Timestamp getTimeStart() {
+        return timeStart;
+    }
+
+    public void setTimeStart(Timestamp timeStart) {
+        this.timeStart = timeStart;
+    }
+
+    private Timestamp timeStart;
 
     public Integer getWarehouseId() {
         return warehouseId;
@@ -71,14 +79,34 @@ public class StockRecordFind {
 
     private Integer storageLocationId;
 
-    public BigDecimal getUnitAomunt() {
-        return unitAomunt;
+    public BigDecimal getUnitAmount() {
+        return unitAmount;
     }
 
-    public void setUnitAomunt(BigDecimal unitAomun) {
-        this.unitAomunt = unitAomun;
+    public void setUnitAmount(BigDecimal unitAomun) {
+        this.unitAmount = unitAomun;
     }
 
-    private BigDecimal unitAomunt;
+    private BigDecimal unitAmount;
+
+    public String getReturnMode() {
+        return returnMode;
+    }
+
+    public void setReturnMode(String returnMode) {
+        this.returnMode = returnMode;
+    }
+
+    private String returnMode="newest";
+
+    public Timestamp getInventaryDate() {
+        return inventaryDate;
+    }
+
+    public void setInventaryDate(Timestamp inventaryDate) {
+        this.inventaryDate = inventaryDate;
+    }
+
+    private Timestamp inventaryDate;
 
 }
