@@ -40,6 +40,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             if(obj.getNo() == null || obj.getNo().isEmpty()) {
                 obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX));
             }
+            obj.setState(0);//新建移库单记为状态0
             obj.setCreateTime(new Timestamp(System.currentTimeMillis()));
         });
         this.validateEntities(accountBook,objs);
@@ -60,7 +61,16 @@ public class TransferOrderServiceImpl implements TransferOrderService{
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
         for(int id : ids){
             if(this.transferOrderDAO.find(accountBook,new Condition().addCondition("id",id)).length == 0){
-                throw new WMSServiceException(String.format("送检单不存在，请重新查询(%d)",id));
+                throw new WMSServiceException(String.format("移库单不存在，请重新查询(%d)",id));
+            }
+            TransferOrderView[] oriViews = this.transferOrderDAO.find(accountBook, new Condition().addCondition("id", id));
+            if (oriViews.length == 0) {
+                throw new WMSServiceException(String.format("移库单不存在，删除失败(%d)", id));
+            }
+            TransferOrderView oriView=oriViews[0];
+            if (oriView.getState()!=0)
+            {
+                throw new WMSServiceException(String.format("移库单正在作业，无法删除(%s)", oriView.getId()));
             }
         }
         this.transferOrderDAO.remove(accountBook,ids);
@@ -77,7 +87,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             TransferOrderItemView[] transferOrderItemViews = this.transferOrderItemService.find(accountBook,new Condition().addCondition("inspectionNoteId",transferFinishArgs.getTransferOrderId()));
             TransferOrderItem[] transferOrderItems = ReflectHelper.createAndCopyFields(transferOrderItemViews,TransferOrderItem.class);
 
-            //如果设置了返回库位，则将每个条目返回到相应库位上。否则遵循各个条目原设置。
+            //如果设置了目标库位，则将每个条目返回到相应库位上。否则遵循各个条目原设置。
             if(transferFinishArgs.getTargetStorageLocationId() != -1){
                 idChecker.check(StorageLocationService.class,accountBook,transferFinishArgs.getTargetStorageLocationId(),"目标库位");
                 Stream.of(transferOrderItems).forEach(inspectionNoteItem -> {
