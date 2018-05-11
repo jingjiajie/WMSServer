@@ -71,7 +71,6 @@ for(int i=0;i<stockRecords.length;i++) {
         for (int i=0;i<stockRecords.length;i++)
         {
             stockRecords[i].setTime(new Timestamp(System.currentTimeMillis()));
-            stockRecords[i].setBatchNo(stockRecords[i].getInventoryDate().toString());
         }
         return stockRecordDAO.add(accountBook,stockRecords);
     }
@@ -101,11 +100,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     }
                 }
         );
-
-        for (int i=0;i<stockRecords.length;i++)
-        {
-            stockRecords[i].setTime(new Timestamp(System.currentTimeMillis()));
-        }
         stockRecordDAO.update(accountBook,stockRecords);
     }
 
