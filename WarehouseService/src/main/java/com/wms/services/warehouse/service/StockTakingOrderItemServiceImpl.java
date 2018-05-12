@@ -85,6 +85,9 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         }
     }
 
+
+
+
     @Override
     public StockTakingOrderItemView[] find(String accountBook, Condition cond) throws WMSServiceException {
         return this.stockTakingOrderItemDAO.find(accountBook, cond);
@@ -94,7 +97,6 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
     public void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd) {
 
         SupplyView[] supplyView=supplyService.find(accountBook,new Condition());
-        
         if(supplyView.length==0){throw new WMSServiceException("无任何供货记录！");}
        // Integer[] supplyIdAll=new Integer[supplyView.length];
         for(int i=0;i<supplyView.length;i++){
@@ -196,6 +198,48 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockTakingOrderItem1.setAmount(warehouseAmount);
         stockTakingOrderItem1.setRealAmount(warehouseAmount);
         stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
+        this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
+    }
 
+    public void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem)
+    {
+        idChecker.check(PersonService.class,accountBook,stockTakingOrderItem.getPersonId()," 人员");
+        new Validator("盘点单条目id").notnull().validate(stockTakingOrderItem.getId());
+        idChecker.check(StockTakingOrderItemService.class,accountBook,stockTakingOrderItem.getId(),"盘点单条目");
+        new Validator("真实数量").notnull().min(0).validate(stockTakingOrderItem.getRealAmount());
+        StockTakingOrderItemView[] stockTakingOrderItemViews=stockTakingOrderItemDAO.find(accountBook,new Condition().addCondition("id",stockTakingOrderItem.getId()));
+        if(stockTakingOrderItemViews.length!=1){throw new WMSServiceException("没有找到要修改的盘点单条目"); }
+        StockTakingOrderItem stockTakingOrderItemSave=new StockTakingOrderItem();
+        stockTakingOrderItemSave.setPersonId(stockTakingOrderItemViews[0].getPersonId());
+        stockTakingOrderItemSave.setUnitAmount(stockTakingOrderItemViews[0].getUnitAmount());
+        stockTakingOrderItemSave.setUnit(stockTakingOrderItemViews[0].getUnit());
+        stockTakingOrderItemSave.setComment(stockTakingOrderItemViews[0].getComment());
+        stockTakingOrderItemSave.setStorageLocationId(stockTakingOrderItemViews[0].getStorageLocationId());
+        stockTakingOrderItemSave.setSupplyId(stockTakingOrderItemViews[0].getSupplyId());
+        stockTakingOrderItemSave.setAmount(stockTakingOrderItemViews[0].getAmount());
+        stockTakingOrderItemSave.setStockTakingOrderId(stockTakingOrderItemViews[0].getStockTakingOrderId());
+        stockTakingOrderItemSave.setId(stockTakingOrderItemViews[0].getId());
+        stockTakingOrderItemSave.setRealAmount(stockTakingOrderItem.getRealAmount());
+        stockTakingOrderItemDAO.update(accountBook,new StockTakingOrderItem[]{stockTakingOrderItemSave});
+        this.updateStockTakingOrder(accountBook,stockTakingOrderItemSave.getStockTakingOrderId(),stockTakingOrderItem.getPersonId());
+    }
+
+    private void updateStockTakingOrder( String accountBook,int stockTakingOrderId ,int lastUpdatePersonId){
+        idChecker.check(StockTakingOrderService.class,accountBook,stockTakingOrderId,"盘点单");
+        idChecker.check(PersonService.class,accountBook,lastUpdatePersonId," 人员");
+       StockTakingOrderView[] stockTakingOrderViews= stockTakingOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockTakingOrderId}));
+        if(stockTakingOrderViews.length==0){
+            throw new WMSServiceException("没有找到要更新的盘点单！");
+        }
+        StockTakingOrder stockTakingOrder=new StockTakingOrder();
+        stockTakingOrder.setId(stockTakingOrderViews[0].getId());
+        stockTakingOrder.setCreatePersonId(stockTakingOrderViews[0].getCreatePersonId());
+        stockTakingOrder.setCreateTime(stockTakingOrderViews[0].getCreateTime());
+        stockTakingOrder.setDescription(stockTakingOrderViews[0].getDescription());
+        stockTakingOrder.setNo(stockTakingOrderViews[0].getNo());
+        stockTakingOrder.setWarehouseId(stockTakingOrderViews[0].getWarehouseId());
+        stockTakingOrder.setLastUpdatePersonId(lastUpdatePersonId);
+        stockTakingOrder.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+        stockTakingOrderService.update(accountBook,new StockTakingOrder[]{stockTakingOrder});
     }
 }

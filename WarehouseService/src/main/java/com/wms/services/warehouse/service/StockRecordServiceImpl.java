@@ -696,13 +696,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
         }
-
-
-
-
-
-
-
     }
 
     private String batchTransfer(Timestamp timestamp)

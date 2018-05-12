@@ -9,4 +9,5 @@ public interface StockTakingOrderItemService
         extends BaseService<StockTakingOrderItem, StockTakingOrderItemView> {
     void addStockTakingOrderItemSingle(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
     void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
+    void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem);
 }
