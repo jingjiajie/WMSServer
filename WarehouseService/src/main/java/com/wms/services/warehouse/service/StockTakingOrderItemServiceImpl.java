@@ -171,7 +171,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
 
         DeliveryOrderItemView[] deliveryOrderItemViews = null;
         deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition().addCondition("supplyId", new Integer[]{stockTakingOrderItemAdd.getSupplyId()}).
-                addCondition("loadingTime", new Timestamp[]{stockTakingOrderItemAdd.getCheckTime()}).addCondition("state", 0, ConditionItem.Relation.NOT_EQUAL));
+                addCondition("loadingTime", new Timestamp[]{stockTakingOrderItemAdd.getCheckTime()}, ConditionItem.Relation.LESS_THAN).addCondition("state", 0, ConditionItem.Relation.NOT_EQUAL));
         List<DeliveryOrderItemView> deliveryOrderItemViewList=new ArrayList<DeliveryOrderItemView>();
         for(int i=0;i<deliveryOrderItemViews.length;i++)
         {
@@ -180,24 +180,28 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
             if(deliveryOrderViews.length!=1){
                 throw new WMSServiceException("没有查到相关出库单！");
             }
-            if(deliveryOrderViews[0].getState()==4)
+            if(deliveryOrderViews[0].getState()!=4)
             {
                 deliveryOrderItemViewList.add(deliveryOrderItemViews[i]);
             }
         }
         DeliveryOrderItemView[] deliveryOrderItemCheckTemp=new DeliveryOrderItemView[deliveryOrderItemViewList.size()];
         DeliveryOrderItemView[] deliveryOrderItemCheck=deliveryOrderItemViewList.toArray(deliveryOrderItemCheckTemp);
-        StockTakingOrderItem stockTakingOrderItem1 = new StockTakingOrderItem();
-        stockTakingOrderItem1.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
-        stockTakingOrderItem1.setPersonId(stockTakingOrderItemAdd.getPersonId());
-        stockTakingOrderItem1.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
-        stockTakingOrderItem1.setComment("在途数量");
-        stockTakingOrderItem1.setUnit("个");
-        stockTakingOrderItem1.setStorageLocationId(null);
-        stockTakingOrderItem1.setUnitAmount(new BigDecimal(1));
-        stockTakingOrderItem1.setAmount(warehouseAmount);
-        stockTakingOrderItem1.setRealAmount(warehouseAmount);
-        stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
+        BigDecimal wayAmount=BigDecimal.ZERO;
+        for(int i=0;i<deliveryOrderItemCheck.length;i++){
+            wayAmount.add(deliveryOrderItemCheck[i].getRealAmount());
+        }
+        StockTakingOrderItem stockTakingOrderItemWay = new StockTakingOrderItem();
+        stockTakingOrderItemWay.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
+        stockTakingOrderItemWay.setPersonId(stockTakingOrderItemAdd.getPersonId());
+        stockTakingOrderItemWay.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
+        stockTakingOrderItemWay.setComment("在途数量");
+        stockTakingOrderItemWay.setUnit("个");
+        stockTakingOrderItemWay.setStorageLocationId(null);
+        stockTakingOrderItemWay.setUnitAmount(new BigDecimal(1));
+        stockTakingOrderItemWay.setAmount(wayAmount);
+        stockTakingOrderItemWay.setRealAmount(wayAmount);
+        stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItemWay});
         this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 
