@@ -81,7 +81,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
             throw new WMSServiceException("删除盘点单条目失败，如果盘点单条目已经被引用，需要先删除引用的内容，才能删除该盘点单条目");
         }
     }
-    
+
     @Override
     public StockTakingOrderItemView[] find(String accountBook, Condition cond) throws WMSServiceException {
         return this.stockTakingOrderItemDAO.find(accountBook, cond);
