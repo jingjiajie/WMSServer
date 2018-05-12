@@ -2,6 +2,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import com.wms.services.warehouse.service.StockTakingOrderService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.StockTakingOrder;
@@ -45,17 +46,11 @@ public class StockTakingOrderControllerImpl implements StockTakingOrderControlle
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping("/{condStr}")
+    @RequestMapping(value = "/{condStr}",method =RequestMethod.GET)
     public ResponseEntity<StockTakingOrderView[]> find(@PathVariable("accountBook") String accountBook,
                                                        @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
         StockTakingOrderView[] stockTakingOrderViews= stockTakingOrderService.find(accountBook, cond);
         return new ResponseEntity<StockTakingOrderView[]>(stockTakingOrderViews, HttpStatus.OK);
     }
-
-
-
-
-
-
 }

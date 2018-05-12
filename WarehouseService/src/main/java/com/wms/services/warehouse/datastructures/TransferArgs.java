@@ -10,4 +10,14 @@ public class TransferArgs {
     }
 
     private TransferItem[] transferItems;
+
+    public boolean isAutoCommit() {
+        return autoCommit;
+    }
+
+    public void setAutoCommit(boolean autoCommit) {
+        this.autoCommit = autoCommit;
+    }
+
+    private boolean autoCommit =true;
 }
