@@ -1,0 +1,16 @@
+package com.wms.services.warehouse.controller;
+
+import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
+import com.wms.utilities.model.StockTakingOrderItem;
+import com.wms.utilities.model.StockTakingOrderItemView;
+import org.springframework.http.ResponseEntity;
+
+public interface StockTakingOrderItemController {
+    ResponseEntity<int[]> add(String accountBook, StockTakingOrderItem[] stockTakingOrderItems);
+    void remove(String accountBook,String strIDs);
+    void update(String accountBook,StockTakingOrderItem stockTakingOrderItems[]);
+    ResponseEntity<StockTakingOrderItemView[]> find(String accountBook, String condStr);
+    void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
+    void addStockTakingOrderItemSingle(String accountBook,StockTakingOrderItemAdd stockTakingOrderItemAdd);
+    void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem);
+}
