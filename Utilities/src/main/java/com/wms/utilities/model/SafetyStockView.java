@@ -3,6 +3,7 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 
 @Entity
@@ -28,7 +29,7 @@ public class SafetyStockView {
     private String sourceUnit;
     private BigDecimal sourceUnitAmount;
 
-    @Basic
+    @Id
     @Column(name = "ID")
     public int getId() {
         return id;

@@ -165,7 +165,6 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     transferOrderItem.setTransferOrderId(newTransferOrderID);
                     this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
                 }
-
             });
         });
     }

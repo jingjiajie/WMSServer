@@ -3,8 +3,8 @@ package com.wms.services.ledger.service;
 
 import com.wms.services.ledger.dao.TaxDAO;
 import com.wms.services.ledger.dao.TaxItemDAO;
-import com.wms.services.ledger.model.Tax;
-import com.wms.services.ledger.model.TaxItem;
+import com.wms.utilities.model.Tax;
+import com.wms.utilities.model.TaxItem;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
