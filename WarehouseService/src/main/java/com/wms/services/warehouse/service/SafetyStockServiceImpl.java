@@ -42,6 +42,7 @@ public class SafetyStockServiceImpl implements SafetyStockService{
                     new Validator("安全库存数量(个)").min(0).validate(safetyStock.getAmount());
                     new Validator("单位").notnull().validate(safetyStock.getUnit());
                     new Validator("单位数量").min(0).validate(safetyStock.getUnitAmount());
+                    new Validator("类型").min(0).max(2).validate(safetyStock.getType());
                 }
         );
 
@@ -54,10 +55,11 @@ public class SafetyStockServiceImpl implements SafetyStockService{
                     } else if (this.supplyService.find(accountBook,
                             new Condition().addCondition("id", safetyStock.getSupplyId())).length == 0) {
                         throw new WMSServiceException(String.format("供应信息不存在，请重新提交！(%d)", safetyStock.getSupplyId()));
-                    } else if (this.storageLocationService.find(accountBook,
-                            new Condition().addCondition("id", safetyStock.getStorageLocationId())).length == 0) {
-                        throw new WMSServiceException(String.format("库位不存在，请重新提交！(%d)", safetyStock.getStorageLocationId()));
                     }
+                    //TODO else if (this.storageLocationService.find(accountBook,
+                         //TODO   new Condition().addCondition("id", safetyStock.getStorageLocationId())).length == 0) {
+                       //TODO throw new WMSServiceException(String.format("库位不存在，请重新提交！(%d)", safetyStock.getStorageLocationId()));
+                    //}
                 }
         );
 
@@ -73,6 +75,7 @@ public class SafetyStockServiceImpl implements SafetyStockService{
             new Validator("安全库存数量(个)").min(0).validate(safetyStock.getAmount());
             new Validator("单位").notnull().validate(safetyStock.getUnit());
             new Validator("单位数量").min(0).validate(safetyStock.getUnitAmount());
+            new Validator("类型").min(0).max(2).validate(safetyStock.getType());
         });
 
 

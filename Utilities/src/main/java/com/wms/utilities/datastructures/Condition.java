@@ -95,6 +95,13 @@ public class Condition {
                         hqlString.append(String.format(" AND %s <> :value%d", cond.getKey(), valueNum));
                         queryParams.put("value" + i, condValues[0]);
                         break;
+                    case CONTAINS:
+                        if (condValues.length != 1) {
+                            throw new ConditionException("CONTAINS relation needs one value");
+                        }
+                        hqlString.append(String.format(" AND %s LIKE :value%d", cond.getKey(), valueNum));
+                        queryParams.put("value" + i, "%"+condValues[0]+"%");
+                        break;
                     case GREATER_THAN:
                         if (condValues.length != 1) {
                             throw new ConditionException("GREATER_THAN relation needs one value");
@@ -102,11 +109,25 @@ public class Condition {
                         hqlString.append(String.format(" AND %s > :value%d", cond.getKey(), valueNum));
                         queryParams.put("value" + i, condValues[0]);
                         break;
+                    case GREATER_THAN_OR_EQUAL_TO:
+                        if (condValues.length != 1) {
+                            throw new ConditionException("GREATER_THAN_OR_EQUAL_TO relation needs one value");
+                        }
+                        hqlString.append(String.format(" AND %s >= :value%d", cond.getKey(), valueNum));
+                        queryParams.put("value" + i, condValues[0]);
+                        break;
                     case LESS_THAN:
                         if (condValues.length != 1) {
                             throw new ConditionException("LESS_THAN relation needs one value");
                         }
                         hqlString.append(String.format(" AND %s < :value%d", cond.getKey(), valueNum));
+                        queryParams.put("value" + i, condValues[0]);
+                        break;
+                    case LESS_THAN_OR_EQUAL_TO:
+                        if (condValues.length != 1) {
+                            throw new ConditionException("LESS_THAN_OR_EQUAL_TO relation needs one value");
+                        }
+                        hqlString.append(String.format(" AND %s <= :value%d", cond.getKey(), valueNum));
                         queryParams.put("value" + i, condValues[0]);
                         break;
                     case BETWEEN:
@@ -124,10 +145,13 @@ public class Condition {
         }
         if (orderItems != null) {
             if (orderItems.size() > 0) {
-                hqlString.append(" order by 1");
+                hqlString.append(" order by ");
             }
             for (int i = 0; i < orderItems.size(); i++, valueNum++) {
-                hqlString.append(String.format(",%s %s", orderItems.get(i).getKey(), orderItems.get(i).getOrder().toString()));
+                if(i != 0){
+                    hqlString.append(",");
+                }
+                hqlString.append(String.format("%s %s", orderItems.get(i).getKey(), orderItems.get(i).getOrder().toString()));
             }
         }
         Query query = session.createQuery(hqlString.toString());

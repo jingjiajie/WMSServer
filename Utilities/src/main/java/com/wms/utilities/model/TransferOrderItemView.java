@@ -3,6 +3,7 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -32,7 +33,7 @@ public class TransferOrderItemView {
     private String sourceStorageLocationNo;
     private String sourceStorageLocationName;
 
-    @Basic
+    @Id
     @Column(name = "ID")
     public int getId() {
         return id;

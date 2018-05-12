@@ -2,7 +2,7 @@ package com.wms.services.ledger.service;
 
 
 import com.wms.services.ledger.dao.PersonDAO;
-import com.wms.services.ledger.model.Person;
+import com.wms.utilities.model.Person;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -24,21 +24,21 @@ public class PersonServiceImpl implements PersonService {
         for (int i = 0; i < persons.length; i++) {
 
             String personName = persons[i].getName();
-            if (personName == null && personName.trim().length() <= 0) {       //判断是否输入姓名
+            if (personName == null || personName.trim().length() <= 0) {       //判断是否输入姓名
                 throw new WMSServiceException("人员姓名不能为空!");
             }
 
             String personPassword = persons[i].getPassword();
-            if (personPassword == null && personPassword.trim().length() <= 0) {       //判断是否输入密码
+            if (personPassword == null || personPassword.trim().length() <= 0) {       //判断是否输入密码
                 throw new WMSServiceException("密码不能为空!");
             }
 
             String personRole = persons[i].getRole();
-            if (personRole == null && personRole.trim().length() <= 0) {       //判断是否输入角色
+            if (personRole == null || personRole.trim().length() <= 0) {       //判断是否输入角色
                 throw new WMSServiceException("角色不能为空!");
             }
 
-            persons[i].setAuthorityString("asd");//预设权限字符串
+            persons[i].setAuthorityString("AAA");//预设权限字符串
 
         }
         return personDAO.add(accountBook, persons);
@@ -55,17 +55,17 @@ public class PersonServiceImpl implements PersonService {
             }
 
             String personName = persons[i].getName();
-            if (personName == null && personName.trim().length() <= 0) {       //判断是否输入姓名
+            if (personName == null || personName.trim().length() <= 0) {       //判断是否输入姓名
                 throw new WMSServiceException("人员姓名不能为空!");
             }
 
             String personPassword = persons[i].getPassword();
-            if (personPassword == null && personPassword.trim().length() <= 0) {       //判断是否输入密码
+            if (personPassword == null || personPassword.trim().length() <= 0) {       //判断是否输入密码
                 throw new WMSServiceException("密码不能为空!");
             }
 
             String personRole = persons[i].getRole();
-            if (personRole == null && personRole.trim().length() <= 0) {       //判断是否输入角色
+            if (personRole == null || personRole.trim().length() <= 0) {       //判断是否输入角色
                 throw new WMSServiceException("角色不能为空!");
             }
 

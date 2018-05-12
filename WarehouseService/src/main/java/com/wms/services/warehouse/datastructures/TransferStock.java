@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.datastructures;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 public class TransferStock {
 
@@ -40,7 +41,7 @@ public class TransferStock {
         this.relatedOrderNo = relatedOrderNo;
     }
 
-    public int supplyId;
+    private int supplyId;
 
     public int getSourceStorageLocationId() {
         return sourceStorageLocationId;
@@ -50,8 +51,9 @@ public class TransferStock {
         this.sourceStorageLocationId = sourceStorageLocationId;
     }
 
-    public int sourceStorageLocationId;
-  public int newStorageLocationId;
+    private int sourceStorageLocationId;
+
+    private int newStorageLocationId;
 
     public BigDecimal getAmount() {
         return amount;
@@ -71,7 +73,59 @@ public class TransferStock {
         this.unitAmount = unitAmount;
     }
 
-    public String unit;
-    public BigDecimal unitAmount;
+    private String unit;
+
+    private BigDecimal unitAmount;
+
     public String relatedOrderNo;
+
+    public String getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String batchNo) {
+        this.batchNo = batchNo;
+    }
+
+    private String batchNo;
+
+    public Timestamp getInventoryDate() {
+        return inventoryDate;
+    }
+
+    public void setInventoryDate(Timestamp inventoryDate) {
+        this.inventoryDate = inventoryDate;
+    }
+
+    private Timestamp inventoryDate;
+
+    public BigDecimal getModifyAvailableAmount() {
+        return modifyAvailableAmount;
+    }
+
+    public void setModifyAvailableAmount(BigDecimal modifyAvailableAmount) {
+        this.modifyAvailableAmount = modifyAvailableAmount;
+    }
+
+    private BigDecimal modifyAvailableAmount;
+
+    public String getNewUnit() {
+        return newUnit;
+    }
+
+    public BigDecimal getNewUnitAmount() {
+        return newUnitAmount;
+    }
+
+    public void setNewUnit(String newUnit) {
+        this.newUnit = newUnit;
+    }
+
+    public void setNewUnitAmount(BigDecimal newUnitAmount) {
+        this.newUnitAmount = newUnitAmount;
+    }
+
+    private String newUnit;
+
+    private BigDecimal newUnitAmount;
 }

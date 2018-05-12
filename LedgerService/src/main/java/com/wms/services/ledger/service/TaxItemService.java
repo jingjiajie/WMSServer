@@ -1,6 +1,6 @@
 package com.wms.services.ledger.service;
 
-import com.wms.services.ledger.model.TaxItem;
+import com.wms.utilities.model.TaxItem;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 

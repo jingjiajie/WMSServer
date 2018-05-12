@@ -1,6 +1,6 @@
 package com.wms.services.ledger.controller;
 
-import com.wms.services.ledger.model.Person;
+import com.wms.utilities.model.Person;
 import com.wms.utilities.model.PersonView;
 import org.springframework.http.ResponseEntity;
 

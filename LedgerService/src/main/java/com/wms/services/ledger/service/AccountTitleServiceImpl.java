@@ -1,7 +1,7 @@
 package com.wms.services.ledger.service;
 
 import com.wms.services.ledger.dao.AccountTitleDAO;
-import com.wms.services.ledger.model.AccountTitle;
+import com.wms.utilities.model.AccountTitle;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;

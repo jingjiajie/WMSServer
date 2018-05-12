@@ -1,6 +1,6 @@
 package com.wms.services.ledger.controller;
 
-import com.wms.services.ledger.model.TaxItem;
+import com.wms.utilities.model.TaxItem;
 import org.springframework.http.ResponseEntity;
 
 public interface TaxItemController {

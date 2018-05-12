@@ -1,6 +1,6 @@
 package com.wms.services.ledger.controller;
 
-import com.wms.services.ledger.model.AccountTitle;
+import com.wms.utilities.model.AccountTitle;
 import org.springframework.http.ResponseEntity;
 
 public interface AccountTitleController {

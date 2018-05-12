@@ -2,7 +2,7 @@ package com.wms.services.ledger.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.services.ledger.model.AccountTitle;
+import com.wms.utilities.model.AccountTitle;
 import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;

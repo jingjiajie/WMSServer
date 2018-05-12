@@ -2,6 +2,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.utilities.datastructures.Condition;
@@ -20,7 +21,7 @@ public class StockRecordControllerImpl implements StockRecordController {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value="/",method = RequestMethod.POST)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
     public int[] add(@PathVariable("accountBook") String accountBook,
                      @RequestBody StockRecord[] stockRecords) {
         return stockRecordService.add(accountBook, stockRecords);
@@ -55,18 +56,34 @@ public class StockRecordControllerImpl implements StockRecordController {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/transfer", method = RequestMethod.POST)
-    public void transferStock(@PathVariable("accountBook") String accountBook,
-                              @RequestBody TransferStock transferStock){
+    @RequestMapping(value = "/real_transfer", method = RequestMethod.POST)
+    public void RealTransferStock(@PathVariable("accountBook") String accountBook,
+                                  @RequestBody TransferStock transferStock) {
 
-         stockRecordService.transformStock(accountBook,transferStock);
+        stockRecordService.RealTransformStock(accountBook, transferStock);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/modify_amount", method = RequestMethod.POST)
-    public void modifyAmount(@PathVariable("accountBook") String accountBook,
-    @RequestBody TransferStock transferStock){
-        stockRecordService.modifyAmount(accountBook,transferStock);
+    @RequestMapping(value = "/add_amount", method = RequestMethod.POST)
+    public void addAmount(@PathVariable("accountBook") String accountBook,
+                          @RequestBody TransferStock transferStock) {
+        stockRecordService.addAmount(accountBook, transferStock);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/modify_available_amount", method = RequestMethod.POST)
+    public void modifyAvailableAmount(@PathVariable("accountBook") String accountBook,
+                                      @RequestBody TransferStock transferStock) {
+        stockRecordService.modifyAvailableAmount(accountBook, transferStock);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/stock_record_find", method = RequestMethod.POST)
+    public StockRecordView[] find(@PathVariable("accountBook") String accountBook,
+                                  @RequestBody StockRecordFind stockRecordFind) {
+        return stockRecordService.find(accountBook, stockRecordFind);
     }
 }
