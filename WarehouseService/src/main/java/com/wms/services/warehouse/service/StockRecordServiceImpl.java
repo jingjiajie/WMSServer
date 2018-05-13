@@ -306,13 +306,14 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         new Validator("数量").notnull().validate(transferStock.getAmount());
         int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
         int supplyId=transferStock.getSupplyId();
+        String batchNo="";
         Integer[] warehouseId=warehouseIdFind(accountBook,sourceStorageLocationId);//至少能返回一个
         idChecker.check(WarehouseService.class,accountBook,warehouseId[0],"仓库");
         idChecker.check(StorageLocationService.class,accountBook,sourceStorageLocationId,"库位");
         idChecker.check(SupplyService.class,accountBook,supplyId,"供货");
         if(transferStock.getAmount().compareTo(new BigDecimal(0)) >=0){
-            new Validator("存货日期").notnull().validate(transferStock.getInventoryDate()); }
-        String batchNo=this.batchTransfer(transferStock.getInventoryDate());
+            new Validator("存货日期").notnull().validate(transferStock.getInventoryDate());
+            batchNo=this.batchTransfer(transferStock.getInventoryDate());}
         BigDecimal amount=transferStock.getAmount();
         String unit=transferStock.getUnit();
         BigDecimal unitAmount=transferStock.getUnitAmount();
@@ -393,7 +394,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 }
             }
             //排序之后最后一条为最久的
-            BigDecimal amountAvailableAll=new BigDecimal(0);
+            BigDecimal amountAvailableAll= BigDecimal.ZERO;
             int iNeed=-1;
             for(int i=stockRecordSource.length-1;i>=0;i--){
                  amountAvailableAll=amountAvailableAll.add(stockRecordSource[i].getAvailableAmount());
@@ -411,7 +412,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setUnitAmount(unitAmount);
                     stockRecord.setRelatedOrderNo(transferStock.getRelatedOrderNo());
                     stockRecord.setWarehouseId(warehouseId[0]);
-                    stockRecord.setBatchNo(batchNo);
+                    stockRecord.setBatchNo(stockRecordSource[i].getBatchNo());
                     stockRecord.setInventoryDate(stockRecordSource[i].getInventoryDate());
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
@@ -426,7 +427,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setUnitAmount(unitAmount);
                     stockRecord.setRelatedOrderNo(transferStock.getRelatedOrderNo());
                     stockRecord.setWarehouseId(warehouseId[0]);
-                    stockRecord.setBatchNo(batchNo);
+                    stockRecord.setBatchNo(stockRecordSource[i].getBatchNo());
                     stockRecord.setInventoryDate(stockRecordSource[i].getInventoryDate());
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
