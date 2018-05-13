@@ -63,8 +63,8 @@ public class WarehouseService {
         date = gc.getTime();
         long a=date.getTime();
         String timestamp = String.valueOf(date.getTime()/1000);
-        Timestamp time2 =null;
-        time2.setTime(a);
+        Timestamp time2 =new Timestamp(date.getTime());
+
         //TransferStock transferStock=new TransferStock();
        // transferStock.setAmount(100);
        // transferStock.setUnit("个");
