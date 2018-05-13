@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.WarehouseEntryItemDAO;
+import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.model.*;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -32,24 +33,20 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
     @Override
     public int[] add(String accountBook, WarehouseEntryItem[] warehouseEntryItems) throws WMSServiceException {
         if (warehouseEntryItems.length == 0) return new int[]{};
-        WarehouseEntryView warehouseEntryView = this.getWarehouseEntryView(accountBook,warehouseEntryItems);
+        WarehouseEntryView warehouseEntryView = this.getWarehouseEntryView(accountBook, warehouseEntryItems);
         //验证字段
         this.validateEntities(accountBook, warehouseEntryItems);
         //增加库存
         Stream.of(warehouseEntryItems).forEach(warehouseEntryItem -> {
-            StockRecord stockRecord = new StockRecord();
-            stockRecord.setAmount(warehouseEntryItem.getRealAmount());
-            stockRecord.setUnit(warehouseEntryItem.getUnit());
-            stockRecord.setUnitAmount(warehouseEntryItem.getUnitAmount());
-            stockRecord.setInventoryDate(warehouseEntryItem.getInventoryDate());
-            stockRecord.setExpiryDate(warehouseEntryItem.getExpiryDate());
-            stockRecord.setManufactureDate(warehouseEntryItem.getManufactureDate());
-            stockRecord.setRelatedOrderNo(warehouseEntryView.getNo());
-            stockRecord.setStorageLocationId(warehouseEntryItem.getStorageLocationId());
-            stockRecord.setSupplyId(warehouseEntryItem.getSupplyId());
-            stockRecord.setWarehouseId(warehouseEntryView.getWarehouseId());
-            //TODO 这里应该用modify
-            this.stockRecordService.add(accountBook, new StockRecord[]{stockRecord});
+            TransferStock transferStock = new TransferStock();
+            transferStock.setAmount(warehouseEntryItem.getRealAmount());
+            transferStock.setUnit(warehouseEntryItem.getUnit());
+            transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
+            transferStock.setInventoryDate(warehouseEntryItem.getInventoryDate());
+            transferStock.setRelatedOrderNo(warehouseEntryView.getNo());
+            transferStock.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId());
+            transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
+            this.stockRecordService.addAmount(accountBook, transferStock);
         });
         //添加到数据库中
         int[] ids = this.warehouseEntryItemDAO.add(accountBook, warehouseEntryItems);
@@ -58,49 +55,46 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
 
     @Override
     public void update(String accountBook, WarehouseEntryItem[] warehouseEntryItems) throws WMSServiceException {
-        WarehouseEntryView warehouseEntryView = this.getWarehouseEntryView(accountBook,warehouseEntryItems);
+        WarehouseEntryView warehouseEntryView = this.getWarehouseEntryView(accountBook, warehouseEntryItems);
         this.validateEntities(accountBook, warehouseEntryItems);
         Stream.of(warehouseEntryItems).forEach(warehouseEntryItem -> {
-            WarehouseEntryItemView[] foundOriItems = this.warehouseEntryItemDAO.find(accountBook,new Condition().addCondition("id",warehouseEntryItem.getId()));
-            if(foundOriItems.length == 0) throw new WMSServiceException(String.format("入库单条目不存在，请重新提交！",warehouseEntryItem.getId()));
+            WarehouseEntryItemView[] foundOriItems = this.warehouseEntryItemDAO.find(accountBook, new Condition().addCondition("id", warehouseEntryItem.getId()));
+            if (foundOriItems.length == 0)
+                throw new WMSServiceException(String.format("入库单条目不存在，请重新提交！", warehouseEntryItem.getId()));
             WarehouseEntryItemView oriItemView = foundOriItems[0];
             BigDecimal deltaRealAmount = warehouseEntryItem.getRealAmount().subtract(oriItemView.getRealAmount());
             //不用管拒收数量 BigDecimal deltaRefuseAmount = warehouseEntryItem.getRefuseAmount().subtract(oriItemView.getRefuseAmount());
             //送检数量不能改
             BigDecimal deltaInspectionAmount = warehouseEntryItem.getInspectionAmount().subtract(oriItemView.getInspectionAmount());
-            if(!deltaInspectionAmount.equals(new BigDecimal(0))){
+            if (!deltaInspectionAmount.equals(new BigDecimal(0))) {
                 throw new WMSServiceException("不允许修改送检数量！");
             }
-            //修改实收数量，更新库存
-            if(!deltaRealAmount.equals(new BigDecimal(0))){
-                //TODO Modify变化数量 不冲抵
-//                //TODO 不能用add 冲抵原库存
-//                StockRecord stockRecordAgainst = new StockRecord();
-//                stockRecordAgainst.setAmount(oriItemView.getRealAmount().multiply(new BigDecimal(-1)));
-//                stockRecordAgainst.setUnit(oriItemView.getUnit());
-//                stockRecordAgainst.setUnitAmount(oriItemView.getUnitAmount());
-//                stockRecordAgainst.setInventoryDate(oriItemView.getInventoryDate());
-//                stockRecordAgainst.setExpiryDate(oriItemView.getExpiryDate());
-//                stockRecordAgainst.setManufactureDate(oriItemView.getManufactureDate());
-//                stockRecordAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
-//                stockRecordAgainst.setStorageLocationId(oriItemView.getStorageLocationId());
-//                stockRecordAgainst.setSupplyId(oriItemView.getSupplyId());
-//                stockRecordAgainst.setWarehouseId(warehouseEntryView.getWarehouseId());
-//                this.stockRecordService.add(accountBook, new StockRecord[]{stockRecordAgainst});
-//
-//                //TODO 不能用add 增加新库存
-//                StockRecord newStockRecord = new StockRecord();
-//                newStockRecord.setAmount(warehouseEntryItem.getRealAmount());
-//                newStockRecord.setUnit(warehouseEntryItem.getUnit());
-//                newStockRecord.setUnitAmount(warehouseEntryItem.getUnitAmount());
-//                newStockRecord.setInventoryDate(warehouseEntryItem.getInventoryDate());
-//                newStockRecord.setExpiryDate(warehouseEntryItem.getExpiryDate());
-//                newStockRecord.setManufactureDate(warehouseEntryItem.getManufactureDate());
-//                newStockRecord.setRelatedOrderNo(warehouseEntryView.getNo());
-//                newStockRecord.setStorageLocationId(warehouseEntryItem.getStorageLocationId());
-//                newStockRecord.setSupplyId(warehouseEntryItem.getSupplyId());
-//                newStockRecord.setWarehouseId(warehouseEntryView.getWarehouseId());
-//                this.stockRecordService.add(accountBook, new StockRecord[]{newStockRecord});
+            //修改实收数量，单位或单位数量，或收货库区，更新库存
+            if (!deltaRealAmount.equals(new BigDecimal(0))
+                    || !oriItemView.getUnit().equals(warehouseEntryItem.getUnit())
+                    || !oriItemView.getUnitAmount().equals(warehouseEntryItem.getUnitAmount())
+                    || oriItemView.getStorageLocationId() != warehouseEntryItem.getStorageLocationId()) {
+                //冲抵原库存
+                TransferStock transferStockAgainst = new TransferStock();
+                transferStockAgainst.setAmount(oriItemView.getRealAmount().negate());
+                transferStockAgainst.setUnit(oriItemView.getUnit());
+                transferStockAgainst.setUnitAmount(oriItemView.getUnitAmount());
+                transferStockAgainst.setInventoryDate(oriItemView.getInventoryDate());
+                transferStockAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
+                transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
+                transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
+                this.stockRecordService.addAmount(accountBook, transferStockAgainst);
+
+                //增加新库存
+                TransferStock transferStockNew = new TransferStock();
+                transferStockNew.setAmount(warehouseEntryItem.getRealAmount());
+                transferStockNew.setUnit(warehouseEntryItem.getUnit());
+                transferStockNew.setUnitAmount(warehouseEntryItem.getUnitAmount());
+                transferStockNew.setInventoryDate(warehouseEntryItem.getInventoryDate());
+                transferStockNew.setRelatedOrderNo(warehouseEntryView.getNo());
+                transferStockNew.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId());
+                transferStockNew.setSupplyId(warehouseEntryItem.getSupplyId());
+                this.stockRecordService.addAmount(accountBook, transferStockNew);
             }
         });
         this.warehouseEntryItemDAO.update(accountBook, warehouseEntryItems);
@@ -154,7 +148,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
         );
     }
 
-    private WarehouseEntryView getWarehouseEntryView(String accountBook,WarehouseEntryItem[] warehouseEntryItems){
+    private WarehouseEntryView getWarehouseEntryView(String accountBook, WarehouseEntryItem[] warehouseEntryItems) {
         //验证入库单号必须全部相同
         Stream.of(warehouseEntryItems).reduce((last, cur) -> {
             if (last.getWarehouseEntryId() != cur.getWarehouseEntryId())

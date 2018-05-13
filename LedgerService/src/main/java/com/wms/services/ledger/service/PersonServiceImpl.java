@@ -83,4 +83,9 @@ public class PersonServiceImpl implements PersonService {
     public PersonView[] find(String accountBook, Condition cond) throws WMSServiceException {
         return this.personDAO.find(accountBook, cond);
     }
+
+    @Transactional
+    public long findCount(String accountBook,Condition cond) throws WMSServiceException{
+        return this.personDAO.findCount(accountBook,cond);
+    }
 }

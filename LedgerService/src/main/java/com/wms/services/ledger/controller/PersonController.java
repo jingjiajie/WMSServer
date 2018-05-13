@@ -9,4 +9,5 @@ public interface PersonController {
     void remove(String accountBook,String strIDs);
     void update(String accountBook,Person persons[]);
     ResponseEntity<PersonView[]> find(String accountBook, String condStr);
+    long findCount(String accountBook,String condStr);
 }

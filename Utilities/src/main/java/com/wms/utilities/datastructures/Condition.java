@@ -3,6 +3,7 @@ package com.wms.utilities.datastructures;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.wms.utilities.exceptions.ConditionException;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import javafx.application.ConditionalFeature;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -16,6 +17,8 @@ import java.util.*;
 public class Condition {
     private List<ConditionItem> conditions = new ArrayList<>();
     private List<OrderItem> orders = new ArrayList<>();
+    private long page = -1;
+    private long pageSize = 50;
 
     public static Condition fromJson(String jsonStr) throws ConditionException {
         Gson gson = new Gson();
@@ -35,9 +38,17 @@ public class Condition {
     }
 
     public Query createQuery(String entityName, Session session) {
+        return this.createQuery(entityName, session, false);
+    }
+
+    public Query createQuery(String entityName, Session session, boolean returnCount) {
         List<ConditionItem> conditionItems = this.conditions;
         List<OrderItem> orderItems = this.orders;
-        StringBuffer hqlString = new StringBuffer("from " + entityName + " ");
+        StringBuffer hqlString = new StringBuffer();
+        if (returnCount) {
+            hqlString.append("select count(*) ");
+        }
+        hqlString.append("from " + entityName + " ");
         Map<String, Object> queryParams = new HashMap<String, Object>();
         int valueNum = 0;
         if (conditionItems != null) {
@@ -49,7 +60,7 @@ public class Condition {
                 ConditionItem cond = conditionItems.get(i);
                 Object[] condValues = cond.getValues();
                 for (int j = 0; j < condValues.length; j++) {
-                    if(condValues[j] == null) continue;
+                    if (condValues[j] == null) continue;
                     //将double的value，如果是整数的，转换成整数。避免id这种INT字段被赋double值造成错误
                     if (condValues[j] instanceof Double) {
                         Double doubleValue = (Double) condValues[j];
@@ -64,18 +75,18 @@ public class Condition {
                     SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                     SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     try {
-                        condValues[j]  = sdf1.parse(condValues[j].toString());
+                        condValues[j] = sdf1.parse(condValues[j].toString());
                     } catch (Exception e) {
                         //do nothing
                     }
-                    try{
-                        condValues[j]  = sdf2.parse(condValues[j].toString());
-                    }catch (ParseException e){
+                    try {
+                        condValues[j] = sdf2.parse(condValues[j].toString());
+                    } catch (ParseException e) {
                         //do nothing
                     }
-                    try{
-                        condValues[j]  = sdf3.parse(condValues[j].toString());
-                    }catch (ParseException e){
+                    try {
+                        condValues[j] = sdf3.parse(condValues[j].toString());
+                    } catch (ParseException e) {
                         //do nothing
                     }
 
@@ -100,7 +111,7 @@ public class Condition {
                             throw new ConditionException("CONTAINS relation needs one value");
                         }
                         hqlString.append(String.format(" AND %s LIKE :value%d", cond.getKey(), valueNum));
-                        queryParams.put("value" + i, "%"+condValues[0]+"%");
+                        queryParams.put("value" + i, "%" + condValues[0] + "%");
                         break;
                     case GREATER_THAN:
                         if (condValues.length != 1) {
@@ -148,11 +159,21 @@ public class Condition {
                 hqlString.append(" order by ");
             }
             for (int i = 0; i < orderItems.size(); i++, valueNum++) {
-                if(i != 0){
+                if (i != 0) {
                     hqlString.append(",");
                 }
                 hqlString.append(String.format("%s %s", orderItems.get(i).getKey(), orderItems.get(i).getOrder().toString()));
             }
+        }
+        //如果设置了分页条件，则生成分页语句
+        if (this.page != -1) {
+            if(returnCount){
+                throw new WMSServiceException(String.format("returnCount时不允许设置页码(%d)",page));
+            }
+            if(page == 0){
+                throw new WMSServiceException(String.format("page(%d)必须从1开始！",page));
+            }
+            hqlString.append(String.format(" limit %d,%d ", (page - 1) * pageSize, pageSize));
         }
         Query query = session.createQuery(hqlString.toString());
         for (Map.Entry<String, Object> entry : queryParams.entrySet()) {

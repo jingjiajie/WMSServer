@@ -11,4 +11,5 @@ import java.util.Map;
 
 public interface PersonService
     extends BaseService<Person,PersonView>{
+    long findCount(String accountBook,Condition cond);
 }

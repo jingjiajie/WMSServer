@@ -8,4 +8,5 @@ public interface BaseDAO<TTable,TView> {
     void update(String database,TTable objs[]) throws WMSDAOException;
     void remove(String database,int ids[]) throws WMSDAOException;
     TView[] find(String database, Condition cond) throws WMSDAOException;
+    long findCount(String database,Condition cond) throws WMSDAOException;
 }

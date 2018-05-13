@@ -48,4 +48,11 @@ public class PersonControllerImpl implements PersonController {
         PersonView[] persons = personService.find(accountBook, cond);
         return new ResponseEntity<>(persons, HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/count/{condStr}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.personService.findCount(accountBook,Condition.fromJson(condStr));
+    }
 }
