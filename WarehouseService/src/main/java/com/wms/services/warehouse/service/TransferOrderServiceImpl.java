@@ -40,7 +40,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             if(obj.getNo() == null || obj.getNo().isEmpty()) {
                 obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX));
             }
-            obj.setState(0);//新建移库单记为状态0
+            obj.setState(TransferOrderItemService.STATE_IN_TRANSFER);//新建移库单记为状态0
             obj.setCreateTime(new Timestamp(System.currentTimeMillis()));
         });
         this.validateEntities(accountBook,objs);
@@ -90,8 +90,8 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             //如果设置了目标库位，则将每个条目返回到相应库位上。否则遵循各个条目原设置。
             if(transferFinishArgs.getTargetStorageLocationId() != -1){
                 idChecker.check(StorageLocationService.class,accountBook,transferFinishArgs.getTargetStorageLocationId(),"目标库位");
-                Stream.of(transferOrderItems).forEach(inspectionNoteItem -> {
-                    inspectionNoteItem.setTargetStorageLocationId(transferFinishArgs.getTargetStorageLocationId());
+                Stream.of(transferOrderItems).forEach(transferOrderItem -> {
+                    transferOrderItem.setTargetStorageLocationId(transferFinishArgs.getTargetStorageLocationId());
                 });
             }
             //如果设置了人员，将每个条目的人员设置为相应人员。否则遵循各个条目原设置
@@ -112,6 +112,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         else { //部分完成
             TransferFinishItem[] transferFinishItems = transferFinishArgs.getTransferFinishItems();
             Stream.of(transferFinishItems).forEach(transferFinishItem -> {
+                //检查有没有移库单条目
                 this.idChecker.check(TransferOrderItemService.class, accountBook, transferFinishArgs.getTransferOrderId(), "移库单条目");
 
 
@@ -130,11 +131,8 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                     transferOrderItem.setPersonId(transferFinishItem.getPersonId());
                 }
                 //部分完成移库操作
-                if (transferFinishItem.isQualified()) {
-                    transferOrderItem.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
-                } else {
-                    transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
-                }
+                transferOrderItem.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
+                
                 this.transferOrderItemService.update(accountBook, new TransferOrderItem[]{transferOrderItem});
             });
         }
