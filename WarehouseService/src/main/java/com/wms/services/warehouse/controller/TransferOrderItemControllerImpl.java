@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/{accountBook}/transfer_order_order")
+@RequestMapping("/{accountBook}/transfer_order_item")
 public class TransferOrderItemControllerImpl
         implements TransferOrderItemController {
     @Autowired
