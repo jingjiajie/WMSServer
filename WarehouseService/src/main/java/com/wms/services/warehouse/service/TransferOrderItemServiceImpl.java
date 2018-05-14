@@ -54,6 +54,8 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             transferStock.setUnitAmount(transferOrderItem.getUnitAmount());
             //todo 确认是否需要时间transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
             this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
+
+            transferOrderItem.setState(0);
         });
 
         this.validateEntities(accountBook, transferOrderItems);

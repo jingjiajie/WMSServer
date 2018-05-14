@@ -1,8 +1,12 @@
 package com.wms.services.warehouse;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
+import com.wms.services.warehouse.datastructures.TransferItem;
+import com.wms.services.warehouse.service.DeliveryOrderService;
 import com.wms.services.warehouse.service.StockTakingOrderItemService;
 import com.wms.utilities.model.StockTakingOrderItem;
+import com.wms.utilities.model.TransferOrder;
+import com.wms.utilities.model.TransferOrderItem;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +17,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 
+import com.wms.services.warehouse.datastructures.TransferArgs;
+
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,19 +43,20 @@ public class WarehouseService {
         //validator.min(5).in(a).validate(1);
         //validator.validate("1000.1");
         //StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
-        StockTakingOrderItemService stockTakingOrderItemService=applicationContext.getBean(StockTakingOrderItemService.class);
-       StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
-       stockTakingOrderItemAdd.setWarehouseId(-1);
-       stockTakingOrderItemAdd.setMode(0);
-       stockTakingOrderItemAdd.setStockTakingOrderId(1);
-       stockTakingOrderItemAdd.setSupplyId(5);
+        //StockTakingOrderItemService stockTakingOrderItemService=applicationContext.getBean(StockTakingOrderItemService.class);
+       //StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
+       //stockTakingOrderItemAdd.setWarehouseId(-1);
+       //stockTakingOrderItemAdd.setMode(0);
+       //stockTakingOrderItemAdd.setStockTakingOrderId(1);
+       //stockTakingOrderItemAdd.setSupplyId(5);
 
 
-        StockTakingOrderItem stockTakingOrderItem=new StockTakingOrderItem();
-        stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
+        //StockTakingOrderItem stockTakingOrderItem=new StockTakingOrderItem();
+        //stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
        // stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
        // stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
         //stockTakingOrderItemService.addStockTakingOrderItemSingle("WMS_Template", stockTakingOrderItemAdd);
+        /*
         StockRecordFind stockRecordFind=new StockRecordFind();
         SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
@@ -64,6 +72,31 @@ public class WarehouseService {
         long a=date.getTime();
         String timestamp = String.valueOf(date.getTime()/1000);
         Timestamp time2 =new Timestamp(date.getTime());
+
+ */
+
+        TransferArgs transferArgs=new TransferArgs();
+        transferArgs.setAutoCommit(true);//是否自动生成数量
+
+        //生成条目请求
+        TransferOrderItem transferOrderItem=new TransferOrderItem();
+        transferOrderItem.setTargetStorageLocationId(4);
+        transferOrderItem.setSourceStorageLocationId(1);
+        transferOrderItem.setSupplyId(5);
+        transferOrderItem.setUnit("个");
+        transferOrderItem.setUnitAmount(new BigDecimal(1));
+        TransferOrderItem[] transferOrderItems ={transferOrderItem};
+
+        TransferItem transferItem=new TransferItem();
+        transferItem.setTransferOrderItems(transferOrderItems);
+        TransferOrder transferOrder =new TransferOrder();
+        transferItem.setTransferOrder(transferOrder);
+
+        TransferItem[] transferItems={transferItem};
+        transferArgs.setTransferItems(transferItems);
+
+        DeliveryOrderService deliveryOrderService=applicationContext.getBean(DeliveryOrderService.class);
+        deliveryOrderService.transferPakage("WMS_Template",transferArgs);
 
         //TransferStock transferStock=new TransferStock();
        // transferStock.setAmount(100);

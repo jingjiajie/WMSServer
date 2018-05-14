@@ -156,6 +156,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     {
                         transferOrderItem.setScheduledAmount(safetyStockViews[0].getAmount().subtract(stockRecordViews[0].getAmount()));//设置计划数量为与安全库存的差值
                         transferOrderItem.setTransferOrderId(newTransferOrderID);
+                        transferOrderItem.setState(0);
                         this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
                     } else {
                         //库存充足取消备货
