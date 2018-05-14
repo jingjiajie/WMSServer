@@ -3,7 +3,11 @@ import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import com.wms.services.warehouse.datastructures.TransferItem;
 import com.wms.services.warehouse.service.DeliveryOrderService;
+import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.services.warehouse.service.StockTakingOrderItemService;
+import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.model.StockRecordView;
 import com.wms.utilities.model.StockTakingOrderItem;
 import com.wms.utilities.model.TransferOrder;
 import com.wms.utilities.model.TransferOrderItem;
@@ -42,7 +46,7 @@ public class WarehouseService {
         //validator.in(a);
         //validator.min(5).in(a).validate(1);
         //validator.validate("1000.1");
-        //StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
+        StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
         //StockTakingOrderItemService stockTakingOrderItemService=applicationContext.getBean(StockTakingOrderItemService.class);
        //StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
        //stockTakingOrderItemAdd.setWarehouseId(-1);
@@ -74,6 +78,16 @@ public class WarehouseService {
         Timestamp time2 =new Timestamp(date.getTime());
 
  */
+        Condition condition=new Condition().addCondition("warehouseId",new Integer[]{5}).addCondition("storageLocationId",new Integer[]{26}).addCondition("supplyId",new Integer[]{7});
+
+        condition.addCondition("unit",new String[]{"个"}, ConditionItem.Relation.NOT_EQUAL);
+
+        condition.addCondition("unitAmount",new BigDecimal[]{new BigDecimal(10)}, ConditionItem.Relation.NOT_EQUAL);
+
+        condition.addCondition("batchNo",new String[]{"100"}, ConditionItem.Relation.NOT_EQUAL);
+
+        StockRecordView[] stockRecordViews=stockRecordService.find("WMS_Template",condition);
+
 
         TransferArgs transferArgs=new TransferArgs();
         transferArgs.setAutoCommit(true);//是否自动生成数量
