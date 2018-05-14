@@ -70,13 +70,14 @@ public class WarehouseService {
         stockRecordService.find("WMS_Template",stockRecordFind);
 
 */
-Condition condition=new Condition().addCondition("warehouseId",new Integer[]{5}).addCondition("storageLocationId",new Integer[]{26}).addCondition("supplyId",new Integer[]{7});
+        Condition condition=new Condition().addCondition("warehouseId",new Integer[]{5}).addCondition("storageLocationId",new Integer[]{26}).addCondition("supplyId",new Integer[]{7});
 
-       condition.addCondition("unit",new String[]{"个"}, ConditionItem.Relation.NOT_EQUAL);
 
-      // condition.addCondition("unitAmount",new BigDecimal[]{new BigDecimal(10)}, ConditionItem.Relation.NOT_EQUAL);
+        condition.addCondition("unit",new String[]{"个"}, ConditionItem.Relation.NOT_EQUAL);
 
-     // condition.addCondition("batchNo",new String[]{"100"}, ConditionItem.Relation.NOT_EQUAL);
+        condition.addCondition("unitAmount",new BigDecimal[]{new BigDecimal(10)}, ConditionItem.Relation.NOT_EQUAL);
+
+      condition.addCondition("batchNo",new String[]{"100"}, ConditionItem.Relation.NOT_EQUAL);
 
        StockRecordView[] stockRecordViews=stockRecordService.find("WMS_Template",condition);
 
