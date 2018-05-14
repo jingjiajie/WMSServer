@@ -44,7 +44,7 @@ public class TransferFinishArgs {
     private boolean allFinish = false;//是否全部完成移库
     private int transferOrderId = -1;//移库单ID
     private boolean qualified = true;
-    private int targetStorageLocationId = -1;//（整单完成）目标库区ID
+    private int targetStorageLocationId = -1;//目标库区ID
     private int personId = -1;//（整单完成）作业人员ID，若留空则不改变原作业人
 
     public TransferFinishItem[] getTransferFinishItems() {

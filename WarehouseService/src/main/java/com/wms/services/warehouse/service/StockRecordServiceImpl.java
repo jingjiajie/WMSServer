@@ -500,7 +500,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     condition.addCondition("unitAmount", new BigDecimal[]{stockRecordTemp[0].getUnitAmount()}, ConditionItem.Relation.NOT_EQUAL);
                 }
                 if(stockRecordFind.getInventaryDate()==null) {
-                    condition.addCondition("batchNo",new String[]{stockRecordTemp[0].getBatchNo()},ConditionItem.Relation.NOT_EQUAL ); }
+                    condition.addCondition("batchNo",new String[]{stockRecordTemp[0].getBatchNo()},ConditionItem.Relation.NOT_EQUAL );
+                    }
             }
             StockRecordView[] stockRecordViews1 = new StockRecordView[stockRecordViews.size()];
             stockRecordViews2 = stockRecordViews.toArray(stockRecordViews1);
