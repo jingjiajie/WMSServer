@@ -115,7 +115,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         Condition condition = new Condition();
         condition.addCondition("supplyId", new Integer[]{stockTakingOrderItemAdd.getSupplyId()}).
                 addCondition("warehouseId", new Integer[]{stockTakingOrderItemAdd.getWarehouseId()}).
-                addCondition("time", new Timestamp[]{stockTakingOrderItemAdd.getCheckTime()}, ConditionItem.Relation.LESS_THAN).
+                addCondition("time", stockTakingOrderItemAdd.getCheckTime(), ConditionItem.Relation.LESS_THAN).
                 addOrder("time", OrderItem.Order.DESC);
         if (stockRecordService.find(accountBook, condition).length == 0) {
             throw new WMSServiceException("没有查到此供货的任何库存信息");
@@ -123,6 +123,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
 
         //第一条肯定是某个记录的最新一条
         BigDecimal warehouseAmount = new BigDecimal(0);
+        //TODO 查找需要修改
         while (stockRecordService.find(accountBook, condition).length > 0) {
             StockRecordView[] stockRecordTemp = stockRecordService.find(accountBook, condition);
             //如果为所有信息模式，将此信息作为一条盘点单条目保存
@@ -165,7 +166,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
 
         DeliveryOrderItemView[] deliveryOrderItemViews = null;
         deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition().addCondition("supplyId", new Integer[]{stockTakingOrderItemAdd.getSupplyId()}).
-                addCondition("loadingTime", new Timestamp[]{stockTakingOrderItemAdd.getCheckTime()}, ConditionItem.Relation.LESS_THAN).addCondition("state", 0, ConditionItem.Relation.NOT_EQUAL));
+                addCondition("loadingTime", stockTakingOrderItemAdd.getCheckTime(), ConditionItem.Relation.LESS_THAN).addCondition("state", 0, ConditionItem.Relation.NOT_EQUAL));
         List<DeliveryOrderItemView> deliveryOrderItemViewList=new ArrayList<DeliveryOrderItemView>();
         for(int i=0;i<deliveryOrderItemViews.length;i++)
         {
