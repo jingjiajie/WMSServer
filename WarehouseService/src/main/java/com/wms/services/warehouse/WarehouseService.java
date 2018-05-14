@@ -18,6 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 
+import javax.management.relation.Relation;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -57,18 +58,29 @@ public class WarehouseService {
         long a=date.getTime();
         String timestamp = String.valueOf(date.getTime()/1000);
         Timestamp time2 =new Timestamp(date.getTime());
-
+/*
         StockRecordFind stockRecordFind=new StockRecordFind();
-        stockRecordFind.setUnit("个");
-        stockRecordFind.setSupplyId(5);
-        stockRecordFind.setWarehouseId(-1);
-        stockRecordFind.setUnitAmount(new BigDecimal(5));
+        //stockRecordFind.setUnit("个");
+        stockRecordFind.setSupplyId(7);
+        stockRecordFind.setWarehouseId(5);
+        stockRecordFind.setStorageLocationId(26);
+        stockRecordFind.setTimeEnd(time2);
+        //stockRecordFind.setUnitAmount(new BigDecimal(5));
         //stockRecordFind.setSupplyId(5);
         stockRecordService.find("WMS_Template",stockRecordFind);
 
+*/
+Condition condition=new Condition().addCondition("warehouseId",new Integer[]{5}).addCondition("storageLocationId",new Integer[]{26}).addCondition("supplyId",new Integer[]{7});
+
+       condition.addCondition("unit",new String[]{"个"}, ConditionItem.Relation.NOT_EQUAL);
+
+      // condition.addCondition("unitAmount",new BigDecimal[]{new BigDecimal(10)}, ConditionItem.Relation.NOT_EQUAL);
+
+     // condition.addCondition("batchNo",new String[]{"100"}, ConditionItem.Relation.NOT_EQUAL);
+
+       StockRecordView[] stockRecordViews=stockRecordService.find("WMS_Template",condition);
 
 
-    // StockRecordView[] stockRecordViews=stockRecordService.find("WMS_Template",new Condition().addCondition("time",time2, ConditionItem.Relation.LESS_THAN));
 
       //  StockTakingOrderItemService stockTakingOrderItemService=applicationContext.getBean(StockTakingOrderItemService.class);
       // StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
@@ -183,6 +195,5 @@ public class WarehouseService {
        // storageLocations=storageLocationService.find("WMS_Template",condition);
        // for(int i=0;i<storageLocations.length;i++)
         //{System.out.println(storageLocations[i].getName());}
-
     }
 }
