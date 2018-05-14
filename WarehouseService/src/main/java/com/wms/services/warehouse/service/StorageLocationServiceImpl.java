@@ -28,7 +28,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
         for(int i=0;i<storageLocations.length;i++) {
             new Validator("库位名").notnull().validate(storageLocations[i].getName());
             new Validator("库位代号").notnull().validate(storageLocations[i].getNo());
-            if(storageLocations[i].getEnabled()!=0||storageLocations[i].getEnabled()!=1){
+            if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
         }
@@ -72,7 +72,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             validator.notnull().validate(storageLocations[i].getName());
             Validator validator1 = new Validator("库位代号");
             validator.notnull().validate(storageLocations[i].getNo());
-            if(storageLocations[i].getEnabled()!=0||storageLocations[i].getEnabled()!=1){
+            if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
         }

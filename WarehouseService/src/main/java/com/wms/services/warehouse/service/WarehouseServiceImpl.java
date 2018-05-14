@@ -28,7 +28,7 @@ public class WarehouseServiceImpl implements WarehouseService{
            Validator validator=new Validator("仓库名");
            validator.notnull().notEmpty().validate(warehouses[i].getName());
 
-           if(warehouses[i].getEnabled()!=0||warehouses[i].getEnabled()!=1){
+           if(warehouses[i].getEnabled()!=0&&warehouses[i].getEnabled()!=1){
                throw new WMSServiceException("是否启用只能为0和1！");
            }
        }
@@ -50,7 +50,7 @@ public class WarehouseServiceImpl implements WarehouseService{
         for(int i=0;i<warehouses.length;i++){
             Validator validator=new Validator("仓库名");
             validator.notnull().notEmpty().validate(warehouses[i].getName());
-            if(warehouses[i].getEnabled()!=0||warehouses[i].getEnabled()!=1){
+            if(warehouses[i].getEnabled()!=0&&warehouses[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
         }

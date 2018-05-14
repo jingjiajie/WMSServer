@@ -37,6 +37,9 @@ public class SupplierServicesImpl implements SupplierServices{
             validator.notnull().validate(suppliers[i].getName());
             Validator validator1=new Validator("供应商代号");
             validator1.notnull().validate(suppliers[i].getNo());
+            if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
+                throw new WMSServiceException("是否启用只能为0和1！");
+            }
         }
 
         Stream.of(suppliers).forEach((supplier)->{
@@ -90,6 +93,9 @@ public class SupplierServicesImpl implements SupplierServices{
         validator.notnull().validate(suppliers[i].getName());
         Validator validator1=new Validator("供应商代号");
         validator1.notnull().validate(suppliers[i].getNo());
+        if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
+            throw new WMSServiceException("是否启用只能为0和1！");
+        }
     }
 
     Stream.of(suppliers).forEach(

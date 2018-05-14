@@ -9,7 +9,7 @@ public class Warehouse {
     private String name;
     private String address;
     private String tel;
-    private int enabled;
+    private int enabled=1;
 
     @Id
     @Column(name = "ID", nullable = false)

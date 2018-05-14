@@ -35,7 +35,7 @@ public class Supplier {
     private Timestamp createTime;
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
-    private int enabled;
+    private int enabled=1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

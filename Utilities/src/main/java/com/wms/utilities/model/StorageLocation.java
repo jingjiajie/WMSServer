@@ -9,7 +9,7 @@ public class StorageLocation {
     private int storageAreaId;
     private String no;
     private String name;
-    private int enabled;
+    private int enabled=1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
