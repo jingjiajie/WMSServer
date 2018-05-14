@@ -26,7 +26,11 @@ public class WarehouseServiceImpl implements WarehouseService{
 
        for(int i=0;i<warehouses.length;i++){
            Validator validator=new Validator("仓库名");
-           validator.notnull().validate(warehouses[i].getName());
+           validator.notnull().notEmpty().validate(warehouses[i].getName());
+
+           if(warehouses[i].getEnabled()!=0&&warehouses[i].getEnabled()!=1){
+               throw new WMSServiceException("是否启用只能为0和1！");
+           }
        }
         //重复
         Stream.of(warehouses).forEach((warehouse)->{
@@ -44,8 +48,10 @@ public class WarehouseServiceImpl implements WarehouseService{
     @Transactional
     public void update(String accountBook, Warehouse[] warehouses) throws WMSServiceException{
         for(int i=0;i<warehouses.length;i++){
-            if(warehouses[i].getName()==null){
-                throw new WMSServiceException("仓库名不能为空!");
+            Validator validator=new Validator("仓库名");
+            validator.notnull().notEmpty().validate(warehouses[i].getName());
+            if(warehouses[i].getEnabled()!=0&&warehouses[i].getEnabled()!=1){
+                throw new WMSServiceException("是否启用只能为0和1！");
             }
         }
 
