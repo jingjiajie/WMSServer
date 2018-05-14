@@ -90,6 +90,8 @@ public class WarehouseService {
         TransferItem transferItem=new TransferItem();
         transferItem.setTransferOrderItems(transferOrderItems);
         TransferOrder transferOrder =new TransferOrder();
+        transferOrder.setCreatePersonId(19);
+        transferOrder.setWarehouseId(-1);
         transferItem.setTransferOrder(transferOrder);
 
         TransferItem[] transferItems={transferItem};

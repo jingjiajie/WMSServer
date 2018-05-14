@@ -43,7 +43,6 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             if(foundTransferOrders.length == 0){
                 throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)",transferOrderId));
             }
-            TransferOrderView transferOrderView = foundTransferOrders[0];
 
             //更新库存
             TransferStock transferStock = new TransferStock();
@@ -52,10 +51,10 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             transferStock.setSupplyId(transferOrderItem.getSupplyId());
             transferStock.setUnit(transferOrderItem.getUnit());
             transferStock.setUnitAmount(transferOrderItem.getUnitAmount());
-            //todo 确认是否需要时间transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+            transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
             this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
 
-            transferOrderItem.setState(0);
+            transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
         });
 
         this.validateEntities(accountBook, transferOrderItems);
@@ -147,7 +146,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                     //实际移库操作
                     TransferStock transferStock = new TransferStock();
                     transferStock.setNewStorageLocationId(transferOrderItem.getTargetStorageLocationId());
-                    transferStock.setAmount(transferOrderItem.getRealAmount());//计划数量
+                    transferStock.setAmount(transferOrderItem.getRealAmount().subtract(oriItemViews[0].getRealAmount()));//计划数量
                     transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
                     transferStock.setSupplyId(transferOrderItem.getSupplyId());
                     transferStock.setRelatedOrderNo(transferOrderView.getNo());//获取单号
@@ -211,9 +210,9 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             this.idChecker.check(SupplyService.class, accountBook, transferOrderItem.getSupplyId(), "关联供货信息");
 
 
-            if (transferOrderItem.getPersonId() != null) {
-                this.idChecker.check(PersonService.class, accountBook, transferOrderItem.getPersonId(), "作业人员");
-            }
+            //if (transferOrderItem.getPersonId() != null) {
+             //   this.idChecker.check(PersonService.class, accountBook, transferOrderItem.getPersonId(), "作业人员");
+            //}
         }));
     }
 }
