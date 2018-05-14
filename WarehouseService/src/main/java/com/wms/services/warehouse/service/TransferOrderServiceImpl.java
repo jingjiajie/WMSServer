@@ -132,7 +132,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                 }
                 //部分完成移库操作
                 transferOrderItem.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
-                
+
                 this.transferOrderItemService.update(accountBook, new TransferOrderItem[]{transferOrderItem});
             });
         }

@@ -28,54 +28,22 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public int[] add(String accountBook, Material[] materials) throws WMSServiceException
     {
-        for (int i=0;i<materials.length;i++) {
-            Validator validator=new Validator("物料名称");
-            validator.notnull().validate(materials[i].getName());
-            Validator validator1=new Validator("物料代号");
-            validator1.notnull().validate(materials[i].getNo());
-        }
-
+        this.validateEntities(accountBook,materials);
         Stream.of(materials).forEach((material)->{
-            Condition cond = new Condition();
-            cond.addCondition("name",new String[]{material.getName()});
-            if(materialDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("物料名："+material.getName()+"已经存在!");
+            if(materialDAO.find(accountBook,new Condition().addCondition("name",new String[]{material.getName()})).length > 0) {
+                throw new WMSServiceException("物料名：" + material.getName() + "已经存在!");
             }
-        });
-
-        Stream.of(materials).forEach((material)->{
-            Condition cond = new Condition();
-            cond.addCondition("no",new String[]{material.getNo()});
-            if(materialDAO.find(accountBook,cond).length > 0){
+            if(materialDAO.find(accountBook,new Condition().addCondition("no",new String[]{material.getNo()})).length > 0){
                 throw new WMSServiceException("物料代号："+material.getNo()+"已经存在!");
             }
         });
-
-        //外键检测
-        Stream.of(materials).forEach(
-                (material)->{
-                    if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("id",material.getWarehouseId())).length == 0){
-                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",material.getWarehouseId()));
-                    }
-
-                }
-        );
-
-
         return materialDAO.add(accountBook,materials);
     }
 
     @Override
-    public void update(String accountBook, Material[] materials) throws WMSServiceException{
-
-        for (int i=0;i<materials.length;i++) {
-            Validator validator=new Validator("物料名称");
-            validator.notnull().validate(materials[i].getName());
-            Validator validator1=new Validator("物料代号");
-            validator1.notnull().validate(materials[i].getNo());
-        }
-
+    public void update(String accountBook, Material[] materials) throws WMSServiceException
+    {
+        this.validateEntities(accountBook,materials);
         for(int i=0;i<materials.length;i++){
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{materials[i].getName()});
@@ -99,6 +67,12 @@ public class MaterialServiceImpl implements MaterialService {
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
 
         try {
+            Stream.of(ids).forEach((curid)->{
+                if(materialDAO.find(accountBook,new Condition().addCondition("id",curid)).length == 0){
+                    throw new WMSServiceException("物料id："+curid+"对应条目信息不存在无法删除!");
+                }
+            });
+
             materialDAO.remove(accountBook, ids);
         }
         catch (Throwable ex){
@@ -109,5 +83,20 @@ public class MaterialServiceImpl implements MaterialService {
     @Override
     public MaterialView[] find(String accountBook, Condition cond) throws WMSServiceException{
         return this.materialDAO.find(accountBook, cond);
+    }
+
+    private void validateEntities(String accountBook,Material[] materials) throws WMSServiceException{
+        Stream.of(materials).forEach((material -> {
+            new Validator("是否启用").min(0).max(1).validate(material.getEnabled());
+            new Validator("代号").notEmpty().validate(material.getNo());
+            new Validator("物料名称").notEmpty().validate(material.getName());
+
+            if(this.warehouseService.find(accountBook,
+                    new Condition().addCondition("id",material.getWarehouseId())).length == 0){
+                throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",material.getWarehouseId()));
+            }
+        }));
+
+
     }
 }
