@@ -235,6 +235,7 @@ public class Condition {
         OrderItem orderItem = new OrderItem();
         orderItem.setKey(key);
         orderItem.setOrder(order);
+        this.orders.add(orderItem);
         return this;
     }
 
