@@ -1,7 +1,12 @@
 package com.wms.services.warehouse;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
+import com.wms.services.warehouse.datastructures.TransferStock;
+import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.services.warehouse.service.StockTakingOrderItemService;
+import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.model.StockRecordView;
 import com.wms.utilities.model.StockTakingOrderItem;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -13,6 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,25 +41,12 @@ public class WarehouseService {
         //validator.in(a);
         //validator.min(5).in(a).validate(1);
         //validator.validate("1000.1");
-        //StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
-        StockTakingOrderItemService stockTakingOrderItemService=applicationContext.getBean(StockTakingOrderItemService.class);
-       StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
-       stockTakingOrderItemAdd.setWarehouseId(-1);
-       stockTakingOrderItemAdd.setMode(0);
-       stockTakingOrderItemAdd.setStockTakingOrderId(1);
-       stockTakingOrderItemAdd.setSupplyId(5);
+        StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
 
-
-        StockTakingOrderItem stockTakingOrderItem=new StockTakingOrderItem();
-        stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
-       // stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
-       // stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
-        //stockTakingOrderItemService.addStockTakingOrderItemSingle("WMS_Template", stockTakingOrderItemAdd);
-        StockRecordFind stockRecordFind=new StockRecordFind();
         SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         GregorianCalendar gc = new GregorianCalendar();
-        gc.set(Calendar.YEAR,2013);//设置年
+        gc.set(Calendar.YEAR,2020);//设置年
         gc.set(Calendar.MONTH, 8);//这里0是1月..以此向后推
         gc.set(Calendar.DAY_OF_MONTH, 29);//设置天
         gc.set(Calendar.HOUR_OF_DAY,5);//设置小时
@@ -65,16 +58,44 @@ public class WarehouseService {
         String timestamp = String.valueOf(date.getTime()/1000);
         Timestamp time2 =new Timestamp(date.getTime());
 
+        StockRecordFind stockRecordFind=new StockRecordFind();
+        stockRecordFind.setUnit("个");
+        stockRecordFind.setSupplyId(5);
+        stockRecordFind.setWarehouseId(-1);
+        stockRecordFind.setUnitAmount(new BigDecimal(5));
+        //stockRecordFind.setSupplyId(5);
+        stockRecordService.find("WMS_Template",stockRecordFind);
+
+
+
+    // StockRecordView[] stockRecordViews=stockRecordService.find("WMS_Template",new Condition().addCondition("time",time2, ConditionItem.Relation.LESS_THAN));
+
+      //  StockTakingOrderItemService stockTakingOrderItemService=applicationContext.getBean(StockTakingOrderItemService.class);
+      // StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
+       //stockTakingOrderItemAdd.setWarehouseId(-1);
+       //stockTakingOrderItemAdd.setMode(0);
+       //stockTakingOrderItemAdd.setStockTakingOrderId(1);
+      // stockTakingOrderItemAdd.setSupplyId(5);
+
+
+        //StockTakingOrderItem stockTakingOrderItem=new StockTakingOrderItem();
+       // stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
+       // stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
+       // stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
+        //stockTakingOrderItemService.addStockTakingOrderItemSingle("WMS_Template", stockTakingOrderItemAdd);
+       // StockRecordFind stockRecordFind=new StockRecordFind();
+
+
         //TransferStock transferStock=new TransferStock();
-       // transferStock.setAmount(100);
-       // transferStock.setUnit("个");
-        //transferStock.setUnitAmount(new BigDecimal(5));
-       // transferStock.setSupplyId(5);
-       // transferStock.setRelatedOrderNo("46416512653101");
-       // transferStock.setSourceStorageLocationId(1);
+        //transferStock.setAmount(new BigDecimal(-100));
+        //transferStock.setUnit("111");
+       // transferStock.setUnitAmount(new BigDecimal(5));
+        //transferStock.setSupplyId(5);
+        //transferStock.setRelatedOrderNo("46416512653101");
+        //transferStock.setSourceStorageLocationId(1);
        // transferStock.setNewStorageLocationId(5);
-        //stockRecordService.modifyAmount("WMS_Template",transferStock);
-       // stockRecordService.transformStock("WMS_Template",transferStock);
+       // stockRecordService.addAmount("WMS_Template",transferStock);
+        //stockRecordService.transformStock("WMS_Template",transferStock);
         //Supplier supplier=new Supplier();
         //supplier.setName("12345667777777");
         //supplier.setNo("aaaaa7777111111");
