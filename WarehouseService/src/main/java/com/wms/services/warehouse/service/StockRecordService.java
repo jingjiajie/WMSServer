@@ -18,4 +18,6 @@ public interface StockRecordService
     void modifyAvailableAmount(String accountBook, TransferStock transferStock);
 
     void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock);
+
+    StockRecordView[] find(String accountBook, String hqlString);
 }

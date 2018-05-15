@@ -8,17 +8,30 @@ import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.datastructures.OrderItem;
+import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.query.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -39,6 +52,8 @@ public class StockRecordServiceImpl implements StockRecordService {
     StorageAreaService storageAreaService;
     @Autowired
     IDChecker idChecker;
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Override
     public int[] add(String accountBook, StockRecord[] stockRecords) throws WMSServiceException {
@@ -748,6 +763,23 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecord.setSupplyId(transferStock.getSupplyId());
         stockRecord.setTime(stockRecordSource[0].getTime());
         stockRecordDAO.update(accountBook,new StockRecord[]{stockRecord});
+    }
+
+    public StockRecordView[] find(String accountBook,String hqlString){
+        Session session= sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        String hql3 = "from StockRecordView as s ";
+        Query query = session.createQuery(hql3);
+        List result3 = query.list();
+        List<StockRecordView> resultList = query.list();
+        StockRecordView[] resultArray = (StockRecordView[]) Array.newInstance(StockRecordView.class,resultList.size());
+        resultList.toArray(resultArray);
+        session.close();
+        return resultArray;
     }
 /*
    public void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock) {

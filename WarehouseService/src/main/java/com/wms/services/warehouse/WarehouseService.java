@@ -53,7 +53,8 @@ public class WarehouseService {
        //stockTakingOrderItemAdd.setMode(0);
        //stockTakingOrderItemAdd.setStockTakingOrderId(1);
        //stockTakingOrderItemAdd.setSupplyId(5);
-
+        String a="";
+        stockRecordService.find("WMS_Template",a);
 
         //StockTakingOrderItem stockTakingOrderItem=new StockTakingOrderItem();
         //stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
@@ -76,6 +77,7 @@ public class WarehouseService {
         long a=date.getTime();
         String timestamp = String.valueOf(date.getTime()/1000);
         Timestamp time2 =new Timestamp(date.getTime());
+
 
  */
         Condition condition=new Condition().addCondition("warehouseId",new Integer[]{5}).addCondition("storageLocationId",new Integer[]{26}).addCondition("supplyId",new Integer[]{7});
