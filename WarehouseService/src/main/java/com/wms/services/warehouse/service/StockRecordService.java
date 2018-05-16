@@ -7,6 +7,8 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.service.BaseService;
 
+import java.sql.Timestamp;
+
 public interface StockRecordService
         extends   BaseService<StockRecord,StockRecordView> {
     void RealTransformStock(String accountBook, TransferStock transferStock);
@@ -20,4 +22,6 @@ public interface StockRecordService
     void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock);
 
     StockRecordView[] find(String accountBook, String hqlString);
+
+    String batchTransfer(Timestamp timestamp);
 }
