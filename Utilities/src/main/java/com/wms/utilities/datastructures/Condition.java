@@ -69,27 +69,27 @@ public class Condition {
                         } else if (doubleValue.longValue() == doubleValue) {
                             condValues[j] = doubleValue.longValue();
                         }
+                    }else if(condValues[j] instanceof String){
+                        //如果有日期字符串，转换为日期类型，避免SQL查询类型错误
+                        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        try {
+                            condValues[j] = sdf3.parse(condValues[j].toString());
+                        } catch (Exception e) {
+                            //do nothing
+                        }
+                        try {
+                            condValues[j] = sdf2.parse(condValues[j].toString());
+                        } catch (ParseException e) {
+                            //do nothing
+                        }
+                        try {
+                            condValues[j] = sdf1.parse(condValues[j].toString());
+                        } catch (ParseException e) {
+                            //do nothing
+                        }
                     }
-                    //如果有日期字符串，转换为日期类型，避免SQL查询类型错误
-                    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-                    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                    SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    try {
-                        condValues[j] = sdf1.parse(condValues[j].toString());
-                    } catch (Exception e) {
-                        //do nothing
-                    }
-                    try {
-                        condValues[j] = sdf2.parse(condValues[j].toString());
-                    } catch (ParseException e) {
-                        //do nothing
-                    }
-                    try {
-                        condValues[j] = sdf3.parse(condValues[j].toString());
-                    } catch (ParseException e) {
-                        //do nothing
-                    }
-
                 }
                 switch (cond.getRelation()) {
                     case EQUAL:
