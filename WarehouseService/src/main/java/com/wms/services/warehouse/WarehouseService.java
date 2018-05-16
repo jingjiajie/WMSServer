@@ -53,8 +53,16 @@ public class WarehouseService {
        //stockTakingOrderItemAdd.setMode(0);
        //stockTakingOrderItemAdd.setStockTakingOrderId(1);
        //stockTakingOrderItemAdd.setSupplyId(5);
-        String a="";
-        stockRecordService.find("WMS_Template",a);
+        //String a="";
+        //stockRecordService.find("WMS_Template",a);
+        StockRecordFind stockRecordFind=new StockRecordFind();
+        stockRecordFind.setSupplyId(7);
+        stockRecordFind.setStorageLocationId(26);
+        stockRecordFind.setWarehouseId(5);
+        stockRecordFind.setUnit("个");
+        stockRecordFind.setUnitAmount(new BigDecimal(10));
+        StockRecordView[]   stockRecordSource1=stockRecordService.find("WMS_Template",stockRecordFind);
+
 
         //StockTakingOrderItem stockTakingOrderItem=new StockTakingOrderItem();
         //stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());

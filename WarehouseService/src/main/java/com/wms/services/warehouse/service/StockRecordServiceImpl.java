@@ -767,12 +767,13 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
     public StockRecordView[] find(String accountBook,String hqlString){
         Session session= sessionFactory.getCurrentSession();
+
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
         } catch (Throwable ex) {
             throw new DatabaseNotFoundException(accountBook);
         }
-        String hql3 = "from StockRecordView as s ";
+        String hql3 = " from StockRecordView as s where s.warehouseId=5 and s.storageLocationId=26 and s.supplyId=7 ";
         Query query = session.createQuery(hql3);
         List result3 = query.list();
         List<StockRecordView> resultList = query.list();
