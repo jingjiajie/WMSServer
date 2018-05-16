@@ -53,4 +53,11 @@ public class PackageControllerImpl implements PackageController {
         return packageService.find(accountBook, Condition.fromJson(condStr));
     }
 
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return packageService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

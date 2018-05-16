@@ -187,4 +187,10 @@ public class InspectionNoteItemServiceImpl
             }
         }));
     }
+
+
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.inspectionNoteItemDAO.findCount(accountBook,cond);
+    }
 }

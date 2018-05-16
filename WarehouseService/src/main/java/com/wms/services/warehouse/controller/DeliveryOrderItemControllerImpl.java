@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.service.DeliveryOrderItemService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.DeliveryOrderItem;
 import com.wms.utilities.model.DeliveryOrderItemView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,4 +51,13 @@ public class DeliveryOrderItemControllerImpl implements DeliveryOrderItemControl
                                         @PathVariable("strCond") String condStr) {
         return deliveryOrderItemService.find(accountBook, Condition.fromJson(condStr));
     }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.deliveryOrderItemService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
 }

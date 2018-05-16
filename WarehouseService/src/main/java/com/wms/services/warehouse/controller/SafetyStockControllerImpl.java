@@ -51,5 +51,11 @@ public class SafetyStockControllerImpl implements SafetyStockController{
         return safetyStockService.find(accountBook, Condition.fromJson(condStr));
     }
 
-
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.safetyStockService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

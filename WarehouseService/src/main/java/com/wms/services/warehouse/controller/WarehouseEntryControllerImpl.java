@@ -62,4 +62,12 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
                         @RequestBody InspectArgs inspectArgs){
         this.warehouseEntryService.inspect(accountBook,inspectArgs);
     }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                   @PathVariable("condStr") String condStr){
+        return warehouseEntryService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

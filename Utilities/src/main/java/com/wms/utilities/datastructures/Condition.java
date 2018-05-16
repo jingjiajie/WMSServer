@@ -17,8 +17,8 @@ import java.util.*;
 public class Condition {
     private List<ConditionItem> conditions = new ArrayList<>();
     private List<OrderItem> orders = new ArrayList<>();
-    private long page = -1;
-    private long pageSize = 50;
+    private int page = -1;
+    private int pageSize = 50;
 
     public static Condition fromJson(String jsonStr) throws ConditionException {
         Gson gson = new Gson();
@@ -154,6 +154,17 @@ public class Condition {
                 }
             }
         }
+        //如果没有ID排序条件，则永远加一个按ID倒排。不需要理由
+        boolean hasIDOrder = false;
+        for(OrderItem orderItem : this.orders){
+            if(orderItem.getKey().equalsIgnoreCase("id")){
+                hasIDOrder = true;
+            }
+        }
+        if(!hasIDOrder) {
+            this.addOrder("id", OrderItem.Order.DESC);
+        }
+
         if (orderItems != null) {
             if (orderItems.size() > 0) {
                 hqlString.append(" order by ");
@@ -165,6 +176,9 @@ public class Condition {
                 hqlString.append(String.format("%s %s", orderItems.get(i).getKey(), orderItems.get(i).getOrder().toString()));
             }
         }
+        //创建查询
+        Query query = session.createQuery(hqlString.toString());
+
         //如果设置了分页条件，则生成分页语句
         if (this.page != -1) {
             if(returnCount){
@@ -173,9 +187,10 @@ public class Condition {
             if(page == 0){
                 throw new WMSServiceException(String.format("page(%d)必须从1开始！",page));
             }
-            hqlString.append(String.format(" limit %d,%d ", (page - 1) * pageSize, pageSize));
+            query.setFirstResult((page - 1) * pageSize);
+            query.setMaxResults(pageSize);
         }
-        Query query = session.createQuery(hqlString.toString());
+
         for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
             query.setParameter(entry.getKey(), entry.getValue());
         }

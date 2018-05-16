@@ -52,4 +52,9 @@ public class CommonDataServiceImpl implements CommonDataService {
     public CommonData[] find(String accountBook, Condition cond) throws WMSServiceException {
         return this.commonDataDAO.find(accountBook, cond);
     }
+
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.commonDataDAO.findCount(accountBook,cond);
+    }
 }
