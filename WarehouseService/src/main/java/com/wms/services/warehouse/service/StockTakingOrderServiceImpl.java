@@ -117,4 +117,10 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
     public StockTakingOrderView[] find(String accountBook, Condition cond) throws WMSServiceException{
         return this.stockTakingOrderDAO.find(accountBook, cond);
     }
+
+
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.stockTakingOrderDAO.findCount(accountBook,cond);
+    }
 }

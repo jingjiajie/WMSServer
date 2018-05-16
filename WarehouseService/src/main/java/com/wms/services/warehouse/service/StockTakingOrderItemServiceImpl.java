@@ -241,4 +241,9 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockTakingOrder.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
         stockTakingOrderService.update(accountBook,new StockTakingOrder[]{stockTakingOrder});
     }
+
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.stockTakingOrderItemDAO.findCount(accountBook,cond);
+    }
 }

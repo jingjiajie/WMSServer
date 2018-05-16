@@ -889,4 +889,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
        transformRecordService.add(accountBook, new TransferRecord[]{transferRecord});
    }
    */
+
+
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.stockRecordDAO.findCount(accountBook,cond);
+    }
 }

@@ -61,4 +61,11 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
         this.deliveryOrderService.transferPakage(accountBook,transferArgs);
     }
 
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.deliveryOrderService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

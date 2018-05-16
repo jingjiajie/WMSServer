@@ -154,4 +154,9 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
             });
         });
     }
+
+    @Override
+    public long findCount(String database,Condition cond) throws WMSServiceException{
+        return this.warehouseEntryDAO.findCount(database,cond);
+    }
 }

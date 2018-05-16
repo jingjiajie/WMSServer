@@ -86,4 +86,13 @@ public class StockRecordControllerImpl implements StockRecordController {
                                   @RequestBody StockRecordFind stockRecordFind) {
         return stockRecordService.find(accountBook, stockRecordFind);
     }
+
+
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.stockRecordService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

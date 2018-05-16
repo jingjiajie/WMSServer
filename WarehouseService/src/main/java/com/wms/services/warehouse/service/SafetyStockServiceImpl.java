@@ -104,4 +104,9 @@ public class SafetyStockServiceImpl implements SafetyStockService{
     }
 
 
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.safetyStockDAO.findCount(accountBook,cond);
+    }
+
 }

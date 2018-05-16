@@ -93,4 +93,10 @@ public class PackageServiceImpl implements PackageService {
         return packageDAO.find(accountBook, cond);
     }
 
+
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.packageDAO.findCount(accountBook,cond);
+    }
+
 }

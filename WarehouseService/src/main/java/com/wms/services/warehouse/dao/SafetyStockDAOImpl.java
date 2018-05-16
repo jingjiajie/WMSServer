@@ -13,6 +13,5 @@ public class SafetyStockDAOImpl
 
     public SafetyStockDAOImpl(){
         super(SafetyStock.class,SafetyStockView.class,SafetyStock::getId);
-
     }
 }

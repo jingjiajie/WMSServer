@@ -147,4 +147,10 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         DeliveryOrderView deliveryOrderView = deliveryOrderViews[0];
         return deliveryOrderView;
     }
+
+
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.deliveryOrderItemDAO.findCount(accountBook,cond);
+    }
 }

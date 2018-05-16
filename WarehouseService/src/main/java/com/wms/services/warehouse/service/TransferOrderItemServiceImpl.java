@@ -215,4 +215,10 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             //}
         }));
     }
+
+
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.transferOrderItemDAO.findCount(accountBook,cond);
+    }
 }

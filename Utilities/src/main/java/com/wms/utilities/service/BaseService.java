@@ -8,4 +8,5 @@ public interface BaseService<TTable,TView> {
     void update(String accountBook,TTable objs[]) throws WMSServiceException;
     void remove(String accountBook,int ids[]) throws WMSServiceException;
     TView[] find(String accountBook, Condition cond) throws WMSServiceException;
+    long findCount(String database,Condition cond) throws WMSServiceException;
 }

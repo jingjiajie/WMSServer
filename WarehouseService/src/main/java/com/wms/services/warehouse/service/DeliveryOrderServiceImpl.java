@@ -171,4 +171,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             });
         });
     }
+
+
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.deliveryOrderDAO.findCount(accountBook,cond);
+    }
 }
