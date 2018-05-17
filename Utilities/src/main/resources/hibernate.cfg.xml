@@ -4,20 +4,64 @@
     "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
   <session-factory>
-    <property name="connection.url">jdbc:mysql://linuxserver.jingjiajie.com:3306</property>
+    <property name="connection.url">jdbc:mysql://linuxserver.jingjiajie.com:3306/WMS_Template</property>
     <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+    <property name="connection.username">wms</property>
+    <property name="connection.password">Wms666666</property>
+
+    <mapping class="com.wms.utilities.model.AccountTitle"/>
+    <mapping class="com.wms.utilities.model.BarCode"/>
+    <mapping class="com.wms.utilities.model.DeliveryOrder"/>
+    <mapping class="com.wms.utilities.model.DeliveryOrderItem"/>
+    <mapping class="com.wms.utilities.model.InspectionNote"/>
+    <mapping class="com.wms.utilities.model.InspectionNoteItem"/>
+    <mapping class="com.wms.utilities.model.Material"/>
+    <mapping class="com.wms.utilities.model.Package"/>
+    <mapping class="com.wms.utilities.model.PackageItem"/>
+    <mapping class="com.wms.utilities.model.Person"/>
     <mapping class="com.wms.utilities.model.SafetyStock"/>
-      <mapping class="com.wms.utilities.model.TransferOrderItem"/>
-      <mapping class="com.wms.utilities.model.SafetyStockView"/>
-      <mapping class="com.wms.utilities.model.TransferOrderItemView"/>
-      <mapping class="com.wms.utilities.model.StockRecord"/>
-      <mapping resource="com/wms/utilities/model/StockRecord.hbm.xml"/>
-      <mapping class="com.wms.utilities.model.StockRecordView"/>
-      <mapping resource="com/wms/utilities/model/StockRecordView.hbm.xml"/>
-      <mapping resource="com/wms/utilities/model/SafetyStock.hbm.xml"/>
-      <mapping resource="com/wms/utilities/model/SafetyStockView.hbm.xml"/>
-      <!-- <property name="connection.username"/> -->
-    <!-- <property name="connection.password"/> -->
+    <mapping class="com.wms.utilities.model.StockRecord"/>
+    <mapping class="com.wms.utilities.model.StockTakingOrder"/>
+    <mapping class="com.wms.utilities.model.StockTakingOrderItem"/>
+    <mapping class="com.wms.utilities.model.StorageArea"/>
+    <mapping class="com.wms.utilities.model.StorageLocation"/>
+    <mapping class="com.wms.utilities.model.Supplier"/>
+    <mapping class="com.wms.utilities.model.Supply"/>
+    <mapping class="com.wms.utilities.model.Tax"/>
+    <mapping class="com.wms.utilities.model.TaxItem"/>
+    <mapping class="com.wms.utilities.model.TransferOrder"/>
+    <mapping class="com.wms.utilities.model.TransferOrderItem"/>
+    <mapping class="com.wms.utilities.model.TransferRecord"/>
+    <mapping class="com.wms.utilities.model.Warehouse"/>
+    <mapping class="com.wms.utilities.model.WarehouseEntry"/>
+    <mapping class="com.wms.utilities.model.WarehouseEntryItem"/>
+    <mapping class="com.wms.utilities.model.AccountTitleView"/>
+    <mapping class="com.wms.utilities.model.BarCodeView"/>
+    <mapping class="com.wms.utilities.model.DeliveryOrderItemView"/>
+    <mapping class="com.wms.utilities.model.DeliveryOrderView"/>
+    <mapping class="com.wms.utilities.model.InspectionNoteItemView"/>
+    <mapping class="com.wms.utilities.model.InspectionNoteView"/>
+    <mapping class="com.wms.utilities.model.MaterialView"/>
+    <mapping class="com.wms.utilities.model.PackageItemView"/>
+    <mapping class="com.wms.utilities.model.PackageView"/>
+    <mapping class="com.wms.utilities.model.PersonView"/>
+    <mapping class="com.wms.utilities.model.SafetyStockView"/>
+    <mapping class="com.wms.utilities.model.StockRecordView"/>
+    <mapping class="com.wms.utilities.model.StockTakingOrderItemView"/>
+    <mapping class="com.wms.utilities.model.StockTakingOrderView"/>
+    <mapping class="com.wms.utilities.model.StorageAreaView"/>
+    <mapping class="com.wms.utilities.model.StorageLocationView"/>
+    <mapping class="com.wms.utilities.model.SupplierView"/>
+    <mapping class="com.wms.utilities.model.SupplyView"/>
+    <mapping class="com.wms.utilities.model.TaxItemView"/>
+    <mapping class="com.wms.utilities.model.TaxView"/>
+    <mapping class="com.wms.utilities.model.TransferOrderItemView"/>
+    <mapping class="com.wms.utilities.model.TransferOrderView"/>
+    <mapping class="com.wms.utilities.model.TransferRecordView"/>
+    <mapping class="com.wms.utilities.model.WarehouseEntryItemView"/>
+    <mapping class="com.wms.utilities.model.WarehouseEntryView"/>
+    <mapping class="com.wms.utilities.model.WarehouseView"/>
+    <mapping class="com.wms.utilities.model.CommonData"/>
 
     <!-- DB schema will be updated if needed -->
     <!-- <property name="hbm2ddl.auto">update</property> -->
