@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 
 import com.wms.services.warehouse.dao.StockRecordDAO;
+import com.wms.services.warehouse.datastructures.StockFindString;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
@@ -926,14 +927,21 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         } catch (Throwable ex) {
             throw new DatabaseNotFoundException(accountBook);
         }
-        String hql3 = " from StockRecordView as s where s.warehouseId=5 and s.storageLocationId=26 and s.supplyId=7 ";
+        String hql3 =  "select max(time) as time1 from StockRecordView as s where s.warehouseId=5 and s.storageLocationId=26 and s.supplyId=7"+
+                      "group by s.unitAmount,s.unit,s.batchNo ";
+       // String hql3 = " select a from StockRecordView as a (select s.unitAmount,s.unit,s.time from StockRecordView as s where s.warehouseId=5 and s.storageLocationId=26 and s.supplyId=7"+
+        //        " group by s.unitAmount,s.unit,s.batchNo)  ";
+
+       // select a from StockRecordView as a
         Query query = session.createQuery(hql3);
         List result3 = query.list();
-        List<StockRecordView> resultList = query.list();
-        StockRecordView[] resultArray = (StockRecordView[]) Array.newInstance(StockRecordView.class,resultList.size());
+        List<StockFindString> resultList = query.list();
+
+        StockFindString[] resultArray = (StockFindString[]) Array.newInstance(StockFindString.class,resultList.size());
         resultList.toArray(resultArray);
         session.close();
-        return resultArray;
+        StockRecordView[] stockRecordViews=null;
+        return stockRecordViews;
     }
 /*
    public void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock) {
