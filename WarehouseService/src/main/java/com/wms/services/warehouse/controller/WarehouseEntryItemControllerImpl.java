@@ -19,9 +19,10 @@ public class WarehouseEntryItemControllerImpl implements WarehouseEntryItemContr
 
     @Override
     @RequestMapping(value = "/",method = RequestMethod.POST)
-    public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook,
+    @ResponseStatus(HttpStatus.OK)
+    public int[] add(@PathVariable("accountBook") String accountBook,
                                      @RequestBody WarehouseEntryItem[] items) {
-        return new ResponseEntity<>(this.warehouseEntryItemService.add(accountBook,items), HttpStatus.OK);
+        return this.warehouseEntryItemService.add(accountBook,items);
     }
 
     @Override
@@ -44,8 +45,17 @@ public class WarehouseEntryItemControllerImpl implements WarehouseEntryItemContr
 
     @Override
     @RequestMapping(value = "/{cond}",method = RequestMethod.GET)
-    public ResponseEntity<WarehouseEntryItemView[]> find(@PathVariable("accountBook") String accountBook,
+    @ResponseStatus(HttpStatus.OK)
+    public WarehouseEntryItemView[] find(@PathVariable("accountBook") String accountBook,
                                                          @PathVariable("cond") String strCond) {
-        return new ResponseEntity<>(this.warehouseEntryItemService.find(accountBook, Condition.fromJson(strCond)),HttpStatus.OK);
+        return this.warehouseEntryItemService.find(accountBook, Condition.fromJson(strCond));
+    }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return warehouseEntryItemService.findCount(accountBook, Condition.fromJson(condStr));
     }
 }

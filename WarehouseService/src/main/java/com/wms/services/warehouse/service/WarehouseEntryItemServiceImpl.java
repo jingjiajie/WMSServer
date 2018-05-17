@@ -163,4 +163,9 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
         WarehouseEntryView warehouseEntryView = warehouseEntryViews[0];
         return warehouseEntryView;
     }
+
+    @Override
+    public long findCount(String database,Condition cond) throws WMSServiceException{
+        return this.warehouseEntryItemDAO.findCount(database,cond);
+    }
 }
