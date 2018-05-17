@@ -43,6 +43,7 @@ public class WarehouseService {
 
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
 
+        stockRecordService.find("WMS_Template","");
         StockRecordFind stockRecordFind = new StockRecordFind();
         stockRecordFind.setSupplyId(7);
         stockRecordFind.setStorageLocationId(26);
@@ -61,7 +62,6 @@ public class WarehouseService {
         condition.addCondition("batchNo", new String[]{"100"}, ConditionItem.Relation.NOT_EQUAL);
 
         condition.addCondition("time", stockRecordFind.getTimeEnd(), ConditionItem.Relation.LESS_THAN);
-
 
         StockRecordView[] stockRecordViews = stockRecordService.find("WMS_Template", condition);
     }
