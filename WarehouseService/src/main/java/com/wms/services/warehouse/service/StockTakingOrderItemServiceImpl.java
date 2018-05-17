@@ -75,6 +75,12 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
 
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
+
+        for (int id : ids) {
+            if (stockTakingOrderItemDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
+                throw new WMSServiceException(String.format("删除盘点单条目不存在，请重新查询！(%d)", id));
+            }
+        }
         try {
             stockTakingOrderItemDAO.remove(accountBook, ids);
         } catch (Throwable ex) {

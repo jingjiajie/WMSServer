@@ -100,6 +100,13 @@ public class StorageAreaServiceImpl implements StorageAreaService{
 
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
+
+        for (int id : ids) {
+            if (storageAreaDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
+                throw new WMSServiceException(String.format("删除库区不存在，请重新查询！(%d)", id));
+            }
+        }
+
         try {
             storageAreaDAO.remove(accountBook, ids);
         }
