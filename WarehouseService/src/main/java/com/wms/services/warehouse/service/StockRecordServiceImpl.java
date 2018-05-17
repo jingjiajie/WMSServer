@@ -927,13 +927,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         } catch (Throwable ex) {
             throw new DatabaseNotFoundException(accountBook);
         }
-        String hql3 =  "select max(time) as time1 from StockRecordView as s where s.warehouseId=5 and s.storageLocationId=26 and s.supplyId=7"+
-                      "group by s.unitAmount,s.unit,s.batchNo ";
-       // String hql3 = " select a from StockRecordView as a (select s.unitAmount,s.unit,s.time from StockRecordView as s where s.warehouseId=5 and s.storageLocationId=26 and s.supplyId=7"+
-        //        " group by s.unitAmount,s.unit,s.batchNo)  ";
-
-       // select a from StockRecordView as a
-        Query query = session.createQuery(hql3);
+        String hql="SELECT s1.* FROM StockRecordView AS s1 INNER JOIN (SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME FROM StockRecordView As s2 GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo) AS s3 ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time";
+        //Query query = session.createQuery(hql3);
+        Query query=session.createNativeQuery(hql);
         List result3 = query.list();
         List<StockFindString> resultList = query.list();
 
