@@ -1,4 +1,5 @@
 package com.wms.services.warehouse.service;
+import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,43 +119,30 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         idChecker.check(Supply.class, accountBook, stockTakingOrderItemAdd.getSupplyId(), "供货信息");
         idChecker.check(Warehouse.class, accountBook, stockTakingOrderItemAdd.getWarehouseId(), " 仓库");
         int mode = stockTakingOrderItemAdd.getMode();
-        Condition condition = new Condition();
-        condition.addCondition("supplyId", new Integer[]{stockTakingOrderItemAdd.getSupplyId()}).
-                addCondition("warehouseId", new Integer[]{stockTakingOrderItemAdd.getWarehouseId()}).
-                addCondition("time", stockTakingOrderItemAdd.getCheckTime(), ConditionItem.Relation.LESS_THAN).
-                addOrder("time", OrderItem.Order.DESC);
-        if (stockRecordService.find(accountBook, condition).length == 0) {
-            throw new WMSServiceException("没有查到此供货的任何库存信息");
-        }
-
         //第一条肯定是某个记录的最新一条
         BigDecimal warehouseAmount = new BigDecimal(0);
-        //TODO 查找需要修改
-        while (stockRecordService.find(accountBook, condition).length > 0) {
-            StockRecordView[] stockRecordTemp = stockRecordService.find(accountBook, condition);
-            //如果为所有信息模式，将此信息作为一条盘点单条目保存
-            if (mode == 0) {
-                StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();
-                stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
-                stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
-                stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
-                //已经建好盘点单
-                stockTakingOrderItem.setComment("库位分单位详细信息");
-                stockTakingOrderItem.setStorageLocationId(stockRecordTemp[0].getStorageLocationId());
-                stockTakingOrderItem.setUnitAmount(stockRecordTemp[0].getUnitAmount());
-                stockTakingOrderItem.setUnit(stockRecordTemp[0].getUnit());
-                stockTakingOrderItem.setAmount(stockRecordTemp[0].getAmount());
-                stockTakingOrderItem.setRealAmount(stockRecordTemp[0].getAmount());
-                //分不同单位单位数量添加所有库位信息条
+        StockRecordFind stockRecordFind=new StockRecordFind();
+        stockRecordFind.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
+        stockRecordFind.setStorageLocationId(stockTakingOrderItemAdd.getStockTakingOrderId());
+        stockRecordFind.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
+        stockRecordFind.setTimeEnd(stockTakingOrderItemAdd.getCheckTime());
+        stockRecordFind.setReturnMode("new");
+        StockRecordView[]   stockRecordSource1=stockRecordService.find(accountBook,stockRecordFind);
+        for(int i=0;i<stockRecordSource1.length;i++){
+            StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();
+            stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
+            stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
+            stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
+            stockTakingOrderItem.setComment("详细数目");
+            stockTakingOrderItem.setUnit(stockRecordSource1[i].getUnit());
+            stockTakingOrderItem.setStorageLocationId(stockRecordSource1[i].getStorageLocationId());
+            stockTakingOrderItem.setUnitAmount(stockRecordSource1[i].getUnitAmount());
+            stockTakingOrderItem.setAmount(stockRecordSource1[i].getAmount());
+            stockTakingOrderItem.setRealAmount(stockRecordSource1[i].getAmount());
+            if(stockTakingOrderItemAdd.getMode()==0) {
                 stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
             }
-            //相同单位、单位数量、批号的第一条已经取出，所有增加条件，下次查询没有与刚才相同的记录了
-            condition = condition.addCondition("unitAmount", new BigDecimal[]{stockRecordTemp[0].getUnitAmount()}, ConditionItem.Relation.NOT_EQUAL)
-                    .addCondition("unit", new java.lang.String[]{stockRecordTemp[0].getUnit()}, ConditionItem.Relation.NOT_EQUAL).addCondition(
-                            "batchNo", new java.lang.String[]{stockRecordTemp[0].getBatchNo()}, ConditionItem.Relation.NOT_EQUAL);
-
-            //得到同一供货、同一仓库内的数量总和
-            warehouseAmount = warehouseAmount.add(stockRecordTemp[0].getAmount());
+            warehouseAmount=warehouseAmount.add(stockRecordSource1[i].getAmount());
         }
         //添加总数量条目
         StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();

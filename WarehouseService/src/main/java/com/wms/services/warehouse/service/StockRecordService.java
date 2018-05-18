@@ -21,7 +21,5 @@ public interface StockRecordService
 
     void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock);
 
-    StockRecordView[] find(String accountBook, String hqlString);
-
     String batchTransfer(Timestamp timestamp);
 }

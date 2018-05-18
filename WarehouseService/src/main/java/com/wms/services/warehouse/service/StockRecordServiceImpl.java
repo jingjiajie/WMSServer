@@ -2,7 +2,6 @@ package com.wms.services.warehouse.service;
 
 
 import com.wms.services.warehouse.dao.StockRecordDAO;
-import com.wms.services.warehouse.datastructures.StockFindString;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
@@ -27,14 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -166,6 +158,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setWarehouseId(warehouseId[0]);
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
+        stockRecordFind.setReturnMode("new");
         StockRecordView[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
         if(stockRecordSource1.length==0)
         {
@@ -352,8 +345,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setStorageLocationId(sourceStorageLocationId);
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
+        stockRecordFind.setReturnMode("new");
         if(transferStock.getAmount().compareTo(new BigDecimal(0)) >=0){
-            stockRecordFind.setInventaryDate(transferStock.getInventoryDate());
+            stockRecordFind.setInventoryDate(transferStock.getInventoryDate());
         }
         StockRecordView[] stockRecordSource=
                 /*stockRecordDAO.find(accountBook,new Condition().addCondition("supplyId",new Integer[]{supplyId}).
@@ -470,7 +464,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             }
         }
     }
-
+/*
     @Override
      public  StockRecordView[] find(String accountBook, StockRecordFind stockRecordFind)
     {
@@ -499,8 +493,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         {condition.addCondition("unitAmount",new BigDecimal[]{stockRecordFind.getUnitAmount()});}
 
         //同一天批号相同，所以用批号查询？
-        if(stockRecordFind.getInventaryDate()!=null) {
-            condition.addCondition("batchNo",new String[]{this.batchTransfer(stockRecordFind.getInventaryDate())}); }
+        if(stockRecordFind.getInventoryDate()!=null) {
+            condition.addCondition("batchNo",new String[]{this.batchTransfer(stockRecordFind.getInventoryDate())}); }
 
         if(stockRecordDAO.find(accountBook, condition).length == 0)
         {throw new WMSServiceException("此条件下无库存记录！");}
@@ -524,7 +518,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 if (stockRecordFind.getUnitAmount() == null) {
                     condition.addCondition("unitAmount", new BigDecimal[]{stockRecordTemp[0].getUnitAmount()}, ConditionItem.Relation.NOT_EQUAL);
                 }
-                if(stockRecordFind.getInventaryDate()==null) {
+                if(stockRecordFind.getInventoryDate()==null) {
                     condition.addCondition("batchNo",new String[]{stockRecordTemp[0].getBatchNo()},ConditionItem.Relation.NOT_EQUAL );
                     }
             }
@@ -537,7 +531,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         }
         return stockRecordViews2;
     }
-
+*/
 
     private Integer[] warehouseIdFind(String accountBook,int storageLocationId) {
         StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{storageLocationId}));
@@ -579,6 +573,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setWarehouseId(warehouseId[0]);
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
+        stockRecordFind.setReturnMode("new");
         StockRecordView[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
         if(stockRecordSource1.length==0)
         {
@@ -776,6 +771,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setWarehouseId(warehouseId[0]);
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
+        stockRecordFind.setReturnMode("new");
         StockRecordView[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
 
         //进行排序
@@ -919,44 +915,63 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordDAO.update(accountBook,new StockRecord[]{stockRecord});
     }
 
-    public StockRecordView[] find(String accountBook,String hqlString){
+    public StockRecordView[] find(String accountBook,StockRecordFind stockRecordFind){
         Session session= sessionFactory.getCurrentSession();
-
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
         } catch (Throwable ex) {
             throw new DatabaseNotFoundException(accountBook);
         }
+        Query query=null;
+        if(stockRecordFind.getReturnMode().equals("new")){
+            //库存查询最新一条用
+            String sqlNew="SELECT s1.* FROM StockRecordView AS s1 \n" +
+                    "INNER JOIN \n" +
+                    "\n" +
+                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME   FROM StockRecordView As s2 \n" +
+                    "\n" +
+                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount\n" +
+                    "\n" +
+                    "GROUP BY s2.BatchNo) AS s3 \n" +
+                    "\n" +
+                    "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time \n" +
+                    "and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId\n";
+            query=session.createNativeQuery(sqlNew,StockRecordView.class);
+            query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
+            query.setParameter("storageLocationId",stockRecordFind.getStorageLocationId());
+            query.setParameter("supplyId",stockRecordFind.getSupplyId());
+            query.setParameter("unit",stockRecordFind.getUnit());
+            query.setParameter("unitAmount",stockRecordFind.getUnitAmount());
+        }
         //盘点用
-        String hql="SELECT s1.* FROM StockRecordView AS s1 \n" +
-                "INNER JOIN  \n" +
-                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
-                "where s2.WarehouseID=-1 and s2.StorageLocationID=1 and s2.SupplyID=5 \n" +
-                "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo) as s3 \n" +
-                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID";
-        //库存查询最新一条用
-        String hql1="SELECT s1.* FROM StockRecordView AS s1 \n" +
-                "INNER JOIN \n" +
-                "\n" +
-                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME   FROM StockRecordView As s2 \n" +
-                "\n" +
-                "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=\"个\" and s2.UnitAmount=5\n" +
-                "\n" +
-                "GROUP BY s2.BatchNo) AS s3 \n" +
-                "\n" +
-                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time \n" +
-                "and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId\n";
-        //库存查询一段时间用
-        String hql2="";
-        Query query=session.createNativeQuery(hql1,StockRecordView.class);
-        query.setParameter("warehouseId",-1);
-        query.setParameter("storageLocationId",1);
-        query.setParameter("supplyId",5);
+        else if(stockRecordFind.getReturnMode().equals("checkNew")){
+            String sqlCheckNew="SELECT s1.* FROM StockRecordView AS s1 \n" +
+                    "INNER JOIN  \n" +
+                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
+                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=storaheLocationId and s2.SupplyID=supplyId AND s2.TIME<endTime \n" +
+                    "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo) as s3 \n" +
+                    "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID";
+            query=session.createNativeQuery(sqlCheckNew,StockRecordView.class);
+            query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
+            query.setParameter("storageLocationId",stockRecordFind.getStorageLocationId());
+            query.setParameter("supplyId",stockRecordFind.getSupplyId());
+            query.setParameter("endTime",stockRecordFind.getTimeEnd());
+        }
+        else if(stockRecordFind.getReturnMode().equals("checkTime"))
+        {//库存查询一段时间用
+        String sqlCheckTime="SELECT s1.* FROM StockRecordView AS s1\n" +
+                "WHERE s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId and s1.SupplyID=:supplyId and s1.Time between :startTime and :endTime";
+            query=session.createNativeQuery(sqlCheckTime,StockRecordView.class);
+            query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
+            query.setParameter("storageLocationId",stockRecordFind.getStorageLocationId());
+            query.setParameter("supplyId",stockRecordFind.getSupplyId());
+            query.setParameter("startTime",stockRecordFind.getTimeStart());
+            query.setParameter("endTime",stockRecordFind.getTimeEnd());
+        }
         List result3 = query.list();
         List<StockRecordView> resultList = query.list();
         StockRecordView[] resultArray = (StockRecordView[]) Array.newInstance(StockRecordView.class,resultList.size());
         resultList.toArray(resultArray);
-        session.close();
         return resultArray;
     }
 /*

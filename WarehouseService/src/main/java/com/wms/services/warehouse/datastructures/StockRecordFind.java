@@ -97,16 +97,16 @@ public class StockRecordFind {
         this.returnMode = returnMode;
     }
 
-    private String returnMode="newest";
+    private String returnMode="new";
 
-    public Timestamp getInventaryDate() {
-        return inventaryDate;
+    public Timestamp getInventoryDate() {
+        return inventoryDate;
     }
 
-    public void setInventaryDate(Timestamp inventaryDate) {
-        this.inventaryDate = inventaryDate;
+    public void setInventoryDate(Timestamp inventoryDate) {
+        this.inventoryDate = inventoryDate;
     }
 
-    private Timestamp inventaryDate;
+    private Timestamp inventoryDate;
 
 }
