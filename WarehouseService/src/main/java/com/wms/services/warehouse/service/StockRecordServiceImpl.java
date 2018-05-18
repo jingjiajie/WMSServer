@@ -927,17 +927,37 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         } catch (Throwable ex) {
             throw new DatabaseNotFoundException(accountBook);
         }
-        String hql="SELECT s1.* FROM StockRecordView AS s1 INNER JOIN (SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME FROM StockRecordView As s2 GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo) AS s3 ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time";
-        //Query query = session.createQuery(hql3);
-        Query query=session.createNativeQuery(hql);
+        //盘点用
+        String hql="SELECT s1.* FROM StockRecordView AS s1 \n" +
+                "INNER JOIN  \n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
+                "where s2.WarehouseID=-1 and s2.StorageLocationID=1 and s2.SupplyID=5 \n" +
+                "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo) as s3 \n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID";
+        //库存查询最新一条用
+        String hql1="SELECT s1.* FROM StockRecordView AS s1 \n" +
+                "INNER JOIN \n" +
+                "\n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME   FROM StockRecordView As s2 \n" +
+                "\n" +
+                "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=\"个\" and s2.UnitAmount=5\n" +
+                "\n" +
+                "GROUP BY s2.BatchNo) AS s3 \n" +
+                "\n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time \n" +
+                "and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId\n";
+        //库存查询一段时间用
+        String hql2="";
+        Query query=session.createNativeQuery(hql1,StockRecordView.class);
+        query.setParameter("warehouseId",-1);
+        query.setParameter("storageLocationId",1);
+        query.setParameter("supplyId",5);
         List result3 = query.list();
-        List<StockFindString> resultList = query.list();
-
-        StockFindString[] resultArray = (StockFindString[]) Array.newInstance(StockFindString.class,resultList.size());
+        List<StockRecordView> resultList = query.list();
+        StockRecordView[] resultArray = (StockRecordView[]) Array.newInstance(StockRecordView.class,resultList.size());
         resultList.toArray(resultArray);
         session.close();
-        StockRecordView[] stockRecordViews=null;
-        return stockRecordViews;
+        return resultArray;
     }
 /*
    public void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock) {

@@ -43,7 +43,7 @@ public class WarehouseService {
 
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
 
-        stockRecordService.find("WMS_Template","");
+       StockRecordView[] stockRecordView= stockRecordService.find("WMS_Template","");
         StockRecordFind stockRecordFind = new StockRecordFind();
         stockRecordFind.setSupplyId(7);
         stockRecordFind.setStorageLocationId(26);
