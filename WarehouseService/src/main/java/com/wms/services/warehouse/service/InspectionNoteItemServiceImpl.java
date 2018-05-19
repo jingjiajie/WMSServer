@@ -91,14 +91,14 @@ public class InspectionNoteItemServiceImpl
             }
             BigDecimal oriAmount = oriItemView.getAmount(); //原送检数量
             BigDecimal deltaAmount = inspectionNoteItem.getAmount().subtract(oriAmount); //变化送检数量
-            if (!deltaAmount.equals(new BigDecimal(0))) {
+            if (deltaAmount.compareTo(BigDecimal.ZERO) != 0) {
                 throw new WMSServiceException("不能修改计划送检数量");
             }
             WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getWarehouseEntryItemId()))[0];
             WarehouseEntryItem warehouseEntryItem = ReflectHelper.createAndCopyFields(warehouseEntryItemView, WarehouseEntryItem.class);
 
 //            //如果改变了送检数量，则把原送检数量移库回去。再把新送检数量移库过来
-//            if(!deltaAmount.equals(new BigDecimal(0))) {
+//            if(deltaAmount.compareTo(BigDecimal.ZERO) != 0) {
 //                //加回入库单条目中
 //                WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getWarehouseEntryItemId()))[0];
 //                WarehouseEntryItem warehouseEntryItem = ReflectHelper.createAndCopyFields(warehouseEntryItemView, WarehouseEntryItem.class);
@@ -114,11 +114,11 @@ public class InspectionNoteItemServiceImpl
             //如果返回数量变化，反映到库存中
             BigDecimal oriReturnAmount = oriItemView.getReturnAmount();
             BigDecimal deltaReturnAmount = inspectionNoteItem.getAmount().subtract(oriReturnAmount);
-            if (!deltaReturnAmount.equals(new BigDecimal(0))
-                    || !oriItemView.getUnit().equals(inspectionNoteItem.getUnit())
-                    || !oriItemView.getUnitAmount().equals(inspectionNoteItem.getUnitAmount())) {
+            if (deltaReturnAmount.compareTo(BigDecimal.ZERO) != 0
+                    || oriItemView.getUnit().compareTo(inspectionNoteItem.getUnit()) != 0
+                    || oriItemView.getUnitAmount().compareTo(inspectionNoteItem.getUnitAmount()) != 0) {
                 //原返回数量不是0的时候，冲销原返回数量
-                if (!oriReturnAmount.equals(new BigDecimal(0))) {
+                if (oriReturnAmount.compareTo(BigDecimal.ZERO) != 0) {
                     TransferStock transferStock = new TransferStock();
                     transferStock.setAmount(oriItemView.getReturnAmount());
                     transferStock.setSourceStorageLocationId(oriItemView.getReturnStorageLocationId());
