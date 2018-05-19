@@ -1,16 +1,13 @@
 package com.wms.services.warehouse;
-import com.wms.services.warehouse.datastructures.StockRecordFind;
-import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
-import com.wms.services.warehouse.datastructures.TransferItem;
+import com.wms.services.warehouse.datastructures.*;
 import com.wms.services.warehouse.service.DeliveryOrderService;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.services.warehouse.service.StockTakingOrderItemService;
+import com.wms.services.warehouse.service.SupplyService;
+import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
-import com.wms.utilities.model.StockRecordView;
-import com.wms.utilities.model.StockTakingOrderItem;
-import com.wms.utilities.model.TransferOrder;
-import com.wms.utilities.model.TransferOrderItem;
+import com.wms.utilities.model.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,8 +17,6 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
-
-import com.wms.services.warehouse.datastructures.TransferArgs;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -42,18 +37,32 @@ public class WarehouseService {
         System.out.println("仓库服务启动...");
 
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
+        IDChecker idChecker = applicationContext.getBean(IDChecker.class);
+        SupplyService supplyService=applicationContext.getBean(SupplyService.class);
 
 
         StockRecordFind stockRecordFind = new StockRecordFind();
-        stockRecordFind.setSupplyId(7);
-        stockRecordFind.setStorageLocationId(26);
-        stockRecordFind.setWarehouseId(5);
+        stockRecordFind.setSupplyId(5);
+        stockRecordFind.setStorageLocationId(21);
+        stockRecordFind.setWarehouseId(1);
         stockRecordFind.setUnit("个");
         stockRecordFind.setReturnMode("new");
-        stockRecordFind.setUnitAmount(new BigDecimal(10));
+        stockRecordFind.setUnitAmount(new BigDecimal(1));
         StockRecordView[] stockRecordSource1 = stockRecordService.find("WMS_Template", stockRecordFind);
 
+        TransferStock transferStock=new TransferStock();
+        transferStock.setAmount(new BigDecimal(-2));
+        transferStock.setSourceStorageLocationId(21);
+        transferStock.setUnit("个");
+        transferStock.setUnitAmount(new BigDecimal(1));
+        transferStock.setSupplyId(5);
+        transferStock.setRelatedOrderNo("4455595");
 
+
+        idChecker.check(SupplyService.class,"WMS_Template",transferStock.getSupplyId(),"供货");
+        SupplyView[] supplyViews=supplyService.find("WMS_Template",new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
+
+        stockRecordService.addAmount("WMS_Template",transferStock);
         Condition condition = new Condition().addCondition("warehouseId", new Integer[]{5}).addCondition("storageLocationId", new Integer[]{26}).addCondition("supplyId", new Integer[]{7});
 
         // condition.addCondition("unit",new String[]{"个"}, ConditionItem.Relation.NOT_EQUAL);

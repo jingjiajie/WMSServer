@@ -345,17 +345,13 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setStorageLocationId(sourceStorageLocationId);
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
+        stockRecordFind.setWarehouseId(warehouseId[0]);
         stockRecordFind.setReturnMode("new");
         if(transferStock.getAmount().compareTo(new BigDecimal(0)) >=0){
             stockRecordFind.setInventoryDate(transferStock.getInventoryDate());
         }
-        StockRecordView[] stockRecordSource=
-                /*stockRecordDAO.find(accountBook,new Condition().addCondition("supplyId",new Integer[]{supplyId}).
-                addCondition("storageLocationId",new Integer[]{sourceStorageLocationId}).addCondition("unit",unit).addCondition("unitAmount",unitAmount)
-        .addCondition("batchNo",new String[]{this.batchTransfer(transferStock.getInventoryDate())}).addOrder("time",OrderItem.Order.DESC ));
-*/
         //根据以上条件如果为增加只应该有一条 如果为减少则应该为所有批次
-        this.find(accountBook,stockRecordFind);
+        StockRecordView[] stockRecordSource= this.find(accountBook,stockRecordFind);
 
         //移入的情况
         if(transferStock.getAmount().compareTo(new BigDecimal(0)) >=0){
