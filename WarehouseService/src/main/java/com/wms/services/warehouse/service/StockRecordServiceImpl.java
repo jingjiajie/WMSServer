@@ -168,7 +168,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         //按批次（存货时间）进行排序
         for(int i=0;i<stockRecordSource1.length;i++)
         {
-            for(int j=i+1;i<stockRecordSource1.length;j++)
+            for(int j=i+1;j<stockRecordSource1.length;j++)
             {
                 if(stockRecordSource1[i].getInventoryDate().compareTo(stockRecordSource1[j].getInventoryDate())>=0)
                 {
@@ -188,7 +188,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 iNeed=i;
                 break;}
         }
-        if(iNeed==-1){ throw new WMSServiceException("可用数量不足，无法进行移出操作!"); }
+        if(iNeed==-1){
+            StorageLocationView[] storageLocationViews1= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
+            SupplyView[] supplyViews1=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
+            throw new WMSServiceException("物料"+supplyViews1[0].getMaterialName()+stockRecordFind.getUnit()+"单位"+"在库位"+storageLocationViews1[0].getName()+"上数量不足无法移出!");  }
 
         for(int i=stockRecordSource1.length-1;i>=iNeed;i--){
             StockRecord stockRecordNewSave=new StockRecord();
@@ -405,7 +408,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             //首先找到最久的库存记录
             for(int i=0;i<stockRecordSource.length;i++)
             {
-                for(int j=i+1;i<stockRecordSource.length;j++)
+                for(int j=i+1;j<stockRecordSource.length;j++)
                 {
                     if(stockRecordSource[i].getInventoryDate().compareTo(stockRecordSource[j].getInventoryDate())>=0)
                     {
@@ -425,7 +428,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                      iNeed=i;
                      break;}
             }
-            if(iNeed==-1){ throw new WMSServiceException("可用数量不足，无法进行移出操作!"); }
+            if(iNeed==-1){
+                StorageLocationView[] storageLocationViews1= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
+                SupplyView[] supplyViews1=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
+                throw new WMSServiceException("物料"+supplyViews1[0].getMaterialName()+stockRecordFind.getUnit()+"单位"+"在库位"+storageLocationViews1[0].getName()+"上数量不足无法移出!"); }
             for(int i=stockRecordSource.length-1;i>=iNeed;i--){
                 if(i>iNeed)
                 {
@@ -582,7 +588,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         //进行排序
         for(int i=0;i<stockRecordSource1.length;i++)
         {
-            for(int j=i+1;i<stockRecordSource1.length;j++)
+            for(int j=i+1;j<stockRecordSource1.length;j++)
             {
                 if(stockRecordSource1[i].getInventoryDate().compareTo(stockRecordSource1[j].getInventoryDate())>=0)
                 {
@@ -778,7 +784,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         //进行排序
         for(int i=0;i<stockRecordSource1.length;i++)
         {
-            for(int j=i+1;i<stockRecordSource1.length;j++)
+            for(int j=i+1;j<stockRecordSource1.length;j++)
             {
                 if(stockRecordSource1[i].getInventoryDate().compareTo(stockRecordSource1[j].getInventoryDate())>=0)
                 {
