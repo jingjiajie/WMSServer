@@ -944,7 +944,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     "GROUP BY s2.BatchNo) AS s3 \n" +
                     "\n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time \n" +
-                    "and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId\n";
+                    "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo \n";
             query=session.createNativeQuery(sqlNew,StockRecordView.class);
             query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
             query.setParameter("storageLocationId",stockRecordFind.getStorageLocationId());

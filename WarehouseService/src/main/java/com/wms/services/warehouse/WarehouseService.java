@@ -49,6 +49,7 @@ public class WarehouseService {
         stockRecordFind.setStorageLocationId(26);
         stockRecordFind.setWarehouseId(5);
         stockRecordFind.setUnit("个");
+        stockRecordFind.setReturnMode("new");
         stockRecordFind.setUnitAmount(new BigDecimal(10));
         StockRecordView[] stockRecordSource1 = stockRecordService.find("WMS_Template", stockRecordFind);
 
