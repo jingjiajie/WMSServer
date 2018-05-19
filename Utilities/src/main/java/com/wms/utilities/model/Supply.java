@@ -16,7 +16,7 @@ public class Supply {
     private BigDecimal defaultEntryAmount;
     private String defaultEntryUnit;
     private BigDecimal defaultEntryUnitAmount;
-    private BigDecimal defaultInspetionAmount;
+    private BigDecimal defaultInspectionAmount;
     private String defaultInspectionUnit;
     private BigDecimal defaultInspectionUnitAmount;
     private BigDecimal defaultDeliveryAmount;
@@ -135,13 +135,13 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DefaultInspetionAmount", nullable = true, precision = 3)
-    public BigDecimal getDefaultInspetionAmount() {
-        return defaultInspetionAmount;
+    @Column(name = "defaultInspectionAmount", nullable = true, precision = 3)
+    public BigDecimal getdefaultInspectionAmount() {
+        return defaultInspectionAmount;
     }
 
-    public void setDefaultInspetionAmount(BigDecimal defaultInspetionAmount) {
-        this.defaultInspetionAmount = defaultInspetionAmount;
+    public void setdefaultInspectionAmount(BigDecimal defaultInspectionAmount) {
+        this.defaultInspectionAmount = defaultInspectionAmount;
     }
 
     @Basic
@@ -623,7 +623,7 @@ public class Supply {
             return false;
         if (defaultEntryUnitAmount != null ? !defaultEntryUnitAmount.equals(supply.defaultEntryUnitAmount) : supply.defaultEntryUnitAmount != null)
             return false;
-        if (defaultInspetionAmount != null ? !defaultInspetionAmount.equals(supply.defaultInspetionAmount) : supply.defaultInspetionAmount != null)
+        if (defaultInspectionAmount != null ? !defaultInspectionAmount.equals(supply.defaultInspectionAmount) : supply.defaultInspectionAmount != null)
             return false;
         if (defaultInspectionUnit != null ? !defaultInspectionUnit.equals(supply.defaultInspectionUnit) : supply.defaultInspectionUnit != null)
             return false;
@@ -718,7 +718,7 @@ public class Supply {
         result = 31 * result + (defaultEntryAmount != null ? defaultEntryAmount.hashCode() : 0);
         result = 31 * result + (defaultEntryUnit != null ? defaultEntryUnit.hashCode() : 0);
         result = 31 * result + (defaultEntryUnitAmount != null ? defaultEntryUnitAmount.hashCode() : 0);
-        result = 31 * result + (defaultInspetionAmount != null ? defaultInspetionAmount.hashCode() : 0);
+        result = 31 * result + (defaultInspectionAmount != null ? defaultInspectionAmount.hashCode() : 0);
         result = 31 * result + (defaultInspectionUnit != null ? defaultInspectionUnit.hashCode() : 0);
         result = 31 * result + (defaultInspectionUnitAmount != null ? defaultInspectionUnitAmount.hashCode() : 0);
         result = 31 * result + (defaultDeliveryAmount != null ? defaultDeliveryAmount.hashCode() : 0);

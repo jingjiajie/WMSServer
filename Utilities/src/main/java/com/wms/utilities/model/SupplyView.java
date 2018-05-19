@@ -16,7 +16,7 @@ public class SupplyView {
     private BigDecimal defaultEntryAmount;
     private String defaultEntryUnit;
     private BigDecimal defaultEntryUnitAmount;
-    private BigDecimal defaultInspetionAmount;
+    private BigDecimal defaultInspectionAmount;
     private String defaultInspectionUnit;
     private BigDecimal defaultInspectionUnitAmount;
     private BigDecimal defaultDeliveryAmount;
@@ -70,6 +70,25 @@ public class SupplyView {
     private String supplierName;
     private String createPersonName;
     private String lastUpdatePersonName;
+    private Integer defaultEntryStorageLocationId;
+    private Integer defaultInspectionStorageLocationId;
+    private Integer defaultQualifiedStorageLocationId;
+    private Integer defaultUnqualifiedStorageLocationId;
+    private Integer defaultDeliveryStorageLocationId;
+    private Integer defaultPrepareTargetStorageLocationId;
+    private String defaultEntryStorageLocationNo;
+    private String defaultEntryStorageLocationName;
+    private String defaultInspectionStorageLocationNo;
+    private String defaultInspectionStorageLocationName;
+    private String defaultQualifiedStorageLocationNo;
+    private String defaultQualifiedStorageLocationName;
+    private String defaultUnqualifiedStorageLocationNo;
+    private String defaultUnqualifiedStorageLocationName;
+    private String defaultDeliveryStorageLocationNo;
+    private String defaultDeliveryStorageLocationName;
+    private String defaultPrepareTargetStorageLocationNo;
+    private String defaultPrepareTargetStorageLocationName;
+    private String materialProductLine;
 
     @Id
     @Basic
@@ -143,13 +162,13 @@ public class SupplyView {
     }
 
     @Basic
-    @Column(name = "DefaultInspetionAmount", nullable = true, precision = 3)
-    public BigDecimal getDefaultInspetionAmount() {
-        return defaultInspetionAmount;
+    @Column(name = "DefaultInspectionAmount", nullable = true, precision = 3)
+    public BigDecimal getDefaultInspectionAmount() {
+        return defaultInspectionAmount;
     }
 
-    public void setDefaultInspetionAmount(BigDecimal defaultInspetionAmount) {
-        this.defaultInspetionAmount = defaultInspetionAmount;
+    public void setDefaultInspectionAmount(BigDecimal defaultInspectionAmount) {
+        this.defaultInspectionAmount = defaultInspectionAmount;
     }
 
     @Basic
@@ -701,7 +720,7 @@ public class SupplyView {
             return false;
         if (defaultEntryUnitAmount != null ? !defaultEntryUnitAmount.equals(that.defaultEntryUnitAmount) : that.defaultEntryUnitAmount != null)
             return false;
-        if (defaultInspetionAmount != null ? !defaultInspetionAmount.equals(that.defaultInspetionAmount) : that.defaultInspetionAmount != null)
+        if (defaultInspectionAmount != null ? !defaultInspectionAmount.equals(that.defaultInspectionAmount) : that.defaultInspectionAmount != null)
             return false;
         if (defaultInspectionUnit != null ? !defaultInspectionUnit.equals(that.defaultInspectionUnit) : that.defaultInspectionUnit != null)
             return false;
@@ -803,7 +822,7 @@ public class SupplyView {
         result = 31 * result + (defaultEntryAmount != null ? defaultEntryAmount.hashCode() : 0);
         result = 31 * result + (defaultEntryUnit != null ? defaultEntryUnit.hashCode() : 0);
         result = 31 * result + (defaultEntryUnitAmount != null ? defaultEntryUnitAmount.hashCode() : 0);
-        result = 31 * result + (defaultInspetionAmount != null ? defaultInspetionAmount.hashCode() : 0);
+        result = 31 * result + (defaultInspectionAmount != null ? defaultInspectionAmount.hashCode() : 0);
         result = 31 * result + (defaultInspectionUnit != null ? defaultInspectionUnit.hashCode() : 0);
         result = 31 * result + (defaultInspectionUnitAmount != null ? defaultInspectionUnitAmount.hashCode() : 0);
         result = 31 * result + (defaultDeliveryAmount != null ? defaultDeliveryAmount.hashCode() : 0);
@@ -858,5 +877,195 @@ public class SupplyView {
         result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
         result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
         return result;
+    }
+
+    @Basic
+    @Column(name = "DefaultEntryStorageLocationID", nullable = true)
+    public Integer getDefaultEntryStorageLocationId() {
+        return defaultEntryStorageLocationId;
+    }
+
+    public void setDefaultEntryStorageLocationId(Integer defaultEntryStorageLocationId) {
+        this.defaultEntryStorageLocationId = defaultEntryStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionStorageLocationID", nullable = true)
+    public Integer getDefaultInspectionStorageLocationId() {
+        return defaultInspectionStorageLocationId;
+    }
+
+    public void setDefaultInspectionStorageLocationId(Integer defaultInspectionStorageLocationId) {
+        this.defaultInspectionStorageLocationId = defaultInspectionStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultQualifiedStorageLocationID", nullable = true)
+    public Integer getDefaultQualifiedStorageLocationId() {
+        return defaultQualifiedStorageLocationId;
+    }
+
+    public void setDefaultQualifiedStorageLocationId(Integer defaultQualifiedStorageLocationId) {
+        this.defaultQualifiedStorageLocationId = defaultQualifiedStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultUnqualifiedStorageLocationID", nullable = true)
+    public Integer getDefaultUnqualifiedStorageLocationId() {
+        return defaultUnqualifiedStorageLocationId;
+    }
+
+    public void setDefaultUnqualifiedStorageLocationId(Integer defaultUnqualifiedStorageLocationId) {
+        this.defaultUnqualifiedStorageLocationId = defaultUnqualifiedStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultDeliveryStorageLocationID", nullable = true)
+    public Integer getDefaultDeliveryStorageLocationId() {
+        return defaultDeliveryStorageLocationId;
+    }
+
+    public void setDefaultDeliveryStorageLocationId(Integer defaultDeliveryStorageLocationId) {
+        this.defaultDeliveryStorageLocationId = defaultDeliveryStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultPrepareTargetStorageLocationID", nullable = true)
+    public Integer getDefaultPrepareTargetStorageLocationId() {
+        return defaultPrepareTargetStorageLocationId;
+    }
+
+    public void setDefaultPrepareTargetStorageLocationId(Integer defaultPrepareTargetStorageLocationId) {
+        this.defaultPrepareTargetStorageLocationId = defaultPrepareTargetStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultEntryStorageLocationNo", nullable = true, length = 64)
+    public String getDefaultEntryStorageLocationNo() {
+        return defaultEntryStorageLocationNo;
+    }
+
+    public void setDefaultEntryStorageLocationNo(String defaultEntryStorageLocationNo) {
+        this.defaultEntryStorageLocationNo = defaultEntryStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultEntryStorageLocationName", nullable = true, length = 64)
+    public String getDefaultEntryStorageLocationName() {
+        return defaultEntryStorageLocationName;
+    }
+
+    public void setDefaultEntryStorageLocationName(String defaultEntryStorageLocationName) {
+        this.defaultEntryStorageLocationName = defaultEntryStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionStorageLocationNo", nullable = true, length = 64)
+    public String getDefaultInspectionStorageLocationNo() {
+        return defaultInspectionStorageLocationNo;
+    }
+
+    public void setDefaultInspectionStorageLocationNo(String defaultInspectionStorageLocationNo) {
+        this.defaultInspectionStorageLocationNo = defaultInspectionStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionStorageLocationName", nullable = true, length = 64)
+    public String getDefaultInspectionStorageLocationName() {
+        return defaultInspectionStorageLocationName;
+    }
+
+    public void setDefaultInspectionStorageLocationName(String defaultInspectionStorageLocationName) {
+        this.defaultInspectionStorageLocationName = defaultInspectionStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "DefaultQualifiedStorageLocationNo", nullable = true, length = 64)
+    public String getDefaultQualifiedStorageLocationNo() {
+        return defaultQualifiedStorageLocationNo;
+    }
+
+    public void setDefaultQualifiedStorageLocationNo(String defaultQualifiedStorageLocationNo) {
+        this.defaultQualifiedStorageLocationNo = defaultQualifiedStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultQualifiedStorageLocationName", nullable = true, length = 64)
+    public String getDefaultQualifiedStorageLocationName() {
+        return defaultQualifiedStorageLocationName;
+    }
+
+    public void setDefaultQualifiedStorageLocationName(String defaultQualifiedStorageLocationName) {
+        this.defaultQualifiedStorageLocationName = defaultQualifiedStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "DefaultUnqualifiedStorageLocationNo", nullable = true, length = 64)
+    public String getDefaultUnqualifiedStorageLocationNo() {
+        return defaultUnqualifiedStorageLocationNo;
+    }
+
+    public void setDefaultUnqualifiedStorageLocationNo(String defaultUnqualifiedStorageLocationNo) {
+        this.defaultUnqualifiedStorageLocationNo = defaultUnqualifiedStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultUnqualifiedStorageLocationName", nullable = true, length = 64)
+    public String getDefaultUnqualifiedStorageLocationName() {
+        return defaultUnqualifiedStorageLocationName;
+    }
+
+    public void setDefaultUnqualifiedStorageLocationName(String defaultUnqualifiedStorageLocationName) {
+        this.defaultUnqualifiedStorageLocationName = defaultUnqualifiedStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "DefaultDeliveryStorageLocationNo", nullable = true, length = 64)
+    public String getDefaultDeliveryStorageLocationNo() {
+        return defaultDeliveryStorageLocationNo;
+    }
+
+    public void setDefaultDeliveryStorageLocationNo(String defaultDeliveryStorageLocationNo) {
+        this.defaultDeliveryStorageLocationNo = defaultDeliveryStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultDeliveryStorageLocationName", nullable = true, length = 64)
+    public String getDefaultDeliveryStorageLocationName() {
+        return defaultDeliveryStorageLocationName;
+    }
+
+    public void setDefaultDeliveryStorageLocationName(String defaultDeliveryStorageLocationName) {
+        this.defaultDeliveryStorageLocationName = defaultDeliveryStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "DefaultPrepareTargetStorageLocationNo", nullable = true, length = 64)
+    public String getDefaultPrepareTargetStorageLocationNo() {
+        return defaultPrepareTargetStorageLocationNo;
+    }
+
+    public void setDefaultPrepareTargetStorageLocationNo(String defaultPrepareTargetStorageLocationNo) {
+        this.defaultPrepareTargetStorageLocationNo = defaultPrepareTargetStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultPrepareTargetStorageLocationName", nullable = true, length = 64)
+    public String getDefaultPrepareTargetStorageLocationName() {
+        return defaultPrepareTargetStorageLocationName;
+    }
+
+    public void setDefaultPrepareTargetStorageLocationName(String defaultPrepareTargetStorageLocationName) {
+        this.defaultPrepareTargetStorageLocationName = defaultPrepareTargetStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "MaterialProductLine", nullable = true, length = 64)
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
     }
 }

@@ -66,13 +66,13 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             //不用管拒收数量 BigDecimal deltaRefuseAmount = warehouseEntryItem.getRefuseAmount().subtract(oriItemView.getRefuseAmount());
             //送检数量不能改
             BigDecimal deltaInspectionAmount = warehouseEntryItem.getInspectionAmount().subtract(oriItemView.getInspectionAmount());
-            if (!deltaInspectionAmount.equals(new BigDecimal(0))) {
+            if (deltaInspectionAmount.compareTo(BigDecimal.ZERO) != 0) {
                 throw new WMSServiceException("不允许修改送检数量！");
             }
             //修改实收数量，单位或单位数量，或收货库区，更新库存
-            if (!deltaRealAmount.equals(new BigDecimal(0))
-                    || !oriItemView.getUnit().equals(warehouseEntryItem.getUnit())
-                    || !oriItemView.getUnitAmount().equals(warehouseEntryItem.getUnitAmount())
+            if (deltaRealAmount.compareTo(BigDecimal.ZERO)!=0
+                    || oriItemView.getUnit().compareTo(warehouseEntryItem.getUnit()) != 0
+                    || oriItemView.getUnitAmount().compareTo(warehouseEntryItem.getUnitAmount()) != 0
                     || oriItemView.getStorageLocationId() != warehouseEntryItem.getStorageLocationId()) {
                 //冲抵原库存
                 TransferStock transferStockAgainst = new TransferStock();
@@ -102,6 +102,30 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
 
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
+        WarehouseEntryView warehouseEntryView = null;
+        for(int id : ids) {
+            WarehouseEntryItemView[] foundItemViews = this.warehouseEntryItemDAO.find(accountBook,new Condition().addCondition("id",id));
+            if(foundItemViews.length == 0){
+                throw new WMSServiceException(String.format("无法找到入库单条目，请重新提交(%d)"));
+            }
+            WarehouseEntryItemView oriItemView = foundItemViews[0];
+            if(warehouseEntryView == null) {
+                final WarehouseEntryView[] warehouseEntryViews = this.warehouseEntryService.find(accountBook, new Condition().addCondition("id", oriItemView.getWarehouseEntryId()));
+                if (warehouseEntryViews.length == 0)
+                    throw new WMSServiceException(String.format("入库单(%d)不存在，请重新提交！", oriItemView.getWarehouseEntryId()));
+                warehouseEntryView = warehouseEntryViews[0];
+            }
+            //冲抵原库存
+            TransferStock transferStockAgainst = new TransferStock();
+            transferStockAgainst.setAmount(oriItemView.getRealAmount().negate());
+            transferStockAgainst.setUnit(oriItemView.getUnit());
+            transferStockAgainst.setUnitAmount(oriItemView.getUnitAmount());
+            transferStockAgainst.setInventoryDate(oriItemView.getInventoryDate());
+            transferStockAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
+            transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
+            transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
+            this.stockRecordService.addAmount(accountBook, transferStockAgainst);
+        }
         try {
             this.warehouseEntryItemDAO.remove(accountBook, ids);
         } catch (Throwable ex) {
@@ -139,10 +163,10 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                         throw new WMSServiceException(String.format("供货信息不存在，请重新提交！(%d)", warehouseEntryItem.getSupplyId()));
                     } else if (storageLocationService.find(accountBook,
                             new Condition().addCondition("id", warehouseEntryItem.getStorageLocationId())).length == 0) {
-                        throw new WMSServiceException(String.format("库位不存在，请重新提交！(%d)", warehouseEntryItem.getSupplyId()));
+                        throw new WMSServiceException(String.format("库位不存在，请重新提交！(%d)", warehouseEntryItem.getStorageLocationId()));
                     } else if (warehouseEntryItem.getPersonId() != null && personService.find(accountBook,
                             new Condition().addCondition("id", warehouseEntryItem.getPersonId())).length == 0) {
-                        throw new WMSServiceException(String.format("作业人员不存在，请重新提交！(%d)", warehouseEntryItem.getSupplyId()));
+                        throw new WMSServiceException(String.format("作业人员不存在，请重新提交！(%d)", warehouseEntryItem.getPersonId()));
                     }
                 }
         );
