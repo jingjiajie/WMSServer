@@ -51,7 +51,7 @@ public class WarehouseService {
         StockRecordView[] stockRecordSource1 = stockRecordService.find("WMS_Template", stockRecordFind);
 
         TransferStock transferStock=new TransferStock();
-        transferStock.setAmount(new BigDecimal(-2));
+        transferStock.setAmount(new BigDecimal(-1));
         transferStock.setSourceStorageLocationId(21);
         transferStock.setUnit("个");
         transferStock.setUnitAmount(new BigDecimal(1));
