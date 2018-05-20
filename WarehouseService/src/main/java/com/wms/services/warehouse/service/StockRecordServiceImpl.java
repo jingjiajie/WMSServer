@@ -172,7 +172,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             {
                 if(stockRecordSource1[i].getInventoryDate().compareTo(stockRecordSource1[j].getInventoryDate())>=0)
                 {
-                    StockRecordView temp=new StockRecordView();
+                    StockRecordView temp=stockRecordSource1[i];
                     stockRecordSource1[i]=stockRecordSource1[j];
                     stockRecordSource1[j]=temp;
                 }
@@ -191,7 +191,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         if(iNeed==-1){
             StorageLocationView[] storageLocationViews1= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews1=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
-            throw new WMSServiceException("物料"+supplyViews1[0].getMaterialName()+stockRecordFind.getUnit()+"单位"+"在库位"+storageLocationViews1[0].getName()+"上数量不足无法移出!");  }
+            throw new WMSServiceException("物料"+supplyViews1[0].getMaterialName()+"单位"+stockRecordFind.getUnit()+"在库位"+storageLocationViews1[0].getName()+"上数量不足无法移出!");  }
 
         for(int i=stockRecordSource1.length-1;i>=iNeed;i--){
             StockRecord stockRecordNewSave=new StockRecord();
@@ -402,7 +402,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
            SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
            if (stockRecordSource.length==0)
             {
-                throw new WMSServiceException("物料"+supplyViews[0].getMaterialName()+stockRecordFind.getUnit()+"单位"+"在库位"+storageLocationViews[0].getName()+"上数量不足无法移出!");
+                throw new WMSServiceException("物料"+supplyViews[0].getMaterialName()+"单位"+stockRecordFind.getUnit()+"在库位"+storageLocationViews[0].getName()+"上数量不足无法移出!");
             }
 
             //首先找到最久的库存记录
@@ -412,7 +412,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 {
                     if(stockRecordSource[i].getInventoryDate().compareTo(stockRecordSource[j].getInventoryDate())>=0)
                     {
-                        StockRecordView temp=new StockRecordView();
+                        StockRecordView temp=stockRecordSource[i];
                         stockRecordSource[i]=stockRecordSource[j];
                         stockRecordSource[j]=temp;
                     }
@@ -431,7 +431,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             if(iNeed==-1){
                 StorageLocationView[] storageLocationViews1= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
                 SupplyView[] supplyViews1=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
-                throw new WMSServiceException("物料"+supplyViews1[0].getMaterialName()+stockRecordFind.getUnit()+"单位"+"在库位"+storageLocationViews1[0].getName()+"上数量不足无法移出!"); }
+                throw new WMSServiceException("物料"+supplyViews1[0].getMaterialName()+"单位"+stockRecordFind.getUnit()+"在库位"+storageLocationViews1[0].getName()+"上数量不足无法移出!"); }
             for(int i=stockRecordSource.length-1;i>=iNeed;i--){
                 if(i>iNeed)
                 {
@@ -592,7 +592,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             {
                 if(stockRecordSource1[i].getInventoryDate().compareTo(stockRecordSource1[j].getInventoryDate())>=0)
                 {
-                    StockRecordView temp=new StockRecordView();
+                    StockRecordView temp=stockRecordSource1[i];
                     stockRecordSource1[i]=stockRecordSource1[j];
                     stockRecordSource1[j]=temp;
                 }
@@ -610,7 +610,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         }
         StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
         SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
-        if(iNeed==-1){ throw new WMSServiceException("物料"+supplyViews[0].getMaterialName()+stockRecordFind.getUnit()+"单位"+"在库位"+storageLocationViews[0].getName()+"上数量不足无法移出!"); }
+        if(iNeed==-1){ throw new WMSServiceException("物料"+supplyViews[0].getMaterialName()+"单位"+stockRecordFind.getUnit()+"在库位"+storageLocationViews[0].getName()+"上数量不足无法移出!"); }
 
         for(int i=stockRecordSource1.length-1;i>=iNeed;i--){
             StockRecord stockRecordNewSave=new StockRecord();
@@ -788,7 +788,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             {
                 if(stockRecordSource1[i].getInventoryDate().compareTo(stockRecordSource1[j].getInventoryDate())>=0)
                 {
-                    StockRecordView temp=new StockRecordView();
+                    StockRecordView temp=stockRecordSource1[i];
                     stockRecordSource1[i]=stockRecordSource1[j];
                     stockRecordSource1[j]=temp;
                 }
@@ -810,7 +810,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
             if (iNeed == -1) {
-                throw new WMSServiceException("物料"+supplyViews[0].getMaterialName()+stockRecordFind.getUnit()+"单位"+"在库位"+storageLocationViews[0].getName()+"上可用数量过多，无法增加！");
+                throw new WMSServiceException("物料"+supplyViews[0].getMaterialName()+"单位"+stockRecordFind.getUnit()+"在库位"+storageLocationViews[0].getName()+"上可用数量过多，无法增加！");
             }
             for(int i=stockRecordSource1.length-1;i>=iNeed;i--){
                 StockRecord stockRecordNewSave=new StockRecord();
@@ -864,7 +864,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
             if (iNeed == -1) {
-                throw new WMSServiceException("物料"+supplyViews[0].getMaterialName()+stockRecordFind.getUnit()+"单位"+"在库位"+storageLocationViews[0].getName()+"可用数量不足，无法执行减少可用数量操作!");
+                throw new WMSServiceException("物料"+supplyViews[0].getMaterialName()+"单位"+stockRecordFind.getUnit()+"在库位"+storageLocationViews[0].getName()+"可用数量不足，无法执行减少可用数量操作!");
             }
             for(int i=stockRecordSource1.length-1;i>=iNeed;i--) {
                 StockRecord stockRecordNewSave = new StockRecord();
