@@ -55,6 +55,7 @@ public class MaterialServiceImpl implements MaterialService {
         Stream.of(materials).forEach((material)->{
             Condition cond = new Condition();
             cond.addCondition("no",new String[]{material.getNo()});
+            cond.addCondition("id",new Integer[]{material.getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(materialDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("物料代号："+material.getNo()+"已经存在!");
             }
