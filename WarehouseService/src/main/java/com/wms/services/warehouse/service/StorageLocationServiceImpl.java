@@ -121,4 +121,9 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     public StorageLocationView[] find(String accountBook, Condition cond) throws WMSServiceException{
             return this.storageLocationDAO.find(accountBook, cond);
     }
+
+    @Override
+    public long findCount(String database,Condition cond) throws WMSServiceException{
+        return this.storageLocationDAO.findCount(database,cond);
+    }
 }

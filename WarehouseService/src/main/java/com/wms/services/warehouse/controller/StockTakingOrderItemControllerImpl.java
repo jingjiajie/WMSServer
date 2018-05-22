@@ -82,5 +82,13 @@ public class StockTakingOrderItemControllerImpl implements StockTakingOrderItemC
              @RequestBody StockTakingOrderItem stockTakingOrderItem)
     { stockTakingOrderItemService.setRealAmount(accountBook,stockTakingOrderItem);
     }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.stockTakingOrderItemService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }
 

@@ -10,4 +10,5 @@ public interface WarehouseService {
     void update(String accountBook,Warehouse warehouses[]) throws WMSServiceException;
     void remove(String accountBook,int ids[]) throws WMSServiceException;
     WarehouseView[] find(String accountBook, Condition cond) throws WMSServiceException;
+    long findCount(String database,Condition cond) throws WMSServiceException;
 }

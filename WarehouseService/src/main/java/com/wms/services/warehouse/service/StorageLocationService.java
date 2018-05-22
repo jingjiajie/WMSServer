@@ -10,4 +10,5 @@ public interface StorageLocationService {
     void update(String accountBook,StorageLocation storageLocations[]) throws WMSServiceException;
     void remove(String accountBook,int ids[]) throws WMSServiceException;
     StorageLocationView[] find(String accountBook, Condition cond) throws WMSServiceException;
+    long findCount(String database,Condition cond) throws WMSServiceException;
 }

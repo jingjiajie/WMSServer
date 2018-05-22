@@ -173,4 +173,9 @@ public class SupplierServicesImpl implements SupplierServices{
     public SupplierView[] find(String accountBook, Condition cond) throws WMSServiceException{
         return this.supplierDAO.find(accountBook, cond);
     }
+
+    @Override
+    public long findCount(String database,Condition cond) throws WMSServiceException{
+        return this.supplierDAO.findCount(database,cond);
+    }
 }

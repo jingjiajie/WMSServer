@@ -52,4 +52,12 @@ public class SupplierControllerImpl implements SupplierController {
         SupplierView[] suppliers = supplierServices.find(accountBook, cond);
         return new ResponseEntity<SupplierView[]>(suppliers, HttpStatus.OK);
     }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.supplierServices.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

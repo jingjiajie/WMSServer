@@ -9,4 +9,5 @@ public interface StorageLocationController {
     void update(String accountBook,StorageLocation[] storageLocations);
     void remove(String accountBook,String strIDs);
     ResponseEntity<StorageLocationView[]> find(String accountBook, String condStr);
+    long findCount(String accountBook,String condStr);
 }

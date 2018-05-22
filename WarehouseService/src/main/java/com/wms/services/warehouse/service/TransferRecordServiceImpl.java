@@ -36,4 +36,9 @@ public class TransferRecordServiceImpl implements TransferRecordService {
     public TransferRecordView[] find(String accountBook, Condition cond) throws WMSServiceException{
             return this.transferRecordDAO.find(accountBook, cond);
     }
+
+    @Override
+    public long findCount(String database,Condition cond) throws WMSServiceException{
+        return this.transferRecordDAO.findCount(database,cond);
+    }
 }

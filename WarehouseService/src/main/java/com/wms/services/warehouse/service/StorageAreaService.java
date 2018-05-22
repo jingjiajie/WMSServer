@@ -10,4 +10,5 @@ public interface StorageAreaService {
     void update(String accountBook,StorageArea storageAreas[]) throws WMSServiceException;
     void remove(String accountBook,int ids[]) throws WMSServiceException;
     StorageAreaView[] find(String accountBook, Condition cond) throws WMSServiceException;
+    long findCount(String database,Condition cond) throws WMSServiceException;
 }

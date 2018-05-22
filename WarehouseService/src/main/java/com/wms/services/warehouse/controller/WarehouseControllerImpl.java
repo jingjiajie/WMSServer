@@ -45,4 +45,12 @@ public class WarehouseControllerImpl implements WarehouseController {
         return new ResponseEntity<WarehouseView[]>(warehouses, HttpStatus.OK);
     }
 
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.warehouseService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
 }

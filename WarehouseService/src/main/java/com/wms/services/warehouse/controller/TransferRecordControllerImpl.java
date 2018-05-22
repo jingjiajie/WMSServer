@@ -29,4 +29,12 @@ public class TransferRecordControllerImpl implements TransferRecordController {
         TransferRecordView[] transferRecordViews =transformRecordService.find(accountBook, cond);
         return new ResponseEntity<TransferRecordView[]>(transferRecordViews, HttpStatus.OK);
     }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.transformRecordService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

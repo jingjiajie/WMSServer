@@ -9,5 +9,5 @@ public interface SupplierServices {
     void update(String accountBook,Supplier suppliers[]) throws WMSServiceException;
     void remove(String accountBook,int ids[]) throws WMSServiceException;
     SupplierView[] find(String accountBook, Condition cond) throws WMSServiceException;
-
+    long findCount(String database,Condition cond) throws WMSServiceException;
 }

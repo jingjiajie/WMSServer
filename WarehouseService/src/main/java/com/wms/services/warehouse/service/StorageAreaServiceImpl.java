@@ -123,4 +123,9 @@ public class StorageAreaServiceImpl implements StorageAreaService{
             throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
     }
+
+    @Override
+    public long findCount(String database,Condition cond) throws WMSServiceException{
+        return this.storageAreaDAO.findCount(database,cond);
+    }
 }

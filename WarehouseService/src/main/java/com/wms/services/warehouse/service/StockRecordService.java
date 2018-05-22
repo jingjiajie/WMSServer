@@ -22,4 +22,6 @@ public interface StockRecordService
     void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock);
 
     String batchTransfer(Timestamp timestamp);
+
+    long findCount(String database,Condition cond) throws WMSServiceException;
 }

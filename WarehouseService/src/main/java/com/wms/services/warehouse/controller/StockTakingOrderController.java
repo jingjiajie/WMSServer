@@ -11,4 +11,5 @@ public interface StockTakingOrderController {
     void remove(String accountBook,String strIDs);
     void update(String accountBook,StockTakingOrder stockTakingOrders[]);
     ResponseEntity<StockTakingOrderView[]> find(String accountBook, String condStr);
+    long findCount(String accountBook,String condStr);
 }

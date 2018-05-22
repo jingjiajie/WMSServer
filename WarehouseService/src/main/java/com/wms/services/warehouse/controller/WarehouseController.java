@@ -14,4 +14,6 @@ public interface WarehouseController {
 
         ResponseEntity<WarehouseView[]> find(String accountBook, String condStr);
 
+        long findCount(String accountBook,String condStr);
+
 }

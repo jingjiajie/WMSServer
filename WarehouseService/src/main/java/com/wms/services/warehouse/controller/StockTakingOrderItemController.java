@@ -13,4 +13,5 @@ public interface StockTakingOrderItemController {
     void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
     void addStockTakingOrderItemSingle(String accountBook,StockTakingOrderItemAdd stockTakingOrderItemAdd);
     void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem);
+    long findCount(String accountBook,String condStr);
 }

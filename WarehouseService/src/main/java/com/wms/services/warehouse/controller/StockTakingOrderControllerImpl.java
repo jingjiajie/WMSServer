@@ -53,4 +53,12 @@ public class StockTakingOrderControllerImpl implements StockTakingOrderControlle
         StockTakingOrderView[] stockTakingOrderViews= stockTakingOrderService.find(accountBook, cond);
         return new ResponseEntity<StockTakingOrderView[]>(stockTakingOrderViews, HttpStatus.OK);
     }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.stockTakingOrderService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

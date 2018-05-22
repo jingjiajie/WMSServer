@@ -8,4 +8,5 @@ public interface SupplierController {
     void update(String accountBook,Supplier[] suppliers);
     void remove(String accountBook,String strIDs);
     ResponseEntity<SupplierView[]> find(String accountBook, String condStr);
+    long findCount(String accountBook,String condStr);
 }

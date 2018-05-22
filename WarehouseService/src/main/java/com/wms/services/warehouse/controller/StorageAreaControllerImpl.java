@@ -47,5 +47,13 @@ public class StorageAreaControllerImpl implements StorageAreaController{
         StorageAreaView[] storageAreas = storageAreaService.find(accountBook,cond);
         return new ResponseEntity<StorageAreaView[]>(storageAreas, HttpStatus.OK);
     }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.storageAreaService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }
 

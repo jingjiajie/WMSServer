@@ -93,4 +93,9 @@ public class WarehouseServiceImpl implements WarehouseService{
             return this.warehouseDAO.find(accountBook, cond);
     }
 
+    @Override
+    public long findCount(String database,Condition cond) throws WMSServiceException{
+        return this.warehouseDAO.findCount(database,cond);
+    }
+
 }

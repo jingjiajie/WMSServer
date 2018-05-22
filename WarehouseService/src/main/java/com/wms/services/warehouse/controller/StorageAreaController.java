@@ -9,4 +9,5 @@ public interface StorageAreaController {
     void remove(String accountBook,String strIDs);
     void update(String accountBook,StorageArea storageAreas[]);
     ResponseEntity<StorageAreaView[]> find(String accountBook, String condStr);
+    long findCount(String accountBook,String condStr);
 }
