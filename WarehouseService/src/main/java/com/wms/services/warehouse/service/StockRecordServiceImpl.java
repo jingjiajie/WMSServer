@@ -280,6 +280,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setAmount(stockRecordViews[0].getAmount().add(stockRecordSource1[i].getAvailableAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
                     stockRecordNewSave.setAvailableAmount(stockRecordViews[0].getAvailableAmount().add(stockRecordSource1[i].getAvailableAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
                     stockRecordNewSave.setRelatedOrderNo(relatedOrderNo);
+                    stockRecordNewSave.setUnit(unit);
+                    stockRecordNewSave.setUnitAmount(unitAmount);
                     stockRecordNewSave.setExpiryDate(stockRecordSource1[i].getExpiryDate());
                     stockRecordNewSave.setInventoryDate(stockRecordSource1[i].getInventoryDate());
                     stockRecordNewSave.setManufactureDate(stockRecordSource1[i].getManufactureDate());
