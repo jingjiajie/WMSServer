@@ -184,7 +184,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         for(int i=stockRecordSource1.length-1;i>=0;i--){
             amountAvailableAll=amountAvailableAll.add(stockRecordSource1[i].getAvailableAmount());
             //如果加到某个记录够移出数量 则跳出并记录下i
-            if(amountAvailableAll.add(transferStock.getAmount()).compareTo(BigDecimal.ZERO)>=0){
+            if(amountAvailableAll.subtract(transferStock.getAmount()).compareTo(BigDecimal.ZERO)>=0){
                 iNeed=i;
                 break;}
         }
@@ -195,6 +195,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
         for(int i=stockRecordSource1.length-1;i>=iNeed;i--){
             StockRecord stockRecordNewSave=new StockRecord();
+            if(stockRecordSource1[i].getAvailableAmount().compareTo(new BigDecimal(0))==0){continue;}
             if(i>iNeed)
             {
                 StockRecord stockRecord = new StockRecord();
@@ -248,6 +249,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
                 }
+
             }
             else if(i==iNeed){
                 StockRecord stockRecord = new StockRecord();
@@ -314,7 +316,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 //添加一条移位记录
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setNewStockRecordId(newStockRecordId[0]);
-                transferRecord.setSourceStockRecordId(stockRecordSource1[i].getStorageLocationId());
+                transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
                 transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
@@ -433,6 +435,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 SupplyView[] supplyViews1=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
                 throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上数量不足。需要库存数量："+transferStock.getAmount().negate()+"，现有库存："+amountAvailableAll);}
             for(int i=stockRecordSource.length-1;i>=iNeed;i--){
+                if(stockRecordSource[i].getAvailableAmount().compareTo(new BigDecimal(0))==0){continue;}
                 if(i>iNeed)
                 {
                     StockRecord stockRecord = new StockRecord();
@@ -607,7 +610,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         for(int i=stockRecordSource1.length-1;i>=0;i--){
             amountAvailableAll=amountAvailableAll.add(stockRecordSource1[i].getAvailableAmount());
             //如果加到某个记录够移出数量 则跳出并记录下i
-            if(amountAvailableAll.add(transferStock.getAmount()).compareTo(BigDecimal.ZERO)>=0){
+            if(amountAvailableAll.subtract(transferStock.getAmount()).compareTo(BigDecimal.ZERO)>=0){
                 iNeed=i;
                 break;}
         }
@@ -616,6 +619,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         if(iNeed==-1){ throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上数量不足。需要库存数量："+transferStock.getAmount().negate()+"，现有库存："+amountAvailableAll); }
 
         for(int i=stockRecordSource1.length-1;i>=iNeed;i--){
+            if(stockRecordSource1[i].getAvailableAmount().compareTo(new BigDecimal(0))==0){continue;}
             StockRecord stockRecordNewSave=new StockRecord();
             if(i>iNeed)
             {
