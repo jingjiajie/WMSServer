@@ -47,10 +47,11 @@ public class WarehouseService {
         Timestamp time2 =new Timestamp(date.getTime());
         StorageLocation storageLocation=new StorageLocation();
         storageLocation.setEnabled(1);
-        storageLocation.setName("abcdef1231111111111111111111111111");
+        storageLocation.setId(28);
+        storageLocation.setName("abcde123111");
         storageLocation.setStorageAreaId(1);
-        storageLocation.setNo("111");
-        storageLocationService.add("WMS_Template",new StorageLocation[]{storageLocation});
+        storageLocation.setNo("1111");
+        storageLocationService.update("WMS_Template",new StorageLocation[]{storageLocation});
 /*
 
         StockRecordFind stockRecordFind = new StockRecordFind();

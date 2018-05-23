@@ -56,7 +56,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             storageAreaName=storageAreaViews[0].getName();
             if(storageLocations[i].getName().length()<=storageAreaName.length()){throw new WMSServiceException("库位名"+storageLocations[i].getName()+"不符合要求，必须以库区名为开头!");}
             if(!storageLocations[i].getName().substring(0,storageAreaName.length()).equals(storageAreaName)) {
-                throw new WMSServiceException("库位名"+storageLocations[i].getName()+"不符合要求，必须以库区名为开头");
+                throw new WMSServiceException("库位名"+storageLocations[i].getName()+"不符合要求，必须以库区名"+storageAreaName+"为开头");
             }
         }
         return storageLocationDAO.add(accountBook,storageLocations);
@@ -85,7 +85,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             storageAreaName=storageAreaViews[0].getName();
             if(storageLocations[i].getName().length()<=storageAreaName.length()){throw new WMSServiceException("库位名"+storageLocations[i].getName()+"不符合要求，必须以库区名为开头!");}
             if(!storageLocations[i].getName().substring(0,storageAreaName.length()).equals(storageAreaName)) {
-                throw new WMSServiceException("库位名"+storageLocations[i].getName()+"不符合要求，必须以库区名为开头");
+                throw new WMSServiceException("库位名"+storageLocations[i].getName()+"不符合要求，必须以库区名"+storageAreaName+"为开头");
             }
         }
         Stream.of(storageLocations).forEach(
