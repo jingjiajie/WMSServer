@@ -126,7 +126,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockRecordFind.setStorageLocationId(stockTakingOrderItemAdd.getStockTakingOrderId());
         stockRecordFind.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
         stockRecordFind.setTimeEnd(stockTakingOrderItemAdd.getCheckTime());
-        stockRecordFind.setReturnMode("new");
+        stockRecordFind.setReturnMode("checkNew");
         StockRecordView[]   stockRecordSource1=stockRecordService.find(accountBook,stockRecordFind);
         for(int i=0;i<stockRecordSource1.length;i++){
             StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();
