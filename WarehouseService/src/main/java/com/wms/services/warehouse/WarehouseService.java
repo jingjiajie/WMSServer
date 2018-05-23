@@ -32,7 +32,7 @@ public class WarehouseService {
     public static void main(java.lang.String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
-
+/*
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
         StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
         SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -64,6 +64,7 @@ public class WarehouseService {
         stockRecordFind.setInventoryDate(time2);
         StockRecordView[] stockRecordSource1 = stockRecordService.find("WMS_Template", stockRecordFind);
 */
+/*
         TransferStock transferStock=new TransferStock();
         transferStock.setAmount(new BigDecimal(1));
         transferStock.setSourceStorageLocationId(20);
@@ -74,5 +75,12 @@ public class WarehouseService {
         transferStock.setRelatedOrderNo("123456");
         transferStock.setNewStorageLocationId(4);
         stockRecordService.RealTransformStock("WMS_Template",transferStock);
+*/
+        StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
+        StockTakingOrder stockTakingOrder=new StockTakingOrder();
+        stockTakingOrder.setWarehouseId(1);
+        stockTakingOrder.setNo("aaaa");
+        stockTakingOrder.setCreatePersonId(19);
+        stockTakingOrderService.add("WMS_Template",new StockTakingOrder[]{stockTakingOrder});
     }
 }
