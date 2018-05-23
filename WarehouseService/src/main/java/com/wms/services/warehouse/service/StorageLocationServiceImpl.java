@@ -123,6 +123,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     }
 
     @Override
+    @Transactional
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.storageLocationDAO.findCount(database,cond);
     }
