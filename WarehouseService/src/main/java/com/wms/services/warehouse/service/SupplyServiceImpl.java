@@ -47,19 +47,19 @@ public class SupplyServiceImpl implements SupplyService {
         Stream.of(supplies).forEach(
                 (supply)->{
                     if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("warehouseId",new Integer[]{supply.getWarehouseId()})).length == 0){
+                            new Condition().addCondition("Id",new Integer[]{supply.getWarehouseId()})).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supply.getWarehouseId()));
                     }else if(this.personService.find(accountBook,
-                            new Condition().addCondition("personId",new Integer[]{supply.getCreatePersonId()})).length == 0){
+                            new Condition().addCondition("Id",new Integer[]{supply.getCreatePersonId()})).length == 0){
                         throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getCreatePersonId()));
                     }else if(this.supplierServices.find(accountBook,
-                            new Condition().addCondition("supplierId",new Integer[]{supply.getSupplierId()})).length == 0){
+                            new Condition().addCondition("Id",new Integer[]{supply.getSupplierId()})).length == 0){
                         throw new WMSServiceException(String.format("供货商不存在，请重新提交！(%d)",supply.getSupplierId()));
                     } else if(this.materialService.find(accountBook,
-                            new Condition().addCondition("materialId",new Integer[]{supply.getMaterialId()})).length == 0){
+                            new Condition().addCondition("Id",new Integer[]{supply.getMaterialId()})).length == 0){
                         throw new WMSServiceException(String.format("物料不存在，请重新提交！(%d)",supply.getMaterialId()));
                     }if(supply.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-                            new Condition().addCondition("lastUpdateId",new Integer[]{supply.getLastUpdatePersonId()})).length == 0){
+                            new Condition().addCondition("Id",new Integer[]{supply.getLastUpdatePersonId()})).length == 0){
                         throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getLastUpdatePersonId()));
                     }
                 }
