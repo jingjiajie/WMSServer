@@ -32,7 +32,6 @@ public class StorageLocationServiceImpl implements StorageLocationService{
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
         }
-
             for(int i=0;i<storageLocations.length;i++){
                 Condition cond = new Condition();
                 cond.addCondition("name",new String[]{storageLocations[i].getName()});
@@ -45,10 +44,8 @@ public class StorageLocationServiceImpl implements StorageLocationService{
                         throw new WMSServiceException("库位代号重复："+storageLocations[i].getNo());
                 }
             }
-
         String storageAreaName;
         StorageAreaView[] storageAreaViews=null;
-
         //外键检测
         for(int i=0;i<storageLocations.length;i++) {
             storageAreaViews = this.storageAreaService.find(accountBook,
@@ -56,12 +53,13 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             if (storageAreaViews.length == 0) {
                 throw new WMSServiceException(String.format("库区不存在，请重新提交！(%d)", storageLocations[i].getStorageAreaId()));
             }
-            storageAreaName=storageAreaViews[i].getName();
-            if(storageLocations[i].getName()!=storageAreaName.substring(0,storageAreaName.length())) {
-                throw new WMSServiceException("库区名"+storageLocations[i].getName()+"不符合要求，必须以库区名为开头");
+            storageAreaName=storageAreaViews[0].getName();
+            if(storageLocations[i].getName().length()<=storageAreaName.length()){throw new WMSServiceException("库位名"+storageLocations[i].getName()+"不符合要求，必须以库区名为开头!");}
+            if(!storageLocations[i].getName().substring(0,storageAreaName.length()).equals(storageAreaName)) {
+                throw new WMSServiceException("库位名"+storageLocations[i].getName()+"不符合要求，必须以库区名为开头");
             }
         }
-            return storageLocationDAO.add(accountBook,storageLocations);
+        return storageLocationDAO.add(accountBook,storageLocations);
     }
 
     @Transactional
@@ -74,6 +72,20 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             validator.notnull().validate(storageLocations[i].getNo());
             if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
+            }
+        }
+        String storageAreaName;
+        StorageAreaView[] storageAreaViews=null;
+        for(int i=0;i<storageLocations.length;i++) {
+            storageAreaViews = this.storageAreaService.find(accountBook,
+                    new Condition().addCondition("id", storageLocations[i].getStorageAreaId()));
+            if (storageAreaViews.length == 0) {
+                throw new WMSServiceException(String.format("库区不存在，请重新提交！(%d)", storageLocations[i].getStorageAreaId()));
+            }
+            storageAreaName=storageAreaViews[0].getName();
+            if(storageLocations[i].getName().length()<=storageAreaName.length()){throw new WMSServiceException("库位名"+storageLocations[i].getName()+"不符合要求，必须以库区名为开头!");}
+            if(!storageLocations[i].getName().substring(0,storageAreaName.length()).equals(storageAreaName)) {
+                throw new WMSServiceException("库位名"+storageLocations[i].getName()+"不符合要求，必须以库区名为开头");
             }
         }
         Stream.of(storageLocations).forEach(

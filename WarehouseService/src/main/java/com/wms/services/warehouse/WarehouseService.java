@@ -1,9 +1,6 @@
 package com.wms.services.warehouse;
 import com.wms.services.warehouse.datastructures.*;
-import com.wms.services.warehouse.service.DeliveryOrderService;
-import com.wms.services.warehouse.service.StockRecordService;
-import com.wms.services.warehouse.service.StockTakingOrderItemService;
-import com.wms.services.warehouse.service.SupplyService;
+import com.wms.services.warehouse.service.*;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -37,9 +34,7 @@ public class WarehouseService {
         System.out.println("仓库服务启动...");
 
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
-        IDChecker idChecker = applicationContext.getBean(IDChecker.class);
-        SupplyService supplyService=applicationContext.getBean(SupplyService.class);
-
+        StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
         SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         GregorianCalendar gc = new GregorianCalendar();
@@ -50,7 +45,14 @@ public class WarehouseService {
         long a=date.getTime();
         String timestamp = String.valueOf(date.getTime()/1000);
         Timestamp time2 =new Timestamp(date.getTime());
+        StorageLocation storageLocation=new StorageLocation();
+        storageLocation.setEnabled(1);
+        storageLocation.setName("abcdef1231111111111111111111111111");
+        storageLocation.setStorageAreaId(1);
+        storageLocation.setNo("111");
+        storageLocationService.add("WMS_Template",new StorageLocation[]{storageLocation});
 /*
+
         StockRecordFind stockRecordFind = new StockRecordFind();
         stockRecordFind.setSupplyId(5);
         stockRecordFind.setStorageLocationId(21);
@@ -70,21 +72,6 @@ public class WarehouseService {
         transferStock.setInventoryDate(time2);
         transferStock.setRelatedOrderNo("123456");
         transferStock.setNewStorageLocationId(4);
-
-
         stockRecordService.RealTransformStock("WMS_Template",transferStock);
-        /*
-        Condition condition = new Condition().addCondition("warehouseId", new Integer[]{5}).addCondition("storageLocationId", new Integer[]{26}).addCondition("supplyId", new Integer[]{7});
-
-        // condition.addCondition("unit",new String[]{"个"}, ConditionItem.Relation.NOT_EQUAL);
-
-        condition.addCondition("unitAmount", new BigDecimal[]{new BigDecimal(10)}, ConditionItem.Relation.NOT_EQUAL);
-
-        condition.addCondition("batchNo", new String[]{"100"}, ConditionItem.Relation.NOT_EQUAL);
-
-        condition.addCondition("time", stockRecordFind.getTimeEnd(), ConditionItem.Relation.LESS_THAN);
-
-        StockRecordView[] stockRecordViews = stockRecordService.find("WMS_Template", condition);
-        */
     }
 }
