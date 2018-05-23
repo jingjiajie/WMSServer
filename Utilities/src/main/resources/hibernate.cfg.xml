@@ -4,12 +4,10 @@
     "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
   <session-factory>
-    <property name="connection.url">jdbc:mysql://linuxserver.jingjiajie.com:3306/WMS_Template</property>
+    <property name="connection.url">jdbc:mysql://linuxserver.jingjiajie.com:3306</property>
     <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-    <property name="connection.username">wms</property>
-    <property name="connection.password">Wms666666</property>
 
-    <mapping class="com.wms.utilities.model.AccountTitle"/>
+      <mapping class="com.wms.utilities.model.AccountTitle"/>
     <mapping class="com.wms.utilities.model.BarCode"/>
     <mapping class="com.wms.utilities.model.DeliveryOrder"/>
     <mapping class="com.wms.utilities.model.DeliveryOrderItem"/>
@@ -62,8 +60,9 @@
     <mapping class="com.wms.utilities.model.WarehouseEntryView"/>
     <mapping class="com.wms.utilities.model.WarehouseView"/>
     <mapping class="com.wms.utilities.model.CommonData"/>
+      <mapping resource="com/wms/utilities/model/StorageLocationView.hbm.xml"/>
 
-    <!-- DB schema will be updated if needed -->
+      <!-- DB schema will be updated if needed -->
     <!-- <property name="hbm2ddl.auto">update</property> -->
   </session-factory>
 </hibernate-configuration>

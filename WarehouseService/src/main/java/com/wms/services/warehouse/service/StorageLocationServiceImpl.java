@@ -3,9 +3,7 @@ package com.wms.services.warehouse.service;
 import com.wms.services.warehouse.dao.StorageLocationDAO;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
-import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.StorageArea;
 import com.wms.utilities.model.StorageLocationView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wms.utilities.model.StorageLocation;
 import com.wms.utilities.model.StorageAreaView;
 import java.util.stream.Stream;
-
+import com.wms.utilities.model.StorageLocationView;
 @Service
 public class StorageLocationServiceImpl implements StorageLocationService{
 
