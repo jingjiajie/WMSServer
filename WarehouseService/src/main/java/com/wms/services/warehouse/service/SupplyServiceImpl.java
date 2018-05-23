@@ -47,27 +47,27 @@ public class SupplyServiceImpl implements SupplyService {
         Stream.of(supplies).forEach(
                 (supply)->{
                     if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("warehouseId",supply.getWarehouseId())).length == 0){
+                            new Condition().addCondition("Id",new Integer[]{supply.getWarehouseId()})).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supply.getWarehouseId()));
                     }else if(this.personService.find(accountBook,
-                            new Condition().addCondition("personId",supply.getCreatePersonId())).length == 0){
+                            new Condition().addCondition("Id",new Integer[]{supply.getCreatePersonId()})).length == 0){
                         throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getCreatePersonId()));
                     }else if(this.supplierServices.find(accountBook,
-                            new Condition().addCondition("supplierId",supply.getSupplierId())).length == 0){
+                            new Condition().addCondition("Id",new Integer[]{supply.getSupplierId()})).length == 0){
                         throw new WMSServiceException(String.format("供货商不存在，请重新提交！(%d)",supply.getSupplierId()));
                     } else if(this.materialService.find(accountBook,
-                            new Condition().addCondition("materialId",supply.getMaterialId())).length == 0){
+                            new Condition().addCondition("Id",new Integer[]{supply.getMaterialId()})).length == 0){
                         throw new WMSServiceException(String.format("物料不存在，请重新提交！(%d)",supply.getMaterialId()));
                     }if(supply.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-                            new Condition().addCondition("lastUpdateId",supply.getLastUpdatePersonId())).length == 0){
+                            new Condition().addCondition("Id",new Integer[]{supply.getLastUpdatePersonId()})).length == 0){
                         throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getLastUpdatePersonId()));
                     }
                 }
         );
 
         for(int i=0;i<supplies.length;i++){
-            MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("materialId",supplies[i].getMaterialId()));
-            SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("supplierId",supplies[i].getMaterialId()));
+            MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("materialId",new Integer[]{supplies[i].getMaterialId()}));
+            SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("supplierId",new Integer[]{supplies[i].getMaterialId()}));
 
             Condition cond = new Condition();
             cond.addCondition("supplierId",new Integer[]{supplies[i].getSupplierId()});
@@ -98,8 +98,8 @@ public class SupplyServiceImpl implements SupplyService {
         }
 
         for(int i=0;i<supplies.length;i++){
-            MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("materialId",supplies[i].getMaterialId()));
-            SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("supplierId",supplies[i].getMaterialId()));
+            MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("materialId",new Integer[]{supplies[i].getMaterialId()}));
+            SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("supplierId",new Integer[]{supplies[i].getMaterialId()}));
             Condition cond = new Condition();
             cond.addCondition("supplierId",new Integer[]{supplies[i].getSupplierId()});
             cond.addCondition("materialId",new Integer[]{supplies[i].getMaterialId()});

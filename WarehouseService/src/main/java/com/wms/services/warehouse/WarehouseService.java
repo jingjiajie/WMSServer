@@ -61,18 +61,15 @@ public class WarehouseService {
         stockRecordFind.setInventoryDate(time2);
         StockRecordView[] stockRecordSource1 = stockRecordService.find("WMS_Template", stockRecordFind);
 */
-        TransferStock transferStock=new TransferStock();
-        transferStock.setAmount(new BigDecimal(1));
-        transferStock.setSourceStorageLocationId(20);
-        transferStock.setUnit("个");
-        transferStock.setUnitAmount(new BigDecimal(100));
-        transferStock.setSupplyId(5);
-        transferStock.setInventoryDate(time2);
-        transferStock.setRelatedOrderNo("123456");
-        transferStock.setNewStorageLocationId(4);
+        Supply transferStock=new Supply();
+        transferStock.setCreatePersonId(19);
+        transferStock.setCreateTime(time2);
+        transferStock.setMaterialId(3);
+        transferStock.setWarehouseId(1);
+        transferStock.setSupplierId(1);
+        Supply[] transferStocks={transferStock};
 
-
-        stockRecordService.RealTransformStock("WMS_Template",transferStock);
+        supplyService.add("WMS_Template",transferStocks);
         /*
         Condition condition = new Condition().addCondition("warehouseId", new Integer[]{5}).addCondition("storageLocationId", new Integer[]{26}).addCondition("supplyId", new Integer[]{7});
 

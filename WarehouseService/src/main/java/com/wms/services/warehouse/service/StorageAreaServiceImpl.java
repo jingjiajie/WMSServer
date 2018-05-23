@@ -125,6 +125,7 @@ public class StorageAreaServiceImpl implements StorageAreaService{
     }
 
     @Override
+    @Transactional
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.storageAreaDAO.findCount(database,cond);
     }
