@@ -4,8 +4,6 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.util.Objects;
-
 @Entity
 public class StorageLocationView {
     private int id;
@@ -13,10 +11,13 @@ public class StorageLocationView {
     private String no;
     private String name;
     private int enabled;
+    private int warehouseId;
+    private String storageAreaNo;
+    private String storageAreaName;
 
     @Id
     @Basic
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -26,7 +27,7 @@ public class StorageLocationView {
     }
 
     @Basic
-    @Column(name = "StorageAreaID", nullable = false)
+    @Column(name = "StorageAreaID")
     public int getStorageAreaId() {
         return storageAreaId;
     }
@@ -36,7 +37,7 @@ public class StorageLocationView {
     }
 
     @Basic
-    @Column(name = "No", nullable = false, length = 64)
+    @Column(name = "No")
     public String getNo() {
         return no;
     }
@@ -46,7 +47,7 @@ public class StorageLocationView {
     }
 
     @Basic
-    @Column(name = "Name", nullable = true, length = 64)
+    @Column(name = "Name")
     public String getName() {
         return name;
     }
@@ -56,7 +57,7 @@ public class StorageLocationView {
     }
 
     @Basic
-    @Column(name = "Enabled", nullable = false)
+    @Column(name = "Enabled")
     public int getEnabled() {
         return enabled;
     }
@@ -65,21 +66,67 @@ public class StorageLocationView {
         this.enabled = enabled;
     }
 
+    @Basic
+    @Column(name = "WarehouseID")
+    public int getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(int warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    @Basic
+    @Column(name = "StorageAreaNo")
+    public String getStorageAreaNo() {
+        return storageAreaNo;
+    }
+
+    public void setStorageAreaNo(String storageAreaNo) {
+        this.storageAreaNo = storageAreaNo;
+    }
+
+    @Basic
+    @Column(name = "StorageAreaName")
+    public String getStorageAreaName() {
+        return storageAreaName;
+    }
+
+    public void setStorageAreaName(String storageAreaName) {
+        this.storageAreaName = storageAreaName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         StorageLocationView that = (StorageLocationView) o;
-        return id == that.id &&
-                storageAreaId == that.storageAreaId &&
-                enabled == that.enabled &&
-                Objects.equals(no, that.no) &&
-                Objects.equals(name, that.name);
+
+        if (id != that.id) return false;
+        if (storageAreaId != that.storageAreaId) return false;
+        if (enabled != that.enabled) return false;
+        if (warehouseId != that.warehouseId) return false;
+        if (no != null ? !no.equals(that.no) : that.no != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (storageAreaNo != null ? !storageAreaNo.equals(that.storageAreaNo) : that.storageAreaNo != null)
+            return false;
+        if (storageAreaName != null ? !storageAreaName.equals(that.storageAreaName) : that.storageAreaName != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, storageAreaId, no, name, enabled);
+        int result = id;
+        result = 31 * result + storageAreaId;
+        result = 31 * result + (no != null ? no.hashCode() : 0);
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + enabled;
+        result = 31 * result + warehouseId;
+        result = 31 * result + (storageAreaNo != null ? storageAreaNo.hashCode() : 0);
+        result = 31 * result + (storageAreaName != null ? storageAreaName.hashCode() : 0);
+        return result;
     }
 }
