@@ -36,13 +36,13 @@ public class StockTakingOrderItemAdd {
     public void setCheckTime(Timestamp checkTime) {
         this.checkTime = checkTime;
     }
-    int stockTakingOrderId;
+   private int stockTakingOrderId;
 
-    int supplyId;
+   private int supplyId;
 
-    Integer personId;
+    private Integer personId;
 
-    Timestamp checkTime=new Timestamp(System.currentTimeMillis());
+    private Timestamp checkTime=new Timestamp(System.currentTimeMillis());
 
     public int getMode() {
         return mode;
@@ -52,7 +52,7 @@ public class StockTakingOrderItemAdd {
         this.mode = mode;
     }
 
-    int mode=0;
+   private int mode=0;
 
     public int getWarehouseId() {
         return warehouseId;
@@ -62,6 +62,7 @@ public class StockTakingOrderItemAdd {
         this.warehouseId = warehouseId;
     }
 
-    int warehouseId;
+   private int warehouseId;
+
 }
 

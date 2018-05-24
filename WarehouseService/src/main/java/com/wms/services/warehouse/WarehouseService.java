@@ -1,9 +1,6 @@
 package com.wms.services.warehouse;
 import com.wms.services.warehouse.datastructures.*;
-import com.wms.services.warehouse.service.DeliveryOrderService;
-import com.wms.services.warehouse.service.StockRecordService;
-import com.wms.services.warehouse.service.StockTakingOrderItemService;
-import com.wms.services.warehouse.service.SupplyService;
+import com.wms.services.warehouse.service.*;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -37,20 +34,27 @@ public class WarehouseService {
         System.out.println("仓库服务启动...");
 
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
-        IDChecker idChecker = applicationContext.getBean(IDChecker.class);
-        SupplyService supplyService=applicationContext.getBean(SupplyService.class);
-
-        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         GregorianCalendar gc = new GregorianCalendar();
-        gc.set(Calendar.YEAR,2018);//设置年
+        gc.set(Calendar.YEAR, 2018);//设置年
         gc.set(Calendar.MONTH, 5);//这里0是1月..以此向后推
         gc.set(Calendar.DAY_OF_MONTH, 5);//设置天
         date = gc.getTime();
-        long a=date.getTime();
-        String timestamp = String.valueOf(date.getTime()/1000);
-        Timestamp time2 =new Timestamp(date.getTime());
-/*
+        long a = date.getTime();
+        String timestamp = String.valueOf(date.getTime() / 1000);
+        Timestamp time2 = new Timestamp(date.getTime());
+        /*
+        StorageLocation storageLocation=new StorageLocation();
+        storageLocation.setEnabled(1);
+        storageLocation.setId(28);
+        storageLocation.setName("abcde123111");
+        storageLocation.setStorageAreaId(1);
+        storageLocation.setNo("1111");
+        storageLocationService.update("WMS_Template",new StorageLocation[]{storageLocation});
+
+
         StockRecordFind stockRecordFind = new StockRecordFind();
         stockRecordFind.setSupplyId(5);
         stockRecordFind.setStorageLocationId(21);
@@ -61,27 +65,35 @@ public class WarehouseService {
         stockRecordFind.setInventoryDate(time2);
         StockRecordView[] stockRecordSource1 = stockRecordService.find("WMS_Template", stockRecordFind);
 */
-        Supply transferStock=new Supply();
-        transferStock.setCreatePersonId(19);
-        transferStock.setCreateTime(time2);
-        transferStock.setMaterialId(3);
-        transferStock.setWarehouseId(1);
-        transferStock.setSupplierId(1);
-        Supply[] transferStocks={transferStock};
+/*
+        TransferStock transferStock=new TransferStock();
+        transferStock.setAmount(new BigDecimal(1));
+        transferStock.setSourceStorageLocationId(20);
+        transferStock.setUnit("个");
+        transferStock.setUnitAmount(new BigDecimal(100));
+        transferStock.setSupplyId(5);
+        transferStock.setInventoryDate(time2);
+        transferStock.setRelatedOrderNo("123456");
+        transferStock.setNewStorageLocationId(4);
+        stockRecordService.RealTransformStock("WMS_Template",transferStock);
+*/
 
-        supplyService.add("WMS_Template",transferStocks);
-        /*
-        Condition condition = new Condition().addCondition("warehouseId", new Integer[]{5}).addCondition("storageLocationId", new Integer[]{26}).addCondition("supplyId", new Integer[]{7});
 
-        // condition.addCondition("unit",new String[]{"个"}, ConditionItem.Relation.NOT_EQUAL);
+        StockTakingOrderItemService stockTakingOrderItemService = applicationContext.getBean(StockTakingOrderItemService.class);
+      StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
+      stockTakingOrderItemAdd.setPersonId(19);
+      stockTakingOrderItemAdd.setStockTakingOrderId(1);
+      stockTakingOrderItemAdd.setWarehouseId(5);
+        stockTakingOrderItemService.addStockTakingOrderItemAll("WMS_Template",stockTakingOrderItemAdd);
 
-        condition.addCondition("unitAmount", new BigDecimal[]{new BigDecimal(10)}, ConditionItem.Relation.NOT_EQUAL);
-
-        condition.addCondition("batchNo", new String[]{"100"}, ConditionItem.Relation.NOT_EQUAL);
-
-        condition.addCondition("time", stockRecordFind.getTimeEnd(), ConditionItem.Relation.LESS_THAN);
-
-        StockRecordView[] stockRecordViews = stockRecordService.find("WMS_Template", condition);
-        */
+/*
+        StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
+        StockTakingOrder stockTakingOrder=new StockTakingOrder();
+        stockTakingOrder.setId(1);
+        stockTakingOrder.setNo("5115111111");
+        stockTakingOrder.setCreatePersonId(19);
+        stockTakingOrder.setWarehouseId(-100);
+        stockTakingOrder.setCreateTime(time2);
+        stockTakingOrderService.update("WMS_Template",new StockTakingOrder[]{stockTakingOrder});    }*/
     }
 }
