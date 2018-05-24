@@ -37,6 +37,7 @@ public class WarehouseEntryItemView {
     private String storageLocationNo;
     private String storageLocationName;
     private String personName;
+    private String materialProductLine;
 
     @Id
     @Basic
@@ -347,5 +348,15 @@ public class WarehouseEntryItemView {
     public int hashCode() {
 
         return Objects.hash(id, warehouseEntryId, supplyId, storageLocationId, expectedAmount, realAmount, unit, unitAmount, inspectionAmount, state, refuseAmount, refuseUnit, refuseUnitAmount, personId, comment, manufactureNo, inventoryDate, manufactureDate, expiryDate, warehouseEntryNo, materialNo, materialName, supplierNo, supplierName, storageLocationNo, storageLocationName, personName);
+    }
+
+    @Basic
+    @Column(name = "MaterialProductLine", nullable = true, length = 64)
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
     }
 }

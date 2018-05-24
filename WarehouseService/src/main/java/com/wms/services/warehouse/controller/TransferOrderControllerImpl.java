@@ -51,4 +51,11 @@ public class TransferOrderControllerImpl implements  TransferOrderController{
                               @RequestBody TransferFinishArgs transferFinishArgs) {
         this.transferOrderService.transferFinish(accountBook, transferFinishArgs);
     }
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.transferOrderService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

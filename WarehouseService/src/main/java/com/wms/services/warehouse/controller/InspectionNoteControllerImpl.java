@@ -51,4 +51,12 @@ public class InspectionNoteControllerImpl implements InspectionNoteController {
                               @RequestBody InspectFinishArgs inspectFinishArgs) {
         this.inspectionNoteService.inspectFinish(accountBook, inspectFinishArgs);
     }
+
+    @Override
+    @RequestMapping(value = "/count/{condStr}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr) {
+        return this.inspectionNoteService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

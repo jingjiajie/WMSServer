@@ -43,5 +43,12 @@ public class SupplyControllerImpl implements SupplyController {
         SupplyView[] supplies = supplyService.find(accountBook, cond);
         return new ResponseEntity<SupplyView[]>(supplies, HttpStatus.OK);
     }
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.supplyService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 
 }

@@ -10,4 +10,5 @@ public interface TransferOrderController {
     void update(String accountBook,TransferOrder transferOrders[]);
     TransferOrderView[] find(String accountBook, String condStr);
     void transferFinish(String accountBook, TransferFinishArgs transferFinishArgs);
+    long findCount(String accountBook,String condStr);
 }

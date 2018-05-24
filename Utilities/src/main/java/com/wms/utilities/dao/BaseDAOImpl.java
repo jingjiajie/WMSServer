@@ -102,7 +102,7 @@ public class BaseDAOImpl<TTable, TView> {
             throw new DatabaseNotFoundException(database);
         }
         try {
-            Query query = cond.createQuery(this.viewName, session);
+            Query query = cond.createQuery(this.classView, session);
             List<TView> resultList = query.list();
             TView[] resultArray = (TView[]) Array.newInstance(this.classView,resultList.size());
             resultList.toArray(resultArray);
@@ -120,7 +120,7 @@ public class BaseDAOImpl<TTable, TView> {
             throw new DatabaseNotFoundException(database);
         }
         try {
-            Query query = cond.createQuery(this.viewName, session,true);
+            Query query = cond.createQuery(this.classView, session,true);
             long result = (long)query.list().get(0);
             return result;
         } catch (Throwable ex) {

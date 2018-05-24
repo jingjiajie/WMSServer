@@ -75,4 +75,8 @@ public class PackageItemServiceImpl implements PackageItemService  {
                 }
         );
     }
+    @Override
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
+        return this.packageItemDAO.findCount(accountBook,cond);
+    }
 }
