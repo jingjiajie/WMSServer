@@ -1,21 +1,17 @@
 package com.wms.services.warehouse.service;
-import com.wms.services.warehouse.WarehouseService;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
-import com.wms.services.warehouse.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.sun.xml.internal.bind.v2.TODO;
 import com.wms.services.warehouse.dao.StockTakingOrderItemDAO;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
-import com.wms.utilities.datastructures.OrderItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
-
+import com.wms.utilities.model.StockTakingOrderItemView;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;

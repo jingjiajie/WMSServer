@@ -3,11 +3,9 @@ package com.wms.services.warehouse.service;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.StockRecordView;
-import com.wms.utilities.model.StockTakingOrderItem;
-import com.wms.utilities.model.StockTakingOrderItemView;
 import com.wms.utilities.service.BaseService;
-
+import com.wms.utilities.model.StockTakingOrderItemView;
+import com.wms.utilities.model.StockTakingOrderItem;
 public interface StockTakingOrderItemService
         extends BaseService<StockTakingOrderItem, StockTakingOrderItemView> {
     void addStockTakingOrderItemSingle(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);

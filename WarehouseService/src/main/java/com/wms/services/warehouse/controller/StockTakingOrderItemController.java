@@ -1,10 +1,10 @@
 package com.wms.services.warehouse.controller;
 
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
+import org.springframework.http.ResponseEntity;
+import com.wms.utilities.model.StockTakingOrderItemView;
 import com.wms.utilities.model.StockTakingOrderItem;
 import com.wms.utilities.model.StockTakingOrderItemView;
-import org.springframework.http.ResponseEntity;
-
 public interface StockTakingOrderItemController {
     ResponseEntity<int[]> add(String accountBook, StockTakingOrderItem[] stockTakingOrderItems);
     void remove(String accountBook,String strIDs);
