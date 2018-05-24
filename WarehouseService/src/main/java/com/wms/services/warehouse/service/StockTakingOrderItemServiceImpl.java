@@ -1,4 +1,5 @@
 package com.wms.services.warehouse.service;
+import com.wms.services.warehouse.WarehouseService;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.service.*;
 import org.springframework.stereotype.Service;
@@ -96,9 +97,11 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
 
     @Override
     public void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd) {
-
-        SupplyView[] supplyView=supplyService.find(accountBook,new Condition());
-        if(supplyView.length==0){throw new WMSServiceException("无任何供货记录！");}
+        new Validator("人员").notnull().validate(stockTakingOrderItemAdd.getPersonId());
+        idChecker.check(StockTakingOrderService.class, accountBook, stockTakingOrderItemAdd.getStockTakingOrderId(), "盘点单");
+        idChecker.check(com.wms.services.warehouse.service.WarehouseService.class, accountBook, stockTakingOrderItemAdd.getWarehouseId(), " 仓库");
+        SupplyView[] supplyView=supplyService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{stockTakingOrderItemAdd.getWarehouseId()}));
+        if(supplyView.length==0){throw new WMSServiceException("当前仓库无任何供货记录，无法添加盘点单条目！");}
        // Integer[] supplyIdAll=new Integer[supplyView.length];
         for(int i=0;i<supplyView.length;i++){
             StockTakingOrderItemAdd stockTakingOrderItemAddAll=new StockTakingOrderItemAdd();
@@ -115,15 +118,15 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
     @Override
     public void addStockTakingOrderItemSingle(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd) {
         new Validator("人员").notnull().validate(stockTakingOrderItemAdd.getPersonId());
-        idChecker.check(StockTakingOrder.class, accountBook, stockTakingOrderItemAdd.getStockTakingOrderId(), "盘点单");
-        idChecker.check(Supply.class, accountBook, stockTakingOrderItemAdd.getSupplyId(), "供货信息");
-        idChecker.check(Warehouse.class, accountBook, stockTakingOrderItemAdd.getWarehouseId(), " 仓库");
+        idChecker.check(StockTakingOrderService.class, accountBook, stockTakingOrderItemAdd.getStockTakingOrderId(), "盘点单");
+        idChecker.check(SupplyService.class, accountBook, stockTakingOrderItemAdd.getSupplyId(), "供货信息");
+        idChecker.check(com.wms.services.warehouse.service.WarehouseService.class, accountBook, stockTakingOrderItemAdd.getWarehouseId(), " 仓库");
         int mode = stockTakingOrderItemAdd.getMode();
         //第一条肯定是某个记录的最新一条
         BigDecimal warehouseAmount = new BigDecimal(0);
         StockRecordFind stockRecordFind=new StockRecordFind();
         stockRecordFind.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
-        stockRecordFind.setStorageLocationId(stockTakingOrderItemAdd.getStockTakingOrderId());
+        //stockRecordFind.setStorageLocationId(stockTakingOrderItemAdd.getStorageLocationId());
         stockRecordFind.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
         stockRecordFind.setTimeEnd(stockTakingOrderItemAdd.getCheckTime());
         stockRecordFind.setReturnMode("checkNew");
@@ -157,7 +160,6 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockTakingOrderItem.setRealAmount(warehouseAmount);
         stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
         //在途数量统计
-
         DeliveryOrderItemView[] deliveryOrderItemViews = null;
         deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition().addCondition("supplyId", new Integer[]{stockTakingOrderItemAdd.getSupplyId()}).
                 addCondition("loadingTime", stockTakingOrderItemAdd.getCheckTime(), ConditionItem.Relation.LESS_THAN).addCondition("state", 0, ConditionItem.Relation.NOT_EQUAL));
@@ -219,7 +221,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
 
     private void updateStockTakingOrder( String accountBook,int stockTakingOrderId ,int lastUpdatePersonId){
         idChecker.check(StockTakingOrderService.class,accountBook,stockTakingOrderId,"盘点单");
-        idChecker.check(PersonService.class,accountBook,lastUpdatePersonId," 人员");
+       //TODO idChecker.check(PersonService.class,accountBook,lastUpdatePersonId," 人员");
        StockTakingOrderView[] stockTakingOrderViews= stockTakingOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockTakingOrderId}));
         if(stockTakingOrderViews.length==0){
             throw new WMSServiceException("没有找到要更新的盘点单！");
@@ -233,7 +235,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockTakingOrder.setWarehouseId(stockTakingOrderViews[0].getWarehouseId());
         stockTakingOrder.setLastUpdatePersonId(lastUpdatePersonId);
         stockTakingOrder.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
-        stockTakingOrderService.update(accountBook,new StockTakingOrder[]{stockTakingOrder});
+       //TODO 盘点单添加修改有问题 stockTakingOrderService.update(accountBook,new StockTakingOrder[]{stockTakingOrder});
     }
 
     @Override
