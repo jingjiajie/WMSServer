@@ -38,6 +38,8 @@ public class WarehouseEntryItemView {
     private String storageLocationName;
     private String personName;
     private String materialProductLine;
+    private Integer supplierId;
+    private Integer materialId;
 
     @Id
     @Basic
@@ -358,5 +360,25 @@ public class WarehouseEntryItemView {
 
     public void setMaterialProductLine(String materialProductLine) {
         this.materialProductLine = materialProductLine;
+    }
+
+    @Basic
+    @Column(name = "SupplierID", nullable = true)
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    @Basic
+    @Column(name = "MaterialID", nullable = true)
+    public Integer getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(Integer materialId) {
+        this.materialId = materialId;
     }
 }

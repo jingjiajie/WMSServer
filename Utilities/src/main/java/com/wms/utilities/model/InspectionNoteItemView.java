@@ -33,6 +33,9 @@ public class InspectionNoteItemView {
     private String inspectionStorageLocationName;
     private String returnStorageLocationNo;
     private String returnStorageLocationName;
+    private String materialProductLine;
+    private Integer supplierId;
+    private Integer materialId;
 
     @Id
     @Basic
@@ -310,5 +313,35 @@ public class InspectionNoteItemView {
     public int hashCode() {
 
         return Objects.hash(id, inspectionNoteId, warehouseEntryItemId, state, amount, unit, unitAmount, inspectionStorageLocationId, returnAmount, returnUnit, returnUnitAmount, returnStorageLocationId, comment, personId, inspectionNoteNo, materialNo, materialName, supplierNo, supplierName, personName, inspectionStorageLocationNo, inspectionStorageLocationName, returnStorageLocationNo, returnStorageLocationName);
+    }
+
+    @Basic
+    @Column(name = "MaterialProductLine", nullable = true, length = 64)
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
+    @Basic
+    @Column(name = "SupplierID", nullable = true)
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    @Basic
+    @Column(name = "MaterialID", nullable = true)
+    public Integer getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(Integer materialId) {
+        this.materialId = materialId;
     }
 }
