@@ -6,4 +6,5 @@ import com.wms.utilities.model.PackageView;
 
 public interface PackageController
     extends BaseController<Package,PackageView>{
+    long findCount(String accountBook,String condStr);
 }

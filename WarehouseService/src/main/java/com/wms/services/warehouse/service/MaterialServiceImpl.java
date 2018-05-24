@@ -100,4 +100,8 @@ public class MaterialServiceImpl implements MaterialService {
 
 
     }
+    @Override
+    public long findCount(String database,Condition cond) throws WMSServiceException{
+        return this.materialDAO.findCount(database,cond);
+    }
 }

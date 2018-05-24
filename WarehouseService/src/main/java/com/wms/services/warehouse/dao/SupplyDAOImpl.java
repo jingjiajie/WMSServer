@@ -1,4 +1,6 @@
 package com.wms.services.warehouse.dao;
+import com.wms.utilities.dao.BaseDAOImpl;
+import com.wms.utilities.model.*;
 import com.wms.utilities.model.Supply;
 import com.wms.utilities.model.SupplyView;
 import com.wms.utilities.datastructures.Condition;
@@ -16,34 +18,10 @@ import java.util.stream.Stream;
 
 @Repository
 @Transactional
-public class SupplyDAOImpl implements SupplyDAO {
-    @Autowired
-    SessionFactory sessionFactory;
+public class SupplyDAOImpl
+        extends BaseDAOImpl<Supply, SupplyView> implements SupplyDAO {
+    public SupplyDAOImpl() { super(Supply.class, SupplyView.class,Supply::getId);}
 
-    private WarehouseServiceDAOTemplate<Supply, SupplyView> getDAOTemplate() {
-        return new WarehouseServiceDAOTemplate<>
-                (this.sessionFactory, "Supply", "SupplyView", Supply::getId);
+
+
     }
-
-    @Override
-    public int[] add(String database,Supply[] supplies) throws WMSDAOException{
-        return this.getDAOTemplate().add(database, supplies);
-    }
-
-    @Override
-    public void update(String database, Supply supplies[]) throws WMSDAOException{
-        this.getDAOTemplate().update(database, supplies);
-    }
-
-    @Override
-    public void remove(String database, int ids[]) throws WMSDAOException{
-        this.getDAOTemplate().remove(database, ids);
-    }
-
-    @Override
-    public SupplyView[] find(String database,Condition cond) throws WMSDAOException{
-        return this.getDAOTemplate().find(database, cond, SupplyView.class);
-    }
-
-
-}

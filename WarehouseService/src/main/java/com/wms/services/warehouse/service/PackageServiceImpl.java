@@ -24,16 +24,11 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public int[] add(String accountBook, Package[] packages) throws WMSServiceException {
-        //数据验证
-        Stream.of(packages).forEach(
-                (package1) -> {
-                    new Validator("发货套餐名称").notnull().validate(package1.getName());
-                }
-        );
 
         //外键检测
         Stream.of(packages).forEach(
                 (package1) -> {
+                    new Validator("发货套餐名称").notEmpty().validate(package1.getName());
                     if (this.warehouseService.find(accountBook,
                             new Condition().addCondition("id", package1.getWarehouseId())).length == 0) {
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)", package1.getWarehouseId()));

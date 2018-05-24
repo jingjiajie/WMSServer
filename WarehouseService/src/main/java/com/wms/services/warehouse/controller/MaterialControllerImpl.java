@@ -52,5 +52,12 @@ public class MaterialControllerImpl implements MaterialController{
         MaterialView[] materials = materialService.find(accountBook, cond);
         return new ResponseEntity<MaterialView[]>(materials, HttpStatus.OK);
     }
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.materialService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 
 }
