@@ -412,12 +412,12 @@ public class Condition {
         if (value == null) return null;
         if (targetType == value.getClass()) return value;
         try {
-            if (targetType == int.class) {
+            if (targetType == int.class || targetType == Integer.class) {
                 double doubleValue = Double.parseDouble(value.toString());
                 return (int) doubleValue;
-            } else if (targetType == double.class) {
+            } else if (targetType == double.class || targetType == Double.class) {
                 return Double.parseDouble(value.toString());
-            } else if (targetType == boolean.class) {
+            } else if (targetType == boolean.class || targetType == Boolean.class) {
                 return Boolean.parseBoolean(value.toString());
             } else if (targetType == BigDecimal.class) {
                 return new BigDecimal(value.toString());

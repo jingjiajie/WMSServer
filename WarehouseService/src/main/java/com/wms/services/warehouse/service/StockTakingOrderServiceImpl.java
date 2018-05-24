@@ -44,10 +44,10 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
                     if(this.warehouseService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{stockTakingOrder.getWarehouseId()})).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",stockTakingOrder.getWarehouseId()));}
-                    //TODO person  else if(this.personService.find(accountBook,
-                     //          new Condition().addCondition("id",new Integer[]{stockTakingOrder.getCreatePersonId()})).length == 0){
-                    //        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",stockTakingOrder.getCreatePersonId()));
-                   // }
+                      else if(this.personService.find(accountBook,
+                              new Condition().addCondition("id",new Integer[]{stockTakingOrder.getCreatePersonId()})).length == 0){
+                            throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",stockTakingOrder.getCreatePersonId()));
+                    }
                     if(stockTakingOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{stockTakingOrder.getLastUpdatePersonId()})).length == 0){
                         throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",stockTakingOrder.getLastUpdatePersonId()));
@@ -78,23 +78,21 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
            {
                throw new WMSServiceException("没找到要修改的盘点单");
            }
-
         }
-
         //外键
         Stream.of(stockTakingOrders).forEach(
                 (stockTakingOrder)->{
                     if(this.warehouseService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{stockTakingOrder.getWarehouseId()})).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",stockTakingOrder.getWarehouseId()));}
-                 //   else if(this.personService.find(accountBook,
-                 //           new Condition().addCondition("id",new Integer[]{stockTakingOrder.getCreatePersonId()})).length == 0){
-                 //       throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",stockTakingOrder.getCreatePersonId()));
-                 //   }
-                    //if(stockTakingOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-                    //        new Condition().addCondition("id",new Integer[]{stockTakingOrder.getLastUpdatePersonId()})).length == 0){
-                   //     throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",stockTakingOrder.getLastUpdatePersonId()));
-                    //}
+                    else if(this.personService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{stockTakingOrder.getCreatePersonId()})).length == 0){
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",stockTakingOrder.getCreatePersonId()));
+                    }
+                    if(stockTakingOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{stockTakingOrder.getLastUpdatePersonId()})).length == 0){
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",stockTakingOrder.getLastUpdatePersonId()));
+                    }
                 }
         );
         for(int i=0;i<stockTakingOrders.length;i++){
