@@ -2,7 +2,6 @@ package com.wms.utilities.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 public class StockTakingOrderItem {
@@ -18,7 +17,7 @@ public class StockTakingOrderItem {
     private String comment;
 
     @Id
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
@@ -29,7 +28,7 @@ public class StockTakingOrderItem {
     }
 
     @Basic
-    @Column(name = "StockTakingOrderID", nullable = false)
+    @Column(name = "StockTakingOrderID")
     public int getStockTakingOrderId() {
         return stockTakingOrderId;
     }
@@ -39,7 +38,7 @@ public class StockTakingOrderItem {
     }
 
     @Basic
-    @Column(name = "StorageLocationID", nullable = true)
+    @Column(name = "StorageLocationID")
     public Integer getStorageLocationId() {
         return storageLocationId;
     }
@@ -49,7 +48,7 @@ public class StockTakingOrderItem {
     }
 
     @Basic
-    @Column(name = "SupplyID", nullable = false)
+    @Column(name = "SupplyID")
     public int getSupplyId() {
         return supplyId;
     }
@@ -59,7 +58,7 @@ public class StockTakingOrderItem {
     }
 
     @Basic
-    @Column(name = "Amount", nullable = false, precision = 3)
+    @Column(name = "Amount")
     public BigDecimal getAmount() {
         return amount;
     }
@@ -69,7 +68,7 @@ public class StockTakingOrderItem {
     }
 
     @Basic
-    @Column(name = "RealAmount", nullable = false, precision = 3)
+    @Column(name = "RealAmount")
     public BigDecimal getRealAmount() {
         return realAmount;
     }
@@ -79,7 +78,7 @@ public class StockTakingOrderItem {
     }
 
     @Basic
-    @Column(name = "Unit", nullable = false, length = 64)
+    @Column(name = "Unit")
     public String getUnit() {
         return unit;
     }
@@ -89,7 +88,7 @@ public class StockTakingOrderItem {
     }
 
     @Basic
-    @Column(name = "UnitAmount", nullable = false, precision = 3)
+    @Column(name = "UnitAmount")
     public BigDecimal getUnitAmount() {
         return unitAmount;
     }
@@ -99,7 +98,7 @@ public class StockTakingOrderItem {
     }
 
     @Basic
-    @Column(name = "PersonID", nullable = true)
+    @Column(name = "PersonID")
     public Integer getPersonId() {
         return personId;
     }
@@ -109,7 +108,7 @@ public class StockTakingOrderItem {
     }
 
     @Basic
-    @Column(name = "Comment", nullable = true, length = 64)
+    @Column(name = "Comment")
     public String getComment() {
         return comment;
     }
@@ -119,25 +118,39 @@ public class StockTakingOrderItem {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        StockTakingOrderItem that = (StockTakingOrderItem) o;
-        return id == that.id &&
-                stockTakingOrderId == that.stockTakingOrderId &&
-                supplyId == that.supplyId &&
-                Objects.equals(storageLocationId, that.storageLocationId) &&
-                Objects.equals(amount, that.amount) &&
-                Objects.equals(realAmount, that.realAmount) &&
-                Objects.equals(unit, that.unit) &&
-                Objects.equals(unitAmount, that.unitAmount) &&
-                Objects.equals(personId, that.personId) &&
-                Objects.equals(comment, that.comment);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        StockTakingOrderItem that = (StockTakingOrderItem) object;
+
+        if (id != that.id) return false;
+        if (stockTakingOrderId != that.stockTakingOrderId) return false;
+        if (supplyId != that.supplyId) return false;
+        if (storageLocationId != null ? !storageLocationId.equals(that.storageLocationId) : that.storageLocationId != null)
+            return false;
+        if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
+        if (realAmount != null ? !realAmount.equals(that.realAmount) : that.realAmount != null) return false;
+        if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+        if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
+        if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
+        if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, stockTakingOrderId, storageLocationId, supplyId, amount, realAmount, unit, unitAmount, personId, comment);
+        int result = id;
+        result = 31 * result + stockTakingOrderId;
+        result = 31 * result + (storageLocationId != null ? storageLocationId.hashCode() : 0);
+        result = 31 * result + supplyId;
+        result = 31 * result + (amount != null ? amount.hashCode() : 0);
+        result = 31 * result + (realAmount != null ? realAmount.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
+        result = 31 * result + (personId != null ? personId.hashCode() : 0);
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        return result;
     }
 }
