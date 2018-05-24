@@ -41,8 +41,10 @@ public class SupplierServicesImpl implements SupplierServices{
             if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
-            if(suppliers[i].getBalanceDelayMonth().compareTo(BigDecimal.ZERO)<0||suppliers[i].getInvoiceDelayMonth().compareTo(BigDecimal.ZERO)<0)
-            {throw new WMSServiceException("开票延迟月和结算延迟月不能小于0！");}
+            if(suppliers[i].getBalanceDelayMonth()!=null){if(suppliers[i].getBalanceDelayMonth().compareTo(BigDecimal.ZERO)<0)
+            {throw new WMSServiceException("结算延迟月不能小于0！");}}
+            if(suppliers[i].getInvoiceDelayMonth()!=null){if(suppliers[i].getInvoiceDelayMonth().compareTo(BigDecimal.ZERO)<0)
+            {throw new WMSServiceException("开票算延迟月不能小于0！");}}
         }
 
         Stream.of(suppliers).forEach((supplier)->{
@@ -99,10 +101,11 @@ public class SupplierServicesImpl implements SupplierServices{
         if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
             throw new WMSServiceException("是否启用只能为0和1！");
         }
-        if(suppliers[i].getBalanceDelayMonth().compareTo(BigDecimal.ZERO)<0||suppliers[i].getInvoiceDelayMonth().compareTo(BigDecimal.ZERO)<0)
-        {throw new WMSServiceException("开票延迟月和结算延迟月不能小于0！");}
+        if(suppliers[i].getBalanceDelayMonth()!=null){if(suppliers[i].getBalanceDelayMonth().compareTo(BigDecimal.ZERO)<0)
+        {throw new WMSServiceException("结算延迟月不能小于0！");}}
+        if(suppliers[i].getInvoiceDelayMonth()!=null){if(suppliers[i].getInvoiceDelayMonth().compareTo(BigDecimal.ZERO)<0)
+        {throw new WMSServiceException("开票算延迟月不能小于0！");}}
     }
-
     Stream.of(suppliers).forEach(
             (supplier)->{
                 if(this.supplierDAO.find(accountBook,
