@@ -23,5 +23,4 @@ public class SupplyDAOImpl
     public SupplyDAOImpl() { super(Supply.class, SupplyView.class,Supply::getId);}
 
 
-
     }
