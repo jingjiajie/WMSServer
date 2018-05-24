@@ -12,4 +12,5 @@ public interface PackageItemController {
     void remove(String accountBook, String strIDs);
 
     ResponseEntity<PackageItemView[]> find(String accountBook, String strCond);
+    long findCount(String accountBook,String condStr);
 }

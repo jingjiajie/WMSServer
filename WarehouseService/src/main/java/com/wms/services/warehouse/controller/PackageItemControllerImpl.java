@@ -50,4 +50,11 @@ public class PackageItemControllerImpl implements PackageItemController {
                                                          @PathVariable("cond") String strCond) {
         return new ResponseEntity<>(this.packageItemService.find(accountBook, Condition.fromJson(strCond)),HttpStatus.OK);
     }
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.packageItemService.findCount(accountBook, Condition.fromJson(condStr));
+    }
 }

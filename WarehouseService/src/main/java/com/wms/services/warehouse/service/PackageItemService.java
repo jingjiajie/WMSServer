@@ -4,10 +4,8 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.PackageItem;
 import com.wms.utilities.model.PackageItemView;
+import com.wms.utilities.service.BaseService;
 
-public interface PackageItemService {
-    int[] add(String accountBook, PackageItem packageItems[]) throws WMSServiceException;
-    void update(String accountBook, PackageItem packageItems[]) throws WMSServiceException;
-    void remove(String accountBook, int ids[]) throws WMSServiceException;
-    PackageItemView[] find(String accountBook, Condition cond) throws WMSServiceException;
+public interface PackageItemService extends BaseService<PackageItem,PackageItemView> {
+
 }

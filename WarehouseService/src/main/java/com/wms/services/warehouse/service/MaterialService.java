@@ -10,4 +10,5 @@ public interface MaterialService {
     void update(String accountBook,Material materials[]) throws WMSServiceException;
     void remove(String accountBook,int ids[]) throws WMSServiceException;
     MaterialView[] find(String accountBook, Condition cond) throws WMSServiceException;
+    long findCount(String database,Condition cond) throws WMSServiceException;
 }
