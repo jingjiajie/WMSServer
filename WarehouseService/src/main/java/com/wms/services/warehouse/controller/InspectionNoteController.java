@@ -10,4 +10,5 @@ public interface InspectionNoteController {
     void update(String accountBook,InspectionNote inspectionNotes[]);
     InspectionNoteView[] find(String accountBook, String condStr);
     void inspectFinish(String accountBook, InspectFinishArgs inspectFinishArgs);
+    long findCount(String accountBook,String condStr);
 }
