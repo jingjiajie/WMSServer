@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.sql.Timestamp;
@@ -40,6 +41,8 @@ public class SupplierServicesImpl implements SupplierServices{
             if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
+            if(suppliers[i].getBalanceDelayMonth().compareTo(BigDecimal.ZERO)<0||suppliers[i].getInvoiceDelayMonth().compareTo(BigDecimal.ZERO)<0)
+            {throw new WMSServiceException("开票延迟月和结算延迟月不能小于0！");}
         }
 
         Stream.of(suppliers).forEach((supplier)->{
