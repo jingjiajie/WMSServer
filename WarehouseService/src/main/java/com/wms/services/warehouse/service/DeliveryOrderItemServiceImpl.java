@@ -65,7 +65,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         this.validateEntities(accountBook,deliveryOrderItems);
 
         Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
-            DeliveryOrderItemView[] foundOriItems = this.deliveryOrderItemDAO.find(accountBook,new Condition().addCondition("id",deliveryOrderItem.getId()));
+            DeliveryOrderItemView[] foundOriItems = this.deliveryOrderItemDAO.find(accountBook,new Condition().addCondition("id",new Integer[]{deliveryOrderItem.getId()}));
             if(foundOriItems.length == 0) throw new WMSServiceException(String.format("出库单条目不存在，请重新提交！",deliveryOrderItem.getId()));//排除异常
             DeliveryOrderItemView oriItemView = foundOriItems[0];
 
@@ -116,16 +116,16 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         Stream.of(deliveryOrderItems).forEach(
                 (deliveryOrderItem) -> {
                     if (this.deliveryOrderService.find(accountBook,
-                            new Condition().addCondition("id", deliveryOrderItem.getDeliveryOrderId())).length == 0) {
+                            new Condition().addCondition("id", new Integer[]{deliveryOrderItem.getDeliveryOrderId()})).length == 0) {
                         throw new WMSServiceException(String.format("出库单不存在，请重新提交！(%d)", deliveryOrderItem.getDeliveryOrderId()));
                     } else if (supplyService.find(accountBook,
-                            new Condition().addCondition("id", deliveryOrderItem.getSupplyId())).length == 0) {
+                            new Condition().addCondition("id", new Integer[]{deliveryOrderItem.getSupplyId()})).length == 0) {
                         throw new WMSServiceException(String.format("供货信息不存在，请重新提交！(%d)", deliveryOrderItem.getSupplyId()));
                     } else if (storageLocationService.find(accountBook,
-                            new Condition().addCondition("id", deliveryOrderItem.getSourceStorageLocationId())).length == 0) {
+                            new Condition().addCondition("id", new Integer[]{deliveryOrderItem.getSourceStorageLocationId()})).length == 0) {
                         throw new WMSServiceException(String.format("库位不存在，请重新提交！(%d)", deliveryOrderItem.getSourceStorageLocationId()));
                     } else if (deliveryOrderItem.getPersonId() != null && personService.find(accountBook,
-                            new Condition().addCondition("id", deliveryOrderItem.getPersonId())).length == 0) {
+                            new Condition().addCondition("id", new Integer[]{deliveryOrderItem.getPersonId()})).length == 0) {
                         throw new WMSServiceException(String.format("作业人员不存在，请重新提交！(%d)", deliveryOrderItem.getPersonId()));
                     }
                 }
@@ -141,7 +141,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         });
         //获取出库单
         int deliveryOrderId = deliveryOrderItems[0].getDeliveryOrderId();
-        final DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderService.find(accountBook, new Condition().addCondition("id", deliveryOrderId));
+        final DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderService.find(accountBook, new Condition().addCondition("id", new Integer[]{deliveryOrderId}));
         if (deliveryOrderViews.length == 0)
             throw new WMSServiceException(String.format("出库单(%d)不存在，请重新提交！", deliveryOrderId));
         DeliveryOrderView deliveryOrderView = deliveryOrderViews[0];
