@@ -235,7 +235,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockTakingOrder.setWarehouseId(stockTakingOrderViews[0].getWarehouseId());
         stockTakingOrder.setLastUpdatePersonId(lastUpdatePersonId);
         stockTakingOrder.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
-       //TODO 盘点单添加修改有问题 stockTakingOrderService.update(accountBook,new StockTakingOrder[]{stockTakingOrder});
+        stockTakingOrderService.update(accountBook,new StockTakingOrder[]{stockTakingOrder});
     }
 
     @Override

@@ -32,19 +32,20 @@ public class WarehouseService {
     public static void main(java.lang.String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
-/*
+
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
         StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
-        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         GregorianCalendar gc = new GregorianCalendar();
-        gc.set(Calendar.YEAR,2018);//设置年
+        gc.set(Calendar.YEAR, 2018);//设置年
         gc.set(Calendar.MONTH, 5);//这里0是1月..以此向后推
         gc.set(Calendar.DAY_OF_MONTH, 5);//设置天
         date = gc.getTime();
-        long a=date.getTime();
-        String timestamp = String.valueOf(date.getTime()/1000);
-        Timestamp time2 =new Timestamp(date.getTime());
+        long a = date.getTime();
+        String timestamp = String.valueOf(date.getTime() / 1000);
+        Timestamp time2 = new Timestamp(date.getTime());
+        /*
         StorageLocation storageLocation=new StorageLocation();
         storageLocation.setEnabled(1);
         storageLocation.setId(28);
@@ -52,7 +53,7 @@ public class WarehouseService {
         storageLocation.setStorageAreaId(1);
         storageLocation.setNo("1111");
         storageLocationService.update("WMS_Template",new StorageLocation[]{storageLocation});
-/*
+
 
         StockRecordFind stockRecordFind = new StockRecordFind();
         stockRecordFind.setSupplyId(5);
@@ -85,5 +86,14 @@ public class WarehouseService {
       stockTakingOrderItemAdd.setWarehouseId(5);
         stockTakingOrderItemService.addStockTakingOrderItemAll("WMS_Template",stockTakingOrderItemAdd);
 
+/*
+        StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
+        StockTakingOrder stockTakingOrder=new StockTakingOrder();
+        stockTakingOrder.setId(1);
+        stockTakingOrder.setNo("5115111111");
+        stockTakingOrder.setCreatePersonId(19);
+        stockTakingOrder.setWarehouseId(-100);
+        stockTakingOrder.setCreateTime(time2);
+        stockTakingOrderService.update("WMS_Template",new StockTakingOrder[]{stockTakingOrder});    }*/
     }
 }
