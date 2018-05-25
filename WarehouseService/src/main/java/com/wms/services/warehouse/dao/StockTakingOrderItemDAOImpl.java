@@ -1,10 +1,9 @@
 package com.wms.services.warehouse.dao;
 
 import com.wms.utilities.dao.BaseDAOImpl;
-import com.wms.utilities.model.StockTakingOrderItem;
-import com.wms.utilities.model.StockTakingOrderItemView;
 import org.springframework.stereotype.Repository;
-
+import com.wms.utilities.model.StockTakingOrderItemView;
+import com.wms.utilities.model.StockTakingOrderItem;
 @Repository
 public class StockTakingOrderItemDAOImpl
         extends BaseDAOImpl<StockTakingOrderItem, StockTakingOrderItemView>
