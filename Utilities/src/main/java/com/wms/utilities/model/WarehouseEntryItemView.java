@@ -40,6 +40,12 @@ public class WarehouseEntryItemView {
     private String materialProductLine;
     private Integer supplierId;
     private Integer materialId;
+    private BigDecimal defaultInspectionAmount;
+    private String defaultInspectionUnit;
+    private BigDecimal defaultInspectionUnitAmount;
+    private Integer defaultInspectionStorageLocationId;
+    private String defaultInspectionStorageLocationNo;
+    private String defaultInspectionStorageLocationName;
 
     @Id
     @Basic
@@ -380,5 +386,65 @@ public class WarehouseEntryItemView {
 
     public void setMaterialId(Integer materialId) {
         this.materialId = materialId;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionAmount", nullable = true, precision = 3)
+    public BigDecimal getDefaultInspectionAmount() {
+        return defaultInspectionAmount;
+    }
+
+    public void setDefaultInspectionAmount(BigDecimal defaultInspectionAmount) {
+        this.defaultInspectionAmount = defaultInspectionAmount;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionUnit", nullable = true, length = 64)
+    public String getDefaultInspectionUnit() {
+        return defaultInspectionUnit;
+    }
+
+    public void setDefaultInspectionUnit(String defaultInspectionUnit) {
+        this.defaultInspectionUnit = defaultInspectionUnit;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionUnitAmount", nullable = true, precision = 3)
+    public BigDecimal getDefaultInspectionUnitAmount() {
+        return defaultInspectionUnitAmount;
+    }
+
+    public void setDefaultInspectionUnitAmount(BigDecimal defaultInspectionUnitAmount) {
+        this.defaultInspectionUnitAmount = defaultInspectionUnitAmount;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionStorageLocationID", nullable = true)
+    public Integer getDefaultInspectionStorageLocationId() {
+        return defaultInspectionStorageLocationId;
+    }
+
+    public void setDefaultInspectionStorageLocationId(Integer defaultInspectionStorageLocationId) {
+        this.defaultInspectionStorageLocationId = defaultInspectionStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionStorageLocationNo", nullable = true, length = 64)
+    public String getDefaultInspectionStorageLocationNo() {
+        return defaultInspectionStorageLocationNo;
+    }
+
+    public void setDefaultInspectionStorageLocationNo(String defaultInspectionStorageLocationNo) {
+        this.defaultInspectionStorageLocationNo = defaultInspectionStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionStorageLocationName", nullable = true, length = 64)
+    public String getDefaultInspectionStorageLocationName() {
+        return defaultInspectionStorageLocationName;
+    }
+
+    public void setDefaultInspectionStorageLocationName(String defaultInspectionStorageLocationName) {
+        this.defaultInspectionStorageLocationName = defaultInspectionStorageLocationName;
     }
 }
