@@ -109,8 +109,10 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
             stockTakingOrderItemAddAll.setCheckTime(stockTakingOrderItemAdd.getCheckTime());
             stockTakingOrderItemAddAll.setPersonId(stockTakingOrderItemAdd.getPersonId());
             stockTakingOrderItemAddAll.setSupplyId(supplyView[i].getId());
+            stockTakingOrderItemAddAll.setAddMode("all");
             this.addStockTakingOrderItemSingle(accountBook,stockTakingOrderItemAddAll);
         }
+        this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 
     @Override
@@ -191,7 +193,8 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockTakingOrderItemWay.setAmount(wayAmount);
         stockTakingOrderItemWay.setRealAmount(wayAmount);
         stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItemWay});
-        this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
+        if(stockTakingOrderItemAdd.getAddMode().equals("single")){
+        this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());}
     }
 
     public void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem)

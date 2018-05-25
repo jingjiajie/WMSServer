@@ -64,5 +64,16 @@ public class StockTakingOrderItemAdd {
 
    private int warehouseId;
 
+    public String getAddMode() {
+        return addMode;
+    }
+
+    public void setAddMode(String addMode) {
+        this.addMode = addMode;
+    }
+
+    private String addMode="single";
+
+
 }
 
