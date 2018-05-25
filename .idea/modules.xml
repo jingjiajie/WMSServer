@@ -8,7 +8,6 @@
       <module fileurl="file://$PROJECT_DIR$/Utilities/Utilities.iml" filepath="$PROJECT_DIR$/Utilities/Utilities.iml" />
       <module fileurl="file://$PROJECT_DIR$/WarehouseService/WarehouseService.iml" filepath="$PROJECT_DIR$/WarehouseService/WarehouseService.iml" />
       <module fileurl="file://$PROJECT_DIR$/Zuul/Zuul.iml" filepath="$PROJECT_DIR$/Zuul/Zuul.iml" />
-      <module fileurl="file://$PROJECT_DIR$/EurekaServer/eureka-server.iml" filepath="$PROJECT_DIR$/EurekaServer/eureka-server.iml" />
     </modules>
   </component>
 </project>
