@@ -32,7 +32,7 @@ public class WarehouseService {
     public static void main(java.lang.String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
-
+/*
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
         StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -78,7 +78,7 @@ public class WarehouseService {
         stockRecordService.RealTransformStock("WMS_Template",transferStock);
 */
 
-
+/*
         StockTakingOrderItemService stockTakingOrderItemService = applicationContext.getBean(StockTakingOrderItemService.class);
       StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
       stockTakingOrderItemAdd.setPersonId(19);

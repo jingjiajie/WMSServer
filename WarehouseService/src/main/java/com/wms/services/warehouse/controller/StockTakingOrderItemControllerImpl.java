@@ -57,16 +57,17 @@ public class StockTakingOrderItemControllerImpl implements StockTakingOrderItemC
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping("/add_all")
+    @RequestMapping(value = "/add_all",method =RequestMethod.POST)
     public void addStockTakingOrderItemAll
             (@PathVariable("accountBook") String accountBook,
              @RequestBody StockTakingOrderItemAdd stockTakingOrderItemAdd)
-    { stockTakingOrderItemService.addStockTakingOrderItemAll(accountBook,stockTakingOrderItemAdd);
+    {
+        stockTakingOrderItemService.addStockTakingOrderItemAll(accountBook,stockTakingOrderItemAdd);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping("/add_single")
+    @RequestMapping(value ="/add_single",method =RequestMethod.POST)
     public void addStockTakingOrderItemSingle
             (@PathVariable("accountBook") String accountBook,
              @RequestBody StockTakingOrderItemAdd stockTakingOrderItemAdd)
