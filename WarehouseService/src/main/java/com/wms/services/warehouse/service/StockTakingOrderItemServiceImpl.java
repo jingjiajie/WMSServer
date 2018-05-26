@@ -122,8 +122,10 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         idChecker.check(SupplyService.class, accountBook, stockTakingOrderItemAdd.getSupplyId(), "供货信息");
         idChecker.check(com.wms.services.warehouse.service.WarehouseService.class, accountBook, stockTakingOrderItemAdd.getWarehouseId(), " 仓库");
         int mode = stockTakingOrderItemAdd.getMode();
-        //第一条肯定是某个记录的最新一条
-        BigDecimal warehouseAmount = new BigDecimal(0);
+        //判断供货和仓库id是不是相符
+     if(supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockTakingOrderItemAdd.getSupplyId()}).addCondition("warehouseId",new Integer[]{stockTakingOrderItemAdd.getWarehouseId()})).length==0)
+     {throw new WMSServiceException("输入的供货信息不属于输入的仓库！");}
+         BigDecimal warehouseAmount = new BigDecimal(0);
         StockRecordFind stockRecordFind=new StockRecordFind();
         stockRecordFind.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
         stockRecordFind.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
