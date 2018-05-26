@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Repository
-@Transactional
 public class SupplyDAOImpl
         extends BaseDAOImpl<Supply, SupplyView> implements SupplyDAO {
     public SupplyDAOImpl() { super(Supply.class, SupplyView.class,Supply::getId);}
