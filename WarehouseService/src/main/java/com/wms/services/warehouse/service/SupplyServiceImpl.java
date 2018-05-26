@@ -96,6 +96,27 @@ public class SupplyServiceImpl implements SupplyService {
             Validator validator1=new Validator("物料ID");
             validator1.notnull().validate(supplies[i].getMaterialId());
         }
+        //外键检测
+        Stream.of(supplies).forEach(
+                (supply)->{
+                    if(this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{supply.getWarehouseId()})).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supply.getWarehouseId()));
+                    }else if(this.personService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{supply.getCreatePersonId()})).length == 0){
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getCreatePersonId()));
+                    }else if(this.supplierServices.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{supply.getSupplierId()})).length == 0){
+                        throw new WMSServiceException(String.format("供货商不存在，请重新提交！(%d)",supply.getSupplierId()));
+                    } else if(this.materialService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{supply.getMaterialId()})).length == 0){
+                        throw new WMSServiceException(String.format("物料不存在，请重新提交！(%d)",supply.getMaterialId()));
+                    }if(supply.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{supply.getLastUpdatePersonId()})).length == 0){
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getLastUpdatePersonId()));
+                    }
+                }
+        );
 
         for(int i=0;i<supplies.length;i++){
             MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
