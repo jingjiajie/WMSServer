@@ -126,26 +126,27 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         BigDecimal warehouseAmount = new BigDecimal(0);
         StockRecordFind stockRecordFind=new StockRecordFind();
         stockRecordFind.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
-        //stockRecordFind.setStorageLocationId(stockTakingOrderItemAdd.getStorageLocationId());
         stockRecordFind.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
         stockRecordFind.setTimeEnd(stockTakingOrderItemAdd.getCheckTime());
         stockRecordFind.setReturnMode("checkNew");
-        StockRecordView[]   stockRecordSource1=stockRecordService.find(accountBook,stockRecordFind);
+        Object[]   stockRecordSource1=stockRecordService.findCheck(accountBook,stockRecordFind);
         for(int i=0;i<stockRecordSource1.length;i++){
+            Object[] objects=(Object[]) stockRecordSource1[i];
+
             StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();
             stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
             stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
             stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
             stockTakingOrderItem.setComment("详细数目");
-            stockTakingOrderItem.setUnit(stockRecordSource1[i].getUnit());
-            stockTakingOrderItem.setStorageLocationId(stockRecordSource1[i].getStorageLocationId());
-            stockTakingOrderItem.setUnitAmount(stockRecordSource1[i].getUnitAmount());
-            stockTakingOrderItem.setAmount(stockRecordSource1[i].getAmount());
-            stockTakingOrderItem.setRealAmount(stockRecordSource1[i].getAmount());
+            stockTakingOrderItem.setUnit((String)objects[5]);
+            stockTakingOrderItem.setStorageLocationId((Integer) objects[2]);
+            stockTakingOrderItem.setUnitAmount((BigDecimal) objects[6]);
+            stockTakingOrderItem.setAmount((BigDecimal) objects[4]);
+            stockTakingOrderItem.setRealAmount((BigDecimal) objects[4]);
             if(stockTakingOrderItemAdd.getMode()==0) {
                 stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
             }
-            warehouseAmount=warehouseAmount.add(stockRecordSource1[i].getAmount());
+            warehouseAmount=warehouseAmount.add((BigDecimal) objects[4]);
         }
         //添加总数量条目
         StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();

@@ -17,6 +17,8 @@ public interface StockRecordService
 
     StockRecordView[] find(String accountBook, StockRecordFind stockRecordFind);
 
+    Object[] findCheck(String accountBook, StockRecordFind stockRecordFind);
+
     void modifyAvailableAmount(String accountBook, TransferStock transferStock);
 
     void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock);

@@ -32,8 +32,9 @@ public class WarehouseService {
     public static void main(java.lang.String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
-/*
+
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
+        /*
         StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
@@ -45,7 +46,7 @@ public class WarehouseService {
         long a = date.getTime();
         String timestamp = String.valueOf(date.getTime() / 1000);
         Timestamp time2 = new Timestamp(date.getTime());
-        /*
+
         StorageLocation storageLocation=new StorageLocation();
         storageLocation.setEnabled(1);
         storageLocation.setId(28);
@@ -54,17 +55,15 @@ public class WarehouseService {
         storageLocation.setNo("1111");
         storageLocationService.update("WMS_Template",new StorageLocation[]{storageLocation});
 
-
+*/
         StockRecordFind stockRecordFind = new StockRecordFind();
         stockRecordFind.setSupplyId(5);
         stockRecordFind.setStorageLocationId(21);
         stockRecordFind.setWarehouseId(1);
-        stockRecordFind.setUnit("个");
-        stockRecordFind.setReturnMode("new");
         stockRecordFind.setUnitAmount(new BigDecimal(1));
-        stockRecordFind.setInventoryDate(time2);
-        StockRecordView[] stockRecordSource1 = stockRecordService.find("WMS_Template", stockRecordFind);
-*/
+        Object[] stockRecordSource1 = stockRecordService.findCheck("WMS_Template", stockRecordFind);
+
+
 /*
         TransferStock transferStock=new TransferStock();
         transferStock.setAmount(new BigDecimal(1));
@@ -77,15 +76,12 @@ public class WarehouseService {
         transferStock.setNewStorageLocationId(4);
         stockRecordService.RealTransformStock("WMS_Template",transferStock);
 */
-
-/*
         StockTakingOrderItemService stockTakingOrderItemService = applicationContext.getBean(StockTakingOrderItemService.class);
       StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
       stockTakingOrderItemAdd.setPersonId(19);
       stockTakingOrderItemAdd.setStockTakingOrderId(1);
       stockTakingOrderItemAdd.setWarehouseId(5);
         stockTakingOrderItemService.addStockTakingOrderItemAll("WMS_Template",stockTakingOrderItemAdd);
-
 /*
         StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
         StockTakingOrder stockTakingOrder=new StockTakingOrder();
