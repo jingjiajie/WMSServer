@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.controller;
 
+import com.wms.services.warehouse.datastructures.StockTakingItemDelete;
 import com.wms.utilities.model.StockTakingOrder;
 import com.wms.utilities.model.StockTakingOrderView;
 import org.springframework.http.ResponseEntity;

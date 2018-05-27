@@ -2,6 +2,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.StockTakingItemDelete;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import com.wms.services.warehouse.service.StockTakingOrderService;
 import com.wms.utilities.datastructures.Condition;
@@ -34,9 +35,10 @@ public class StockTakingOrderControllerImpl implements StockTakingOrderControlle
         stockTakingOrderService.update(accountBook,stockTakingOrders);
     }
 
+
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/remove",method = RequestMethod.POST)
     public void remove(@PathVariable("accountBook") String accountBook,
                        @PathVariable("strIDs") String strIDs) {
         Gson gson = new Gson();

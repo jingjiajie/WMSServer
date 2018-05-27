@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.service;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
+import com.wms.services.warehouse.datastructures.StockTakingItemDelete;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.dao.StockTakingOrderItemDAO;
@@ -78,8 +79,25 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
     }
 
     @Override
-    public void remove(String accountBook, int[] ids) throws WMSServiceException {
+    public void remove(String accountBook, StockTakingItemDelete stockTakingItemDelete) throws WMSServiceException {
+        int[] ids=stockTakingItemDelete.getDeleteIds();
+        for (int id : ids) {
+            if (stockTakingOrderItemDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
+                throw new WMSServiceException(String.format("删除盘点单条目不存在，请重新查询！(%d)", id));
+            }
+        }
+        StockTakingOrderItemView[] stockTakingOrderItemViews= stockTakingOrderItemDAO.find(accountBook,new Condition().addCondition("id",new Integer[]{ids[0]}));
+        try {
+            stockTakingOrderItemDAO.remove(accountBook, ids);
+            //删除的时候每次只能删除同一个盘点单的
+           this.updateStockTakingOrder(accountBook,stockTakingOrderItemViews[0].getStockTakingOrderId(),stockTakingItemDelete.getPersonId());
+        } catch (Throwable ex) {
+            throw new WMSServiceException("删除盘点单条目失败，如果盘点单条目已经被引用，需要先删除引用的内容，才能删除该盘点单条目");
+        }
+    }
 
+    @Override
+    public void remove(String accountBook, int[] ids )throws WMSServiceException {
         for (int id : ids) {
             if (stockTakingOrderItemDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
                 throw new WMSServiceException(String.format("删除盘点单条目不存在，请重新查询！(%d)", id));
@@ -91,6 +109,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
             throw new WMSServiceException("删除盘点单条目失败，如果盘点单条目已经被引用，需要先删除引用的内容，才能删除该盘点单条目");
         }
     }
+
 
     @Override
     public StockTakingOrderItemView[] find(String accountBook, Condition cond) throws WMSServiceException {
