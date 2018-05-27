@@ -143,12 +143,12 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
             stockTakingOrderItem.setUnit((String)objects[5]);
             stockTakingOrderItem.setStorageLocationId((Integer) objects[2]);
             stockTakingOrderItem.setUnitAmount((BigDecimal) objects[6]);
-            stockTakingOrderItem.setAmount((BigDecimal) objects[4]);
-            stockTakingOrderItem.setRealAmount((BigDecimal) objects[4]);
+            stockTakingOrderItem.setAmount((BigDecimal) objects[23]);
+            stockTakingOrderItem.setRealAmount((BigDecimal) objects[23]);
             if(stockTakingOrderItemAdd.getMode()==0) {
                 stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
             }
-            warehouseAmount=warehouseAmount.add((BigDecimal) objects[4]);
+            warehouseAmount=warehouseAmount.add((BigDecimal) objects[23]);
         }
         //添加总数量条目
         StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();
