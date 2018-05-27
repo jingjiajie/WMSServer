@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
 
 
+import com.sun.xml.internal.bind.api.impl.NameConverter;
 import com.wms.services.warehouse.dao.StockRecordDAO;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.TransferStock;
@@ -12,6 +13,7 @@ import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import org.hibernate.SessionFactory;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -985,27 +988,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             query.setParameter("unitAmount",stockRecordFind.getUnitAmount());
             query.setParameter("batchNo1",this.batchTransfer(stockRecordFind.getInventoryDate()));
         }
-
-        //盘点用
-        else if(stockRecordFind.getReturnMode().equals("checkNew")){
-            String sqlCheckNew1="SELECT s1.* FROM StockRecordView AS s1 \n" +
-                    "INNER JOIN  \n" +
-                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
-                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=storaheLocationId and s2.SupplyID=supplyId AND s2.TIME<endTime \n" +
-                    "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo) as s3 \n" +
-                    "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID";
-            String sqlCheckNew="SELECT s1.* FROM StockRecordView AS s1\n" +
-                    "INNER JOIN \n" +
-                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
-                    "where s2.WarehouseID=:warehouseId and s2.SupplyID=:supplyId AND s2.TIME<:endTime \n" +
-                    "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID) as s3\n" +
-                    "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo";
-            query=session.createNativeQuery(sqlCheckNew,StockRecordView.class);
-            query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
-            //query.setParameter("storageLocationId",stockRecordFind.getStorageLocationId());
-            query.setParameter("supplyId",stockRecordFind.getSupplyId());
-            query.setParameter("endTime",stockRecordFind.getTimeEnd());
-        }
         else if(stockRecordFind.getReturnMode().equals("checkTime"))
         {//库存查询一段时间用
         String sqlCheckTime="SELECT s1.* FROM StockRecordView AS s1\n" +
@@ -1017,12 +999,43 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             query.setParameter("startTime",stockRecordFind.getTimeStart());
             query.setParameter("endTime",stockRecordFind.getTimeEnd());
         }
-        List result3 = query.list();
+        StockRecordView[] resultArray=null;
         List<StockRecordView> resultList = query.list();
-        StockRecordView[] resultArray = (StockRecordView[]) Array.newInstance(StockRecordView.class,resultList.size());
+        resultArray = (StockRecordView[]) Array.newInstance(StockRecordView.class,resultList.size());
         resultList.toArray(resultArray);
         return resultArray;
     }
+
+    public Object[] findCheck(String accountBook,StockRecordFind stockRecordFind){
+        Session session= sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query=null;
+        String sqlCheckNew2="SELECT s_all.*,sum(s_all.Amount) as sumAmount FROM \n" +
+                    "(SELECT s1.* FROM StockRecordView AS s1\n" +
+                    "INNER JOIN\n" +
+                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
+                    "where s2.WarehouseID=:warehouseId and s2.SupplyID=:supplyId AND s2.TIME<:endTime \n" +
+                    "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID) as s3\n" +
+                    "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo) \n" +
+                    "as s_all GROUP BY s_all.Unit,s_all.UnitAmount,s_all.StorageLocationID";
+        query=session.createNativeQuery(sqlCheckNew2);
+        query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
+        query.setParameter("supplyId",stockRecordFind.getSupplyId());
+        query.setParameter("endTime",stockRecordFind.getTimeEnd());
+        Object[] resultArray=null;
+        List list = query.list();
+        resultArray=list.toArray();
+        return resultArray;
+    }
+
+
+
+
+
 /*
    public void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock) {
        new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
