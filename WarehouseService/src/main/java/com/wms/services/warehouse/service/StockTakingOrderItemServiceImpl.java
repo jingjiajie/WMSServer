@@ -46,10 +46,12 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         for (int i = 0; i < stockTakingOrderItems.length; i++) {
             new Validator("单位").notnull().notEmpty().validate(stockTakingOrderItems[i].getUnit());
             new Validator("单位数量").notnull().validate(stockTakingOrderItems[i].getUnitAmount());
+            new Validator("数量").notnull().validate(stockTakingOrderItems[i].getAmount());
+            new Validator("实际数量").notnull().validate(stockTakingOrderItems[i].getRealAmount());
         }
         for (int i = 0; i < stockTakingOrderItems.length; i++) {
             idChecker.check(StockTakingOrderService.class, accountBook, stockTakingOrderItems[i].getStockTakingOrderId(), "盘点单");
-            // idChecker.check(PersonService.class,accountBook,stockTakingOrderItems[i].getPersonId(),"盘点人");TODO
+            //idChecker.check(PersonService.class,accountBook,stockTakingOrderItems[i].getPersonId(),"盘点人");TODO
             idChecker.check(SupplyService.class, accountBook, stockTakingOrderItems[i].getSupplyId(), "供货信息");
             idChecker.check(StorageLocationService.class, accountBook, stockTakingOrderItems[i].getStorageLocationId(), "库位");
             this.updateStockTakingOrder(accountBook,stockTakingOrderItems[i].getStockTakingOrderId(),stockTakingOrderItems[i].getPersonId());
@@ -62,6 +64,8 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         for (int i = 0; i < stockTakingOrderItems.length; i++) {
             new Validator("单位").notnull().notEmpty().validate(stockTakingOrderItems[i].getUnit());
             new Validator("单位数量").notnull().validate(stockTakingOrderItems[i].getUnitAmount());
+            new Validator("数量").notnull().validate(stockTakingOrderItems[i].getAmount());
+            new Validator("实际数量").notnull().validate(stockTakingOrderItems[i].getRealAmount());
         }
         for (int i = 0; i < stockTakingOrderItems.length; i++) {
             idChecker.check(StockTakingOrderService.class, accountBook, stockTakingOrderItems[i].getStockTakingOrderId(), "盘点单");
