@@ -774,7 +774,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         BigDecimal modifyAvailableAmoun=transferStock.getModifyAvailableAmount();
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
-        new Validator("存货时间").notnull().validate(transferStock.getInventoryDate());
+        //new Validator("存货时间").notnull().validate(transferStock.getInventoryDate());
         idChecker.check(StorageLocationService.class,accountBook,transferStock.getSourceStorageLocationId(),"库位");
         idChecker.check(SupplyService.class,accountBook,transferStock.getSupplyId(),"供货信息");
         int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
