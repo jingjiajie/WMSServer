@@ -837,6 +837,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
+                    stockRecord.setTime(stockRecordSource1[i].getTime());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAmount());
                     stockRecordDAO.update(accountBook,new StockRecord[]{stockRecord});
                 }
@@ -852,6 +853,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
+                    stockRecord.setTime(stockRecordSource1[i].getTime());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAmount().subtract(amountAddAvailable.subtract(transferStock.getModifyAvailableAmount())));//最后一个差几个满
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
                 }
@@ -891,6 +893,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
+                    stockRecord.setTime(stockRecordSource1[i].getTime());
                     stockRecord.setAvailableAmount(BigDecimal.ZERO);
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
                 } else if (i == iNeed) {
@@ -905,7 +908,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
-                    stockRecord.setAvailableAmount(amountAvailableAll.subtract(transferStock.getModifyAvailableAmount()));
+                    stockRecord.setTime(stockRecordSource1[i].getTime());
+                    stockRecord.setAvailableAmount(amountAvailableAll.add(transferStock.getModifyAvailableAmount()));
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
                 }
             }

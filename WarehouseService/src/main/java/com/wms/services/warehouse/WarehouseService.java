@@ -64,25 +64,26 @@ public class WarehouseService {
         Object[] stockRecordSource1 = stockRecordService.findCheck("WMS_Template", stockRecordFind);
 
 
-/*
+
         TransferStock transferStock=new TransferStock();
-        transferStock.setAmount(new BigDecimal(1));
-        transferStock.setSourceStorageLocationId(20);
+        transferStock.setModifyAvailableAmount(new BigDecimal(10));
+        transferStock.setSourceStorageLocationId(21);
         transferStock.setUnit("个");
-        transferStock.setUnitAmount(new BigDecimal(100));
+        transferStock.setUnitAmount(new BigDecimal(1));
         transferStock.setSupplyId(5);
-        transferStock.setInventoryDate(time2);
-        transferStock.setRelatedOrderNo("123456");
-        transferStock.setNewStorageLocationId(4);
-        stockRecordService.RealTransformStock("WMS_Template",transferStock);
-*/
+        //transferStock.setInventoryDate(time2);
+        //transferStock.setRelatedOrderNo("123456");
+        //transferStock.setNewStorageLocationId(4);
+        //stockRecordService.RealTransformStock("WMS_Template",transferStock);
+        stockRecordService.modifyAvailableAmount("WMS_Template",transferStock);
+
         StockTakingOrderItemService stockTakingOrderItemService = applicationContext.getBean(StockTakingOrderItemService.class);
         StockTakingItemDelete stockTakingItemDelete=new StockTakingItemDelete();
         stockTakingItemDelete.setDeleteIds(new int[]{1654});
         stockTakingItemDelete.setPersonId(19);
         stockTakingOrderItemService.remove("WMS_Template",stockTakingItemDelete);
-
-        /*       StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
+        /*
+        StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
         StockTakingOrder stockTakingOrder=new StockTakingOrder();
         stockTakingOrder.setId(1);
         stockTakingOrder.setNo("5115111111");
