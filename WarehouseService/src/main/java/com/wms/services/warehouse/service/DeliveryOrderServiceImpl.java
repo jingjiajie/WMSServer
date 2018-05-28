@@ -1,6 +1,8 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.DeliveryOrderDAO;
+import com.wms.services.warehouse.datastructures.TransferAuto;
+import com.wms.utilities.IDChecker;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -30,6 +32,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     @Autowired
     PersonService personService;
     @Autowired
+    IDChecker idChecker;
+    @Autowired
     TransferOrderService transferOrderService;
     @Autowired
     TransferOrderItemService transferOrderItemService;
@@ -37,6 +41,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     SafetyStockService safetyStockService;
     @Autowired
     StockRecordService stockRecordService;
+    @Autowired
+    SupplyService supplyService;
+
 
     private static final String NO_PREFIX = "D";
 
@@ -171,6 +178,26 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             });
         });
     }
+    /*public void transferPakage1(String accountBook, TransferAuto TransferAuto) {
+        new Validator("人员").notnull().validate(TransferAuto.getPersonId());
+        idChecker.check(com.wms.services.warehouse.service.WarehouseService.class, accountBook, TransferAuto.getWarehouseId(), " 仓库");
+        SupplyView[] supplyView=supplyService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{stockTakingOrderItemAdd.getWarehouseId()}));
+        if(supplyView.length==0){throw new WMSServiceException("当前仓库无任何供货记录，无法添加盘点单条目！");}
+        // Integer[] supplyIdAll=new Integer[supplyView.length];
+        for(int i=0;i<supplyView.length;i++){
+            StockTakingOrderItemAdd stockTakingOrderItemAddAll=new StockTakingOrderItemAdd();
+            stockTakingOrderItemAddAll.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
+            stockTakingOrderItemAddAll.setMode(stockTakingOrderItemAdd.getMode());
+            stockTakingOrderItemAddAll.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
+            stockTakingOrderItemAddAll.setCheckTime(stockTakingOrderItemAdd.getCheckTime());
+            stockTakingOrderItemAddAll.setPersonId(stockTakingOrderItemAdd.getPersonId());
+            stockTakingOrderItemAddAll.setSupplyId(supplyView[i].getId());
+            stockTakingOrderItemAddAll.setAddMode("all");
+            this.addStockTakingOrderItemSingle(accountBook,stockTakingOrderItemAddAll);
+        }
+        this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
+
+    }*/
 
 
     @Override
