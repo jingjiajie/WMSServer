@@ -78,12 +78,13 @@ public class WarehouseService {
         stockRecordService.RealTransformStock("WMS_Template",transferStock);
 */
 
-/*
+
         StockTakingOrderItemService stockTakingOrderItemService = applicationContext.getBean(StockTakingOrderItemService.class);
       StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
       stockTakingOrderItemAdd.setPersonId(19);
       stockTakingOrderItemAdd.setStockTakingOrderId(1);
       stockTakingOrderItemAdd.setWarehouseId(5);
+      stockTakingOrderItemAdd.setStockTakingOrderId(3);
         stockTakingOrderItemService.addStockTakingOrderItemAll("WMS_Template",stockTakingOrderItemAdd);
 
 /*
@@ -93,7 +94,7 @@ public class WarehouseService {
         stockTakingOrder.setNo("5115111111");
         stockTakingOrder.setCreatePersonId(19);
         stockTakingOrder.setWarehouseId(-100);
-        stockTakingOrder.setCreateTime(time2);
+       // stockTakingOrder.setCreateTime(time2);
         stockTakingOrderService.update("WMS_Template",new StockTakingOrder[]{stockTakingOrder});    }*/
     }
 }
