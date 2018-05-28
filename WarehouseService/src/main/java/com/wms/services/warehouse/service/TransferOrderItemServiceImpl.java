@@ -82,7 +82,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 throw new WMSServiceException("无法修改移库单条目的目标库位:(%d)，如要操作请新建移库单"+oriItemViews[0].getTargetStorageLocationId());
             }
             // TODO 如果计划移库数量发生变化,还是需要改进
-            if (!transferOrderItem.getScheduledAmount().equals(oriItemViews[0].getScheduledAmount()))//如果计划移库数量发生变化
+            if (transferOrderItem.getScheduledAmount().equals(oriItemViews[0].getScheduledAmount()))//如果计划移库数量发生变化
             {
                 if (transferOrderItem.getScheduledAmount().subtract(oriItemViews[0].getRealAmount()).compareTo(new BigDecimal(0))<=0)//如果新修改时计划数量小于当前实际已经移动的数量
                 {
@@ -99,7 +99,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             }
 
             //如果没有实际移库数量输入，直接跳过.有实际移库数量输入且数量变化才往下执行
-            if(transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))>=0&&transferOrderItem.getRealAmount()!=oriItemViews[0].getRealAmount())
+            if(transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))>0&&transferOrderItem.getRealAmount().equals(oriItemViews[0].getRealAmount()))
             {
                 //todo 是移库前先把当前一步实际数量加回去可用数量
                 TransferStock fixTransferStock = new TransferStock();
@@ -121,7 +121,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                         reTransferStock.setSourceStorageLocationId(transferOrderItem.getTargetStorageLocationId());//目标库位反转
                         reTransferStock.setSupplyId(transferOrderItem.getSupplyId());
                         reTransferStock.setRelatedOrderNo(transferOrderView.getNo());//获取单号
-                        //reTransferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                        reTransferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
                         reTransferStock.setUnit(oriItemViews[0].getUnit());
                         reTransferStock.setUnitAmount(oriItemViews[0].getUnitAmount());
                         this.stockRecordService.RealTransferStockUnitFlexible(accountBook,reTransferStock);//使用更新单位的库存修改
