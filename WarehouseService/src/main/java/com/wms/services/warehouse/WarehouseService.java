@@ -77,13 +77,12 @@ public class WarehouseService {
         stockRecordService.RealTransformStock("WMS_Template",transferStock);
 */
         StockTakingOrderItemService stockTakingOrderItemService = applicationContext.getBean(StockTakingOrderItemService.class);
-      StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
-      stockTakingOrderItemAdd.setPersonId(19);
-      stockTakingOrderItemAdd.setStockTakingOrderId(1);
-      stockTakingOrderItemAdd.setWarehouseId(5);
-        stockTakingOrderItemService.addStockTakingOrderItemAll("WMS_Template",stockTakingOrderItemAdd);
-/*
-        StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
+        StockTakingItemDelete stockTakingItemDelete=new StockTakingItemDelete();
+        stockTakingItemDelete.setDeleteIds(new int[]{1654});
+        stockTakingItemDelete.setPersonId(19);
+        stockTakingOrderItemService.remove("WMS_Template",stockTakingItemDelete);
+
+        /*       StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
         StockTakingOrder stockTakingOrder=new StockTakingOrder();
         stockTakingOrder.setId(1);
         stockTakingOrder.setNo("5115111111");

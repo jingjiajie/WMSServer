@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.service;
 
+import com.wms.services.warehouse.datastructures.StockTakingItemDelete;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -12,4 +13,5 @@ public interface StockTakingOrderItemService
     void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
     void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem);
     long findCount(String database,Condition cond) throws WMSServiceException;
+    void remove(String accountBook, StockTakingItemDelete stockTakingItemDelete);
 }

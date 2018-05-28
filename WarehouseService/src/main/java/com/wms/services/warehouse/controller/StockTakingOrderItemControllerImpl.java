@@ -2,8 +2,10 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.StockTakingItemDelete;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import com.wms.services.warehouse.service.StockTakingOrderItemService;
+import com.wms.services.warehouse.service.StockTakingOrderService;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,6 @@ import com.wms.utilities.model.StockTakingOrderItem;
 public class StockTakingOrderItemControllerImpl implements StockTakingOrderItemController{
 @Autowired
     StockTakingOrderItemService stockTakingOrderItemService;
-
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value="/",method = RequestMethod.POST)
@@ -89,6 +90,14 @@ public class StockTakingOrderItemControllerImpl implements StockTakingOrderItemC
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.stockTakingOrderItemService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/remove",method = RequestMethod.POST)
+    public void remove(@PathVariable("accountBook") String accountBook,
+                       @RequestBody StockTakingItemDelete stockTakingItemDelete) {
+        stockTakingOrderItemService.remove(accountBook,stockTakingItemDelete);
     }
 }
 

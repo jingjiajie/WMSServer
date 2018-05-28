@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.controller;
 
+import com.wms.services.warehouse.datastructures.StockTakingItemDelete;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import org.springframework.http.ResponseEntity;
 import com.wms.utilities.model.StockTakingOrderItemView;
@@ -14,4 +15,5 @@ public interface StockTakingOrderItemController {
     void addStockTakingOrderItemSingle(String accountBook,StockTakingOrderItemAdd stockTakingOrderItemAdd);
     void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem);
     long findCount(String accountBook,String condStr);
+    void remove(String accountBook, StockTakingItemDelete stockTakingItemDelete);
 }
