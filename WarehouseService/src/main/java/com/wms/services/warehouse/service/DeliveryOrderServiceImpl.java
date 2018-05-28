@@ -178,13 +178,14 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             });
         });
     }
-    /*public void transferPakage1(String accountBook, TransferAuto TransferAuto) {
+    public void transferPakage1(String accountBook, TransferAuto TransferAuto) {
         new Validator("人员").notnull().validate(TransferAuto.getPersonId());
         idChecker.check(com.wms.services.warehouse.service.WarehouseService.class, accountBook, TransferAuto.getWarehouseId(), " 仓库");
-        SupplyView[] supplyView=supplyService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{stockTakingOrderItemAdd.getWarehouseId()}));
-        if(supplyView.length==0){throw new WMSServiceException("当前仓库无任何供货记录，无法添加盘点单条目！");}
-        // Integer[] supplyIdAll=new Integer[supplyView.length];
-        for(int i=0;i<supplyView.length;i++){
+        SafetyStockView[] safetyStockViews=safetyStockService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{TransferAuto.getWarehouseId()}));
+        if(safetyStockViews.length==0){throw new WMSServiceException("当前仓库无任何安全库存记录，无法自动添加移库作业单单条目！");}
+        TransferArgs transferArgs=new TransferArgs();
+
+        /*for(int i=0;i<safetyStockViews.length;i++){
             StockTakingOrderItemAdd stockTakingOrderItemAddAll=new StockTakingOrderItemAdd();
             stockTakingOrderItemAddAll.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
             stockTakingOrderItemAddAll.setMode(stockTakingOrderItemAdd.getMode());
@@ -195,9 +196,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             stockTakingOrderItemAddAll.setAddMode("all");
             this.addStockTakingOrderItemSingle(accountBook,stockTakingOrderItemAddAll);
         }
-        this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
+        */
+        this.transferPakage(accountBook, transferArgs);
 
-    }*/
+    }
 
 
     @Override
