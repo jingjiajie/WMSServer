@@ -779,7 +779,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         idChecker.check(SupplyService.class,accountBook,transferStock.getSupplyId(),"供货信息");
         int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
         int supplyId=transferStock.getSupplyId();
-        int newStorageLocationId=transferStock.getNewStorageLocationId();
         Integer[] warehouseId=warehouseIdFind(accountBook,sourceStorageLocationId);//至少能返回一个
         String unit=transferStock.getUnit();
         BigDecimal unitAmount=transferStock.getUnitAmount();
@@ -911,7 +910,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 }
             }
         }
-
+/*
         //先查出源库存记录
         StockRecordView[] stockRecordSource= stockRecordDAO.find(accountBook,new Condition().addCondition("supplyId",new Integer[]{transferStock.getSupplyId()}).
                 addCondition("storageLocationId",new Integer[]{transferStock.getSourceStorageLocationId()}).addCondition("unit",new String[]{transferStock.getUnit()}).addCondition("unitAmount",transferStock.getUnitAmount())
@@ -935,7 +934,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecord.setStorageLocationId(stockRecordSource[0].getStorageLocationId());
         stockRecord.setSupplyId(transferStock.getSupplyId());
         stockRecord.setTime(stockRecordSource[0].getTime());
-        stockRecordDAO.update(accountBook,new StockRecord[]{stockRecord});
+        stockRecordDAO.update(accountBook,new StockRecord[]{stockRecord});*/
     }
 
     public StockRecordView[] find(String accountBook,StockRecordFind stockRecordFind){
