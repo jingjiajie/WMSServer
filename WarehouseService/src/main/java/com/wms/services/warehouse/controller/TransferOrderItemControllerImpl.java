@@ -8,6 +8,7 @@ import com.wms.utilities.model.TransferOrderItem;
 import com.wms.utilities.model.TransferOrderItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -17,6 +18,13 @@ public class TransferOrderItemControllerImpl
         implements TransferOrderItemController {
     @Autowired
     TransferOrderItemService transferOrderItemService;
+
+    @RequestMapping(value="/",method = RequestMethod.POST)
+    public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook,
+                                     @RequestBody TransferOrderItem[] transferOrderItems) {
+        int ids[] = transferOrderItemService.add(accountBook, transferOrderItems);
+        return new ResponseEntity<int[]>(ids, HttpStatus.OK);
+    }
 
     @Override
     @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
