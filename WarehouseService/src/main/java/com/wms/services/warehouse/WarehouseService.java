@@ -34,6 +34,14 @@ public class WarehouseService {
         System.out.println("仓库服务启动...");
 
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
+        SupplierServices supplierServices = applicationContext.getBean(SupplierServices.class);
+        Supplier supplier=new Supplier();
+        supplier.setId(1);
+        supplier.setNo("111123123131");
+        supplier.setName("adsdasdadsadadssa");
+        supplier.setWarehouseId(1);
+        supplier.setCreatePersonId(19);
+        supplierServices.updateHistory("WMS_Template",new Supplier[]{supplier});
         /*
         StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

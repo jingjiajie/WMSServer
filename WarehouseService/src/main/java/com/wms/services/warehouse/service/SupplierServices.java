@@ -7,6 +7,7 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 public interface SupplierServices {
     int[] add(String accountBook, Supplier suppliers[]) throws WMSServiceException;
     void update(String accountBook,Supplier suppliers[]) throws WMSServiceException;
+    void updateHistory(String accountBook,Supplier suppliers[]) throws WMSServiceException;
     void remove(String accountBook,int ids[]) throws WMSServiceException;
     SupplierView[] find(String accountBook, Condition cond) throws WMSServiceException;
     long findCount(String database,Condition cond) throws WMSServiceException;
