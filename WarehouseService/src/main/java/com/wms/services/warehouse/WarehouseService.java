@@ -66,17 +66,18 @@ public class WarehouseService {
 
 
         TransferStock transferStock=new TransferStock();
-        transferStock.setModifyAvailableAmount(new BigDecimal(10));
-        transferStock.setSourceStorageLocationId(21);
+        transferStock.setAmount((new BigDecimal(-100000)));
+        transferStock.setSourceStorageLocationId(39);
         transferStock.setUnit("个");
         transferStock.setUnitAmount(new BigDecimal(1));
         transferStock.setSupplyId(5);
+        transferStock.setRelatedOrderNo("aaaaaaaaaaaa");
         //transferStock.setInventoryDate(time2);
         //transferStock.setRelatedOrderNo("123456");
         //transferStock.setNewStorageLocationId(4);
         //stockRecordService.RealTransformStock("WMS_Template",transferStock);
-        stockRecordService.modifyAvailableAmount("WMS_Template",transferStock);
-
+        //stockRecordService.modifyAvailableAmount("WMS_Template",transferStock);
+        stockRecordService.addAmount("WMS_Template",transferStock);
         StockTakingOrderItemService stockTakingOrderItemService = applicationContext.getBean(StockTakingOrderItemService.class);
         StockTakingItemDelete stockTakingItemDelete=new StockTakingItemDelete();
         stockTakingItemDelete.setDeleteIds(new int[]{1654});
