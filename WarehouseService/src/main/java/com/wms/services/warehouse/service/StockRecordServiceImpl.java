@@ -556,6 +556,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             }
         return    new Integer[] {storageAreaViews[0].getWarehouseId()};
     }
+
     public void RealTransferStockUnitFlexible(String accountBook,TransferStock transferStock)
     {
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
@@ -991,6 +992,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             query.setParameter("unitAmount",stockRecordFind.getUnitAmount());
             query.setParameter("batchNo1",this.batchTransfer(stockRecordFind.getInventoryDate()));
         }
+        /*
         else if(stockRecordFind.getReturnMode().equals("checkTime"))
         {//库存查询一段时间用
         String sqlCheckTime="SELECT s1.* FROM StockRecordView AS s1\n" +
@@ -1001,7 +1003,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             query.setParameter("supplyId",stockRecordFind.getSupplyId());
             query.setParameter("startTime",stockRecordFind.getTimeStart());
             query.setParameter("endTime",stockRecordFind.getTimeEnd());
-        }
+        }*/
         StockRecordView[] resultArray=null;
         List<StockRecordView> resultList = query.list();
         resultArray = (StockRecordView[]) Array.newInstance(StockRecordView.class,resultList.size());
@@ -1009,6 +1011,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         return resultArray;
     }
 
+    //盘点用
     public Object[] findCheck(String accountBook,StockRecordFind stockRecordFind){
         Session session= sessionFactory.getCurrentSession();
         try {
@@ -1034,11 +1037,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         resultArray=list.toArray();
         return resultArray;
     }
-
-
-
-
-
 /*
    public void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock) {
        new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
@@ -1179,7 +1177,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
        transformRecordService.add(accountBook, new TransferRecord[]{transferRecord});
    }
    */
-
 
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
