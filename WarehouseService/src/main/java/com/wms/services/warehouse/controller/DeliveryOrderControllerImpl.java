@@ -4,6 +4,7 @@ package com.wms.services.warehouse.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.datastructures.TransferArgs;
+import com.wms.services.warehouse.datastructures.TransferAuto;
 import com.wms.services.warehouse.service.DeliveryOrderService;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,14 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     public void transferPakage(@PathVariable("accountBook") String accountBook,
                         @RequestBody TransferArgs transferArgs){
         this.deliveryOrderService.transferPakage(accountBook,transferArgs);
+    }
+
+    @Override
+    @RequestMapping(value = "/transfer_auto",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void transferAuto(@PathVariable("accountBook") String accountBook,
+                               @RequestBody TransferAuto transferAuto){
+        this.deliveryOrderService.transferAuto(accountBook,transferAuto);
     }
 
     @Override

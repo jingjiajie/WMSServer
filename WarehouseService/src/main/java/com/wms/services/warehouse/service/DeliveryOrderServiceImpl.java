@@ -17,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.datastructures.TransferArgs;
 import com.wms.services.warehouse.datastructures.TransferItem;
 
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -155,7 +158,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 //创建新的移库单条目
                 // todo 等数据库修改确定
                 //找到对应供货对应库位的安全库存信息
-                if(transferArgs.isAutoCommit()&&transferOrderItem.getScheduledAmount()==null) {
+                if(transferArgs.isAutoCommit()&&transferOrderItem.getScheduledAmount().equals(new BigDecimal(0))) {
                     SafetyStockView[] safetyStockViews = safetyStockService.find(accountBook,
                             new Condition().addCondition("targetStorageLocationId", transferOrderItem.getTargetStorageLocationId()).addCondition("supplyID", transferOrderItem.getSupplyId()));
                     StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
@@ -178,25 +181,38 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             });
         });
     }
-    public void transferPakage1(String accountBook, TransferAuto TransferAuto) {
+
+    public void transferAuto(String accountBook, TransferAuto TransferAuto) {
         new Validator("人员").notnull().validate(TransferAuto.getPersonId());
         idChecker.check(com.wms.services.warehouse.service.WarehouseService.class, accountBook, TransferAuto.getWarehouseId(), " 仓库");
         SafetyStockView[] safetyStockViews=safetyStockService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{TransferAuto.getWarehouseId()}));
         if(safetyStockViews.length==0){throw new WMSServiceException("当前仓库无任何安全库存记录，无法自动添加移库作业单单条目！");}
         TransferArgs transferArgs=new TransferArgs();
+        TransferItem[] transferItems=null;
 
-        /*for(int i=0;i<safetyStockViews.length;i++){
-            StockTakingOrderItemAdd stockTakingOrderItemAddAll=new StockTakingOrderItemAdd();
-            stockTakingOrderItemAddAll.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
-            stockTakingOrderItemAddAll.setMode(stockTakingOrderItemAdd.getMode());
-            stockTakingOrderItemAddAll.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
-            stockTakingOrderItemAddAll.setCheckTime(stockTakingOrderItemAdd.getCheckTime());
-            stockTakingOrderItemAddAll.setPersonId(stockTakingOrderItemAdd.getPersonId());
-            stockTakingOrderItemAddAll.setSupplyId(supplyView[i].getId());
-            stockTakingOrderItemAddAll.setAddMode("all");
-            this.addStockTakingOrderItemSingle(accountBook,stockTakingOrderItemAddAll);
+        TransferOrder transferOrder=new TransferOrder();
+        transferOrder.setWarehouseId(TransferAuto.getWarehouseId());
+        transferOrder.setCreatePersonId(TransferAuto.getPersonId());
+
+        //新建列表存放条目
+        List<TransferOrderItem> transferOrderItemsList=null;
+        for(int i=0;i<safetyStockViews.length;i++){
+            TransferOrderItem transferOrderItem=new TransferOrderItem();
+            transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
+            transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
+            transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
+            transferOrderItem.setScheduledAmount(new BigDecimal(0));
+            transferOrderItemsList.add(transferOrderItem);
         }
-        */
+        TransferOrderItem[] transferOrderItems=null;
+        transferOrderItems = (TransferOrderItem[]) Array.newInstance(TransferOrderItem.class,transferOrderItemsList.size());
+        transferOrderItemsList.toArray(transferOrderItems);
+
+        transferItems[0].setTransferOrder(transferOrder);
+        transferItems[0].setTransferOrderItems(transferOrderItems);
+
+        transferArgs.setTransferItems(transferItems);
+        transferArgs.setAutoCommit(true);
         this.transferPakage(accountBook, transferArgs);
 
     }

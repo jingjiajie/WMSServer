@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wms.utilities.model.TransferOrderItem;
 import com.wms.utilities.model.TransferOrderItemView;
 
+import javax.enterprise.inject.New;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.stream.Stream;
@@ -54,9 +55,10 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
 
             transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
+            this.updateTransferOrder(accountBook,transferOrderId ,transferOrderItem.getPersonId());
         });
-
         this.validateEntities(accountBook, transferOrderItems);
+
         return this.transferOrderItemDAO.add(accountBook, transferOrderItems);
     }
 
@@ -219,5 +221,26 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
         return this.transferOrderItemDAO.findCount(accountBook,cond);
+    }
+
+    private void updateTransferOrder( String accountBook,int transferOrderId ,int lastUpdatePersonId){
+        idChecker.check(TransferOrder.class,accountBook,transferOrderId,"移库单");
+        //TODO idChecker.check(PersonService.class,accountBook,lastUpdatePersonId," 人员");
+        TransferOrderView[] transferOrderViews= transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
+        if(transferOrderViews.length==0){
+            throw new WMSServiceException("没有找到要更新的盘点单！");
+        }
+        TransferOrder transferOrder=new TransferOrder();
+        transferOrder.setId(transferOrderViews[0].getId());
+        transferOrder.setCreatePersonId(transferOrderViews[0].getCreatePersonId());
+        transferOrder.setCreateTime(transferOrderViews[0].getCreateTime());
+        transferOrder.setDescription(transferOrderViews[0].getDescription());
+        transferOrder.setNo(transferOrderViews[0].getNo());
+        transferOrder.setWarehouseId(transferOrderViews[0].getWarehouseId());
+        transferOrder.setLastUpdatePersonId(""+lastUpdatePersonId);
+        transferOrder.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+        transferOrder.setPrintTimes(transferOrderViews[0].getPrintTimes());
+        transferOrder.setState(transferOrderViews[0].getState());
+        transferOrderService.update(accountBook,new TransferOrder[]{transferOrder});
     }
 }
