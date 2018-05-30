@@ -304,6 +304,18 @@ public class SupplierServicesImpl implements SupplierServices{
     }
 
     @Override
+    public SupplierView[] findHistory(String accountBook, Condition cond) throws WMSServiceException{
+        cond.addCondition("isHistory",new Integer[]{1});
+        return this.supplierDAO.find(accountBook, cond);
+    }
+
+    @Override
+    public SupplierView[] findNew(String accountBook, Condition cond) throws WMSServiceException{
+    cond.addCondition("isHistory",new Integer[]{0});
+        return this.supplierDAO.find(accountBook, cond);
+    }
+
+    @Override
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.supplierDAO.findCount(database,cond);
     }

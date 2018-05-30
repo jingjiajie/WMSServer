@@ -35,7 +35,7 @@ public class SupplierControllerImpl implements SupplierController {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/history_save",method = RequestMethod.POST)
+    @RequestMapping(value = "/history_save",method = RequestMethod.PUT)
     public void updateHistorySave(@PathVariable("accountBook") String accountBook,
                        @RequestBody Supplier[] suppliers) {
         supplierServices.updateHistory(accountBook,suppliers);
@@ -58,6 +58,25 @@ public class SupplierControllerImpl implements SupplierController {
                                            @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
         SupplierView[] suppliers = supplierServices.find(accountBook, cond);
+        return new ResponseEntity<SupplierView[]>(suppliers, HttpStatus.OK);
+    }
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping("/{condStr}/new")
+    public ResponseEntity<SupplierView[]> findNew(@PathVariable("accountBook") String accountBook,
+                                               @PathVariable("condStr") String condStr) {
+        Condition cond = Condition.fromJson(condStr);
+        SupplierView[] suppliers = supplierServices.findNew(accountBook, cond);
+        return new ResponseEntity<SupplierView[]>(suppliers, HttpStatus.OK);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping("/{condStr}/history")
+    public ResponseEntity<SupplierView[]> findHistory(@PathVariable("accountBook") String accountBook,
+                                               @PathVariable("condStr") String condStr) {
+        Condition cond = Condition.fromJson(condStr);
+        SupplierView[] suppliers = supplierServices.findHistory(accountBook, cond);
         return new ResponseEntity<SupplierView[]>(suppliers, HttpStatus.OK);
     }
 

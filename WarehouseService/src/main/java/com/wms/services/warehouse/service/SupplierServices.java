@@ -10,5 +10,7 @@ public interface SupplierServices {
     void updateHistory(String accountBook,Supplier suppliers[]) throws WMSServiceException;
     void remove(String accountBook,int ids[]) throws WMSServiceException;
     SupplierView[] find(String accountBook, Condition cond) throws WMSServiceException;
+    SupplierView[] findNew(String accountBook, Condition cond) throws WMSServiceException;
+    SupplierView[] findHistory(String accountBook, Condition cond) throws WMSServiceException;
     long findCount(String database,Condition cond) throws WMSServiceException;
 }
