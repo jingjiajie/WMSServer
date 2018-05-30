@@ -5,6 +5,9 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 public class ReflectHelper {
@@ -57,5 +60,13 @@ public class ReflectHelper {
         TSource[] sourceArray = (TSource[]) Array.newInstance(source.getClass(),1);
         sourceArray[0] = source;
         return createAndCopyFields(sourceArray,targetType)[0];
+    }
+
+    public static Integer[] intArrayToIntegerArray(int[] intArray) {
+        Integer[] result = new Integer[intArray.length];
+        for (int i = 0; i < intArray.length; i++) {
+            result[i] = intArray[i];
+        }
+        return result;
     }
 }

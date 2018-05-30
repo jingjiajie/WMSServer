@@ -46,6 +46,12 @@ public class WarehouseEntryItemView {
     private Integer defaultInspectionStorageLocationId;
     private String defaultInspectionStorageLocationNo;
     private String defaultInspectionStorageLocationName;
+    private Integer qualifiedStorageLocationId;
+    private Integer unqualifiedStorageLocationId;
+    private String qualifiedStorageLocationNo;
+    private String qualifiedStorageLocationName;
+    private String unqualifiedStorageLocationNo;
+    private String unqualifiedStorageLocationName;
 
     @Id
     @Basic
@@ -446,5 +452,65 @@ public class WarehouseEntryItemView {
 
     public void setDefaultInspectionStorageLocationName(String defaultInspectionStorageLocationName) {
         this.defaultInspectionStorageLocationName = defaultInspectionStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "QualifiedStorageLocationID", nullable = true)
+    public Integer getQualifiedStorageLocationId() {
+        return qualifiedStorageLocationId;
+    }
+
+    public void setQualifiedStorageLocationId(Integer qualifiedStorageLocationId) {
+        this.qualifiedStorageLocationId = qualifiedStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "UnqualifiedStorageLocationID", nullable = true)
+    public Integer getUnqualifiedStorageLocationId() {
+        return unqualifiedStorageLocationId;
+    }
+
+    public void setUnqualifiedStorageLocationId(Integer unqualifiedStorageLocationId) {
+        this.unqualifiedStorageLocationId = unqualifiedStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "QualifiedStorageLocationNo", nullable = true, length = 64)
+    public String getQualifiedStorageLocationNo() {
+        return qualifiedStorageLocationNo;
+    }
+
+    public void setQualifiedStorageLocationNo(String qualifiedStorageLocationNo) {
+        this.qualifiedStorageLocationNo = qualifiedStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "QualifiedStorageLocationName", nullable = true, length = 64)
+    public String getQualifiedStorageLocationName() {
+        return qualifiedStorageLocationName;
+    }
+
+    public void setQualifiedStorageLocationName(String qualifiedStorageLocationName) {
+        this.qualifiedStorageLocationName = qualifiedStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "UnqualifiedStorageLocationNo", nullable = true, length = 64)
+    public String getUnqualifiedStorageLocationNo() {
+        return unqualifiedStorageLocationNo;
+    }
+
+    public void setUnqualifiedStorageLocationNo(String unqualifiedStorageLocationNo) {
+        this.unqualifiedStorageLocationNo = unqualifiedStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "UnqualifiedStorageLocationName", nullable = true, length = 64)
+    public String getUnqualifiedStorageLocationName() {
+        return unqualifiedStorageLocationName;
+    }
+
+    public void setUnqualifiedStorageLocationName(String unqualifiedStorageLocationName) {
+        this.unqualifiedStorageLocationName = unqualifiedStorageLocationName;
     }
 }

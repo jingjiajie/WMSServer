@@ -26,6 +26,8 @@ public class WarehouseEntryItem {
     private Timestamp inventoryDate;
     private Timestamp manufactureDate;
     private Timestamp expiryDate;
+    private Integer qualifiedStorageLocationId;
+    private Integer unqualifiedStorageLocationId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -248,5 +250,25 @@ public class WarehouseEntryItem {
     public int hashCode() {
 
         return Objects.hash(id, warehouseEntryId, supplyId, storageLocationId, expectedAmount, realAmount, unit, unitAmount, inspectionAmount, state, refuseAmount, refuseUnit, refuseUnitAmount, personId, comment, manufactureNo, inventoryDate, manufactureDate, expiryDate);
+    }
+
+    @Basic
+    @Column(name = "QualifiedStorageLocationID", nullable = true)
+    public Integer getQualifiedStorageLocationId() {
+        return qualifiedStorageLocationId;
+    }
+
+    public void setQualifiedStorageLocationId(Integer qualifiedStorageLocationId) {
+        this.qualifiedStorageLocationId = qualifiedStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "UnqualifiedStorageLocationID", nullable = true)
+    public Integer getUnqualifiedStorageLocationId() {
+        return unqualifiedStorageLocationId;
+    }
+
+    public void setUnqualifiedStorageLocationId(Integer unqualifiedStorageLocationId) {
+        this.unqualifiedStorageLocationId = unqualifiedStorageLocationId;
     }
 }

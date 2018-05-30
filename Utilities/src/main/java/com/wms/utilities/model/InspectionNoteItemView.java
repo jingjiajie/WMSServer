@@ -16,11 +16,9 @@ public class InspectionNoteItemView {
     private BigDecimal amount;
     private String unit;
     private BigDecimal unitAmount;
-    private int inspectionStorageLocationId;
     private BigDecimal returnAmount;
     private String returnUnit;
     private BigDecimal returnUnitAmount;
-    private Integer returnStorageLocationId;
     private String comment;
     private Integer personId;
     private String inspectionNoteNo;
@@ -29,10 +27,6 @@ public class InspectionNoteItemView {
     private String supplierNo;
     private String supplierName;
     private String personName;
-    private String inspectionStorageLocationNo;
-    private String inspectionStorageLocationName;
-    private String returnStorageLocationNo;
-    private String returnStorageLocationName;
     private String materialProductLine;
     private Integer supplierId;
     private Integer materialId;
@@ -108,15 +102,6 @@ public class InspectionNoteItemView {
         this.unitAmount = unitAmount;
     }
 
-    @Basic
-    @Column(name = "InspectionStorageLocationID", nullable = false)
-    public int getInspectionStorageLocationId() {
-        return inspectionStorageLocationId;
-    }
-
-    public void setInspectionStorageLocationId(int inspectionStorageLocationId) {
-        this.inspectionStorageLocationId = inspectionStorageLocationId;
-    }
 
     @Basic
     @Column(name = "ReturnAmount", nullable = true, precision = 3)
@@ -148,15 +133,6 @@ public class InspectionNoteItemView {
         this.returnUnitAmount = returnUnitAmount;
     }
 
-    @Basic
-    @Column(name = "ReturnStorageLocationID", nullable = true)
-    public Integer getReturnStorageLocationId() {
-        return returnStorageLocationId;
-    }
-
-    public void setReturnStorageLocationId(Integer returnStorageLocationId) {
-        this.returnStorageLocationId = returnStorageLocationId;
-    }
 
     @Basic
     @Column(name = "Comment", nullable = true, length = 64)
@@ -238,46 +214,6 @@ public class InspectionNoteItemView {
         this.personName = personName;
     }
 
-    @Basic
-    @Column(name = "InspectionStorageLocationNo", nullable = true, length = 64)
-    public String getInspectionStorageLocationNo() {
-        return inspectionStorageLocationNo;
-    }
-
-    public void setInspectionStorageLocationNo(String inspectionStorageLocationNo) {
-        this.inspectionStorageLocationNo = inspectionStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "InspectionStorageLocationName", nullable = true, length = 64)
-    public String getInspectionStorageLocationName() {
-        return inspectionStorageLocationName;
-    }
-
-    public void setInspectionStorageLocationName(String inspectionStorageLocationName) {
-        this.inspectionStorageLocationName = inspectionStorageLocationName;
-    }
-
-    @Basic
-    @Column(name = "ReturnStorageLocationNo", nullable = true, length = 64)
-    public String getReturnStorageLocationNo() {
-        return returnStorageLocationNo;
-    }
-
-    public void setReturnStorageLocationNo(String returnStorageLocationNo) {
-        this.returnStorageLocationNo = returnStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "ReturnStorageLocationName", nullable = true, length = 64)
-    public String getReturnStorageLocationName() {
-        return returnStorageLocationName;
-    }
-
-    public void setReturnStorageLocationName(String returnStorageLocationName) {
-        this.returnStorageLocationName = returnStorageLocationName;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -287,14 +223,12 @@ public class InspectionNoteItemView {
                 inspectionNoteId == that.inspectionNoteId &&
                 warehouseEntryItemId == that.warehouseEntryItemId &&
                 state == that.state &&
-                inspectionStorageLocationId == that.inspectionStorageLocationId &&
                 Objects.equals(amount, that.amount) &&
                 Objects.equals(unit, that.unit) &&
                 Objects.equals(unitAmount, that.unitAmount) &&
                 Objects.equals(returnAmount, that.returnAmount) &&
                 Objects.equals(returnUnit, that.returnUnit) &&
                 Objects.equals(returnUnitAmount, that.returnUnitAmount) &&
-                Objects.equals(returnStorageLocationId, that.returnStorageLocationId) &&
                 Objects.equals(comment, that.comment) &&
                 Objects.equals(personId, that.personId) &&
                 Objects.equals(inspectionNoteNo, that.inspectionNoteNo) &&
@@ -302,17 +236,13 @@ public class InspectionNoteItemView {
                 Objects.equals(materialName, that.materialName) &&
                 Objects.equals(supplierNo, that.supplierNo) &&
                 Objects.equals(supplierName, that.supplierName) &&
-                Objects.equals(personName, that.personName) &&
-                Objects.equals(inspectionStorageLocationNo, that.inspectionStorageLocationNo) &&
-                Objects.equals(inspectionStorageLocationName, that.inspectionStorageLocationName) &&
-                Objects.equals(returnStorageLocationNo, that.returnStorageLocationNo) &&
-                Objects.equals(returnStorageLocationName, that.returnStorageLocationName);
+                Objects.equals(personName, that.personName);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, inspectionNoteId, warehouseEntryItemId, state, amount, unit, unitAmount, inspectionStorageLocationId, returnAmount, returnUnit, returnUnitAmount, returnStorageLocationId, comment, personId, inspectionNoteNo, materialNo, materialName, supplierNo, supplierName, personName, inspectionStorageLocationNo, inspectionStorageLocationName, returnStorageLocationNo, returnStorageLocationName);
+        return Objects.hash(id, inspectionNoteId, warehouseEntryItemId, state, amount, unit, unitAmount, returnAmount, returnUnit, returnUnitAmount, comment, personId, inspectionNoteNo, materialNo, materialName, supplierNo, supplierName, personName);
     }
 
     @Basic
