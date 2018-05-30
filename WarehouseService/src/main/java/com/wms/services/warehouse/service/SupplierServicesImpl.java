@@ -189,7 +189,7 @@ public class SupplierServicesImpl implements SupplierServices{
             {throw new WMSServiceException("开票算延迟月不能小于0！");}}
             if(suppliers[i].getContractEndTime()!=null&&suppliers[i].getContractStartTime()!=null&&suppliers[i].getContractStartTime().compareTo(suppliers[i].getContractEndTime())>=0)
             {throw new WMSServiceException("合同截止时间必须在合同开始时间之后！");}
-            suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
+            //suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
         }
         Stream.of(suppliers).forEach(
                 (supplier)->{
