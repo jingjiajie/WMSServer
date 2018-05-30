@@ -20,6 +20,7 @@ import com.wms.services.warehouse.datastructures.TransferItem;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -160,9 +161,11 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 //找到对应供货对应库位的安全库存信息
                 if(transferArgs.isAutoCommit()&&transferOrderItem.getScheduledAmount().equals(new BigDecimal(0))) {
                     SafetyStockView[] safetyStockViews = safetyStockService.find(accountBook,
-                            new Condition().addCondition("targetStorageLocationId", transferOrderItem.getTargetStorageLocationId()).addCondition("supplyID", transferOrderItem.getSupplyId()));
+                            new Condition().addCondition("targetStorageLocationId", new Integer[]{transferOrderItem.getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{transferOrderItem.getSupplyId()}));
                     StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
-                            new Condition().addCondition("storageLocationID", transferOrderItem.getTargetStorageLocationId()).addCondition("supplyID", transferOrderItem.getSupplyId()));
+                            new Condition().addCondition("storageLocationId", new Integer[]{transferOrderItem.getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{transferOrderItem.getSupplyId()}));
+                    StockRecordView[] sourseStockRecordViews = stockRecordService.find(accountBook,
+                            new Condition().addCondition("storageLocationId", new Integer[]{transferOrderItem.getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{transferOrderItem.getSupplyId()}));
                     if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[0].getAmount()) == -1)//如果库存数量小于安全库存数量
                     {
                         transferOrderItem.setScheduledAmount(safetyStockViews[0].getAmount().subtract(stockRecordViews[0].getAmount()));//设置计划数量为与安全库存的差值
@@ -188,18 +191,20 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         SafetyStockView[] safetyStockViews=safetyStockService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{TransferAuto.getWarehouseId()}));
         if(safetyStockViews.length==0){throw new WMSServiceException("当前仓库无任何安全库存记录，无法自动添加移库作业单单条目！");}
         TransferArgs transferArgs=new TransferArgs();
-        TransferItem[] transferItems=null;
+        TransferItem transferItem=new TransferItem();
 
         TransferOrder transferOrder=new TransferOrder();
         transferOrder.setWarehouseId(TransferAuto.getWarehouseId());
         transferOrder.setCreatePersonId(TransferAuto.getPersonId());
 
         //新建列表存放条目
-        List<TransferOrderItem> transferOrderItemsList=null;
+        List<TransferOrderItem> transferOrderItemsList=new ArrayList();
         for(int i=0;i<safetyStockViews.length;i++){
             TransferOrderItem transferOrderItem=new TransferOrderItem();
             transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
             transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
+            transferOrderItem.setUnit(safetyStockViews[i].getUnit());
+            transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
             transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
             transferOrderItem.setScheduledAmount(new BigDecimal(0));
             transferOrderItemsList.add(transferOrderItem);
@@ -208,10 +213,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         transferOrderItems = (TransferOrderItem[]) Array.newInstance(TransferOrderItem.class,transferOrderItemsList.size());
         transferOrderItemsList.toArray(transferOrderItems);
 
-        transferItems[0].setTransferOrder(transferOrder);
-        transferItems[0].setTransferOrderItems(transferOrderItems);
+        transferItem.setTransferOrder(transferOrder);
+        transferItem.setTransferOrderItems(transferOrderItems);
 
-        transferArgs.setTransferItems(transferItems);
+        transferArgs.setTransferItems(new TransferItem[]{transferItem});
         transferArgs.setAutoCommit(true);
         this.transferPakage(accountBook, transferArgs);
 
