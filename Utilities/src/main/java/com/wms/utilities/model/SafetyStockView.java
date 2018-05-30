@@ -3,7 +3,6 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.math.BigDecimal;
 
 @Entity
@@ -28,8 +27,11 @@ public class SafetyStockView {
     private String targetStorageLocationName;
     private String sourceUnit;
     private BigDecimal sourceUnitAmount;
+    private Integer materialId;
+    private Integer supplierId;
+    private String materialProductLine;
 
-    @Id
+    @Basic
     @Column(name = "ID")
     public int getId() {
         return id;
@@ -229,6 +231,36 @@ public class SafetyStockView {
         this.sourceUnitAmount = sourceUnitAmount;
     }
 
+    @Basic
+    @Column(name = "MaterialID")
+    public Integer getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(Integer materialId) {
+        this.materialId = materialId;
+    }
+
+    @Basic
+    @Column(name = "SupplierID")
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    @Basic
+    @Column(name = "MaterialProductLine")
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -262,6 +294,10 @@ public class SafetyStockView {
         if (sourceUnit != null ? !sourceUnit.equals(that.sourceUnit) : that.sourceUnit != null) return false;
         if (sourceUnitAmount != null ? !sourceUnitAmount.equals(that.sourceUnitAmount) : that.sourceUnitAmount != null)
             return false;
+        if (materialId != null ? !materialId.equals(that.materialId) : that.materialId != null) return false;
+        if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
+        if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
+            return false;
 
         return true;
     }
@@ -288,6 +324,9 @@ public class SafetyStockView {
         result = 31 * result + (targetStorageLocationName != null ? targetStorageLocationName.hashCode() : 0);
         result = 31 * result + (sourceUnit != null ? sourceUnit.hashCode() : 0);
         result = 31 * result + (sourceUnitAmount != null ? sourceUnitAmount.hashCode() : 0);
+        result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
+        result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
+        result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
         return result;
     }
 }

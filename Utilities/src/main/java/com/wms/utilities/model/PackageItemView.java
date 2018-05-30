@@ -3,9 +3,7 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 public class PackageItemView {
@@ -20,10 +18,12 @@ public class PackageItemView {
     private String materialName;
     private String supplierNo;
     private String supplierName;
+    private Integer materialId;
+    private Integer supplierId;
+    private String materialProductLine;
 
-    @Id
     @Basic
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -33,7 +33,7 @@ public class PackageItemView {
     }
 
     @Basic
-    @Column(name = "PackageID", nullable = false)
+    @Column(name = "PackageID")
     public int getPackageId() {
         return packageId;
     }
@@ -43,7 +43,7 @@ public class PackageItemView {
     }
 
     @Basic
-    @Column(name = "SupplyID", nullable = false)
+    @Column(name = "SupplyID")
     public int getSupplyId() {
         return supplyId;
     }
@@ -53,7 +53,7 @@ public class PackageItemView {
     }
 
     @Basic
-    @Column(name = "DefaultDeliveryAmount", nullable = false, precision = 3)
+    @Column(name = "DefaultDeliveryAmount")
     public BigDecimal getDefaultDeliveryAmount() {
         return defaultDeliveryAmount;
     }
@@ -63,7 +63,7 @@ public class PackageItemView {
     }
 
     @Basic
-    @Column(name = "DefaultDeliveryUnit", nullable = false, length = 64)
+    @Column(name = "DefaultDeliveryUnit")
     public String getDefaultDeliveryUnit() {
         return defaultDeliveryUnit;
     }
@@ -73,7 +73,7 @@ public class PackageItemView {
     }
 
     @Basic
-    @Column(name = "DefaultDeliveryUnitAmount", nullable = false, precision = 3)
+    @Column(name = "DefaultDeliveryUnitAmount")
     public BigDecimal getDefaultDeliveryUnitAmount() {
         return defaultDeliveryUnitAmount;
     }
@@ -83,7 +83,7 @@ public class PackageItemView {
     }
 
     @Basic
-    @Column(name = "PackageName", nullable = true, length = 64)
+    @Column(name = "PackageName")
     public String getPackageName() {
         return packageName;
     }
@@ -93,7 +93,7 @@ public class PackageItemView {
     }
 
     @Basic
-    @Column(name = "MaterialNo", nullable = true, length = 64)
+    @Column(name = "MaterialNo")
     public String getMaterialNo() {
         return materialNo;
     }
@@ -103,7 +103,7 @@ public class PackageItemView {
     }
 
     @Basic
-    @Column(name = "MaterialName", nullable = true, length = 64)
+    @Column(name = "MaterialName")
     public String getMaterialName() {
         return materialName;
     }
@@ -113,7 +113,7 @@ public class PackageItemView {
     }
 
     @Basic
-    @Column(name = "SupplierNo", nullable = true, length = 64)
+    @Column(name = "SupplierNo")
     public String getSupplierNo() {
         return supplierNo;
     }
@@ -123,7 +123,7 @@ public class PackageItemView {
     }
 
     @Basic
-    @Column(name = "SupplierName", nullable = true, length = 64)
+    @Column(name = "SupplierName")
     public String getSupplierName() {
         return supplierName;
     }
@@ -132,27 +132,81 @@ public class PackageItemView {
         this.supplierName = supplierName;
     }
 
+    @Basic
+    @Column(name = "MaterialID")
+    public Integer getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(Integer materialId) {
+        this.materialId = materialId;
+    }
+
+    @Basic
+    @Column(name = "SupplierID")
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    @Basic
+    @Column(name = "MaterialProductLine")
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         PackageItemView that = (PackageItemView) o;
-        return id == that.id &&
-                packageId == that.packageId &&
-                supplyId == that.supplyId &&
-                Objects.equals(defaultDeliveryAmount, that.defaultDeliveryAmount) &&
-                Objects.equals(defaultDeliveryUnit, that.defaultDeliveryUnit) &&
-                Objects.equals(defaultDeliveryUnitAmount, that.defaultDeliveryUnitAmount) &&
-                Objects.equals(packageName, that.packageName) &&
-                Objects.equals(materialNo, that.materialNo) &&
-                Objects.equals(materialName, that.materialName) &&
-                Objects.equals(supplierNo, that.supplierNo) &&
-                Objects.equals(supplierName, that.supplierName);
+
+        if (id != that.id) return false;
+        if (packageId != that.packageId) return false;
+        if (supplyId != that.supplyId) return false;
+        if (defaultDeliveryAmount != null ? !defaultDeliveryAmount.equals(that.defaultDeliveryAmount) : that.defaultDeliveryAmount != null)
+            return false;
+        if (defaultDeliveryUnit != null ? !defaultDeliveryUnit.equals(that.defaultDeliveryUnit) : that.defaultDeliveryUnit != null)
+            return false;
+        if (defaultDeliveryUnitAmount != null ? !defaultDeliveryUnitAmount.equals(that.defaultDeliveryUnitAmount) : that.defaultDeliveryUnitAmount != null)
+            return false;
+        if (packageName != null ? !packageName.equals(that.packageName) : that.packageName != null) return false;
+        if (materialNo != null ? !materialNo.equals(that.materialNo) : that.materialNo != null) return false;
+        if (materialName != null ? !materialName.equals(that.materialName) : that.materialName != null) return false;
+        if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
+        if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
+        if (materialId != null ? !materialId.equals(that.materialId) : that.materialId != null) return false;
+        if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
+        if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, packageId, supplyId, defaultDeliveryAmount, defaultDeliveryUnit, defaultDeliveryUnitAmount, packageName, materialNo, materialName, supplierNo, supplierName);
+        int result = id;
+        result = 31 * result + packageId;
+        result = 31 * result + supplyId;
+        result = 31 * result + (defaultDeliveryAmount != null ? defaultDeliveryAmount.hashCode() : 0);
+        result = 31 * result + (defaultDeliveryUnit != null ? defaultDeliveryUnit.hashCode() : 0);
+        result = 31 * result + (defaultDeliveryUnitAmount != null ? defaultDeliveryUnitAmount.hashCode() : 0);
+        result = 31 * result + (packageName != null ? packageName.hashCode() : 0);
+        result = 31 * result + (materialNo != null ? materialNo.hashCode() : 0);
+        result = 31 * result + (materialName != null ? materialName.hashCode() : 0);
+        result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
+        result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
+        result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
+        result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
+        result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
+        return result;
     }
 }
