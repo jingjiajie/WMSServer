@@ -2,6 +2,7 @@ package com.wms.utilities.datastructures;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.exceptions.ConditionException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import javafx.application.ConditionalFeature;
@@ -9,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -316,7 +318,7 @@ public class Condition {
                         if (condValues.length == 0) {
                             throw new ConditionException("IN relation needs at least one value");
                         }
-                        hqlString.append(String.format(" AND %s IN ("));
+                        hqlString.append(String.format(" AND %s IN (",cond.getKey()));
                         for (int j = 0; j < condValues.length; j++) {
                             Object curValue = condValues[j];
                             if (j != 0) {
@@ -465,7 +467,7 @@ public class Condition {
         } catch (WMSServiceException e) {
             throw e;
         }catch (Exception e){
-            throw new WMSServiceException(String.format("\"%s\"不能转换为目标类型，请检查输入！"));
+            throw new WMSServiceException(String.format("\"%s\"不能转换为目标类型%s，请检查输入！",value.toString(),targetType.getName()));
         }
     }
 }

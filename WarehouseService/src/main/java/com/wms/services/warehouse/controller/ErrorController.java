@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class ErrorController {
     @ExceptionHandler
     public ResponseEntity<String> handleWMSServiceException(WMSServiceException ex){
+        //ex.printStackTrace();
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     public ResponseEntity<String> handleWMSDAOException(WMSDAOException ex){
+        ex.printStackTrace();
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
