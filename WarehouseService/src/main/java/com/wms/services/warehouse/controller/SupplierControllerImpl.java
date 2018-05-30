@@ -35,6 +35,14 @@ public class SupplierControllerImpl implements SupplierController {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/history_save",method = RequestMethod.POST)
+    public void updateHistorySave(@PathVariable("accountBook") String accountBook,
+                       @RequestBody Supplier[] suppliers) {
+        supplierServices.updateHistory(accountBook,suppliers);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
     public void remove(@PathVariable("accountBook") String accountBook,
                        @PathVariable("strIDs") String strIDs) {

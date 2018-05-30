@@ -189,6 +189,7 @@ public class SupplierServicesImpl implements SupplierServices{
             {throw new WMSServiceException("开票算延迟月不能小于0！");}}
             if(suppliers[i].getContractEndTime()!=null&&suppliers[i].getContractStartTime()!=null&&suppliers[i].getContractStartTime().compareTo(suppliers[i].getContractEndTime())>=0)
             {throw new WMSServiceException("合同截止时间必须在合同开始时间之后！");}
+            suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
         }
         Stream.of(suppliers).forEach(
                 (supplier)->{
@@ -224,7 +225,7 @@ public class SupplierServicesImpl implements SupplierServices{
                             new Condition().addCondition("id",new Integer[]{ supplier.getWarehouseId()})).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supplier.getWarehouseId()));
                     }
-                    /*
+
                     else  if(this.personService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{supplier.getCreatePersonId()})).length == 0)
                     {
@@ -232,9 +233,8 @@ public class SupplierServicesImpl implements SupplierServices{
                     }
                     if(supplier.getLastUpdatePersonId() != null && this.personService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{supplier.getLastUpdatePersonId()})).length == 0){
-                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supplier.getLastUpdatePersonId()));
-                    }
-                    */
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supplier.getLastUpdatePersonId())); }
+
                 }
         );
         List<Supplier> supplierList=new ArrayList();
@@ -279,8 +279,8 @@ public class SupplierServicesImpl implements SupplierServices{
         Supplier[] resultArray=null;
         resultArray = (Supplier[]) Array.newInstance(Supplier.class,supplierList.size());
         supplierList.toArray(resultArray);
-        this.update(accountBook, suppliers);
-        this.add(accountBook,resultArray);
+        supplierDAO.update(accountBook, suppliers);
+        supplierDAO.add(accountBook,resultArray);
     }
 @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
