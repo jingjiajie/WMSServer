@@ -3,6 +3,7 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 
 @Entity
@@ -22,6 +23,7 @@ public class PackageItemView {
     private Integer supplierId;
     private String materialProductLine;
 
+    @Id
     @Basic
     @Column(name = "ID")
     public int getId() {
