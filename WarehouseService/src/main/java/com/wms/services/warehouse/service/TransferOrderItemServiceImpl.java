@@ -157,6 +157,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                     this.stockRecordService.RealTransformStock(accountBook, transferStock);
                 }
             }
+            this.updateTransferOrder(accountBook,transferOrderId ,transferOrderItem.getPersonId());
         }));
         this.transferOrderItemDAO.update(accountBook, transferOrderItems);
     }
@@ -224,7 +225,6 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
     }
 
     private void updateTransferOrder( String accountBook,int transferOrderId ,int lastUpdatePersonId){
-        idChecker.check(TransferOrder.class,accountBook,transferOrderId,"移库单");
         //TODO idChecker.check(PersonService.class,accountBook,lastUpdatePersonId," 人员");
         TransferOrderView[] transferOrderViews= transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
         if(transferOrderViews.length==0){
