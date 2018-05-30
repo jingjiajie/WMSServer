@@ -55,14 +55,14 @@ public class SupplierServicesImpl implements SupplierServices{
 
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{supplier.getName()}).addCondition("isHistory",new BigDecimal[]{new BigDecimal(0)});
+            cond.addCondition("name",new String[]{supplier.getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商名："+supplier.getName()+"已经存在!");
             }
         });
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new BigDecimal[]{new BigDecimal(0)});
+            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商代号："+supplier.getNo()+"已经存在!");
             }
@@ -128,7 +128,7 @@ public class SupplierServicesImpl implements SupplierServices{
 
     for(int i=0;i<suppliers.length;i++){
         Condition cond = new Condition();
-        cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new BigDecimal[]{new BigDecimal(0)});
+        cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
         cond.addCondition("id",new Integer[]{suppliers[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
         if(supplierDAO.find(accountBook,cond).length > 0){
             throw new WMSServiceException("供应商名称重复："+suppliers[i].getName());
@@ -136,7 +136,7 @@ public class SupplierServicesImpl implements SupplierServices{
     }
     Stream.of(suppliers).forEach((supplier)->{
         Condition cond = new Condition();
-        cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new BigDecimal[]{new BigDecimal(0)});
+        cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
         cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
         if(supplierDAO.find(accountBook,cond).length > 0){
             throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
@@ -202,7 +202,7 @@ public class SupplierServicesImpl implements SupplierServices{
 
         for(int i=0;i<suppliers.length;i++){
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new BigDecimal[]{new BigDecimal(0)});
+            cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
             cond.addCondition("id",new Integer[]{suppliers[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商名称重复："+suppliers[i].getName());
@@ -210,7 +210,7 @@ public class SupplierServicesImpl implements SupplierServices{
         }
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new BigDecimal[]{new BigDecimal(0)});
+            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
             cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
@@ -240,7 +240,7 @@ public class SupplierServicesImpl implements SupplierServices{
         List<Supplier> supplierList=new ArrayList();
         //查出旧供应商
         for(int i=0;i<suppliers.length;i++){
-            SupplierView[] supplierViews=supplierDAO.find(accountBook,new Condition().addCondition("id",new Integer[]{suppliers[i].getId()}));
+            SupplierView[] supplierViews=supplierDAO.find(accountBook,new Condition().addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("id",new Integer[]{suppliers[i].getId()}));
             if(supplierViews.length!=1){throw new WMSServiceException(String.format("供应商不存在，请重新提交！(%d)",suppliers[i].getId()));}
             //新建一条存旧信息
             Supplier supplier=new Supplier();

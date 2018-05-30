@@ -1,6 +1,9 @@
 package com.wms.services.warehouse.service;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.StockTakingItemDelete;
+import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.dao.StockTakingOrderItemDAO;
@@ -17,6 +20,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.SessionFactory;
 
 @Service
 @Transactional
@@ -40,6 +44,8 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
     DeliveryOrderService deliveryOrderService;
     @Autowired
     SupplyService supplyService;
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Override
     public int[] add(String accountBook, StockTakingOrderItem[] stockTakingOrderItems) throws WMSServiceException {
@@ -118,28 +124,23 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         return this.stockTakingOrderItemDAO.find(accountBook, cond);
     }
 
+    //提供仓库即可
     @Override
     public void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd) {
         new Validator("人员").notnull().validate(stockTakingOrderItemAdd.getPersonId());
         idChecker.check(StockTakingOrderService.class, accountBook, stockTakingOrderItemAdd.getStockTakingOrderId(), "盘点单");
         idChecker.check(com.wms.services.warehouse.service.WarehouseService.class, accountBook, stockTakingOrderItemAdd.getWarehouseId(), " 仓库");
-        SupplyView[] supplyView=supplyService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{stockTakingOrderItemAdd.getWarehouseId()}));
-        if(supplyView.length==0){throw new WMSServiceException("当前仓库无任何供货记录，无法添加盘点单条目！");}
-       // Integer[] supplyIdAll=new Integer[supplyView.length];
-        for(int i=0;i<supplyView.length;i++){
-            StockTakingOrderItemAdd stockTakingOrderItemAddAll=new StockTakingOrderItemAdd();
-            stockTakingOrderItemAddAll.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
-            stockTakingOrderItemAddAll.setMode(stockTakingOrderItemAdd.getMode());
-            stockTakingOrderItemAddAll.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
-            stockTakingOrderItemAddAll.setCheckTime(stockTakingOrderItemAdd.getCheckTime());
-            stockTakingOrderItemAddAll.setPersonId(stockTakingOrderItemAdd.getPersonId());
-            stockTakingOrderItemAddAll.setSupplyId(supplyView[i].getId());
-            stockTakingOrderItemAddAll.setAddMode("all");
-            this.addStockTakingOrderItemSingle(accountBook,stockTakingOrderItemAddAll);
-        }
+        StockRecordFind stockRecordFind=new StockRecordFind();
+        stockRecordFind.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
+        stockRecordFind.setTimeEnd(stockTakingOrderItemAdd.getCheckTime());
+        stockTakingOrderItemAdd.setAddMode("all");
+        this.addItemToDatabase(accountBook,stockRecordService.findCheckWarehouse(accountBook,stockRecordFind),stockTakingOrderItemAdd,"详细数目");
+        this.addItemToDatabase(accountBook,stockRecordService.findCheckWarehouseAmountAll(accountBook,stockRecordFind),stockTakingOrderItemAdd,"仓库总数");
+        this.addItemToDatabase(accountBook,stockRecordService.findLoadingWarehouse(accountBook,stockRecordFind),stockTakingOrderItemAdd,"在途数量");
         this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 
+    //提供供货添加查出每条供货的库存记录
     @Override
     public void addStockTakingOrderItemSingle(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd) {
         new Validator("人员").notnull().validate(stockTakingOrderItemAdd.getPersonId());
@@ -150,79 +151,40 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         //判断供货和仓库id是不是相符
      if(supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockTakingOrderItemAdd.getSupplyId()}).addCondition("warehouseId",new Integer[]{stockTakingOrderItemAdd.getWarehouseId()})).length==0)
      {throw new WMSServiceException("输入的供货信息不属于输入的仓库！");}
-         BigDecimal warehouseAmount = new BigDecimal(0);
         StockRecordFind stockRecordFind=new StockRecordFind();
         stockRecordFind.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
         stockRecordFind.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
         stockRecordFind.setTimeEnd(stockTakingOrderItemAdd.getCheckTime());
-        stockRecordFind.setReturnMode("checkNew");
-        Object[]   stockRecordSource1=stockRecordService.findCheck(accountBook,stockRecordFind);
+        this.addItemToDatabase(accountBook,stockRecordService.findCheckSupply(accountBook,stockRecordFind),stockTakingOrderItemAdd,"详细数目");
+        this.addItemToDatabase(accountBook,stockRecordService.findCheckSupplyAmountAll(accountBook,stockRecordFind),stockTakingOrderItemAdd,"仓库总数");
+        this.addItemToDatabase(accountBook,stockRecordService.findLoadingWarehouse(accountBook,stockRecordFind),stockTakingOrderItemAdd,"在途数量");
+        this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
+    }
+
+        //接收盘点单条目数据并添加
+        private void addItemToDatabase(String accountBook,Object[] stockRecordSource1,StockTakingOrderItemAdd stockTakingOrderItemAdd,String comment)
+        {
         for(int i=0;i<stockRecordSource1.length;i++){
             Object[] objects=(Object[]) stockRecordSource1[i];
-
             StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();
             stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
             stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
-            stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
-            stockTakingOrderItem.setComment("详细数目");
-            stockTakingOrderItem.setUnit((String)objects[5]);
-            stockTakingOrderItem.setStorageLocationId((Integer) objects[2]);
-            stockTakingOrderItem.setUnitAmount((BigDecimal) objects[6]);
+            stockTakingOrderItem.setComment(comment);
+            if(comment.equals("详细数目")){
+                stockTakingOrderItem.setUnit((String)objects[5]);
+                stockTakingOrderItem.setStorageLocationId((Integer) objects[2]);
+                stockTakingOrderItem.setUnitAmount((BigDecimal) objects[6]);
+            }
+            else{stockTakingOrderItem.setUnit("个");
+                stockTakingOrderItem.setStorageLocationId(null);
+                stockTakingOrderItem.setUnitAmount(new BigDecimal(1));}
+            stockTakingOrderItem.setSupplyId((int) objects[3]);
             stockTakingOrderItem.setAmount((BigDecimal) objects[23]);
             stockTakingOrderItem.setRealAmount((BigDecimal) objects[23]);
             if(stockTakingOrderItemAdd.getMode()==0) {
                 stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
             }
-            warehouseAmount=warehouseAmount.add((BigDecimal) objects[23]);
         }
-        //添加总数量条目
-        StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();
-        stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
-        stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
-        stockTakingOrderItem.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
-        stockTakingOrderItem.setComment("仓库总数");
-        stockTakingOrderItem.setUnit("个");
-        stockTakingOrderItem.setStorageLocationId(null);
-        stockTakingOrderItem.setUnitAmount(new BigDecimal(1));
-        stockTakingOrderItem.setAmount(warehouseAmount);
-        stockTakingOrderItem.setRealAmount(warehouseAmount);
-        stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
-        //在途数量统计
-        DeliveryOrderItemView[] deliveryOrderItemViews = null;
-        deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition().addCondition("supplyId", new Integer[]{stockTakingOrderItemAdd.getSupplyId()}).
-                addCondition("loadingTime", stockTakingOrderItemAdd.getCheckTime(), ConditionItem.Relation.LESS_THAN).addCondition("state", 0, ConditionItem.Relation.NOT_EQUAL));
-        List<DeliveryOrderItemView> deliveryOrderItemViewList=new ArrayList<DeliveryOrderItemView>();
-        for(int i=0;i<deliveryOrderItemViews.length;i++)
-        {
-            int delivery=deliveryOrderItemViews[i].getDeliveryOrderId();
-            DeliveryOrderView[] deliveryOrderViews=deliveryOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{delivery}));
-            if(deliveryOrderViews.length!=1){
-                throw new WMSServiceException("没有查到相关出库单！");
-            }
-            if(deliveryOrderViews[0].getState()!=4)
-            {
-                deliveryOrderItemViewList.add(deliveryOrderItemViews[i]);
-            }
-        }
-        DeliveryOrderItemView[] deliveryOrderItemCheckTemp=new DeliveryOrderItemView[deliveryOrderItemViewList.size()];
-        DeliveryOrderItemView[] deliveryOrderItemCheck=deliveryOrderItemViewList.toArray(deliveryOrderItemCheckTemp);
-        BigDecimal wayAmount=BigDecimal.ZERO;
-        for(int i=0;i<deliveryOrderItemCheck.length;i++){
-            wayAmount.add(deliveryOrderItemCheck[i].getRealAmount());
-        }
-        StockTakingOrderItem stockTakingOrderItemWay = new StockTakingOrderItem();
-        stockTakingOrderItemWay.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
-        stockTakingOrderItemWay.setPersonId(stockTakingOrderItemAdd.getPersonId());
-        stockTakingOrderItemWay.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
-        stockTakingOrderItemWay.setComment("在途数量");
-        stockTakingOrderItemWay.setUnit("个");
-        stockTakingOrderItemWay.setStorageLocationId(null);
-        stockTakingOrderItemWay.setUnitAmount(new BigDecimal(1));
-        stockTakingOrderItemWay.setAmount(wayAmount);
-        stockTakingOrderItemWay.setRealAmount(wayAmount);
-        stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItemWay});
-        if(stockTakingOrderItemAdd.getAddMode().equals("single")){
-        this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());}
     }
 
     public void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem)

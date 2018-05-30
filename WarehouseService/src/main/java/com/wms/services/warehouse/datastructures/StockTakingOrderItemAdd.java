@@ -9,7 +9,7 @@ public class StockTakingOrderItemAdd {
         return stockTakingOrderId;
     }
 
-    public int getSupplyId() {
+    public Integer getSupplyId() {
         return supplyId;
     }
 
@@ -25,7 +25,7 @@ public class StockTakingOrderItemAdd {
         this.stockTakingOrderId = stockTakingOrderId;
     }
 
-    public void setSupplyId(int supplyId) {
+    public void setSupplyId(Integer supplyId) {
         this.supplyId = supplyId;
     }
 
@@ -36,9 +36,10 @@ public class StockTakingOrderItemAdd {
     public void setCheckTime(Timestamp checkTime) {
         this.checkTime = checkTime;
     }
+
    private int stockTakingOrderId;
 
-   private int supplyId;
+   private Integer supplyId;
 
     private Integer personId;
 
