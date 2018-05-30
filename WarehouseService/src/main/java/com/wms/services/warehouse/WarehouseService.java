@@ -33,17 +33,6 @@ public class WarehouseService {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
 
-        StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
-        SupplierServices supplierServices = applicationContext.getBean(SupplierServices.class);
-        Supplier supplier=new Supplier();
-        supplier.setId(1);
-        supplier.setNo("111123123131");
-        supplier.setName("adsdasdadsadadssa");
-        supplier.setWarehouseId(1);
-        supplier.setCreatePersonId(19);
-        supplierServices.updateHistory("WMS_Template",new Supplier[]{supplier});
-        /*
-        StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         GregorianCalendar gc = new GregorianCalendar();
@@ -52,8 +41,20 @@ public class WarehouseService {
         gc.set(Calendar.DAY_OF_MONTH, 5);//设置天
         date = gc.getTime();
         long a = date.getTime();
-        String timestamp = String.valueOf(date.getTime() / 1000);
         Timestamp time2 = new Timestamp(date.getTime());
+        StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
+        SupplierServices supplierServices = applicationContext.getBean(SupplierServices.class);
+        Supplier supplier=new Supplier();
+        supplier.setId(1);
+        supplier.setNo("111123123131");
+        supplier.setName("adsdasdadsadadssa");
+        supplier.setWarehouseId(1);
+        supplier.setCreatePersonId(19);
+        supplier.setCreateTime(time2);
+        supplierServices.updateHistory("WMS_Template",new Supplier[]{supplier});
+        /*
+        StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
+
 
         StorageLocation storageLocation=new StorageLocation();
         storageLocation.setEnabled(1);
