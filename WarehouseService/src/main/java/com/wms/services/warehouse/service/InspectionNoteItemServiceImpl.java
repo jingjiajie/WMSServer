@@ -50,25 +50,9 @@ public class InspectionNoteItemServiceImpl
             //更新入库单条目的送检数量
             WarehouseEntryItem warehouseEntryItem = ReflectHelper.createAndCopyFields(warehouseEntryItemView, WarehouseEntryItem.class);
             warehouseEntryItem.setInspectionAmount(warehouseEntryItem.getInspectionAmount().add(inspectAmount));
-            warehouseEntryItemService.update(accountBook, new WarehouseEntryItem[]{warehouseEntryItem});
+            warehouseEntryItem.setState(WarehouseEntryItemService.BEING_INSPECTED);
+            warehouseEntryItemService.update(accountBook, new WarehouseEntryItem[]{warehouseEntryItem},true);
 
-            //获取送检单
-            int inspectionNoteID = inspectionNoteItem.getInspectionNoteId();
-            InspectionNoteView[] foundInspectionNotes = this.inspectionNoteService.find(accountBook, new Condition().addCondition("id", inspectionNoteID));
-            if (foundInspectionNotes.length == 0) {
-                throw new WMSServiceException(String.format("送检单不存在，请重新提交！(%d)", inspectionNoteID));
-            }
-            InspectionNoteView inspectionNoteView = foundInspectionNotes[0];
-            //更新库存
-            TransferStock transferStock = new TransferStock();
-            transferStock.setAmount(inspectionNoteItem.getAmount()); //移库数量
-            transferStock.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId()); //源库位ID
-            transferStock.setNewStorageLocationId(inspectionNoteItem.getInspectionStorageLocationId()); //目标库位ID
-            transferStock.setRelatedOrderNo(inspectionNoteView.getNo());
-            transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
-            transferStock.setUnit(inspectionNoteItem.getUnit());
-            transferStock.setUnitAmount(inspectionNoteItem.getUnitAmount());
-            this.stockRecordService.RealTransformStock(accountBook, transferStock);
         });
 
         this.validateEntities(accountBook, objs);
@@ -83,8 +67,6 @@ public class InspectionNoteItemServiceImpl
             if (oriItemViews.length == 0) {
                 throw new WMSServiceException(String.format("送检单条目不存在，修改失败(%d)", inspectionNoteItem.getId()));
             }
-            InspectionNoteView[] foundInspectionNoteViews = this.inspectionNoteService.find(accountBook,new Condition().addCondition("id",inspectionNoteItem.getInspectionNoteId()));
-            InspectionNoteView inspectionNoteView = foundInspectionNoteViews[0];
             InspectionNoteItemView oriItemView = oriItemViews[0];//原对象
             if(oriItemView.getWarehouseEntryItemId() != inspectionNoteItem.getWarehouseEntryItemId()){
                 throw new WMSServiceException("不能修改送检单条目关联的收货单条目！");
@@ -92,58 +74,14 @@ public class InspectionNoteItemServiceImpl
             BigDecimal oriAmount = oriItemView.getAmount(); //原送检数量
             BigDecimal deltaAmount = inspectionNoteItem.getAmount().subtract(oriAmount); //变化送检数量
             if (deltaAmount.compareTo(BigDecimal.ZERO) != 0) {
-                throw new WMSServiceException("不能修改计划送检数量");
+                throw new WMSServiceException("不允许修改计划送检数量！");
+            }else if(!oriItemView.getUnit().equals(inspectionNoteItem.getUnit())){
+                throw new WMSServiceException("不允许修改送检单位！");
+            }else if(oriItemView.getUnitAmount().compareTo(inspectionNoteItem.getUnitAmount())!=0){
+                throw new WMSServiceException("不允许修改送检单位数量！");
             }
             WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getWarehouseEntryItemId()))[0];
             WarehouseEntryItem warehouseEntryItem = ReflectHelper.createAndCopyFields(warehouseEntryItemView, WarehouseEntryItem.class);
-
-//            //如果改变了送检数量，则把原送检数量移库回去。再把新送检数量移库过来
-//            if(deltaAmount.compareTo(BigDecimal.ZERO) != 0) {
-//                //加回入库单条目中
-//                WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getWarehouseEntryItemId()))[0];
-//                WarehouseEntryItem warehouseEntryItem = ReflectHelper.createAndCopyFields(warehouseEntryItemView, WarehouseEntryItem.class);
-//                warehouseEntryItem.setInspectionAmount(warehouseEntryItemView.getInspectionAmount().add(deltaAmount));
-//                warehouseEntryItemService.update(accountBook, new WarehouseEntryItem[]{warehouseEntryItem});
-//                //原库存移库回去
-//                TransferStock transferStockAgainst = new TransferStock();
-//                transferStockAgainst.setSourceStorageLocationId(oriItemView.getInspectionStorageLocationId());
-//                transferStockAgainst.setNewStorageLocationId(warehouseEntryItem.getStorageLocationId());
-//                transferStockAgainst.setUnit();
-//            }
-
-            //如果返回数量变化，反映到库存中
-            BigDecimal oriReturnAmount = oriItemView.getReturnAmount();
-            BigDecimal deltaReturnAmount = inspectionNoteItem.getAmount().subtract(oriReturnAmount);
-            if (deltaReturnAmount.compareTo(BigDecimal.ZERO) != 0
-                    || oriItemView.getUnit().compareTo(inspectionNoteItem.getUnit()) != 0
-                    || oriItemView.getUnitAmount().compareTo(inspectionNoteItem.getUnitAmount()) != 0) {
-                //原返回数量不是0的时候，冲销原返回数量
-                if (oriReturnAmount.compareTo(BigDecimal.ZERO) != 0) {
-                    TransferStock transferStock = new TransferStock();
-                    transferStock.setAmount(oriItemView.getReturnAmount());
-                    transferStock.setSourceStorageLocationId(oriItemView.getReturnStorageLocationId());
-                    transferStock.setNewStorageLocationId(oriItemView.getInspectionStorageLocationId());
-                    transferStock.setUnit(oriItemView.getReturnUnit());
-                    transferStock.setUnitAmount(oriItemView.getReturnUnitAmount());
-                    transferStock.setNewUnit(oriItemView.getUnit());
-                    transferStock.setNewUnitAmount(oriItemView.getUnitAmount());
-                    transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
-                    transferStock.setRelatedOrderNo(inspectionNoteView.getNo());
-                    this.stockRecordService.RealTransferStockUnitFlexible(accountBook,transferStock);
-                }
-                //移库新返回数量
-                TransferStock transferStock = new TransferStock();
-                transferStock.setAmount(inspectionNoteItem.getReturnAmount());
-                transferStock.setSourceStorageLocationId(inspectionNoteItem.getInspectionStorageLocationId());
-                transferStock.setNewStorageLocationId(inspectionNoteItem.getReturnStorageLocationId());
-                transferStock.setUnit(inspectionNoteItem.getUnit());
-                transferStock.setUnitAmount(inspectionNoteItem.getUnitAmount());
-                transferStock.setNewUnit(inspectionNoteItem.getReturnUnit());
-                transferStock.setNewUnitAmount(inspectionNoteItem.getReturnUnitAmount());
-                transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
-                transferStock.setRelatedOrderNo(inspectionNoteView.getNo());
-                this.stockRecordService.RealTransferStockUnitFlexible(accountBook,transferStock);
-            }
         }));
         this.inspectionNoteItemDAO.update(accountBook, objs);
     }
@@ -178,10 +116,6 @@ public class InspectionNoteItemServiceImpl
             //验证外键
             this.idChecker.check(InspectionNoteService.class, accountBook, inspectionNoteItem.getInspectionNoteId(), "关联送检单");
             this.idChecker.check(WarehouseEntryItemService.class, accountBook, inspectionNoteItem.getWarehouseEntryItemId(), "关联入库单条目");
-            this.idChecker.check(StorageLocationService.class, accountBook, inspectionNoteItem.getInspectionStorageLocationId(), "送检库位");
-            if (inspectionNoteItem.getReturnStorageLocationId() != null) {
-                this.idChecker.check(StorageLocationService.class, accountBook, inspectionNoteItem.getReturnStorageLocationId(), "返回库位");
-            }
             if (inspectionNoteItem.getPersonId() != null) {
                 this.idChecker.check(PersonService.class, accountBook, inspectionNoteItem.getPersonId(), "作业人员");
             }

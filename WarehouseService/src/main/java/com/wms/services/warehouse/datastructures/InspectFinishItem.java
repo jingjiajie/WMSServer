@@ -9,7 +9,6 @@ public class InspectFinishItem {
     private BigDecimal returnAmount;
     private String returnUnit;
     private BigDecimal returnUnitAmount;
-    private int returnStorageLocationId = -1;
     private int personId = -1;
 
     public int getPersonId() {
@@ -58,14 +57,6 @@ public class InspectFinishItem {
 
     public void setReturnUnitAmount(BigDecimal returnUnitAmount) {
         this.returnUnitAmount = returnUnitAmount;
-    }
-
-    public int getReturnStorageLocationId() {
-        return returnStorageLocationId;
-    }
-
-    public void setReturnStorageLocationId(int returnStorageLocationId) {
-        this.returnStorageLocationId = returnStorageLocationId;
     }
 
 }

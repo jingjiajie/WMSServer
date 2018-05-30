@@ -17,8 +17,13 @@ public class IDChecker {
     public <TService> IDChecker check(
             Class<TService> serviceClass,
             String accountBook,
-            int id,
+            Integer id,
             String hintName) throws WMSServiceException{
+
+        if(id == null) {
+            throw new WMSServiceException("请填写" + hintName + "！");
+        }
+
         Method methodFind;
         try {
             methodFind = serviceClass.getMethod("find", String.class, Condition.class);

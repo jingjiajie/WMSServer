@@ -1,6 +1,9 @@
 package com.wms.utilities.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -22,7 +25,6 @@ public class TransferOrderItem {
 
     @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }

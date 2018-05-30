@@ -13,11 +13,9 @@ public class InspectionNoteItem {
     private BigDecimal amount;
     private String unit;
     private BigDecimal unitAmount;
-    private int inspectionStorageLocationId;
     private BigDecimal returnAmount;
     private String returnUnit;
     private BigDecimal returnUnitAmount;
-    private Integer returnStorageLocationId;
     private String comment;
     private Integer personId;
 
@@ -92,15 +90,6 @@ public class InspectionNoteItem {
         this.unitAmount = unitAmount;
     }
 
-    @Basic
-    @Column(name = "InspectionStorageLocationID", nullable = false)
-    public int getInspectionStorageLocationId() {
-        return inspectionStorageLocationId;
-    }
-
-    public void setInspectionStorageLocationId(int inspectionStorageLocationId) {
-        this.inspectionStorageLocationId = inspectionStorageLocationId;
-    }
 
     @Basic
     @Column(name = "ReturnAmount", nullable = true, precision = 3)
@@ -132,15 +121,6 @@ public class InspectionNoteItem {
         this.returnUnitAmount = returnUnitAmount;
     }
 
-    @Basic
-    @Column(name = "ReturnStorageLocationID", nullable = true)
-    public Integer getReturnStorageLocationId() {
-        return returnStorageLocationId;
-    }
-
-    public void setReturnStorageLocationId(Integer returnStorageLocationId) {
-        this.returnStorageLocationId = returnStorageLocationId;
-    }
 
     @Basic
     @Column(name = "Comment", nullable = true, length = 64)
@@ -171,14 +151,12 @@ public class InspectionNoteItem {
                 inspectionNoteId == that.inspectionNoteId &&
                 warehouseEntryItemId == that.warehouseEntryItemId &&
                 state == that.state &&
-                inspectionStorageLocationId == that.inspectionStorageLocationId &&
                 Objects.equals(amount, that.amount) &&
                 Objects.equals(unit, that.unit) &&
                 Objects.equals(unitAmount, that.unitAmount) &&
                 Objects.equals(returnAmount, that.returnAmount) &&
                 Objects.equals(returnUnit, that.returnUnit) &&
                 Objects.equals(returnUnitAmount, that.returnUnitAmount) &&
-                Objects.equals(returnStorageLocationId, that.returnStorageLocationId) &&
                 Objects.equals(comment, that.comment) &&
                 Objects.equals(personId, that.personId);
     }
@@ -186,6 +164,6 @@ public class InspectionNoteItem {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, inspectionNoteId, warehouseEntryItemId, state, amount, unit, unitAmount, inspectionStorageLocationId, returnAmount, returnUnit, returnUnitAmount, returnStorageLocationId, comment, personId);
+        return Objects.hash(id, inspectionNoteId, warehouseEntryItemId, state, amount, unit, unitAmount, returnAmount, returnUnit, returnUnitAmount, comment, personId);
     }
 }

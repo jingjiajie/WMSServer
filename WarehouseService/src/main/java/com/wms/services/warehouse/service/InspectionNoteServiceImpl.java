@@ -3,21 +3,22 @@ package com.wms.services.warehouse.service;
 import com.wms.services.warehouse.dao.InspectionNoteDAO;
 import com.wms.services.warehouse.datastructures.InspectFinishArgs;
 import com.wms.services.warehouse.datastructures.InspectFinishItem;
+import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.InspectionNote;
-import com.wms.utilities.model.InspectionNoteItem;
-import com.wms.utilities.model.InspectionNoteItemView;
-import com.wms.utilities.model.InspectionNoteView;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -32,6 +33,10 @@ public class InspectionNoteServiceImpl
     IDChecker idChecker;
     @Autowired
     OrderNoGenerator orderNoGenerator;
+    @Autowired
+    WarehouseEntryItemService warehouseEntryItemService;
+    @Autowired
+    StockRecordService stockRecordService;
 
     private static final String PREFIX = "J";
 
@@ -77,13 +82,7 @@ public class InspectionNoteServiceImpl
         if(inspectFinishArgs.isAllFinish()){ //整单完成
             InspectionNoteItemView[] inspectionNoteItemViews = this.inspectionNoteItemService.find(accountBook,new Condition().addCondition("inspectionNoteId",inspectFinishArgs.getInspectionNoteId()));
             InspectionNoteItem[] inspectionNoteItems = ReflectHelper.createAndCopyFields(inspectionNoteItemViews,InspectionNoteItem.class);
-            //如果设置了返回库位，则将每个条目返回到相应库位上。否则遵循各个条目原设置。
-            if(inspectFinishArgs.getReturnStorageLocationId() != -1){
-                idChecker.check(StorageLocationService.class,accountBook,inspectFinishArgs.getReturnStorageLocationId(),"返回库位");
-                Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> {
-                    inspectionNoteItem.setReturnStorageLocationId(inspectFinishArgs.getReturnStorageLocationId());
-                });
-            }
+
             //如果设置了人员，将每个条目的人员设置为相应人员。否则遵循各个条目原设置
             if(inspectFinishArgs.getPersonId() != -1){
                 idChecker.check(PersonService.class,accountBook,inspectFinishArgs.getPersonId(),"作业人员");
@@ -95,11 +94,13 @@ public class InspectionNoteServiceImpl
                 inspectionNoteItem.setReturnUnit(inspectionNoteItem.getUnit());
                 inspectionNoteItem.setReturnUnitAmount(inspectionNoteItem.getUnitAmount());
             });
-            //如果是合格，则将每一项状态更新为合格，否则为不合格
+            //如果是合格，则将每一项状态更新为合格，否则为不合格，并调用入库单的收货功能。
             if(inspectFinishArgs.isQualified()){
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.STATE_QUALIFIED));
+                this.warehouseEntryItemService.receive(accountBook,Stream.of(inspectionNoteItems).mapToInt((item)->item.getWarehouseEntryItemId()).toArray());
             }else{
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.STATE_UNQUALIFIED));
+                this.warehouseEntryItemService.reject(accountBook,Stream.of(inspectionNoteItems).mapToInt((item)->item.getWarehouseEntryItemId()).toArray());
             }
             this.inspectionNoteItemService.update(accountBook, inspectionNoteItems);
         }else { //部分完成
@@ -111,17 +112,30 @@ public class InspectionNoteServiceImpl
                 inspectionNoteItem.setReturnAmount(inspectFinishItem.getReturnAmount());
                 inspectionNoteItem.setReturnUnit(inspectFinishItem.getReturnUnit());
                 inspectionNoteItem.setReturnUnitAmount(inspectFinishItem.getReturnAmount());
-                if(inspectFinishItem.getReturnStorageLocationId() != -1) {
-                    inspectionNoteItem.setReturnStorageLocationId(inspectFinishItem.getReturnStorageLocationId());
+                WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook,new Condition().addCondition("id",inspectionNoteItem.getWarehouseEntryItemId()))[0];
+                //如果返回数量小于送检数量，则将差值从入库单条目的库存里扣除，再收货。
+                BigDecimal unreturnedAmount = inspectionNoteItem.getAmount().subtract(inspectionNoteItem.getReturnAmount());
+                if(unreturnedAmount.compareTo(BigDecimal.ZERO) != 0){
+                    TransferStock transferStock = new TransferStock();
+                    transferStock.setAmount(unreturnedAmount);
+                    transferStock.setUnit(warehouseEntryItemView.getUnit());
+                    transferStock.setUnitAmount(warehouseEntryItemView.getUnitAmount());
+                    transferStock.setSupplyId(warehouseEntryItemView.getSupplyId());
+                    transferStock.setSourceStorageLocationId(warehouseEntryItemView.getStorageLocationId());
+                    transferStock.setRelatedOrderNo(warehouseEntryItemView.getWarehouseEntryNo());
+                    this.stockRecordService.addAmount(accountBook,transferStock);
                 }
                 if(inspectFinishItem.getPersonId() != -1){
                     inspectionNoteItem.setPersonId(inspectFinishItem.getPersonId());
                 }
                 if (inspectFinishItem.isQualified()) {
                     inspectionNoteItem.setState(InspectionNoteItemService.STATE_QUALIFIED);
+                    this.warehouseEntryItemService.receive(accountBook,new int[]{inspectionNoteItem.getWarehouseEntryItemId()});
                 } else {
                     inspectionNoteItem.setState(InspectionNoteItemService.STATE_UNQUALIFIED);
+                    this.warehouseEntryItemService.reject(accountBook,new int[]{inspectionNoteItem.getWarehouseEntryItemId()});
                 }
+
                 this.inspectionNoteItemService.update(accountBook, new InspectionNoteItem[]{inspectionNoteItem});
             });
         }
