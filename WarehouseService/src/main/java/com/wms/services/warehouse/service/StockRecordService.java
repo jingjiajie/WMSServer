@@ -17,7 +17,17 @@ public interface StockRecordService
 
     StockRecordView[] find(String accountBook, StockRecordFind stockRecordFind);
 
-    Object[] findCheck(String accountBook, StockRecordFind stockRecordFind);
+    Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind);
+
+    Object[] findCheckSupplyAmountAll(String accountBook, StockRecordFind stockRecordFind);
+
+    Object[] findCheckWarehouse(String accountBook, StockRecordFind stockRecordFind);
+
+    Object[] findCheckWarehouseAmountAll(String accountBook, StockRecordFind stockRecordFind);
+
+    Object[] findLoadingWarehouse(String accountBook, StockRecordFind stockRecordFind);
+
+    Object[] findLoadingSupply (String accountBook, StockRecordFind stockRecordFind);
 
     void modifyAvailableAmount(String accountBook, TransferStock transferStock);
 

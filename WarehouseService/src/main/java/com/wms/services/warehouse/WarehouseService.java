@@ -1,9 +1,6 @@
 package com.wms.services.warehouse;
 import com.wms.services.warehouse.datastructures.*;
 import com.wms.services.warehouse.service.*;
-import com.wms.utilities.IDChecker;
-import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.model.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -70,7 +67,7 @@ public class WarehouseService {
         stockRecordFind.setStorageLocationId(21);
         stockRecordFind.setWarehouseId(1);
         stockRecordFind.setUnitAmount(new BigDecimal(1));
-        Object[] stockRecordSource1 = stockRecordService.findCheck("WMS_Template", stockRecordFind);
+        Object[] stockRecordSource1 = stockRecordService.findCheckSupply("WMS_Template", stockRecordFind);
 
 
 
