@@ -41,6 +41,7 @@ public class SupplierServicesImpl implements SupplierServices{
             validator.notnull().validate(suppliers[i].getName());
             Validator validator1=new Validator("供应商代号");
             validator1.notnull().validate(suppliers[i].getNo());
+            new Validator("创建时间").validate(suppliers[i].getCreateTime());
             if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
@@ -54,14 +55,14 @@ public class SupplierServicesImpl implements SupplierServices{
 
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{supplier.getName()});
+            cond.addCondition("name",new String[]{supplier.getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商名："+supplier.getName()+"已经存在!");
             }
         });
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("no",new String[]{supplier.getNo()});
+            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商代号："+supplier.getNo()+"已经存在!");
             }
@@ -104,6 +105,7 @@ public class SupplierServicesImpl implements SupplierServices{
         validator.notnull().validate(suppliers[i].getName());
         Validator validator1=new Validator("供应商代号");
         validator1.notnull().validate(suppliers[i].getNo());
+        new Validator("创建时间").validate(suppliers[i].getCreateTime());
         if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
             throw new WMSServiceException("是否启用只能为0和1！");
         }
@@ -126,7 +128,7 @@ public class SupplierServicesImpl implements SupplierServices{
 
     for(int i=0;i<suppliers.length;i++){
         Condition cond = new Condition();
-        cond.addCondition("name",new String[]{suppliers[i].getName()});
+        cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
         cond.addCondition("id",new Integer[]{suppliers[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
         if(supplierDAO.find(accountBook,cond).length > 0){
             throw new WMSServiceException("供应商名称重复："+suppliers[i].getName());
@@ -134,7 +136,7 @@ public class SupplierServicesImpl implements SupplierServices{
     }
     Stream.of(suppliers).forEach((supplier)->{
         Condition cond = new Condition();
-        cond.addCondition("no",new String[]{supplier.getNo()});
+        cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
         cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
         if(supplierDAO.find(accountBook,cond).length > 0){
             throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
@@ -187,6 +189,7 @@ public class SupplierServicesImpl implements SupplierServices{
             {throw new WMSServiceException("开票算延迟月不能小于0！");}}
             if(suppliers[i].getContractEndTime()!=null&&suppliers[i].getContractStartTime()!=null&&suppliers[i].getContractStartTime().compareTo(suppliers[i].getContractEndTime())>=0)
             {throw new WMSServiceException("合同截止时间必须在合同开始时间之后！");}
+            //suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
         }
         Stream.of(suppliers).forEach(
                 (supplier)->{
@@ -200,7 +203,7 @@ public class SupplierServicesImpl implements SupplierServices{
 
         for(int i=0;i<suppliers.length;i++){
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{suppliers[i].getName()});
+            cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
             cond.addCondition("id",new Integer[]{suppliers[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商名称重复："+suppliers[i].getName());
@@ -208,7 +211,7 @@ public class SupplierServicesImpl implements SupplierServices{
         }
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("no",new String[]{supplier.getNo()});
+            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
             cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
@@ -222,7 +225,7 @@ public class SupplierServicesImpl implements SupplierServices{
                             new Condition().addCondition("id",new Integer[]{ supplier.getWarehouseId()})).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supplier.getWarehouseId()));
                     }
-                    /*
+
                     else  if(this.personService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{supplier.getCreatePersonId()})).length == 0)
                     {
@@ -230,52 +233,52 @@ public class SupplierServicesImpl implements SupplierServices{
                     }
                     if(supplier.getLastUpdatePersonId() != null && this.personService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{supplier.getLastUpdatePersonId()})).length == 0){
-                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supplier.getLastUpdatePersonId()));
-                    }
-                    */
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supplier.getLastUpdatePersonId())); }
+
                 }
         );
         List<Supplier> supplierList=new ArrayList();
         //查出旧供应商
         for(int i=0;i<suppliers.length;i++){
-            SupplierView[] supplierViews=supplierDAO.find(accountBook,new Condition().addCondition("id",new Integer[]{suppliers[i].getId()}));
+            SupplierView[] supplierViews=supplierDAO.find(accountBook,new Condition().addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("id",new Integer[]{suppliers[i].getId()}));
             if(supplierViews.length!=1){throw new WMSServiceException(String.format("供应商不存在，请重新提交！(%d)",suppliers[i].getId()));}
             //新建一条存旧信息
             Supplier supplier=new Supplier();
-            supplier.setCreateTime(suppliers[i].getCreateTime());
-            supplier.setLastUpdatePersonId(suppliers[i].getLastUpdatePersonId());
-            supplier.setAddress(suppliers[i].getAddress());
-            supplier.setBalanceDelayMonth(suppliers[i].getBalanceDelayMonth());
-            supplier.setBankAccount(suppliers[i].getBankAccount());
-            supplier.setBankName(suppliers[i].getBankName());
-            supplier.setBankNo(suppliers[i].getBankNo());
-            supplier.setContractNo(suppliers[i].getContractNo());
-            supplier.setContractEndTime(suppliers[i].getContractEndTime());
-            supplier.setContractStartTime(suppliers[i].getContractStartTime());
-            supplier.setContractState(suppliers[i].getContractState());
-            supplier.setFullName(suppliers[i].getFullName());
-            supplier.setInvoiceDelayMonth(suppliers[i].getInvoiceDelayMonth());
-            supplier.setEnabled(suppliers[i].getEnabled());
-            supplier.setLastUpdateTime(suppliers[i].getLastUpdateTime());
-            supplier.setCreatePersonId(suppliers[i].getCreatePersonId());
-            supplier.setContractStorageArea(suppliers[i].getContractStorageArea());
-            supplier.setEnterpriseCode(suppliers[i].getEnterpriseCode());
-            supplier.setFixedStorageCost(suppliers[i].getFixedStorageCost());
-            supplier.setName(suppliers[i].getName());
-            supplier.setNetArea(suppliers[i].getNetArea());
-            supplier.setNo(suppliers[i].getNo());
-            supplier.setRecipientName(suppliers[i].getRecipientName());
-            supplier.setTaxpayerNumber(suppliers[i].getTaxpayerNumber());
-            supplier.setTel(suppliers[i].getTel());
-            supplier.setZipCode(suppliers[i].getZipCode());
+            supplier.setCreateTime(supplierViews[0].getCreateTime());
+            supplier.setLastUpdatePersonId(supplierViews[0].getLastUpdatePersonId());
+            supplier.setAddress(supplierViews[0].getAddress());
+            supplier.setBalanceDelayMonth(supplierViews[0].getBalanceDelayMonth());
+            supplier.setBankAccount(supplierViews[0].getBankAccount());
+            supplier.setBankName(supplierViews[0].getBankName());
+            supplier.setBankNo(supplierViews[0].getBankNo());
+            supplier.setContractNo(supplierViews[0].getContractNo());
+            supplier.setContractEndTime(supplierViews[0].getContractEndTime());
+            supplier.setContractStartTime(supplierViews[0].getContractStartTime());
+            supplier.setContractState(supplierViews[0].getContractState());
+            supplier.setFullName(supplierViews[0].getFullName());
+            supplier.setInvoiceDelayMonth(supplierViews[0].getInvoiceDelayMonth());
+            supplier.setEnabled(supplierViews[0].getEnabled());
+            supplier.setLastUpdateTime(supplierViews[0].getLastUpdateTime());
+            supplier.setCreatePersonId(supplierViews[0].getCreatePersonId());
+            supplier.setContractStorageArea(supplierViews[0].getContractStorageArea());
+            supplier.setEnterpriseCode(supplierViews[0].getEnterpriseCode());
+            supplier.setFixedStorageCost(supplierViews[0].getFixedStorageCost());
+            supplier.setName(supplierViews[0].getName());
+            supplier.setNetArea(supplierViews[0].getNetArea());
+            supplier.setNo(supplierViews[0].getNo());
+            supplier.setRecipientName(supplierViews[0].getRecipientName());
+            supplier.setTaxpayerNumber(supplierViews[0].getTaxpayerNumber());
+            supplier.setTel(supplierViews[0].getTel());
+            supplier.setZipCode(supplierViews[0].getZipCode());
+            supplier.setWarehouseId(supplierViews[0].getWarehouseId());
             supplier.setIsHistory(1);
             supplier.setNewestSupplierId(suppliers[i].getId());
             supplierList.add(supplier);
         }
         //更新和保存
         Supplier[] resultArray=null;
-        resultArray = (Supplier[]) Array.newInstance(StockRecordView.class,supplierList.size());
-        //supplierList.toArray(resultArray);
+        resultArray = (Supplier[]) Array.newInstance(Supplier.class,supplierList.size());
+        supplierList.toArray(resultArray);
         supplierDAO.update(accountBook, suppliers);
         supplierDAO.add(accountBook,resultArray);
     }
