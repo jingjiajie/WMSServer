@@ -281,6 +281,9 @@ class NotEmptyValidatorCondition extends ValidatorCondition {
     private String key;
 
     public void validate(Object value) {
+        if(value==null){
+            throw new WMSServiceException(key+ "不能为空");
+        }
         try {
             actualValue = String.valueOf(value);
         } catch (Exception e) {

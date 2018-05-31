@@ -157,7 +157,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockRecordFind.setTimeEnd(stockTakingOrderItemAdd.getCheckTime());
         this.addItemToDatabase(accountBook,stockRecordService.findCheckSupply(accountBook,stockRecordFind),stockTakingOrderItemAdd,"详细数目");
         this.addItemToDatabase(accountBook,stockRecordService.findCheckSupplyAmountAll(accountBook,stockRecordFind),stockTakingOrderItemAdd,"仓库总数");
-        this.addItemToDatabase(accountBook,stockRecordService.findLoadingWarehouse(accountBook,stockRecordFind),stockTakingOrderItemAdd,"在途数量");
+        this.addItemToDatabase(accountBook,stockRecordService.findLoadingSupply(accountBook,stockRecordFind),stockTakingOrderItemAdd,"在途数量");
         this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 

@@ -49,19 +49,9 @@ public class WarehouseService {
         supplier.setCreatePersonId(19);
         supplier.setCreateTime(time2);
         //supplierServices.updateHistory("WMS_Template",new Supplier[]{supplier});
+
+
         /*
-        StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
-
-
-        StorageLocation storageLocation=new StorageLocation();
-        storageLocation.setEnabled(1);
-        storageLocation.setId(28);
-        storageLocation.setName("abcde123111");
-        storageLocation.setStorageAreaId(1);
-        storageLocation.setNo("1111");
-        storageLocationService.update("WMS_Template",new StorageLocation[]{storageLocation});
-
-*/
         Object[] o=new Object[]{5,0};
         stockRecordService.findBySql("WMS_Template","SELECT loading.* from DeliveryOrderItemView as loading \n" +
                 "WHERE loading.SupplyID =:a0 and (SELECT d.state from DeliveryOrderView as d WHERE d.id=loading.DeliveryOrderID)=:a1",o);
@@ -71,35 +61,21 @@ public class WarehouseService {
         stockRecordFind.setWarehouseId(1);
         stockRecordFind.setUnitAmount(new BigDecimal(1));
         Object[] stockRecordSource1 = stockRecordService.findCheckSupply("WMS_Template", stockRecordFind);
-
-
-
-        TransferStock transferStock=new TransferStock();
-        transferStock.setAmount((new BigDecimal(-100000)));
-        transferStock.setSourceStorageLocationId(39);
-        transferStock.setUnit("个");
-        transferStock.setUnitAmount(new BigDecimal(1));
-        transferStock.setSupplyId(5);
-        transferStock.setRelatedOrderNo("aaaaaaaaaaaa");
-        //transferStock.setInventoryDate(time2);
-        //transferStock.setRelatedOrderNo("123456");
-        //transferStock.setNewStorageLocationId(4);
-        //stockRecordService.RealTransformStock("WMS_Template",transferStock);
-        //stockRecordService.modifyAvailableAmount("WMS_Template",transferStock);
-        stockRecordService.addAmount("WMS_Template",transferStock);
-        StockTakingOrderItemService stockTakingOrderItemService = applicationContext.getBean(StockTakingOrderItemService.class);
-        StockTakingItemDelete stockTakingItemDelete=new StockTakingItemDelete();
-        stockTakingItemDelete.setDeleteIds(new int[]{1654});
-        stockTakingItemDelete.setPersonId(19);
-        stockTakingOrderItemService.remove("WMS_Template",stockTakingItemDelete);
-        /*
+        */
         StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
+        StockTakingOrderItemService stockTakingOrderServiceItem = applicationContext.getBean(StockTakingOrderItemService.class);
+        StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
+        stockTakingOrderItemAdd.setStockTakingOrderId(1);
+        stockTakingOrderItemAdd.setPersonId(19);
+        stockTakingOrderItemAdd.setSupplyId(5);
+        stockTakingOrderItemAdd.setWarehouseId(1);
+        stockTakingOrderServiceItem.addStockTakingOrderItemSingle("WMS_Template",stockTakingOrderItemAdd);
         StockTakingOrder stockTakingOrder=new StockTakingOrder();
         stockTakingOrder.setId(1);
         stockTakingOrder.setNo("5115111111");
         stockTakingOrder.setCreatePersonId(19);
         stockTakingOrder.setWarehouseId(-100);
         stockTakingOrder.setCreateTime(time2);
-        stockTakingOrderService.update("WMS_Template",new StockTakingOrder[]{stockTakingOrder});    }*/
+        stockTakingOrderService.update("WMS_Template",new StockTakingOrder[]{stockTakingOrder});
     }
 }
