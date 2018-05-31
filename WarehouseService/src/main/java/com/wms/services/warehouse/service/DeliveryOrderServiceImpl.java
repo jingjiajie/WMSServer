@@ -207,6 +207,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
             transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
             transferOrderItem.setScheduledAmount(new BigDecimal(0));
+            transferOrderItem.setPersonId(TransferAuto.getPersonId());
             transferOrderItemsList.add(transferOrderItem);
         }
         TransferOrderItem[] transferOrderItems=null;
