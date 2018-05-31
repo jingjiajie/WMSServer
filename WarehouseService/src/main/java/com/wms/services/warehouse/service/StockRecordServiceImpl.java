@@ -1011,10 +1011,15 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             throw new DatabaseNotFoundException(accountBook);
         }
         Query query=null;
-        String sqlCheckNew2="SELECT loading.* from DeliveryOrderItemView as loading n\" +\n" +
-                "                    \"WHERE loading.SupplyID in (SELECT su.id from SupplyView as su where su.warehouseId=:warehouseId) and (SELECT d.state from DeliveryOrderView as d WHERE d.id=loading.DeliveryOrderID)=0\n";
+        String sqlCheckNew2="SELECT loading.* from DeliveryOrderItemView as loading \n" +
+                "INNER JOIN \n" +
+                "(SELECT  a.id ,a.state from DeliveryOrderView as a) as a1\n" +
+                "on a1.id=loading.DeliveryOrderID and a1.state!=0 \n" +
+                "WHERE loading.SupplyID in (SELECT su.id from SupplyView as su where su.warehouseId=:warehouseId) and loading.loadingtime<:endTime";
         query=session.createNativeQuery(sqlCheckNew2);
+        query.setParameter("endTime",stockRecordFind.getTimeEnd());
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
+
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1031,9 +1036,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         }
         Query query=null;
         String sqlCheckNew2="SELECT loading.* from DeliveryOrderItemView as loading "+
-                "   WHERE loading.SupplyID =:supplyId and (SELECT d.state from DeliveryOrderView as d WHERE d.id=loading.DeliveryOrderID)=0";
+                "   WHERE loading.SupplyID =:supplyId and (SELECT d.state from DeliveryOrderView as d WHERE d.id=loading.DeliveryOrderID)=0 AND  loading.LoadingTime <:endTime";
         query=session.createNativeQuery(sqlCheckNew2);
         query.setParameter("supplyId",stockRecordFind.getWarehouseId());
+        query.setParameter("endTime",stockRecordFind.getTimeEnd());
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1053,7 +1059,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
-                "where s2.WarehouseID=:warehouseId and s2.SupplyID=:supplyId AND s2.TIME<:endTime" +
+                "where s2.WarehouseID=:warehouseId and s2.SupplyID=:supplyId "+
                 "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID) as s3\n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo)\n" +
                 "as s_all \n" +
@@ -1061,7 +1067,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         query=session.createNativeQuery(sqlCheckNew2);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
         query.setParameter("supplyId",stockRecordFind.getSupplyId());
-        query.setParameter("endTime",stockRecordFind.getTimeEnd());
+        //query.setParameter("end",stockRecordFind.getTimeEnd());TODO 时间还没设置
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
