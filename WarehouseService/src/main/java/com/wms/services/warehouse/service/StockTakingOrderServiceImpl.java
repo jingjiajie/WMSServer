@@ -29,10 +29,6 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
     private static final String NO_PREFIX = "P";
     @Override
     public int[] add(String accountBook,StockTakingOrder[] stockTakingOrders) throws WMSServiceException {
-        for(int i=0;i<stockTakingOrders.length;i++)
-        {
-           new Validator("盘点单号").notnull().notEmpty().validate(stockTakingOrders[i].getNo());
-        }
         for(int i=0;i<stockTakingOrders.length;i++){
             Condition cond = new Condition();
             cond.addCondition("no",new String[]{stockTakingOrders[i].getNo()});
