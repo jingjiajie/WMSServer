@@ -5,11 +5,14 @@ import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.datastructures.InspectFinishArgs;
 import com.wms.services.warehouse.service.InspectionNoteService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.InspectionNote;
 import com.wms.utilities.model.InspectionNoteView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/{accountBook}/inspection_note")
@@ -59,4 +62,15 @@ public class InspectionNoteControllerImpl implements InspectionNoteController {
                           @PathVariable("condStr") String condStr) {
         return this.inspectionNoteService.findCount(accountBook, Condition.fromJson(condStr));
     }
+
+    @Override
+    @RequestMapping(value = "/update_state", method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateState(
+            @PathVariable("accountBook") String accountBook,
+            @RequestBody List<Integer> ids) throws WMSServiceException {
+        this.inspectionNoteService.updateState(accountBook,ids);
+    }
+
+
 }

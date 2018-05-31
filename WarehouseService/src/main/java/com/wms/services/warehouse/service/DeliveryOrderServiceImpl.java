@@ -169,6 +169,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[0].getAmount()) == -1)//如果库存数量小于安全库存数量
                     {
                         transferOrderItem.setScheduledAmount(safetyStockViews[0].getAmount().subtract(stockRecordViews[0].getAmount()));//设置计划数量为与安全库存的差值
+                        transferOrderItem.setRealAmount(new BigDecimal(0));
+                        transferOrderItem.setComment("成功一件备货");
+                        transferOrderItem.setOperateTime(new Timestamp(System.currentTimeMillis()));
                         transferOrderItem.setTransferOrderId(newTransferOrderID);
                         transferOrderItem.setState(0);
                         this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
@@ -200,15 +203,19 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         //新建列表存放条目
         List<TransferOrderItem> transferOrderItemsList=new ArrayList();
         for(int i=0;i<safetyStockViews.length;i++){
-            TransferOrderItem transferOrderItem=new TransferOrderItem();
-            transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
-            transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
-            transferOrderItem.setUnit(safetyStockViews[i].getUnit());
-            transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
-            transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
-            transferOrderItem.setScheduledAmount(new BigDecimal(0));
-            transferOrderItem.setPersonId(TransferAuto.getPersonId());
-            transferOrderItemsList.add(transferOrderItem);
+            StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
+                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
+            if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[0].getAmount()) == -1) {
+                TransferOrderItem transferOrderItem = new TransferOrderItem();
+                transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
+                transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
+                transferOrderItem.setUnit(safetyStockViews[i].getUnit());
+                transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
+                transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
+                transferOrderItem.setScheduledAmount(new BigDecimal(0));
+                transferOrderItem.setPersonId(TransferAuto.getPersonId());
+                transferOrderItemsList.add(transferOrderItem);
+            }
         }
         TransferOrderItem[] transferOrderItems=null;
         transferOrderItems = (TransferOrderItem[]) Array.newInstance(TransferOrderItem.class,transferOrderItemsList.size());
