@@ -39,7 +39,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
             //获取移库单
             int transferOrderId = transferOrderItem.getTransferOrderId();
-            TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",transferOrderId));
+            TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
             if(foundTransferOrders.length == 0){
                 throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)",transferOrderId));
             }
@@ -67,12 +67,12 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         Stream.of(transferOrderItems).forEach((transferOrderItem -> {
 
             //找出对应的移库单和移库单条目
-            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", transferOrderItem.getId()));
+            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{transferOrderItem.getId()}));
             if (oriItemViews.length == 0) {
                 throw new WMSServiceException(String.format("移库单条目不存在，修改失败(%d)", transferOrderItem.getId()));
             }
             int transferOrderId = transferOrderItem.getTransferOrderId();
-            TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",transferOrderId));
+            TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
             if(foundTransferOrders.length == 0){
                 throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)",transferOrderId));
             }
@@ -167,7 +167,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         for (int id : ids) {
             //todo idChecker.check(this.getClass(), accountBook, id, "删除的移库单条目");
 
-            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", id));
+            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{id}));
             if (oriItemViews.length == 0) {
                 throw new WMSServiceException(String.format("移库单条目不存在，删除失败(%d)", id));
             }
