@@ -65,7 +65,7 @@ public class BaseDAOImpl<TTable, TView> {
 
         try {
             for (TTable obj : objs) {
-                session.update(obj);
+                session.merge(obj);
             }
         } catch (Throwable ex) {
             throw new WMSDAOException(ex.getMessage());
@@ -107,6 +107,38 @@ public class BaseDAOImpl<TTable, TView> {
             TView[] resultArray = (TView[]) Array.newInstance(this.classView,resultList.size());
             resultList.toArray(resultArray);
             return resultArray;
+        } catch (Throwable ex) {
+            throw new WMSDAOException(ex.getMessage());
+        }
+    }
+
+    public TTable[] findTable(String database, Condition cond) throws WMSDAOException {
+        Session session = sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + database + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(database);
+        }
+        try {
+            Query query = cond.createQuery(this.classTable, session);
+            List<TTable> resultList = query.list();
+            TTable[] resultArray = (TTable[]) Array.newInstance(this.classTable,resultList.size());
+            resultList.toArray(resultArray);
+            return resultArray;
+        } catch (Throwable ex) {
+            throw new WMSDAOException(ex.getMessage());
+        }
+    }
+
+    public TTable get(String database, int id) throws WMSDAOException {
+        Session session = sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + database + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(database);
+        }
+        try {
+            return session.get(classTable,id);
         } catch (Throwable ex) {
             throw new WMSDAOException(ex.getMessage());
         }

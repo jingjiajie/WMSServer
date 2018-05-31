@@ -87,4 +87,20 @@ public class SupplierControllerImpl implements SupplierController {
                           @PathVariable("condStr") String condStr){
         return this.supplierServices.findCount(accountBook, Condition.fromJson(condStr));
     }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}/new",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCountNew(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.supplierServices.findCountNew(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}/history",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCountHistory(@PathVariable("accountBook") String accountBook,
+                             @PathVariable("condStr") String condStr){
+        return this.supplierServices.findCountHistory(accountBook, Condition.fromJson(condStr));
+    }
 }

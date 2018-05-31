@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.StockTakingOrderDAO;
+import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -23,7 +24,9 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
     WarehouseService warehouseService;
     @Autowired
     PersonService personService;
-
+    @Autowired
+    OrderNoGenerator orderNoGenerator;
+    private static final String NO_PREFIX = "P";
     @Override
     public int[] add(String accountBook,StockTakingOrder[] stockTakingOrders) throws WMSServiceException {
         for(int i=0;i<stockTakingOrders.length;i++)
@@ -54,10 +57,22 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
                     }
                 }
         );
+        //生成创建时间
+        Stream.of(stockTakingOrders).forEach((stockTakingOrder) -> stockTakingOrder.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
+        //生成/检测单号
+        Stream.of(stockTakingOrders).forEach((stockTakingOrder) -> {
+            //如果单号留空则自动生成
+            if (stockTakingOrder.getNo() == null) {
+                stockTakingOrder.setNo(this.orderNoGenerator.generateNextNo(accountBook, StockTakingOrderServiceImpl.NO_PREFIX));
+            } else { //否则检查单号是否重复
+                Condition cond = new Condition();
+                cond.addCondition("no", new String[]{stockTakingOrder.getNo()});
+                if (stockTakingOrderDAO.find(accountBook, cond).length > 0) {
+                    throw new WMSServiceException("盘点单单号重复：" + stockTakingOrder.getNo());
+                }
+            }
+        });
 
-        for(int i=0;i<stockTakingOrders.length;i++){
-            stockTakingOrders[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
-        }
         return stockTakingOrderDAO.add(accountBook,stockTakingOrders);
     }
 

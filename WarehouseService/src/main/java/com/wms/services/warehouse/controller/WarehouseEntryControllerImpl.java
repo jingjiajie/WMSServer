@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.netflix.discovery.converters.Auto;
 import com.wms.services.warehouse.datastructures.InspectArgs;
 import com.wms.utilities.OrderNoGenerator;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.WarehouseEntry;
 import com.wms.utilities.model.WarehouseEntryView;
 import com.wms.services.warehouse.service.WarehouseEntryService;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/{accountBook}/warehouse_entry")
@@ -58,9 +61,18 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @Override
     @RequestMapping(value = "/inspect",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void inspect(@PathVariable("accountBook") String accountBook,
-                        @RequestBody InspectArgs inspectArgs){
-        this.warehouseEntryService.inspect(accountBook,inspectArgs);
+    public List<Integer> inspect(@PathVariable("accountBook") String accountBook,
+                                 @RequestBody InspectArgs inspectArgs){
+        return this.warehouseEntryService.inspect(accountBook,inspectArgs);
+    }
+
+    @Override
+    @RequestMapping(value = "/update_state",method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public void updateState(
+            @PathVariable("accountBook") String accountBook,
+            @RequestBody List<Integer> ids) throws WMSServiceException {
+        this.warehouseEntryService.updateState(accountBook,ids);
     }
 
     @Override

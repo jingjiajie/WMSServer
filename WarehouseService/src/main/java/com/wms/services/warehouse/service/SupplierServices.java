@@ -13,4 +13,6 @@ public interface SupplierServices {
     SupplierView[] findNew(String accountBook, Condition cond) throws WMSServiceException;
     SupplierView[] findHistory(String accountBook, Condition cond) throws WMSServiceException;
     long findCount(String database,Condition cond) throws WMSServiceException;
+    long findCountNew(String database,Condition cond) throws WMSServiceException;
+    long findCountHistory(String database,Condition cond) throws WMSServiceException;
 }

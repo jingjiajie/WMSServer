@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.List;
 
 public class ReflectHelper {
     public static <TSource, TTarget> void copyFields(TSource source, TTarget target) {
@@ -66,6 +67,14 @@ public class ReflectHelper {
         Integer[] result = new Integer[intArray.length];
         for (int i = 0; i < intArray.length; i++) {
             result[i] = intArray[i];
+        }
+        return result;
+    }
+
+    public static<T> T[] listToArray(List<T> list,Class<T> targetClass) {
+        T[] result = (T[]) Array.newInstance(targetClass, list.size());
+        for (int i = 0; i < result.length; i++) {
+            result[i] = list.get(i);
         }
         return result;
     }
