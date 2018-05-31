@@ -82,6 +82,10 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             {
                 throw new WMSServiceException("无法修改移库单条目的目标库位:(%d)，如要操作请新建移库单"+oriItemViews[0].getTargetStorageLocationId());
             }
+            if (transferOrderItem.getRealAmount().compareTo(oriItemViews[0].getRealAmount())<0)
+            {
+                throw new WMSServiceException("无法修改移库单条目的实际移动数量，如要操作请新建移库单");
+            }
             // TODO 如果计划移库数量发生变化,还是需要改进
             if (transferOrderItem.getScheduledAmount().equals(oriItemViews[0].getScheduledAmount()))//如果计划移库数量发生变化
             {
