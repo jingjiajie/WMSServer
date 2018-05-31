@@ -319,4 +319,16 @@ public class SupplierServicesImpl implements SupplierServices{
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.supplierDAO.findCount(database,cond);
     }
+
+    @Override
+    public long findCountNew(String database,Condition cond) throws WMSServiceException{
+        cond.addCondition("isHistory",new Integer[]{0});
+        return this.supplierDAO.findCount(database,cond);
+    }
+
+    @Override
+    public long findCountHistory(String database,Condition cond) throws WMSServiceException{
+        cond.addCondition("isHistory",new Integer[]{1});
+        return this.supplierDAO.findCount(database,cond);
+    }
 }

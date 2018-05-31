@@ -12,4 +12,6 @@ public interface SupplierController {
     ResponseEntity<SupplierView[]> findNew(String accountBook, String condStr);
     ResponseEntity<SupplierView[]> findHistory(String accountBook, String condStr);
     long findCount(String accountBook,String condStr);
+    long findCountNew(String accountBook,String condStr);
+    long findCountHistory(String accountBook,String condStr);
 }
