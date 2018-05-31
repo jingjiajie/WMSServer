@@ -285,7 +285,7 @@ public class SupplierServicesImpl implements SupplierServices{
 @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
     for (int id : ids) {
-        if (supplierDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
+        if (supplierDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{id})).length == 0) {
             throw new WMSServiceException(String.format("删除供应商不存在，请重新查询！(%d)", id));
         }
     }
@@ -317,6 +317,18 @@ public class SupplierServicesImpl implements SupplierServices{
 
     @Override
     public long findCount(String database,Condition cond) throws WMSServiceException{
+        return this.supplierDAO.findCount(database,cond);
+    }
+
+    @Override
+    public long findCountNew(String database,Condition cond) throws WMSServiceException{
+        cond.addCondition("isHistory",new Integer[]{0});
+        return this.supplierDAO.findCount(database,cond);
+    }
+
+    @Override
+    public long findCountHistory(String database,Condition cond) throws WMSServiceException{
+        cond.addCondition("isHistory",new Integer[]{1});
         return this.supplierDAO.findCount(database,cond);
     }
 }

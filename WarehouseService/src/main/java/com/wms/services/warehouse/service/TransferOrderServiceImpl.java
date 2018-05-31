@@ -159,10 +159,11 @@ public class TransferOrderServiceImpl implements TransferOrderService{
 
             idChecker.check(WarehouseService.class,accountBook,transferOrder.getWarehouseId(),"仓库");
                     //.check(PersonService.class,accountBook,transferOrder.getCreatePersonId(),"创建人员");
-            if (transferOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-                    new Condition().addCondition("id", transferOrder.getLastUpdatePersonId())).length == 0) {
-                throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)", transferOrder.getLastUpdatePersonId()));
-            }
+            //TODO
+            // if (transferOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+            //        new Condition().addCondition("id", transferOrder.getLastUpdatePersonId())).length == 0) {
+            //    throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)", transferOrder.getLastUpdatePersonId()));
+            //}
         }));
 
     }

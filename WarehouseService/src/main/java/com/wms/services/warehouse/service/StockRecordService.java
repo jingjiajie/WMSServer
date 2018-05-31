@@ -29,6 +29,8 @@ public interface StockRecordService
 
     Object[] findLoadingSupply (String accountBook, StockRecordFind stockRecordFind);
 
+    Object[] findBySql(String accountBook, String sql, Object[] o);
+
     void modifyAvailableAmount(String accountBook, TransferStock transferStock);
 
     void RealTransferStockUnitFlexible(String accountBook, TransferStock transferStock);

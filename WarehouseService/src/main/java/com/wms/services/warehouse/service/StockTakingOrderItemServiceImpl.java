@@ -157,7 +157,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockRecordFind.setTimeEnd(stockTakingOrderItemAdd.getCheckTime());
         this.addItemToDatabase(accountBook,stockRecordService.findCheckSupply(accountBook,stockRecordFind),stockTakingOrderItemAdd,"详细数目");
         this.addItemToDatabase(accountBook,stockRecordService.findCheckSupplyAmountAll(accountBook,stockRecordFind),stockTakingOrderItemAdd,"仓库总数");
-        this.addItemToDatabase(accountBook,stockRecordService.findLoadingWarehouse(accountBook,stockRecordFind),stockTakingOrderItemAdd,"在途数量");
+        this.addItemToDatabase(accountBook,stockRecordService.findLoadingSupply(accountBook,stockRecordFind),stockTakingOrderItemAdd,"在途数量");
         this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 
@@ -165,25 +165,30 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         private void addItemToDatabase(String accountBook,Object[] stockRecordSource1,StockTakingOrderItemAdd stockTakingOrderItemAdd,String comment)
         {
         for(int i=0;i<stockRecordSource1.length;i++){
-            Object[] objects=(Object[]) stockRecordSource1[i];
+            Object[] objects = (Object[]) stockRecordSource1[i];
             StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();
             stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
             stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
             stockTakingOrderItem.setComment(comment);
-            if(comment.equals("详细数目")){
-                stockTakingOrderItem.setUnit((String)objects[5]);
-                stockTakingOrderItem.setStorageLocationId((Integer) objects[2]);
-                stockTakingOrderItem.setUnitAmount((BigDecimal) objects[6]);
-            }
-            else{stockTakingOrderItem.setUnit("个");
-                stockTakingOrderItem.setStorageLocationId(null);
-                stockTakingOrderItem.setUnitAmount(new BigDecimal(1));}
-            stockTakingOrderItem.setSupplyId((int) objects[3]);
-            stockTakingOrderItem.setAmount((BigDecimal) objects[23]);
-            stockTakingOrderItem.setRealAmount((BigDecimal) objects[23]);
-            if(stockTakingOrderItemAdd.getMode()==0) {
-                stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
-            }
+
+                if (comment.equals("详细数目")) {
+                    stockTakingOrderItem.setUnit((String) objects[5]);
+                    stockTakingOrderItem.setStorageLocationId((Integer) objects[2]);
+                    stockTakingOrderItem.setUnitAmount((BigDecimal) objects[6]);
+                } else {
+                    stockTakingOrderItem.setUnit("个");
+                    stockTakingOrderItem.setStorageLocationId(null);
+                    stockTakingOrderItem.setUnitAmount(new BigDecimal(1));
+                }
+            if(comment.equals("在途数量")) {stockTakingOrderItem.setSupplyId((int) objects[2]);
+                stockTakingOrderItem.setAmount((BigDecimal) objects[6]);
+                stockTakingOrderItem.setRealAmount((BigDecimal) objects[6]);}
+            else{
+                stockTakingOrderItem.setSupplyId((int) objects[3]);
+                stockTakingOrderItem.setAmount((BigDecimal) objects[23]);
+                stockTakingOrderItem.setRealAmount((BigDecimal) objects[23]);}
+            stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
+
         }
     }
 

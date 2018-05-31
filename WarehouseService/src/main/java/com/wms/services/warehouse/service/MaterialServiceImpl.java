@@ -68,11 +68,11 @@ public class MaterialServiceImpl implements MaterialService {
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
 
         try {
-            Stream.of(ids).forEach((curid)->{
-                if(materialDAO.find(accountBook,new Condition().addCondition("id",curid)).length == 0){
-                    throw new WMSServiceException("物料id："+curid+"对应条目信息不存在无法删除!");
+            for (int id : ids) {
+                if (materialDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{id})).length == 0) {
+                    throw new WMSServiceException(String.format("删除物料不存在，请重新查询！(%d)", id));
                 }
-            });
+            }
 
             materialDAO.remove(accountBook, ids);
         }

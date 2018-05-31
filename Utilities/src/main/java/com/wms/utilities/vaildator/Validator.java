@@ -31,6 +31,14 @@ String key;
         return  this;
     }
 
+    public Validator greaterThan(Object greaterThan){
+        GreaterThanValidatorCondition greaterThanValidatorCondition=new GreaterThanValidatorCondition();
+        greaterThanValidatorCondition.setKey(key);
+        greaterThanValidatorCondition.dateDeliver(greaterThan);
+        conditions.add(greaterThanValidatorCondition);
+        return  this;
+    }
+
     public Validator max(Object max){
         MaxValidatorCondition maxValidatorCondition=new MaxValidatorCondition();
         maxValidatorCondition.setKey(key);
@@ -96,6 +104,38 @@ class MinValidatorCondition extends ValidatorCondition {
         }
         if (actualValue < min) {
             throw new WMSServiceException(key+ "的值小于最低值");
+        }
+    }
+    public String getKey() {
+        return key;
+    }
+    public void setKey(String key) {
+        this.key = key;
+    }
+}
+class GreaterThanValidatorCondition extends ValidatorCondition {
+    private double greaterThan;
+    private double actualValue;
+    private String key;
+
+    public void dateDeliver(Object min1) {
+        try {
+            greaterThan = Double.parseDouble(String.valueOf(min1));
+        } catch (NumberFormatException e) {
+        }
+    }
+
+    public void validate(Object value) {
+        if (value == null) {
+            throw new WMSServiceException("请填写"+key);
+        }
+        try {
+            actualValue =  Double.parseDouble((String.valueOf(value)));
+        } catch (NumberFormatException e) {
+            throw new WMSServiceException(key+"检查的数据无法转换为数字类型");
+        }
+        if (actualValue <= greaterThan) {
+            throw new WMSServiceException(key+ "的值不能小于或等于最低值");
         }
     }
     public String getKey() {
@@ -241,6 +281,9 @@ class NotEmptyValidatorCondition extends ValidatorCondition {
     private String key;
 
     public void validate(Object value) {
+        if(value==null){
+            throw new WMSServiceException(key+ "不能为空");
+        }
         try {
             actualValue = String.valueOf(value);
         } catch (Exception e) {
