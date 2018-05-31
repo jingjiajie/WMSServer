@@ -39,6 +39,7 @@ public class WarehouseService {
         date = gc.getTime();
         long a = date.getTime();
         Timestamp time2 = new Timestamp(date.getTime());
+        /*
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
         SupplierServices supplierServices = applicationContext.getBean(SupplierServices.class);
         Supplier supplier=new Supplier();
@@ -49,7 +50,12 @@ public class WarehouseService {
         supplier.setCreatePersonId(19);
         supplier.setCreateTime(time2);
         //supplierServices.updateHistory("WMS_Template",new Supplier[]{supplier});
-
+        */
+        DeliveryOrderService deliveryOrderService = applicationContext.getBean(DeliveryOrderService.class);
+        TransferAuto transferAuto=new TransferAuto();
+        transferAuto.setPersonId(19);
+        transferAuto.setWarehouseId(1);
+        deliveryOrderService.transferAuto("WMS_Template",transferAuto);
 
         /*
         Object[] o=new Object[]{5,0};
@@ -62,6 +68,8 @@ public class WarehouseService {
         stockRecordFind.setUnitAmount(new BigDecimal(1));
         Object[] stockRecordSource1 = stockRecordService.findCheckSupply("WMS_Template", stockRecordFind);
         */
+
+        /*
         StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
         StockTakingOrderItemService stockTakingOrderServiceItem = applicationContext.getBean(StockTakingOrderItemService.class);
         StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
@@ -77,5 +85,6 @@ public class WarehouseService {
         stockTakingOrder.setWarehouseId(-100);
         stockTakingOrder.setCreateTime(time2);
         stockTakingOrderService.update("WMS_Template",new StockTakingOrder[]{stockTakingOrder});
+        */
     }
 }

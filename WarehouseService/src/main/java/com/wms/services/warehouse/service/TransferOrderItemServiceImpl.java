@@ -53,12 +53,11 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             transferStock.setUnitAmount(transferOrderItem.getUnitAmount());
             //transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
             this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
-
             transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
-            this.updateTransferOrder(accountBook,transferOrderId ,transferOrderItem.getPersonId());
+
         });
         this.validateEntities(accountBook, transferOrderItems);
-
+        this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
         return this.transferOrderItemDAO.add(accountBook, transferOrderItems);
     }
 
@@ -157,15 +156,16 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                     this.stockRecordService.RealTransformStock(accountBook, transferStock);
                 }
             }
-            this.updateTransferOrder(accountBook,transferOrderId ,transferOrderItem.getPersonId());
+
         }));
+        this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
         this.transferOrderItemDAO.update(accountBook, transferOrderItems);
     }
 
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
         for (int id : ids) {
-            idChecker.check(this.getClass(), accountBook, id, "删除的移库单条目");
+            //todo idChecker.check(this.getClass(), accountBook, id, "删除的移库单条目");
 
             TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", id));
             if (oriItemViews.length == 0) {
