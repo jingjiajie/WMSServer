@@ -112,6 +112,20 @@ public class BaseDAOImpl<TTable, TView> {
         }
     }
 
+    public TTable get(String database, int id) throws WMSDAOException {
+        Session session = sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + database + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(database);
+        }
+        try {
+            return session.get(classTable,id);
+        } catch (Throwable ex) {
+            throw new WMSDAOException(ex.getMessage());
+        }
+    }
+
     public long findCount(String database, Condition cond) throws WMSDAOException {
         Session session = sessionFactory.getCurrentSession();
         try {

@@ -14,6 +14,8 @@ public interface WarehouseEntryItemService
     void reject(String accountBook, int[] ids) throws WMSServiceException;
     void receive(String accountBook, int[] ids) throws WMSServiceException;
 
+    WarehouseEntryItem get(String accountBook,int id) throws WMSServiceException;
+
     int WAIT_FOR_PUT_IN_STORAGE = 0;//待入库
     int BEING_INSPECTED = 1;//送检中
     int QUALIFIED = 2; //正品入库

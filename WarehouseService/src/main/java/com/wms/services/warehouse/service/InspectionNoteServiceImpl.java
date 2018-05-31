@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -33,6 +33,8 @@ public class InspectionNoteServiceImpl
     IDChecker idChecker;
     @Autowired
     OrderNoGenerator orderNoGenerator;
+    @Autowired
+    WarehouseEntryService warehouseEntryService;
     @Autowired
     WarehouseEntryItemService warehouseEntryItemService;
     @Autowired
@@ -80,6 +82,14 @@ public class InspectionNoteServiceImpl
     @Override
     public void inspectFinish(String accountBook, InspectFinishArgs inspectFinishArgs) throws WMSServiceException{
         if(inspectFinishArgs.isAllFinish()){ //整单完成
+            //this.idChecker.check(InspectionNoteService.class,accountBook,inspectFinishArgs.getInspectionNoteId(),"送检单");
+            InspectionNote inspectionNote = this.inspectionNoteDAO.get(accountBook,inspectFinishArgs.getInspectionNoteId());
+            if(inspectionNote.getState() == ALL_INSPECTED){
+                throw new WMSServiceException("送检单 "+inspectionNote.getNo()+" 已送检完成，请不要重复操作！");
+            }
+            inspectionNote.setState(ALL_INSPECTED);
+            inspectionNote.setLastUpdatePersonId(inspectFinishArgs.getPersonId());
+            this.update(accountBook,new InspectionNote[]{inspectionNote});
             InspectionNoteItemView[] inspectionNoteItemViews = this.inspectionNoteItemService.find(accountBook,new Condition().addCondition("inspectionNoteId",inspectFinishArgs.getInspectionNoteId()));
             InspectionNoteItem[] inspectionNoteItems = ReflectHelper.createAndCopyFields(inspectionNoteItemViews,InspectionNoteItem.class);
 
@@ -96,10 +106,10 @@ public class InspectionNoteServiceImpl
             });
             //如果是合格，则将每一项状态更新为合格，否则为不合格，并调用入库单的收货功能。
             if(inspectFinishArgs.isQualified()){
-                Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.STATE_QUALIFIED));
+                Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.QUALIFIED));
                 this.warehouseEntryItemService.receive(accountBook,Stream.of(inspectionNoteItems).mapToInt((item)->item.getWarehouseEntryItemId()).toArray());
             }else{
-                Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.STATE_UNQUALIFIED));
+                Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.UNQUALIFIED));
                 this.warehouseEntryItemService.reject(accountBook,Stream.of(inspectionNoteItems).mapToInt((item)->item.getWarehouseEntryItemId()).toArray());
             }
             this.inspectionNoteItemService.update(accountBook, inspectionNoteItems);
@@ -129,10 +139,10 @@ public class InspectionNoteServiceImpl
                     inspectionNoteItem.setPersonId(inspectFinishItem.getPersonId());
                 }
                 if (inspectFinishItem.isQualified()) {
-                    inspectionNoteItem.setState(InspectionNoteItemService.STATE_QUALIFIED);
+                    inspectionNoteItem.setState(InspectionNoteItemService.QUALIFIED);
                     this.warehouseEntryItemService.receive(accountBook,new int[]{inspectionNoteItem.getWarehouseEntryItemId()});
                 } else {
-                    inspectionNoteItem.setState(InspectionNoteItemService.STATE_UNQUALIFIED);
+                    inspectionNoteItem.setState(InspectionNoteItemService.UNQUALIFIED);
                     this.warehouseEntryItemService.reject(accountBook,new int[]{inspectionNoteItem.getWarehouseEntryItemId()});
                 }
 
@@ -159,5 +169,28 @@ public class InspectionNoteServiceImpl
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
         return this.inspectionNoteDAO.findCount(accountBook,cond);
+    }
+
+    @Override
+    public void updateState(String accountBook, List<Integer> ids) {
+        List<InspectionNote> inspectionNotesToUpdate = new ArrayList<>();
+        for (int id : ids) {
+            this.idChecker.check(this.getClass(), accountBook, id, "送检单");
+            InspectionNote inspectionNote = ReflectHelper.createAndCopyFields(this.find(accountBook, new Condition().addCondition("id", id))[0],InspectionNote.class);
+            inspectionNotesToUpdate.add(inspectionNote);
+            InspectionNoteItemView[] inspectionNoteItemViews = this.inspectionNoteItemService.find(accountBook, new Condition().addCondition("inspectionNoteId", id));
+            long total = inspectionNoteItemViews.length;
+            long notInspectedCount = Stream.of(inspectionNoteItemViews).filter((item)->item.getState()==InspectionNoteItemService.NOT_INSPECTED).count();
+            long qualifiedCount = Stream.of(inspectionNoteItemViews).filter((item)->item.getState()==InspectionNoteItemService.QUALIFIED).count();
+            long unqualifiedCount = Stream.of(inspectionNoteItemViews).filter((item)->item.getState()==InspectionNoteItemService.UNQUALIFIED).count();
+            if(notInspectedCount == total) {
+                inspectionNote.setState(NOT_INSPECTED);
+            }else if(qualifiedCount+unqualifiedCount == total){
+                inspectionNote.setState(ALL_INSPECTED);
+            }else {
+                inspectionNote.setState(PART_INSPECTED);
+            }
+        }
+        this.update(accountBook,ReflectHelper.listToArray(inspectionNotesToUpdate,InspectionNote.class));
     }
 }

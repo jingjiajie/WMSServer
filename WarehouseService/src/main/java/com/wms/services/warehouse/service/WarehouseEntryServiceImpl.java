@@ -12,12 +12,17 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.vaildator.Validator;
+import org.hibernate.validator.internal.engine.messageinterpolation.parser.BeginState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.WebAppRootListener;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -138,25 +143,69 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         return warehouseEntryDAO.find(accountBook, cond);
     }
 
-    public void inspect(String accountBook, InspectArgs inspectArgs) {
+    @Override
+    public List<Integer> inspect(String accountBook, InspectArgs inspectArgs) {
+        List<Integer> inspectionNoteIDs = new ArrayList<>();
+        List<InspectionNoteItem> inspectionNoteItemsToAdd = new ArrayList<>();
+        List<WarehouseEntry> warehouseEntriesToUpdate = new ArrayList<>();
         InspectItem[] inspectItems = inspectArgs.getInspectItems();
         Stream.of(inspectItems).forEach((inspectItem) -> {
+            int warehouseEntryID = inspectItem.getInspectionNote().getWarehouseEntryId();
+            WarehouseEntry warehouseEntry = this.warehouseEntryDAO.get(accountBook, warehouseEntryID);
+            if (warehouseEntry.getState() != WAIT_FOR_PUT_IN_STORAGE) {
+                throw new WMSServiceException("入库单 " + warehouseEntry.getNo() + " 已送检/入库，请不要重复操作！");
+            }
+            warehouseEntry.setState(WarehouseEntryService.BEING_INSPECTED);
+            warehouseEntriesToUpdate.add(warehouseEntry);
             //创建新的送检单
             InspectionNote inspectionNote = inspectItem.getInspectionNote();
             new Validator("送检单信息").notnull().validate(inspectionNote);
-            int newInspectionNoteID = this.inspectionNoteService.add(accountBook, new InspectionNote[]{inspectionNote})[0];
-
             //将每一条入库单条目生成送检单条目
-            Stream.of(inspectItem.getInspectionNoteItems()).forEach((inspectionNoteItem)->{
-                //创建新的送检单条目（会自动更新入库单条目送检数量）
+            int newInspectionNoteID = this.inspectionNoteService.add(accountBook, new InspectionNote[]{inspectionNote})[0];
+            Stream.of(inspectItem.getInspectionNoteItems()).forEach(inspectionNoteItem -> {
                 inspectionNoteItem.setInspectionNoteId(newInspectionNoteID);
-                this.inspectionNoteItemService.add(accountBook,new InspectionNoteItem[]{inspectionNoteItem});
+                inspectionNoteItemsToAdd.add(inspectionNoteItem);
             });
+            inspectionNoteIDs.add(newInspectionNoteID);
         });
+        this.inspectionNoteItemService.add(accountBook,ReflectHelper.listToArray(inspectionNoteItemsToAdd,InspectionNoteItem.class));
+        this.update(accountBook,ReflectHelper.listToArray(warehouseEntriesToUpdate,WarehouseEntry.class));
+        return inspectionNoteIDs;
     }
 
     @Override
-    public long findCount(String database,Condition cond) throws WMSServiceException{
-        return this.warehouseEntryDAO.findCount(database,cond);
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException {
+        return this.warehouseEntryDAO.findCount(accountBook, cond);
+    }
+
+    @Override
+    public void updateState(String accountBook, List<Integer> ids) {
+        List<WarehouseEntry> warehouseEntriesToUpdate = new ArrayList<>();
+        for (int id : ids) {
+            //this.idChecker.check(WarehouseEntryService.class, accountBook, id, "入库单");
+            WarehouseEntry warehouseEntry = this.warehouseEntryDAO.get(accountBook, id);
+            warehouseEntriesToUpdate.add(warehouseEntry);
+            WarehouseEntryItemView[] warehouseEntryItemViews = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("warehouseEntryId", id));
+            long total = warehouseEntryItemViews.length;
+            long waitForPutInCount = Stream.of(warehouseEntryItemViews).filter((item) -> item.getState() == WarehouseEntryItemService.WAIT_FOR_PUT_IN_STORAGE).count();
+            long beingInspectedCount = Stream.of(warehouseEntryItemViews).filter((item) -> item.getState() == WarehouseEntryItemService.BEING_INSPECTED).count();
+            long qualifiedCount = Stream.of(warehouseEntryItemViews).filter((item) -> item.getState() == WarehouseEntryItemService.QUALIFIED).count();
+            long unqualifiedCount = Stream.of(warehouseEntryItemViews).filter((item) -> item.getState() == WarehouseEntryItemService.UNQUALIFIED).count();
+            if (waitForPutInCount == total) {
+                warehouseEntry.setState(WAIT_FOR_PUT_IN_STORAGE);
+            } else if (qualifiedCount + unqualifiedCount == total) {
+                warehouseEntry.setState(ALL_PUT_IN_STORAGE);
+            } else if (qualifiedCount > 0 || unqualifiedCount > 0) {
+                warehouseEntry.setState(PART_PUT_IN_STORAGE);
+            } else if (beingInspectedCount > 0) {
+                warehouseEntry.setState(BEING_INSPECTED);
+            }
+        }
+        this.update(accountBook, ReflectHelper.listToArray(warehouseEntriesToUpdate, WarehouseEntry.class));
+    }
+
+    @Override
+    public WarehouseEntry get(String accountBook,int id){
+        return this.warehouseEntryDAO.get(accountBook,id);
     }
 }

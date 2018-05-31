@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -25,6 +27,8 @@ public class InspectionNoteItemServiceImpl
     @Autowired
     WarehouseEntryItemService warehouseEntryItemService;
     @Autowired
+    WarehouseEntryService warehouseEntryService;
+    @Autowired
     InspectionNoteService inspectionNoteService;
     @Autowired
     StockRecordService stockRecordService;
@@ -33,35 +37,34 @@ public class InspectionNoteItemServiceImpl
 
     @Override
     public int[] add(String accountBook, InspectionNoteItem[] objs) throws WMSServiceException {
+        List<WarehouseEntryItem> warehouseEntryItemsToUpdate = new ArrayList<>();
         //根据每条送检单条目，更新入库单条目的送检数量
         Stream.of(objs).forEach(inspectionNoteItem -> {
             int warehouseEntryItemID = inspectionNoteItem.getWarehouseEntryItemId(); //入库单条目ID
             BigDecimal inspectAmount = inspectionNoteItem.getAmount(); //入库单条目要送检的数量
             //检查送检的入库单条目是否存在
-            this.idChecker.check(WarehouseEntryItemService.class, accountBook, warehouseEntryItemID, "送检入库单条目");
+            //this.idChecker.check(WarehouseEntryItemService.class, accountBook, warehouseEntryItemID, "送检入库单条目");
             //存在就把相应的入库单条目取出来。
             //由于数据库事务的原子性，可以保证上一条语句执行确定入库单条目存在和这一条语句之间，不会有任何进行任何其他的对该数据表进行的操作
-            WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook,
-                    new Condition().addCondition("id", warehouseEntryItemID))[0];
+            WarehouseEntryItem warehouseEntryItem = this.warehouseEntryItemService.get(accountBook,warehouseEntryItemID);
             new Validator("送检数量")
                     .min(0)
-                    .max(warehouseEntryItemView.getRealAmount().subtract(warehouseEntryItemView.getInspectionAmount()))
+                    .max(warehouseEntryItem.getRealAmount().subtract(warehouseEntryItem.getInspectionAmount()))
                     .validate(inspectAmount);
             //更新入库单条目的送检数量
-            WarehouseEntryItem warehouseEntryItem = ReflectHelper.createAndCopyFields(warehouseEntryItemView, WarehouseEntryItem.class);
             warehouseEntryItem.setInspectionAmount(warehouseEntryItem.getInspectionAmount().add(inspectAmount));
             warehouseEntryItem.setState(WarehouseEntryItemService.BEING_INSPECTED);
-            warehouseEntryItemService.update(accountBook, new WarehouseEntryItem[]{warehouseEntryItem},true);
-
+            warehouseEntryItemsToUpdate.add(warehouseEntryItem);
         });
-
         this.validateEntities(accountBook, objs);
+        warehouseEntryItemService.update(accountBook, ReflectHelper.listToArray(warehouseEntryItemsToUpdate,WarehouseEntryItem.class),true);
         return this.inspectionNoteItemDAO.add(accountBook, objs);
     }
 
     @Override
     public void update(String accountBook, InspectionNoteItem[] objs) throws WMSServiceException {
         this.validateEntities(accountBook, objs);
+        List<Integer> inspectionNotesToUpdateState = new ArrayList<>();
         Stream.of(objs).forEach((inspectionNoteItem -> {
             InspectionNoteItemView[] oriItemViews = this.inspectionNoteItemDAO.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getId()));
             if (oriItemViews.length == 0) {
@@ -80,10 +83,14 @@ public class InspectionNoteItemServiceImpl
             }else if(oriItemView.getUnitAmount().compareTo(inspectionNoteItem.getUnitAmount())!=0){
                 throw new WMSServiceException("不允许修改送检单位数量！");
             }
+            if(oriItemView.getState() != inspectionNoteItem.getState() && !inspectionNotesToUpdateState.contains(inspectionNoteItem.getInspectionNoteId())){
+                inspectionNotesToUpdateState.add(inspectionNoteItem.getInspectionNoteId());
+            }
             WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getWarehouseEntryItemId()))[0];
             WarehouseEntryItem warehouseEntryItem = ReflectHelper.createAndCopyFields(warehouseEntryItemView, WarehouseEntryItem.class);
         }));
         this.inspectionNoteItemDAO.update(accountBook, objs);
+        this.inspectionNoteService.updateState(accountBook,inspectionNotesToUpdateState);
     }
 
     @Override
@@ -105,6 +112,7 @@ public class InspectionNoteItemServiceImpl
         Stream.of(inspectionNoteItems).forEach((inspectionNoteItem -> {
             //数据验证
             new Validator("状态").min(0).max(2).validate(inspectionNoteItem.getState());
+            new Validator("送检单位").notnull().notEmpty().validate(inspectionNoteItem.getUnit());
             new Validator("送检数量").min(0).validate(inspectionNoteItem.getAmount());
             new Validator("送检单位数量").min(0).validate(inspectionNoteItem.getUnitAmount());
             if (inspectionNoteItem.getReturnAmount() != null) {
