@@ -180,16 +180,15 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
                     stockTakingOrderItem.setStorageLocationId(null);
                     stockTakingOrderItem.setUnitAmount(new BigDecimal(1));
                 }
-            if(!comment.equals("在途数量")) {stockTakingOrderItem.setSupplyId((int) objects[2]);
+            if(comment.equals("在途数量")) {stockTakingOrderItem.setSupplyId((int) objects[2]);
                 stockTakingOrderItem.setAmount((BigDecimal) objects[6]);
                 stockTakingOrderItem.setRealAmount((BigDecimal) objects[6]);}
             else{
                 stockTakingOrderItem.setSupplyId((int) objects[3]);
                 stockTakingOrderItem.setAmount((BigDecimal) objects[23]);
                 stockTakingOrderItem.setRealAmount((BigDecimal) objects[23]);}
-                if (stockTakingOrderItemAdd.getMode() == 0) {
-                    stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
-                }
+            stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
+
         }
     }
 

@@ -1011,13 +1011,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             throw new DatabaseNotFoundException(accountBook);
         }
         Query query=null;
-        String sqlCheckNew2="SELECT s2.*,sum(s2.RealAmount) as sum from \n" +
-                "(SELECT loading.* from DeliveryOrderItemView as loading" +
+        String sqlCheckNew2="SELECT s2.*,sum(s2.RealAmount) as sum from (SELECT loading.* from DeliveryOrderItemView as loading" +
                 "INNER JOIN " +
                 "(SELECT  a.id ,a.state from DeliveryOrderView as a) as a1" +
-                "on a1.id=loading.DeliveryOrderID and a1.state!=4 " +
-                "WHERE loading.SupplyID in (SELECT su.id from SupplyView as su where su.warehouseId=:warehouseId) and loading.State!=0 and loading.loadingtime<:endTime)as s2" +
-                "GROUP BY s2.supplyId";
+                "on a1.id=loading.DeliveryOrderID and a1.state!=4" +
+                "WHERE loading.SupplyID in (SELECT su.id from SupplyView as su where su.warehouseId=:warehouseId) and loading.State!=0 and loading.loadingtime<:endTime )as s2" +
+                "GROUP BY s2.supplyId ";
         query=session.createNativeQuery(sqlCheckNew2);
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
