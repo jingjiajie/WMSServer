@@ -30,6 +30,8 @@ public class WarehouseService {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
 
+        MaterialService materialService=applicationContext.getBean(MaterialService.class);
+        materialService.remove("WMS_Template",new int[]{20});
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         GregorianCalendar gc = new GregorianCalendar();

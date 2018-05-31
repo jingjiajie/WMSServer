@@ -285,7 +285,7 @@ public class SupplierServicesImpl implements SupplierServices{
 @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
     for (int id : ids) {
-        if (supplierDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
+        if (supplierDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{id})).length == 0) {
             throw new WMSServiceException(String.format("删除供应商不存在，请重新查询！(%d)", id));
         }
     }
