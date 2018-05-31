@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -1120,6 +1121,29 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         resultArray=list.toArray();
         return resultArray;
     }
+
+    //查询库存记录sql内部使用
+    public Object[] findBySql(String accountBook, String sql, Object[] o){
+        Session session= sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query=null;
+        query=session.createNativeQuery(sql);
+
+        for(int i=0;i<o.length;i++) {
+            String name="a"+i;
+            query.setParameter("a"+i, o[i]);
+        }
+
+        Object[] resultArray=null;
+        List list = query.list();
+        resultArray=list.toArray();
+        return resultArray;
+    }
+
 
 
     @Override

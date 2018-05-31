@@ -48,7 +48,7 @@ public class WarehouseService {
         supplier.setWarehouseId(1);
         supplier.setCreatePersonId(19);
         supplier.setCreateTime(time2);
-        supplierServices.updateHistory("WMS_Template",new Supplier[]{supplier});
+        //supplierServices.updateHistory("WMS_Template",new Supplier[]{supplier});
         /*
         StorageLocationService storageLocationService = applicationContext.getBean(StorageLocationService.class);
 
@@ -62,6 +62,9 @@ public class WarehouseService {
         storageLocationService.update("WMS_Template",new StorageLocation[]{storageLocation});
 
 */
+        Object[] o=new Object[]{5,0};
+        stockRecordService.findBySql("WMS_Template","SELECT loading.* from DeliveryOrderItemView as loading \n" +
+                "WHERE loading.SupplyID =:a0 and (SELECT d.state from DeliveryOrderView as d WHERE d.id=loading.DeliveryOrderID)=:a1",o);
         StockRecordFind stockRecordFind = new StockRecordFind();
         stockRecordFind.setSupplyId(5);
         stockRecordFind.setStorageLocationId(21);
