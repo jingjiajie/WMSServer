@@ -66,31 +66,27 @@ public class InspectionNoteItemServiceImpl
         this.validateEntities(accountBook, objs);
         List<Integer> inspectionNotesToUpdateState = new ArrayList<>();
         Stream.of(objs).forEach((inspectionNoteItem -> {
-            InspectionNoteItemView[] oriItemViews = this.inspectionNoteItemDAO.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getId()));
-            if (oriItemViews.length == 0) {
+            InspectionNoteItem oriItem = this.inspectionNoteItemDAO.get(accountBook, inspectionNoteItem.getId());
+            if (oriItem == null) {
                 throw new WMSServiceException(String.format("送检单条目不存在，修改失败(%d)", inspectionNoteItem.getId()));
             }
-            InspectionNoteItemView oriItemView = oriItemViews[0];//原对象
-            if(oriItemView.getWarehouseEntryItemId() != inspectionNoteItem.getWarehouseEntryItemId()){
+            if(oriItem.getWarehouseEntryItemId() != inspectionNoteItem.getWarehouseEntryItemId()){
                 throw new WMSServiceException("不能修改送检单条目关联的收货单条目！");
             }
-            BigDecimal oriAmount = oriItemView.getAmount(); //原送检数量
+            BigDecimal oriAmount = oriItem.getAmount(); //原送检数量
             BigDecimal deltaAmount = inspectionNoteItem.getAmount().subtract(oriAmount); //变化送检数量
             if (deltaAmount.compareTo(BigDecimal.ZERO) != 0) {
                 throw new WMSServiceException("不允许修改计划送检数量！");
-            }else if(!oriItemView.getUnit().equals(inspectionNoteItem.getUnit())){
+            }else if(!oriItem.getUnit().equals(inspectionNoteItem.getUnit())){
                 throw new WMSServiceException("不允许修改送检单位！");
-            }else if(oriItemView.getUnitAmount().compareTo(inspectionNoteItem.getUnitAmount())!=0){
+            }else if(oriItem.getUnitAmount().compareTo(inspectionNoteItem.getUnitAmount())!=0){
                 throw new WMSServiceException("不允许修改送检单位数量！");
             }
-            if(oriItemView.getState() != inspectionNoteItem.getState() && !inspectionNotesToUpdateState.contains(inspectionNoteItem.getInspectionNoteId())){
+            if(oriItem.getState() != inspectionNoteItem.getState() && !inspectionNotesToUpdateState.contains(inspectionNoteItem.getInspectionNoteId())){
                 inspectionNotesToUpdateState.add(inspectionNoteItem.getInspectionNoteId());
             }
-            WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getWarehouseEntryItemId()))[0];
-            WarehouseEntryItem warehouseEntryItem = ReflectHelper.createAndCopyFields(warehouseEntryItemView, WarehouseEntryItem.class);
         }));
         this.inspectionNoteItemDAO.update(accountBook, objs);
-        this.inspectionNoteService.updateState(accountBook,inspectionNotesToUpdateState);
     }
 
     @Override

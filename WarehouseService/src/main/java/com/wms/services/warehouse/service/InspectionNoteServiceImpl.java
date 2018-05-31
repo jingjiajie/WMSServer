@@ -82,6 +82,7 @@ public class InspectionNoteServiceImpl
     @Override
     public void inspectFinish(String accountBook, InspectFinishArgs inspectFinishArgs) throws WMSServiceException{
         if(inspectFinishArgs.isAllFinish()){ //整单完成
+            long time1 = System.currentTimeMillis();
             //this.idChecker.check(InspectionNoteService.class,accountBook,inspectFinishArgs.getInspectionNoteId(),"送检单");
             InspectionNote inspectionNote = this.inspectionNoteDAO.get(accountBook,inspectFinishArgs.getInspectionNoteId());
             if(inspectionNote.getState() == ALL_INSPECTED){
@@ -104,6 +105,8 @@ public class InspectionNoteServiceImpl
                 inspectionNoteItem.setReturnUnit(inspectionNoteItem.getUnit());
                 inspectionNoteItem.setReturnUnitAmount(inspectionNoteItem.getUnitAmount());
             });
+            long time2 = System.currentTimeMillis();
+            System.out.printf("=====入库单接收之前用时%f秒",(time2-time1)/1000F);
             //如果是合格，则将每一项状态更新为合格，否则为不合格，并调用入库单的收货功能。
             if(inspectFinishArgs.isQualified()){
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.QUALIFIED));
@@ -112,7 +115,11 @@ public class InspectionNoteServiceImpl
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.UNQUALIFIED));
                 this.warehouseEntryItemService.reject(accountBook,Stream.of(inspectionNoteItems).mapToInt((item)->item.getWarehouseEntryItemId()).toArray());
             }
+            long time3 = System.currentTimeMillis();
+            System.out.printf("=====入库单接收用时%f秒",(time3-time2)/1000F);
             this.inspectionNoteItemService.update(accountBook, inspectionNoteItems);
+            long time4 = System.currentTimeMillis();
+            System.out.printf("=====送检单条目更新用时%f秒",(time4-time3)/1000F);
         }else { //部分完成
             InspectFinishItem[] inspectFinishItems = inspectFinishArgs.getInspectFinishItems();
             Stream.of(inspectFinishItems).forEach(inspectFinishItem -> {
@@ -175,7 +182,7 @@ public class InspectionNoteServiceImpl
     public void updateState(String accountBook, List<Integer> ids) {
         List<InspectionNote> inspectionNotesToUpdate = new ArrayList<>();
         for (int id : ids) {
-            this.idChecker.check(this.getClass(), accountBook, id, "送检单");
+            this.idChecker.check(InspectionNoteService.class, accountBook, id, "送检单");
             InspectionNote inspectionNote = ReflectHelper.createAndCopyFields(this.find(accountBook, new Condition().addCondition("id", id))[0],InspectionNote.class);
             inspectionNotesToUpdate.add(inspectionNote);
             InspectionNoteItemView[] inspectionNoteItemViews = this.inspectionNoteItemService.find(accountBook, new Condition().addCondition("inspectionNoteId", id));
