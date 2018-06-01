@@ -17,9 +17,9 @@ public interface StockRecordService
 
     StockRecordView[] find(String accountBook, StockRecordFind stockRecordFind);
 
-    Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind);
+    Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind,String ids);
 
-    Object[] findCheckSupplyAmountAll(String accountBook, StockRecordFind stockRecordFind);
+    Object[] findCheckSupplyAmountAll(String accountBook, StockRecordFind stockRecordFind,String ids);
 
     Object[] findCheckWarehouse(String accountBook, StockRecordFind stockRecordFind);
 
@@ -27,7 +27,7 @@ public interface StockRecordService
 
     Object[] findLoadingWarehouse(String accountBook, StockRecordFind stockRecordFind);
 
-    Object[] findLoadingSupply (String accountBook, StockRecordFind stockRecordFind);
+    Object[] findLoadingSupply (String accountBook, StockRecordFind stockRecordFind,String ids);
 
     Object[] findBySql(String accountBook, String sql, Object[] o);
 

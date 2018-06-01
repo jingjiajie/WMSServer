@@ -9,7 +9,7 @@ import com.wms.utilities.model.StockTakingOrderItemView;
 import com.wms.utilities.model.StockTakingOrderItem;
 public interface StockTakingOrderItemService
         extends BaseService<StockTakingOrderItem, StockTakingOrderItemView> {
-    void addStockTakingOrderItemSingle(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
+    void addStockTakingOrderItemSingle(String accountBook,int ids[],StockTakingOrderItemAdd stockTakingOrderItemAdd);
     void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
     void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem);
     long findCount(String database,Condition cond) throws WMSServiceException;

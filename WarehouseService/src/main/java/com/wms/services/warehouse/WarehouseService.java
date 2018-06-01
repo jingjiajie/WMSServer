@@ -30,8 +30,8 @@ public class WarehouseService {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
 
-        MaterialService materialService=applicationContext.getBean(MaterialService.class);
-        materialService.remove("WMS_Template",new int[]{20});
+        //MaterialService materialService=applicationContext.getBean(MaterialService.class);
+        //materialService.remove("WMS_Template",new int[]{20});
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         GregorianCalendar gc = new GregorianCalendar();
@@ -52,14 +52,15 @@ public class WarehouseService {
         supplier.setCreatePersonId(19);
         supplier.setCreateTime(time2);
         //supplierServices.updateHistory("WMS_Template",new Supplier[]{supplier});
-        */
+
+
         DeliveryOrderService deliveryOrderService = applicationContext.getBean(DeliveryOrderService.class);
         TransferAuto transferAuto=new TransferAuto();
         transferAuto.setPersonId(19);
         transferAuto.setWarehouseId(1);
         deliveryOrderService.transferAuto("WMS_Template",transferAuto);
 
-        /*
+
         Object[] o=new Object[]{5,0};
         stockRecordService.findBySql("WMS_Template","SELECT loading.* from DeliveryOrderItemView as loading \n" +
                 "WHERE loading.SupplyID =:a0 and (SELECT d.state from DeliveryOrderView as d WHERE d.id=loading.DeliveryOrderID)=:a1",o);

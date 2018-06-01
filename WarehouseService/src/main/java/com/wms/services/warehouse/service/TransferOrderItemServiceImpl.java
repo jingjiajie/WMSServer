@@ -39,7 +39,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
             //获取移库单
             int transferOrderId = transferOrderItem.getTransferOrderId();
-            TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",transferOrderId));
+            TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
             if(foundTransferOrders.length == 0){
                 throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)",transferOrderId));
             }
@@ -57,7 +57,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
         });
         this.validateEntities(accountBook, transferOrderItems);
-        this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
+        //todo this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
         return this.transferOrderItemDAO.add(accountBook, transferOrderItems);
     }
 
@@ -67,12 +67,12 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         Stream.of(transferOrderItems).forEach((transferOrderItem -> {
 
             //找出对应的移库单和移库单条目
-            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", transferOrderItem.getId()));
+            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{transferOrderItem.getId()}));
             if (oriItemViews.length == 0) {
                 throw new WMSServiceException(String.format("移库单条目不存在，修改失败(%d)", transferOrderItem.getId()));
             }
             int transferOrderId = transferOrderItem.getTransferOrderId();
-            TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",transferOrderId));
+            TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
             if(foundTransferOrders.length == 0){
                 throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)",transferOrderId));
             }
@@ -81,6 +81,10 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             if (transferOrderItem.getTargetStorageLocationId()!=oriItemViews[0].getTargetStorageLocationId())
             {
                 throw new WMSServiceException("无法修改移库单条目的目标库位:(%d)，如要操作请新建移库单"+oriItemViews[0].getTargetStorageLocationId());
+            }
+            if (transferOrderItem.getRealAmount().compareTo(oriItemViews[0].getRealAmount())<0)
+            {
+                throw new WMSServiceException("无法修改移库单条目的实际移动数量，如要操作请新建移库单");
             }
             // TODO 如果计划移库数量发生变化,还是需要改进
             if (transferOrderItem.getScheduledAmount().equals(oriItemViews[0].getScheduledAmount()))//如果计划移库数量发生变化
@@ -100,7 +104,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             }
 
             //如果没有实际移库数量输入，直接跳过.有实际移库数量输入且数量变化才往下执行
-            if(transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))>0&&transferOrderItem.getRealAmount().equals(oriItemViews[0].getRealAmount()))
+            if(transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))>0&&!transferOrderItem.getRealAmount().equals(oriItemViews[0].getRealAmount()))
             {
                 //todo 是移库前先把当前一步实际数量加回去可用数量
                 TransferStock fixTransferStock = new TransferStock();
@@ -155,10 +159,14 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                     transferStock.setUnitAmount(oriItemViews[0].getUnitAmount());
                     this.stockRecordService.RealTransformStock(accountBook, transferStock);
                 }
+                transferOrderItem.setState(1);
+                if (transferOrderItem.getScheduledAmount().equals(transferOrderItem.getRealAmount())){
+                    transferOrderItem.setState(2);
+                }
             }
 
         }));
-        this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
+        //todo this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
         this.transferOrderItemDAO.update(accountBook, transferOrderItems);
     }
 
@@ -167,7 +175,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         for (int id : ids) {
             //todo idChecker.check(this.getClass(), accountBook, id, "删除的移库单条目");
 
-            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", id));
+            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{id}));
             if (oriItemViews.length == 0) {
                 throw new WMSServiceException(String.format("移库单条目不存在，删除失败(%d)", id));
             }

@@ -13,6 +13,8 @@ import com.wms.services.ledger.service.PersonServiceImpl;
 */
 import com.wms.services.ledger.service.TaxItemService;
 import com.wms.services.ledger.service.TaxService;
+import javafx.beans.binding.StringBinding;
+import javafx.print.Printer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -40,6 +42,11 @@ public class LedgerService {
         double d1 = 133999441.132;
         double d2 = 44123.031;
 
+        int[] a={1,2,3,4,5};
+        StringBuffer s=new StringBuffer();
+        s.append("");
+
+        System.out.printf(s.toString());
 /*
         TaxItemService taxItemService = applicationContext.getBean(TaxItemService.class);
         TaxItem taxItem = new TaxItem();
