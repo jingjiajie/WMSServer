@@ -72,15 +72,14 @@ public class WarehouseService {
         Object[] stockRecordSource1 = stockRecordService.findCheckSupply("WMS_Template", stockRecordFind);
         */
 
-        /*
+
         StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
         StockTakingOrderItemService stockTakingOrderServiceItem = applicationContext.getBean(StockTakingOrderItemService.class);
         StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
         stockTakingOrderItemAdd.setStockTakingOrderId(1);
         stockTakingOrderItemAdd.setPersonId(19);
-        stockTakingOrderItemAdd.setSupplyId(5);
         stockTakingOrderItemAdd.setWarehouseId(1);
-        stockTakingOrderServiceItem.addStockTakingOrderItemSingle("WMS_Template",stockTakingOrderItemAdd);
+        stockTakingOrderServiceItem.addStockTakingOrderItemSingle("WMS_Template",new int[]{5},stockTakingOrderItemAdd);
         StockTakingOrder stockTakingOrder=new StockTakingOrder();
         stockTakingOrder.setId(1);
         stockTakingOrder.setNo("5115111111");
@@ -88,6 +87,6 @@ public class WarehouseService {
         stockTakingOrder.setWarehouseId(-100);
         stockTakingOrder.setCreateTime(time2);
         stockTakingOrderService.update("WMS_Template",new StockTakingOrder[]{stockTakingOrder});
-        */
+
     }
 }
