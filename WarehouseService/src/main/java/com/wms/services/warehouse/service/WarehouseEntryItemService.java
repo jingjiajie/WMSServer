@@ -8,11 +8,13 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.service.BaseService;
 
+import java.util.List;
+
 public interface WarehouseEntryItemService
         extends BaseService<WarehouseEntryItem, WarehouseEntryItemView> {
     void update(String accountBook, WarehouseEntryItem[] warehouseEntryItems, boolean allowUpdateInspectionAmount) throws WMSServiceException;
-    void reject(String accountBook, int[] ids) throws WMSServiceException;
-    void receive(String accountBook, int[] ids) throws WMSServiceException;
+    void reject(String accountBook, List<Integer> ids) throws WMSServiceException;
+    void receive(String accountBook, List<Integer> ids) throws WMSServiceException;
 
     WarehouseEntryItem get(String accountBook,int id) throws WMSServiceException;
 

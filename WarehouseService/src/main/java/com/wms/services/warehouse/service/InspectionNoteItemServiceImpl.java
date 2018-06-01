@@ -1,7 +1,6 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.InspectionNoteItemDAO;
-import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
@@ -130,5 +129,10 @@ public class InspectionNoteItemServiceImpl
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
         return this.inspectionNoteItemDAO.findCount(accountBook,cond);
+    }
+
+    @Override
+    public InspectionNoteItem get(String accountBook,int id){
+        return this.inspectionNoteItemDAO.get(accountBook,id);
     }
 }

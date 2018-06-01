@@ -2,17 +2,12 @@ package com.wms.utilities.datastructures;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.exceptions.ConditionException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import javafx.application.ConditionalFeature;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.ParseException;

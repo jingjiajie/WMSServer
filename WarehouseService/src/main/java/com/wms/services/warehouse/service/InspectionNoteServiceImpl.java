@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -82,7 +83,6 @@ public class InspectionNoteServiceImpl
     @Override
     public void inspectFinish(String accountBook, InspectFinishArgs inspectFinishArgs) throws WMSServiceException{
         if(inspectFinishArgs.isAllFinish()){ //整单完成
-            long time1 = System.currentTimeMillis();
             //this.idChecker.check(InspectionNoteService.class,accountBook,inspectFinishArgs.getInspectionNoteId(),"送检单");
             InspectionNote inspectionNote = this.inspectionNoteDAO.get(accountBook,inspectFinishArgs.getInspectionNoteId());
             if(inspectionNote.getState() == ALL_INSPECTED){
@@ -105,27 +105,22 @@ public class InspectionNoteServiceImpl
                 inspectionNoteItem.setReturnUnit(inspectionNoteItem.getUnit());
                 inspectionNoteItem.setReturnUnitAmount(inspectionNoteItem.getUnitAmount());
             });
-            long time2 = System.currentTimeMillis();
-            System.out.printf("=====入库单接收之前用时%f秒",(time2-time1)/1000F);
             //如果是合格，则将每一项状态更新为合格，否则为不合格，并调用入库单的收货功能。
             if(inspectFinishArgs.isQualified()){
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.QUALIFIED));
-                this.warehouseEntryItemService.receive(accountBook,Stream.of(inspectionNoteItems).mapToInt((item)->item.getWarehouseEntryItemId()).toArray());
+                this.warehouseEntryItemService.receive(accountBook,Stream.of(inspectionNoteItems).map((item)->item.getWarehouseEntryItemId()).collect(Collectors.toList()));
             }else{
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.UNQUALIFIED));
-                this.warehouseEntryItemService.reject(accountBook,Stream.of(inspectionNoteItems).mapToInt((item)->item.getWarehouseEntryItemId()).toArray());
+                this.warehouseEntryItemService.reject(accountBook,Stream.of(inspectionNoteItems).map((item)->item.getWarehouseEntryItemId()).collect(Collectors.toList()));
             }
-            long time3 = System.currentTimeMillis();
-            System.out.printf("=====入库单接收用时%f秒",(time3-time2)/1000F);
             this.inspectionNoteItemService.update(accountBook, inspectionNoteItems);
-            long time4 = System.currentTimeMillis();
-            System.out.printf("=====送检单条目更新用时%f秒",(time4-time3)/1000F);
         }else { //部分完成
+            List<Integer> warehouseEntryIDsToReceive = new ArrayList<>();
+            List<Integer> warehouseEntryIDsToReject = new ArrayList<>();
             InspectFinishItem[] inspectFinishItems = inspectFinishArgs.getInspectFinishItems();
             Stream.of(inspectFinishItems).forEach(inspectFinishItem -> {
-                this.idChecker.check(InspectionNoteItemService.class, accountBook, inspectFinishItem.getInspectionNoteItemId(), "送检单条目");
-                InspectionNoteItemView inspectionNoteItemView = this.inspectionNoteItemService.find(accountBook, new Condition().addCondition("id", inspectFinishItem.getInspectionNoteItemId()))[0];
-                InspectionNoteItem inspectionNoteItem = ReflectHelper.createAndCopyFields(inspectionNoteItemView, InspectionNoteItem.class);
+//                this.idChecker.check(InspectionNoteItemService.class, accountBook, inspectFinishItem.getInspectionNoteItemId(), "送检单条目");
+                InspectionNoteItem inspectionNoteItem = this.inspectionNoteItemService.get(accountBook, inspectFinishItem.getInspectionNoteItemId());
                 inspectionNoteItem.setReturnAmount(inspectFinishItem.getReturnAmount());
                 inspectionNoteItem.setReturnUnit(inspectFinishItem.getReturnUnit());
                 inspectionNoteItem.setReturnUnitAmount(inspectFinishItem.getReturnAmount());
@@ -147,12 +142,13 @@ public class InspectionNoteServiceImpl
                 }
                 if (inspectFinishItem.isQualified()) {
                     inspectionNoteItem.setState(InspectionNoteItemService.QUALIFIED);
-                    this.warehouseEntryItemService.receive(accountBook,new int[]{inspectionNoteItem.getWarehouseEntryItemId()});
+                    warehouseEntryIDsToReceive.add(inspectionNoteItem.getWarehouseEntryItemId());
                 } else {
                     inspectionNoteItem.setState(InspectionNoteItemService.UNQUALIFIED);
-                    this.warehouseEntryItemService.reject(accountBook,new int[]{inspectionNoteItem.getWarehouseEntryItemId()});
+                    warehouseEntryIDsToReject.add(inspectionNoteItem.getWarehouseEntryItemId());
                 }
-
+                this.warehouseEntryItemService.receive(accountBook,warehouseEntryIDsToReceive);
+                this.warehouseEntryItemService.reject(accountBook,warehouseEntryIDsToReject);
                 this.inspectionNoteItemService.update(accountBook, new InspectionNoteItem[]{inspectionNoteItem});
             });
         }
@@ -198,6 +194,6 @@ public class InspectionNoteServiceImpl
                 inspectionNote.setState(PART_INSPECTED);
             }
         }
-        this.update(accountBook,ReflectHelper.listToArray(inspectionNotesToUpdate,InspectionNote.class));
+        this.update(accountBook, ReflectHelper.listToArray(inspectionNotesToUpdate,InspectionNote.class));
     }
 }

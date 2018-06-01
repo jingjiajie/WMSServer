@@ -10,4 +10,6 @@ public interface InspectionNoteItemService
     int NOT_INSPECTED = 0;
     int QUALIFIED = 1;
     int UNQUALIFIED = 2;
+
+    InspectionNoteItem get(String accountBook, int id);
 }

@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -213,8 +212,9 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
     }
 
     @Override
-    public void receive(String accountBook, int[] ids) {
-        WarehouseEntryItem[] warehouseEntryItems = this.warehouseEntryItemDAO.findTable(accountBook, new Condition().addCondition("id", ReflectHelper.intArrayToIntegerArray(ids), ConditionItem.Relation.IN));
+    public void receive(String accountBook, List<Integer> ids) {
+
+        WarehouseEntryItem[] warehouseEntryItems = this.warehouseEntryItemDAO.findTable(accountBook, new Condition().addCondition("id", ReflectHelper.listToArray(ids,Integer.class), ConditionItem.Relation.IN));
         List<Integer> warehouseEntryIDs = new ArrayList<>();
         Stream.of(warehouseEntryItems).forEach((warehouseEntryItem -> {
             if (warehouseEntryItem.getState() == WarehouseEntryItemService.UNQUALIFIED ||
@@ -243,8 +243,8 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
     }
 
     @Override
-    public void reject(String accountBook, int[] ids) {
-        WarehouseEntryItem[] warehouseEntryItems = this.warehouseEntryItemDAO.findTable(accountBook, new Condition().addCondition("id", ReflectHelper.intArrayToIntegerArray(ids), ConditionItem.Relation.IN));
+    public void reject(String accountBook, List<Integer> ids) {
+        WarehouseEntryItem[] warehouseEntryItems = this.warehouseEntryItemDAO.findTable(accountBook, new Condition().addCondition("id", ReflectHelper.listToArray(ids,Integer.class), ConditionItem.Relation.IN));
         List<Integer> warehouseEntryIDs = new ArrayList<>();
         Stream.of(warehouseEntryItems).forEach((warehouseEntryItem -> {
             if (warehouseEntryItem.getState() == WarehouseEntryItemService.UNQUALIFIED ||

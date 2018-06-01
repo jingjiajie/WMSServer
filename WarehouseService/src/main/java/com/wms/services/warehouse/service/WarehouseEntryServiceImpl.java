@@ -1,6 +1,5 @@
 package com.wms.services.warehouse.service;
 
-import com.netflix.discovery.converters.Auto;
 import com.wms.services.warehouse.dao.WarehouseEntryDAO;
 import com.wms.services.warehouse.datastructures.InspectArgs;
 import com.wms.services.warehouse.datastructures.InspectItem;
@@ -12,16 +11,12 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.vaildator.Validator;
-import org.hibernate.validator.internal.engine.messageinterpolation.parser.BeginState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.WebAppRootListener;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -168,8 +163,8 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
             });
             inspectionNoteIDs.add(newInspectionNoteID);
         });
-        this.inspectionNoteItemService.add(accountBook,ReflectHelper.listToArray(inspectionNoteItemsToAdd,InspectionNoteItem.class));
-        this.update(accountBook,ReflectHelper.listToArray(warehouseEntriesToUpdate,WarehouseEntry.class));
+        this.inspectionNoteItemService.add(accountBook, ReflectHelper.listToArray(inspectionNoteItemsToAdd,InspectionNoteItem.class));
+        this.update(accountBook, ReflectHelper.listToArray(warehouseEntriesToUpdate,WarehouseEntry.class));
         return inspectionNoteIDs;
     }
 

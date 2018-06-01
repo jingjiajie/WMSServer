@@ -1,6 +1,5 @@
 package com.wms.services.warehouse.service;
 
-import com.wms.services.warehouse.dao.InspectionNoteDAO;
 import com.wms.services.warehouse.dao.TransferOrderDAO;
 import com.wms.services.warehouse.datastructures.TransferFinishArgs;
 import com.wms.services.warehouse.datastructures.TransferFinishItem;
