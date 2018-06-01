@@ -202,7 +202,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
                 stockTakingOrderItemList.add(stockTakingOrderItem);
         }
             StockTakingOrderItem[] stockTakingOrderItems=null;
-            stockTakingOrderItems = (StockTakingOrderItem[])  Array.newInstance(StockRecordView.class,stockTakingOrderItemList.size());
+            stockTakingOrderItems = (StockTakingOrderItem[])  Array.newInstance(StockTakingOrderItem.class,stockTakingOrderItemList.size());
             stockTakingOrderItemList.toArray(stockTakingOrderItems);
             stockTakingOrderItemDAO.add(accountBook, stockTakingOrderItems);
     }

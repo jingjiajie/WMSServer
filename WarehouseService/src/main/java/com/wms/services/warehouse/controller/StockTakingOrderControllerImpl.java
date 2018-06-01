@@ -38,7 +38,7 @@ public class StockTakingOrderControllerImpl implements StockTakingOrderControlle
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/remove",method = RequestMethod.POST)
+    @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
     public void remove(@PathVariable("accountBook") String accountBook,
                        @PathVariable("strIDs") String strIDs) {
         Gson gson = new Gson();
