@@ -16,6 +16,8 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import com.wms.utilities.model.StockTakingOrderItemView;
+
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -164,6 +166,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         //接收盘点单条目数据并添加
         private void addItemToDatabase(String accountBook,Object[] stockRecordSource1,StockTakingOrderItemAdd stockTakingOrderItemAdd,String comment)
         {
+            List<StockTakingOrderItem> stockTakingOrderItemList=new ArrayList<>();
         for(int i=0;i<stockRecordSource1.length;i++){
             Object[] objects = (Object[]) stockRecordSource1[i];
             StockTakingOrderItem stockTakingOrderItem = new StockTakingOrderItem();
@@ -187,9 +190,12 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
                 stockTakingOrderItem.setSupplyId((int) objects[3]);
                 stockTakingOrderItem.setAmount((BigDecimal) objects[23]);
                 stockTakingOrderItem.setRealAmount((BigDecimal) objects[23]);}
-            stockTakingOrderItemDAO.add(accountBook, new StockTakingOrderItem[]{stockTakingOrderItem});
-
+                stockTakingOrderItemList.add(stockTakingOrderItem);
         }
+            StockTakingOrderItem[] stockTakingOrderItems=null;
+            stockTakingOrderItems = (StockTakingOrderItem[])  Array.newInstance(StockRecordView.class,stockTakingOrderItemList.size());
+            stockTakingOrderItemList.toArray(stockTakingOrderItems);
+            stockTakingOrderItemDAO.add(accountBook, stockTakingOrderItems);
     }
 
     public void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem)
