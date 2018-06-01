@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.StockTakingItemDelete;
+import com.wms.services.warehouse.datastructures.StockTakingOrderItemAddSingle;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -144,22 +145,30 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
 
     //提供供货添加查出每条供货的库存记录
     @Override
-    public void addStockTakingOrderItemSingle(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd) {
+    public void addStockTakingOrderItemSingle(String accountBook, int[] supplyIds,StockTakingOrderItemAdd stockTakingOrderItemAdd) {
         new Validator("人员").notnull().validate(stockTakingOrderItemAdd.getPersonId());
         idChecker.check(StockTakingOrderService.class, accountBook, stockTakingOrderItemAdd.getStockTakingOrderId(), "盘点单");
-        idChecker.check(SupplyService.class, accountBook, stockTakingOrderItemAdd.getSupplyId(), "供货信息");
         idChecker.check(com.wms.services.warehouse.service.WarehouseService.class, accountBook, stockTakingOrderItemAdd.getWarehouseId(), " 仓库");
+        for(int supplyId:supplyIds){idChecker.check(SupplyService.class, accountBook, supplyId, "供货信息");
+            if(supplyService.find(accountBook,new Condition().addCondition("id",supplyId).addCondition("warehouseId",new Integer[]{stockTakingOrderItemAdd.getWarehouseId()})).length==0)
+            {throw new WMSServiceException("输入的供货id"+supplyId+"不属于输入的仓库！");}
+        }
         int mode = stockTakingOrderItemAdd.getMode();
-        //判断供货和仓库id是不是相符
-     if(supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockTakingOrderItemAdd.getSupplyId()}).addCondition("warehouseId",new Integer[]{stockTakingOrderItemAdd.getWarehouseId()})).length==0)
-     {throw new WMSServiceException("输入的供货信息不属于输入的仓库！");}
         StockRecordFind stockRecordFind=new StockRecordFind();
-        stockRecordFind.setSupplyId(stockTakingOrderItemAdd.getSupplyId());
         stockRecordFind.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
         stockRecordFind.setTimeEnd(stockTakingOrderItemAdd.getCheckTime());
-        this.addItemToDatabase(accountBook,stockRecordService.findCheckSupply(accountBook,stockRecordFind),stockTakingOrderItemAdd,"详细数目");
-        this.addItemToDatabase(accountBook,stockRecordService.findCheckSupplyAmountAll(accountBook,stockRecordFind),stockTakingOrderItemAdd,"仓库总数");
-        this.addItemToDatabase(accountBook,stockRecordService.findLoadingSupply(accountBook,stockRecordFind),stockTakingOrderItemAdd,"在途数量");
+        StringBuffer stringBuffer=new StringBuffer();
+        stringBuffer.append("(");
+        for(int i=0;i<supplyIds.length;i++){ stringBuffer.append(supplyIds[i]);
+            if(i!=supplyIds.length-1)
+            {
+                stringBuffer.append(",");
+            }
+        }
+        stringBuffer.append(")");
+        this.addItemToDatabase(accountBook,stockRecordService.findCheckSupply(accountBook,stockRecordFind,stringBuffer.toString()),stockTakingOrderItemAdd,"详细数目");
+        this.addItemToDatabase(accountBook,stockRecordService.findCheckSupplyAmountAll(accountBook,stockRecordFind,stringBuffer.toString()),stockTakingOrderItemAdd,"仓库总数");
+        this.addItemToDatabase(accountBook,stockRecordService.findLoadingSupply(accountBook,stockRecordFind,stringBuffer.toString()),stockTakingOrderItemAdd,"在途数量");
         this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 

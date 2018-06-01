@@ -12,7 +12,7 @@ public interface StockTakingOrderItemController {
     void update(String accountBook,StockTakingOrderItem stockTakingOrderItems[]);
     ResponseEntity<StockTakingOrderItemView[]> find(String accountBook, String condStr);
     void addStockTakingOrderItemAll(String accountBook, StockTakingOrderItemAdd stockTakingOrderItemAdd);
-    void addStockTakingOrderItemSingle(String accountBook,StockTakingOrderItemAdd stockTakingOrderItemAdd);
+    void addStockTakingOrderItemSingle(String accountBook,String strIDs,StockTakingOrderItemAdd stockTakingOrderItemAdd);
     void setRealAmount(String accountBook,StockTakingOrderItem stockTakingOrderItem);
     long findCount(String accountBook,String condStr);
     void remove(String accountBook, StockTakingItemDelete stockTakingItemDelete);

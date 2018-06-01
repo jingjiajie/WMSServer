@@ -976,7 +976,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     //盘点单一用
-    public Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind){
+    public Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind,String ids){
         Session session= sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -988,13 +988,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     "(SELECT s1.* FROM StockRecordView AS s1\n" +
                     "INNER JOIN\n" +
                     "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
-                    "where s2.WarehouseID=:warehouseId and s2.SupplyID=:supplyId AND s2.TIME<:endTime \n" +
+                    "where s2.WarehouseID=:warehouseId and s2.SupplyID IN "+ids+"AND s2.TIME<:endTime \n" +
                     "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID) as s3\n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo) \n" +
                     "as s_all GROUP BY s_all.Unit,s_all.UnitAmount,s_all.StorageLocationID";
         query=session.createNativeQuery(sqlCheckNew2);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
-        query.setParameter("supplyId",stockRecordFind.getSupplyId());
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
         Object[] resultArray=null;
         List list = query.list();
@@ -1027,7 +1026,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     //盘点单在途数量供货
-    public Object[] findLoadingSupply(String accountBook, StockRecordFind stockRecordFind){
+    public Object[] findLoadingSupply(String accountBook, StockRecordFind stockRecordFind,String ids){
         Session session= sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -1039,11 +1038,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 "                INNER JOIN +\n" +
                 "                (SELECT  a.id ,a.state from DeliveryOrderView as a) as a1 +\n" +
                 "                on a1.id=loading.DeliveryOrderID and a1.state!=4 \n" +
-                "                WHERE loading.SupplyID =:supplyId and loading.State!=0 and loading.loadingtime<:endTime)as s2 \n" +
+                "                WHERE loading.SupplyID IN "+ids+ " and loading.State!=0 and loading.loadingtime<:endTime)as s2 \n" +
                 "                GROUP BY s2.supplyId";
         query=session.createNativeQuery(sqlCheckNew2);
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
-        query.setParameter("supplyId",stockRecordFind.getWarehouseId());
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1051,7 +1049,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     //盘点供货总数用
-    public Object[] findCheckSupplyAmountAll(String accountBook,StockRecordFind stockRecordFind){
+    public Object[] findCheckSupplyAmountAll(String accountBook,StockRecordFind stockRecordFind,String ids){
         Session session= sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -1062,14 +1060,13 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         String sqlCheckNew2="SELECT s_all.*,sum(s_all.Amount) as sumAmount FROM \n" +
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
-                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2  where s2.WarehouseID=:warehouseId and s2.SupplyID=:supplyId "+
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2  where s2.WarehouseID=:warehouseId and s2.SupplyID IN  " +ids+
                 "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID) as s3\n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo)\n" +
                 "as s_all \n" +
                 "GROUP BY s_all.supplyId";
         query=session.createNativeQuery(sqlCheckNew2);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
-        query.setParameter("supplyId",stockRecordFind.getSupplyId());
         //query.setParameter("end",stockRecordFind.getTimeEnd());TODO 时间还没设置
         Object[] resultArray=null;
         List list = query.list();

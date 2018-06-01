@@ -68,11 +68,15 @@ public class StockTakingOrderItemControllerImpl implements StockTakingOrderItemC
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value ="/add_single",method =RequestMethod.POST)
+    @RequestMapping(value ="/add_single/{stringIds}",method =RequestMethod.POST)
     public void addStockTakingOrderItemSingle
             (@PathVariable("accountBook") String accountBook,
+             @PathVariable("stringIds") String stringIds,
              @RequestBody StockTakingOrderItemAdd stockTakingOrderItemAdd)
-    { stockTakingOrderItemService.addStockTakingOrderItemSingle(accountBook,stockTakingOrderItemAdd);
+    {
+        Gson gson = new Gson();
+        int ids[] = gson.fromJson(stringIds,new TypeToken<int[]>(){}.getType());
+        stockTakingOrderItemService.addStockTakingOrderItemSingle(accountBook,ids,stockTakingOrderItemAdd);
     }
 
     @Override
