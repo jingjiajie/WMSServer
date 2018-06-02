@@ -4,6 +4,7 @@ import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.WarehouseEntryDAO;
 import com.wms.services.warehouse.datastructures.InspectArgs;
 import com.wms.services.warehouse.datastructures.InspectItem;
+import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
@@ -203,5 +204,25 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     @Override
     public WarehouseEntry get(String accountBook,int id){
         return this.warehouseEntryDAO.get(accountBook,id);
+    }
+
+
+    @Override
+    public List<WarehouseEntryAndItems> getPreviewData(String accountBook, List<Integer> warehouseEntryIDs) throws WMSServiceException{
+        WarehouseEntryView[] warehouseEntryViews = this.warehouseEntryDAO.find(accountBook,new Condition().addCondition("id",warehouseEntryIDs.toArray(), ConditionItem.Relation.IN));
+        WarehouseEntryItemView[] itemViews = this.warehouseEntryItemService.find(accountBook,new Condition().addCondition("warehouseEntryId",warehouseEntryIDs.toArray(), ConditionItem.Relation.IN));
+        List<WarehouseEntryAndItems> result = new ArrayList<>();
+        for(WarehouseEntryView warehouseEntryView : warehouseEntryViews){
+            WarehouseEntryAndItems warehouseEntryAndItems = new WarehouseEntryAndItems();
+            warehouseEntryAndItems.setWarehouseEntry(warehouseEntryView);
+            warehouseEntryAndItems.setWarehouseEntryItems(new ArrayList<>());
+            result.add(warehouseEntryAndItems);
+            for(WarehouseEntryItemView itemView : itemViews){
+                if(itemView.getWarehouseEntryId() == warehouseEntryView.getId()){
+                    warehouseEntryAndItems.getWarehouseEntryItems().add(itemView);
+                }
+            }
+        }
+        return result;
     }
 }

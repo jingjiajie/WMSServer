@@ -1,9 +1,8 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.WarehouseDAO;
-import com.wms.utilities.model.Supply;
-import com.wms.utilities.model.Warehouse;
-import com.wms.utilities.model.WarehouseView;
+import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
+import com.wms.utilities.model.*;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -97,5 +97,4 @@ public class WarehouseServiceImpl implements WarehouseService{
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.warehouseDAO.findCount(database,cond);
     }
-
 }

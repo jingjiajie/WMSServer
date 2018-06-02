@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.netflix.discovery.converters.Auto;
 import com.wms.services.warehouse.datastructures.InspectArgs;
+import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.WarehouseEntry;
@@ -81,5 +82,15 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     public long findCount(@PathVariable("accountBook") String accountBook,
                    @PathVariable("condStr") String condStr){
         return warehouseEntryService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/preview/{strIDs}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<WarehouseEntryAndItems> getPreviewData(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("strIDs") String strIDs){
+        Gson gson = new Gson();
+        List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {}.getType());
+        return warehouseEntryService.getPreviewData(accountBook,ids);
     }
 }
