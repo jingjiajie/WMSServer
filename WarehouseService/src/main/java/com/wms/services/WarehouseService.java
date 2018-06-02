@@ -1,7 +1,4 @@
-package com.wms.services.warehouse;
-import com.wms.services.warehouse.datastructures.*;
-import com.wms.services.warehouse.service.*;
-import com.wms.utilities.model.*;
+package com.wms.services;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +9,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,8 +16,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 @SpringBootApplication
-@EnableDiscoveryClient
-@EnableFeignClients
+//@EnableDiscoveryClient
+//@EnableFeignClients
 @EnableAutoConfiguration(exclude={HibernateJpaAutoConfiguration.class})
 @ComponentScan("com.wms")
 @ImportResource({"classpath:applicationContext.xml"})
@@ -29,7 +25,6 @@ public class WarehouseService {
     public static void main(java.lang.String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
-
         //MaterialService materialService=applicationContext.getBean(MaterialService.class);
         //materialService.remove("WMS_Template",new int[]{20});
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

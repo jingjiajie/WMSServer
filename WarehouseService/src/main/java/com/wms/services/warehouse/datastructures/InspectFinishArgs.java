@@ -3,9 +3,18 @@ package com.wms.services.warehouse.datastructures;
 public class InspectFinishArgs {
     private boolean allFinish = false;
     private int inspectionNoteId = -1;
+    private int warehouseEntryId = -1;
     private boolean qualified = true;
     private int personId = -1;
     private InspectFinishItem[] inspectFinishItems = new InspectFinishItem[]{};
+
+    public int getWarehouseEntryId() {
+        return warehouseEntryId;
+    }
+
+    public void setWarehouseEntryId(int warehouseEntryId) {
+        this.warehouseEntryId = warehouseEntryId;
+    }
 
     public boolean isAllFinish() {
         return allFinish;

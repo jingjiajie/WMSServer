@@ -9,13 +9,13 @@ public class InspectFinishItem {
     private BigDecimal returnAmount;
     private String returnUnit;
     private BigDecimal returnUnitAmount;
-    private int personId = -1;
+    private Integer personId = null;
 
-    public int getPersonId() {
+    public Integer getPersonId() {
         return personId;
     }
 
-    public void setPersonId(int personId) {
+    public void setPersonId(Integer personId) {
         this.personId = personId;
     }
 

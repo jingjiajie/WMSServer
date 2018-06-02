@@ -53,7 +53,7 @@
                             <!--<addClasspath>true</addClasspath>-->
                             <!--<useUniqueVersions>false</useUniqueVersions>-->
                             <!--<classpathPrefix>lib/</classpathPrefix>-->
-                            <!--<mainClass>com.wms.services.ledger.LedgerService</mainClass>-->
+                            <!--<mainClass>LedgerService</mainClass>-->
                         <!--</manifest>-->
                     <!--</archive>-->
                 <!--</configuration>-->

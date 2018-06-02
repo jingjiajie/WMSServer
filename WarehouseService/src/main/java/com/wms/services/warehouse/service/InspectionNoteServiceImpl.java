@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.service;
 
+import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.InspectionNoteDAO;
 import com.wms.services.warehouse.datastructures.InspectFinishArgs;
 import com.wms.services.warehouse.datastructures.InspectFinishItem;
@@ -58,7 +59,7 @@ public class InspectionNoteServiceImpl
     @Override
     public void update(String accountBook, InspectionNote[] objs) throws WMSServiceException {
         Stream.of(objs).forEach((obj)->{
-            new Validator("最后更新人员").notnull().validate(obj.getLastUpdatePersonId());
+            //new Validator("最后更新人员").notnull().validate(obj.getLastUpdatePersonId());
             obj.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
         });
         this.validateEntities(accountBook,objs);
@@ -91,7 +92,12 @@ public class InspectionNoteServiceImpl
             inspectionNote.setState(ALL_INSPECTED);
             inspectionNote.setLastUpdatePersonId(inspectFinishArgs.getPersonId());
             this.update(accountBook,new InspectionNote[]{inspectionNote});
-            InspectionNoteItemView[] inspectionNoteItemViews = this.inspectionNoteItemService.find(accountBook,new Condition().addCondition("inspectionNoteId",inspectFinishArgs.getInspectionNoteId()));
+            InspectionNoteItemView[] inspectionNoteItemViews = this.inspectionNoteItemService.find(accountBook,
+                    new Condition().addCondition("inspectionNoteId",inspectFinishArgs.getInspectionNoteId())
+                                    .addCondition("state",InspectionNoteItemService.NOT_INSPECTED));
+            if(inspectionNoteItemViews.length == 0){
+                return;
+            }
             InspectionNoteItem[] inspectionNoteItems = ReflectHelper.createAndCopyFields(inspectionNoteItemViews,InspectionNoteItem.class);
 
             //如果设置了人员，将每个条目的人员设置为相应人员。否则遵循各个条目原设置
@@ -117,6 +123,7 @@ public class InspectionNoteServiceImpl
         }else { //部分完成
             List<Integer> warehouseEntryIDsToReceive = new ArrayList<>();
             List<Integer> warehouseEntryIDsToReject = new ArrayList<>();
+            List<InspectionNoteItem> inspectionNoteItemsToUpdate = new ArrayList<>();
             InspectFinishItem[] inspectFinishItems = inspectFinishArgs.getInspectFinishItems();
             Stream.of(inspectFinishItems).forEach(inspectFinishItem -> {
 //                this.idChecker.check(InspectionNoteItemService.class, accountBook, inspectFinishItem.getInspectionNoteItemId(), "送检单条目");
@@ -124,20 +131,20 @@ public class InspectionNoteServiceImpl
                 inspectionNoteItem.setReturnAmount(inspectFinishItem.getReturnAmount());
                 inspectionNoteItem.setReturnUnit(inspectFinishItem.getReturnUnit());
                 inspectionNoteItem.setReturnUnitAmount(inspectFinishItem.getReturnAmount());
-                WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook,new Condition().addCondition("id",inspectionNoteItem.getWarehouseEntryItemId()))[0];
+                WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getWarehouseEntryItemId()))[0];
                 //如果返回数量小于送检数量，则将差值从入库单条目的库存里扣除，再收货。
                 BigDecimal unreturnedAmount = inspectionNoteItem.getAmount().subtract(inspectionNoteItem.getReturnAmount());
-                if(unreturnedAmount.compareTo(BigDecimal.ZERO) != 0){
+                if (unreturnedAmount.compareTo(BigDecimal.ZERO) != 0) {
                     TransferStock transferStock = new TransferStock();
-                    transferStock.setAmount(unreturnedAmount);
+                    transferStock.setAmount(unreturnedAmount.negate());
                     transferStock.setUnit(warehouseEntryItemView.getUnit());
                     transferStock.setUnitAmount(warehouseEntryItemView.getUnitAmount());
                     transferStock.setSupplyId(warehouseEntryItemView.getSupplyId());
                     transferStock.setSourceStorageLocationId(warehouseEntryItemView.getStorageLocationId());
                     transferStock.setRelatedOrderNo(warehouseEntryItemView.getWarehouseEntryNo());
-                    this.stockRecordService.addAmount(accountBook,transferStock);
+                    this.stockRecordService.addAmount(accountBook, transferStock);
                 }
-                if(inspectFinishItem.getPersonId() != -1){
+                if (inspectFinishItem.getPersonId() != null) {
                     inspectionNoteItem.setPersonId(inspectFinishItem.getPersonId());
                 }
                 if (inspectFinishItem.isQualified()) {
@@ -147,10 +154,18 @@ public class InspectionNoteServiceImpl
                     inspectionNoteItem.setState(InspectionNoteItemService.UNQUALIFIED);
                     warehouseEntryIDsToReject.add(inspectionNoteItem.getWarehouseEntryItemId());
                 }
-                this.warehouseEntryItemService.receive(accountBook,warehouseEntryIDsToReceive);
-                this.warehouseEntryItemService.reject(accountBook,warehouseEntryIDsToReject);
-                this.inspectionNoteItemService.update(accountBook, new InspectionNoteItem[]{inspectionNoteItem});
+                inspectionNoteItemsToUpdate.add(inspectionNoteItem);
             });
+            if(inspectionNoteItemsToUpdate.size() == 0) {
+                return;
+            }
+            this.inspectionNoteItemService.update(accountBook, ReflectHelper.listToArray(inspectionNoteItemsToUpdate, InspectionNoteItem.class));
+            if (warehouseEntryIDsToReceive.size() > 0) {
+                this.warehouseEntryItemService.receive(accountBook, warehouseEntryIDsToReceive);
+            }
+            if (warehouseEntryIDsToReject.size() > 0) {
+                this.warehouseEntryItemService.reject(accountBook, warehouseEntryIDsToReject);
+            }
         }
     }
 

@@ -3,15 +3,19 @@ package com.wms.services.warehouse.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.datastructures.InspectFinishArgs;
+import com.wms.services.warehouse.datastructures.InspectFinishItem;
 import com.wms.services.warehouse.service.InspectionNoteService;
+import com.wms.services.warehouse.service.WarehouseEntryService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.InspectionNote;
+import com.wms.utilities.model.InspectionNoteItem;
 import com.wms.utilities.model.InspectionNoteView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,6 +23,8 @@ import java.util.List;
 public class InspectionNoteControllerImpl implements InspectionNoteController {
     @Autowired
     InspectionNoteService inspectionNoteService;
+    @Autowired
+    WarehouseEntryService warehouseEntryService;
 
     @Override
     @RequestMapping(value = "/{strIDs}", method = RequestMethod.DELETE)
@@ -53,6 +59,12 @@ public class InspectionNoteControllerImpl implements InspectionNoteController {
     public void inspectFinish(@PathVariable("accountBook") String accountBook,
                               @RequestBody InspectFinishArgs inspectFinishArgs) {
         this.inspectionNoteService.inspectFinish(accountBook, inspectFinishArgs);
+        List<Integer> warehouseEntryIDs = new ArrayList<>();
+        List<Integer> inspectionNoteIDs = new ArrayList<>();
+        inspectionNoteIDs.add(inspectFinishArgs.getInspectionNoteId());
+        warehouseEntryIDs.add(inspectFinishArgs.getWarehouseEntryId());
+        this.inspectionNoteService.updateState(accountBook,inspectionNoteIDs);
+        this.warehouseEntryService.updateState(accountBook,warehouseEntryIDs);
     }
 
     @Override
