@@ -663,7 +663,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         if(iNeed==-1){ throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上数量不足。需要库存数量："+transferStock.getAmount().negate()+"，现有库存："+amountAvailableAll); }
 
         //相同的情况
-        if(newStorageLocationId==sourceStorageLocationId){
+        if(newStorageLocationId==sourceStorageLocationId&&newUnit.equals(unit)&&newUnitAmount.equals(unitAmount)){
             if(newUnit.equals(unit)&&newUnitAmount.equals(unitAmount)){
                 //如果完全相同
                 for(int i=stockRecordSource1.length-1;i>=iNeed;i--){
@@ -682,7 +682,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                         stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                         stockRecord.setAmount(stockRecordSource1[i].getAmount());
                         stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount());
-                        int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNewSave});
+                        int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecord});
                         if(newStockRecordId.length!=1)
                         {
                             throw new WMSServiceException("添加新库存记录失败！");
@@ -824,7 +824,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 //添加一条移位记录
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setNewStockRecordId(newStockRecordId[0]);
-                transferRecord.setSourceStockRecordId(stockRecordSource1[i].getStorageLocationId());
+                transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
                 transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }

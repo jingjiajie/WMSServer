@@ -1,5 +1,7 @@
 package com.wms.services;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
+import com.wms.services.warehouse.datastructures.TransferStock;
+import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.services.warehouse.service.StockTakingOrderItemService;
 import com.wms.services.warehouse.service.StockTakingOrderService;
 import com.wms.utilities.model.StockTakingOrder;
@@ -13,6 +15,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,8 +43,20 @@ public class WarehouseService {
         date = gc.getTime();
         long a = date.getTime();
         Timestamp time2 = new Timestamp(date.getTime());
-        /*
+
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
+        TransferStock transferStock=new TransferStock();
+        transferStock.setSupplyId(5);
+        transferStock.setUnit("1");
+        transferStock.setUnitAmount(new BigDecimal(1));
+        transferStock.setSourceStorageLocationId(23154);
+        transferStock.setNewStorageLocationId(23154);
+        transferStock.setNewUnit("1");
+        transferStock.setNewUnitAmount(new BigDecimal(1));
+        transferStock.setAmount(new BigDecimal(10));
+        transferStock.setRelatedOrderNo("xxxxxxxxxxxx");
+        stockRecordService.RealTransferStockUnitFlexible("WMS_Template",transferStock);
+        /*
         SupplierServices supplierServices = applicationContext.getBean(SupplierServices.class);
         Supplier supplier=new Supplier();
         supplier.setId(1);
@@ -52,7 +67,8 @@ public class WarehouseService {
         supplier.setCreateTime(time2);
         //supplierServices.updateHistory("WMS_Template",new Supplier[]{supplier});
 
-
+*/
+        /*
         DeliveryOrderService deliveryOrderService = applicationContext.getBean(DeliveryOrderService.class);
         TransferAuto transferAuto=new TransferAuto();
         transferAuto.setPersonId(19);
