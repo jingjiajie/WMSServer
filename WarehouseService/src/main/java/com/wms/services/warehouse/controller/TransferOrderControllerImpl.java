@@ -55,7 +55,7 @@ public class TransferOrderControllerImpl implements  TransferOrderController{
     }
 
     @Override
-    @RequestMapping(value = "/transfer_finish", method = RequestMethod.PUT)
+    @RequestMapping(value = "/transfer_some", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public void transferSome(@PathVariable("accountBook") String accountBook,
                                @RequestBody List<Integer> ids) {
