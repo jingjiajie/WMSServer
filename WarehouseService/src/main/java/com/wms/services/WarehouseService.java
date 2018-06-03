@@ -67,7 +67,7 @@ public class WarehouseService {
         Object[] stockRecordSource1 = stockRecordService.findCheckSupply("WMS_Template", stockRecordFind);
         */
 
-
+/*
         StockTakingOrderService stockTakingOrderService = applicationContext.getBean(StockTakingOrderService.class);
         StockTakingOrderItemService stockTakingOrderServiceItem = applicationContext.getBean(StockTakingOrderItemService.class);
         StockTakingOrderItemAdd stockTakingOrderItemAdd=new StockTakingOrderItemAdd();
@@ -82,6 +82,6 @@ public class WarehouseService {
         stockTakingOrder.setWarehouseId(-100);
         stockTakingOrder.setCreateTime(time2);
         stockTakingOrderService.update("WMS_Template",new StockTakingOrder[]{stockTakingOrder});
-
+*/
     }
 }
