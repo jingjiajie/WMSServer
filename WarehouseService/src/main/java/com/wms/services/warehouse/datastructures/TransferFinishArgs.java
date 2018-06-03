@@ -41,7 +41,7 @@ public class TransferFinishArgs {
         this.personId = personId;
     }
 
-    private boolean allFinish = false;//是否全部完成移库
+    private boolean allFinish = true;//是否全部完成移库
     private int transferOrderId = -1;//移库单ID
     private boolean qualified = true;
     private int targetStorageLocationId = -1;//目标库区ID

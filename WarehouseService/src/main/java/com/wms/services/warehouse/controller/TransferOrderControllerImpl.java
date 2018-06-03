@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/{accountBook}/transfer_order")
 public class TransferOrderControllerImpl implements  TransferOrderController{
@@ -51,6 +53,15 @@ public class TransferOrderControllerImpl implements  TransferOrderController{
                               @RequestBody TransferFinishArgs transferFinishArgs) {
         this.transferOrderService.transferFinish(accountBook, transferFinishArgs);
     }
+
+    @Override
+    @RequestMapping(value = "/transfer_finish", method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public void transferSome(@PathVariable("accountBook") String accountBook,
+                               @RequestBody List<Integer> ids) {
+        this.transferOrderService.transferSome(accountBook, ids);
+    }
+
     @Override
     @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)

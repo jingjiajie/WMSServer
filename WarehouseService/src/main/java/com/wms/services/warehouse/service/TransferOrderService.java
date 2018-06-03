@@ -6,9 +6,11 @@ import com.wms.utilities.model.TransferOrder;
 import com.wms.utilities.model.TransferOrderView;
 import com.wms.utilities.service.BaseService;
 
+import java.util.List;
+
 public interface TransferOrderService
     extends BaseService<TransferOrder,TransferOrderView>{
 
     void transferFinish(String accountBook, TransferFinishArgs transferFinishArgs) throws WMSServiceException;
-
+    void transferSome(String accountBook, List<Integer> ids) throws WMSServiceException;
 }
