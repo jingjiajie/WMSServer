@@ -93,4 +93,20 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
         List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {}.getType());
         return warehouseEntryService.getPreviewData(accountBook,ids);
     }
+
+    @Override
+    @RequestMapping(value="/receive",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void receive(@PathVariable("accountBook") String accountBook,
+                 @RequestBody List<Integer> ids) {
+        this.warehouseEntryService.receive(accountBook,ids);
+    }
+
+    @Override
+    @RequestMapping(value="/reject",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void reject(@PathVariable("accountBook") String accountBook,
+                        @RequestBody List<Integer> ids) {
+        this.warehouseEntryService.reject(accountBook,ids);
+    }
 }

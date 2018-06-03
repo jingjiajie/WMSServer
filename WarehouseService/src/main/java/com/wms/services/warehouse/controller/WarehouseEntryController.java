@@ -22,8 +22,7 @@ public interface WarehouseEntryController
     List<Integer> inspect(String accountBook, InspectArgs inspectArgs) throws WMSServiceException;
     void updateState(String accountBook,List<Integer> ids) throws WMSServiceException;
 
-    @RequestMapping(value="/preview/{strIDs}",method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    List<WarehouseEntryAndItems> getPreviewData(@PathVariable("accountBook") String accountBook,
-                                                @PathVariable("strIDs") String strIDs);
+    List<WarehouseEntryAndItems> getPreviewData(String accountBook,String strIDs);
+    void receive(String accountBook,List<Integer> ids);
+    void reject(String accountBook,List<Integer> ids);
 }

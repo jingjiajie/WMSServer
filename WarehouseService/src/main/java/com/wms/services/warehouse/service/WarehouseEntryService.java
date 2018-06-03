@@ -31,4 +31,6 @@ public interface WarehouseEntryService
     int PART_PUT_IN_STORAGE = 3;//部分入库
 
     List<WarehouseEntryAndItems> getPreviewData(String accountBook, List<Integer> warehouseEntryIDs) throws WMSServiceException;
+    void receive(String accountBook,List<Integer> id) throws WMSServiceException;
+    void reject(String accountBook,List<Integer> id) throws WMSServiceException;
 }

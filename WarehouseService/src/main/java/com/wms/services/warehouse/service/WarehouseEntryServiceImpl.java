@@ -19,7 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -224,5 +226,39 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
             }
         }
         return result;
+    }
+
+    @Override
+    public void receive(String accountBook,List<Integer> ids) throws WMSServiceException{
+        this.putIn(accountBook,ids,true);
+    }
+
+    @Override
+    public void reject(String accountBook,List<Integer> ids) throws WMSServiceException{
+        this.putIn(accountBook,ids,false);
+    }
+
+    private void putIn(String accountBook,List<Integer> ids,boolean ifQualified) {
+        if (ids.size() == 0) {
+            throw new WMSServiceException("请选择至少一个入库单！");
+        }
+        WarehouseEntry[] warehouseEntries = this.warehouseEntryDAO.findTable(accountBook, new Condition().addCondition("id", ids.toArray(), ConditionItem.Relation.IN));
+        Stream.of(warehouseEntries).forEach(warehouseEntry -> {
+            if (warehouseEntry.getState() != WAIT_FOR_PUT_IN_STORAGE) {
+                throw new WMSServiceException("入库单：" + warehouseEntry.getNo() + " 已经送检/入库，请勿重复操作！");
+            }
+            warehouseEntry.setState(ALL_PUT_IN_STORAGE);
+        });
+        //更新入库单
+        this.update(accountBook, warehouseEntries);
+        WarehouseEntryItemView[] warehouseEntryItemViews = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("warehouseEntryId", ids.toArray(), ConditionItem.Relation.IN));
+        if (warehouseEntryItemViews.length == 0) return;
+        List<Integer> itemIDs = Stream.of(warehouseEntryItemViews).map(item -> item.getId()).collect(Collectors.toList());
+        //更新入库单条目
+        if (ifQualified) {
+            this.warehouseEntryItemService.receive(accountBook, itemIDs);
+        } else {
+            this.warehouseEntryItemService.reject(accountBook, itemIDs);
+        }
     }
 }
