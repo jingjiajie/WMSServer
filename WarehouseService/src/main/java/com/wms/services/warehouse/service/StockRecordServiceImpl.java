@@ -1275,52 +1275,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
-        StockRecordView[] stockRecordViews=this.find(accountBook,cond);
-        List<StockRecordGroup> stockRecordGroupList=new ArrayList<>();
-        for(int i=0;i<stockRecordViews.length;i++){
-            StockRecordGroup stockRecordGroup=new StockRecordGroup();
-            StringBuffer stringBuffer=new StringBuffer();
-            //if(stockRecordViews[i].getUnit()==null||stockRecordViews[i].getUnit().equals("")){stringBuffer.append("empty");}
-            stringBuffer.append(stockRecordViews[i].getUnit());
-            stringBuffer.append(";");
-            //if(stockRecordViews[i].getUnitAmount()==null){stringBuffer.append("empty");}
-            stringBuffer.append(stockRecordViews[i].getUnitAmount());
-            stringBuffer.append(";");
-            stringBuffer.append(stockRecordViews[i].getStorageLocationId());
-            stringBuffer.append(";");
-            stringBuffer.append(stockRecordViews[i].getSupplyId());
-            stringBuffer.append(";");
-            stringBuffer.append(stockRecordViews[i].getWarehouseId());
-            stringBuffer.append(";");
-            stringBuffer.append(stockRecordViews[i].getBatchNo());
-            stockRecordGroup.setGroup(stringBuffer.toString());
-            stockRecordGroup.setStockRecordView(stockRecordViews[i]);
-            stockRecordGroupList.add(stockRecordGroup);
-        }
-        StockRecordGroup[] resultArray=null;
-        resultArray = (StockRecordGroup[]) Array.newInstance(StockRecordGroup.class,stockRecordGroupList.size());
-        stockRecordGroupList.toArray(resultArray);
-        Map<String,List<StockRecordGroup>> stockRecordGroup = Stream.of(resultArray).collect(Collectors.groupingBy(StockRecordGroup::getGroup));
-        Iterator<Map.Entry<String,List<StockRecordGroup>>> entries = stockRecordGroup.entrySet().iterator();
-        List<StockRecordView> stockRecordViewList=new ArrayList<>();
-        //将每组最新的加到一个列表中
-        while (entries.hasNext()) {
-            Map.Entry<String, List<StockRecordGroup>> entry = entries.next();
-            List<StockRecordGroup> stockRecordGroup1=entry.getValue();
-            StockRecordGroup[] resultArray1=null;
-            resultArray1 = (StockRecordGroup[]) Array.newInstance(StockRecordGroup.class,stockRecordGroup1.size());
-            stockRecordGroup1.toArray(resultArray1);
-            StockRecordView stockRecordViewNewest = resultArray1[0].getStockRecordView();
-            for(int i=1;i<resultArray1.length-1;i++){
-                if(stockRecordViewNewest.getTime().compareTo(resultArray1[i].getStockRecordView().getTime())<0){
-                    stockRecordViewNewest = resultArray1[i].getStockRecordView();
-                }
-            }
-            stockRecordViewList.add(stockRecordViewNewest);
-        }
-        StockRecordView[] result=null;
-        result = (StockRecordView[]) Array.newInstance(StockRecordView.class,stockRecordViewList.size());
-        stockRecordViewList.toArray(result);
-        return result.length;
+        return this.stockRecordDAO.findCount(accountBook,cond);
     }
 }
