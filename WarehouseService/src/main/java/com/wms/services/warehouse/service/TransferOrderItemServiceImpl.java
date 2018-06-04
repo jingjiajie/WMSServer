@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.TransferOrderItemDAO;
+import com.wms.services.warehouse.datastructures.TransferAuto;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
@@ -14,6 +15,7 @@ import com.wms.utilities.model.TransferOrderItem;
 import com.wms.utilities.model.TransferOrderItemView;
 
 import javax.enterprise.inject.New;
+import javax.xml.bind.annotation.XmlElementDecl;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.stream.Stream;
@@ -31,6 +33,13 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
     StockRecordService stockRecordService;
     @Autowired
     IDChecker idChecker;
+
+    private static boolean autotransfer=false;
+
+    public void autoTrans(boolean a){
+        autotransfer=a;
+    }
+
 
     @Override
     public int[] add(String accountBook, TransferOrderItem[] transferOrderItems) throws WMSServiceException {
@@ -57,7 +66,9 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
         });
         this.validateEntities(accountBook, transferOrderItems);
-        //todo this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
+        //if (!autotransfer) {
+            //this.updateTransferOrder(accountBook, transferOrderItems[0].getTransferOrderId(), transferOrderItems[0].getPersonId());
+        //}
         return this.transferOrderItemDAO.add(accountBook, transferOrderItems);
     }
 
@@ -166,7 +177,9 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             }
 
         }));
-        //todo this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
+        //if(!autotransfer){
+        //this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
+        //}
         this.transferOrderItemDAO.update(accountBook, transferOrderItems);
     }
 
@@ -232,7 +245,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         return this.transferOrderItemDAO.findCount(accountBook,cond);
     }
 
-    private void updateTransferOrder( String accountBook,int transferOrderId ,int lastUpdatePersonId){
+    public void updateTransferOrder( String accountBook,int transferOrderId ,int lastUpdatePersonId){
         //TODO idChecker.check(PersonService.class,accountBook,lastUpdatePersonId," 人员");
         TransferOrderView[] transferOrderViews= transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
         if(transferOrderViews.length==0){
