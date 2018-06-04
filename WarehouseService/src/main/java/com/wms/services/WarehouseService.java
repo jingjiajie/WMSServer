@@ -1,9 +1,12 @@
 package com.wms.services;
+import com.wms.services.warehouse.datastructures.StockRecordGroup;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.services.warehouse.service.StockTakingOrderItemService;
 import com.wms.services.warehouse.service.StockTakingOrderService;
+import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.StockRecordView;
 import com.wms.utilities.model.StockTakingOrder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -15,12 +18,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @SpringBootApplication
 //@EnableDiscoveryClient
@@ -45,6 +49,54 @@ public class WarehouseService {
         Timestamp time2 = new Timestamp(date.getTime());
 
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
+        StockRecordView[] stockRecordViews=stockRecordService.find("WMS_Template",new Condition().addCondition("warehouseId",new Integer[]{-1}));
+        List<StockRecordGroup> stockRecordGroupList=new ArrayList<>();
+        for(int i=0;i<stockRecordViews.length;i++){
+            StockRecordGroup stockRecordGroup=new StockRecordGroup();
+            StringBuffer stringBuffer=new StringBuffer();
+            //if(stockRecordViews[i].getUnit()==null||stockRecordViews[i].getUnit().equals("")){stringBuffer.append("empty");}
+            stringBuffer.append(stockRecordViews[i].getUnit());
+            stringBuffer.append(";");
+            //if(stockRecordViews[i].getUnitAmount()==null){stringBuffer.append("empty");}
+            stringBuffer.append(stockRecordViews[i].getUnitAmount());
+            stringBuffer.append(";");
+            stringBuffer.append(stockRecordViews[i].getStorageLocationId());
+            stringBuffer.append(";");
+            stringBuffer.append(stockRecordViews[i].getSupplyId());
+            stringBuffer.append(";");
+            stringBuffer.append(stockRecordViews[i].getWarehouseId());
+            stringBuffer.append(";");
+            stringBuffer.append(stockRecordViews[i].getBatchNo());
+            stockRecordGroup.setGroup(stringBuffer.toString());
+            stockRecordGroup.setStockRecordView(stockRecordViews[i]);
+            stockRecordGroupList.add(stockRecordGroup);
+        }
+        StockRecordGroup[] resultArray=null;
+        resultArray = (StockRecordGroup[]) Array.newInstance(StockRecordGroup.class,stockRecordGroupList.size());
+        stockRecordGroupList.toArray(resultArray);
+        Map<String,List<StockRecordGroup>> stockRecordGroup = Stream.of(resultArray).collect(Collectors.groupingBy(StockRecordGroup::getGroup));
+        Iterator<Map.Entry<String,List<StockRecordGroup>>> entries = stockRecordGroup.entrySet().iterator();
+        List<StockRecordView> stockRecordViewList=new ArrayList<>();
+        //将每组最新的加到一个列表中
+        while (entries.hasNext()) {
+            Map.Entry<String, List<StockRecordGroup>> entry = entries.next();
+            List<StockRecordGroup> stockRecordGroup1=entry.getValue();
+            StockRecordGroup[] resultArray1=null;
+            resultArray1 = (StockRecordGroup[]) Array.newInstance(StockRecordGroup.class,stockRecordGroup1.size());
+            stockRecordGroup1.toArray(resultArray1);
+            StockRecordView stockRecordViewNewest = resultArray1[0].getStockRecordView();
+            for(int i=1;i<resultArray1.length-1;i++){
+                    if(stockRecordViewNewest.getTime().compareTo(resultArray1[i].getStockRecordView().getTime())<0){
+                        stockRecordViewNewest = resultArray1[i].getStockRecordView();
+                    }
+                }
+                stockRecordViewList.add(stockRecordViewNewest);
+            }
+        StockRecordView[] result=null;
+        result = (StockRecordView[]) Array.newInstance(StockRecordView.class,stockRecordViewList.size());
+        stockRecordViewList.toArray(result);
+        StockRecordView[] stockRecordViews1=stockRecordService.findNewest("WMS_Template",new Condition().addCondition("warehouseId",new Integer[]{-1}));
+        /*
         TransferStock transferStock=new TransferStock();
         transferStock.setSupplyId(5);
         transferStock.setUnit("1");

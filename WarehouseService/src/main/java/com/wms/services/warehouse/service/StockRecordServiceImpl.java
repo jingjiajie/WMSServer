@@ -4,6 +4,7 @@ package com.wms.services.warehouse.service;
 import com.sun.xml.internal.bind.api.impl.NameConverter;
 import com.wms.services.warehouse.dao.StockRecordDAO;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
+import com.wms.services.warehouse.datastructures.StockRecordGroup;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
@@ -25,9 +26,8 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import java.sql.Timestamp;
@@ -135,6 +135,56 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         return this.stockRecordDAO.find(accountBook, cond);
     }
 
+    @Override
+    public StockRecordView[] findNewest(String accountBook, Condition cond) throws WMSServiceException{
+        StockRecordView[] stockRecordViews=this.stockRecordDAO.find(accountBook, cond);
+        List<StockRecordGroup> stockRecordGroupList=new ArrayList<>();
+        for(int i=0;i<stockRecordViews.length;i++){
+            StockRecordGroup stockRecordGroup=new StockRecordGroup();
+            StringBuffer stringBuffer=new StringBuffer();
+            //if(stockRecordViews[i].getUnit()==null||stockRecordViews[i].getUnit().equals("")){stringBuffer.append("empty");}
+            stringBuffer.append(stockRecordViews[i].getUnit());
+            stringBuffer.append(";");
+            //if(stockRecordViews[i].getUnitAmount()==null){stringBuffer.append("empty");}
+            stringBuffer.append(stockRecordViews[i].getUnitAmount());
+            stringBuffer.append(";");
+            stringBuffer.append(stockRecordViews[i].getStorageLocationId());
+            stringBuffer.append(";");
+            stringBuffer.append(stockRecordViews[i].getSupplyId());
+            stringBuffer.append(";");
+            stringBuffer.append(stockRecordViews[i].getWarehouseId());
+            stringBuffer.append(";");
+            stringBuffer.append(stockRecordViews[i].getBatchNo());
+            stockRecordGroup.setGroup(stringBuffer.toString());
+            stockRecordGroup.setStockRecordView(stockRecordViews[i]);
+            stockRecordGroupList.add(stockRecordGroup);
+        }
+        StockRecordGroup[] resultArray=null;
+        resultArray = (StockRecordGroup[]) Array.newInstance(StockRecordGroup.class,stockRecordGroupList.size());
+        stockRecordGroupList.toArray(resultArray);
+        Map<String,List<StockRecordGroup>> stockRecordGroup = Stream.of(resultArray).collect(Collectors.groupingBy(StockRecordGroup::getGroup));
+        Iterator<Map.Entry<String,List<StockRecordGroup>>> entries = stockRecordGroup.entrySet().iterator();
+        List<StockRecordView> stockRecordViewList=new ArrayList<>();
+        //将每组最新的加到一个列表中
+        while (entries.hasNext()) {
+            Map.Entry<String, List<StockRecordGroup>> entry = entries.next();
+            List<StockRecordGroup> stockRecordGroup1=entry.getValue();
+            StockRecordGroup[] resultArray1=null;
+            resultArray1 = (StockRecordGroup[]) Array.newInstance(StockRecordGroup.class,stockRecordGroup1.size());
+            stockRecordGroup1.toArray(resultArray1);
+            StockRecordView stockRecordViewNewest = resultArray1[0].getStockRecordView();
+            for(int i=1;i<resultArray1.length-1;i++){
+                if(stockRecordViewNewest.getTime().compareTo(resultArray1[i].getStockRecordView().getTime())<0){
+                    stockRecordViewNewest = resultArray1[i].getStockRecordView();
+                }
+            }
+            stockRecordViewList.add(stockRecordViewNewest);
+        }
+        StockRecordView[] result=null;
+        result = (StockRecordView[]) Array.newInstance(StockRecordView.class,stockRecordViewList.size());
+        stockRecordViewList.toArray(result);
+        return result;
+    }
 
     @Override
     public void RealTransformStock(String accountBook, TransferStock transferStock)
