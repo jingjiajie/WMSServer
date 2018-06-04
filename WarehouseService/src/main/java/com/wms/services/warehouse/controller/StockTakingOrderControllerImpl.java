@@ -3,7 +3,9 @@ package com.wms.services.warehouse.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.datastructures.StockTakingItemDelete;
+import com.wms.services.warehouse.datastructures.StockTakingOrderAndItems;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
+import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
 import com.wms.services.warehouse.service.StockTakingOrderService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.StockTakingOrder;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/{accountBook}/stocktaking_order")
@@ -62,5 +66,15 @@ public class StockTakingOrderControllerImpl implements StockTakingOrderControlle
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.stockTakingOrderService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/preview/{strIDs}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<StockTakingOrderAndItems> getPreviewData(@PathVariable("accountBook") String accountBook,
+                                                         @PathVariable("strIDs") String strIDs){
+        Gson gson = new Gson();
+        List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {}.getType());
+        return stockTakingOrderService.getPreviewData(accountBook,ids);
     }
 }
