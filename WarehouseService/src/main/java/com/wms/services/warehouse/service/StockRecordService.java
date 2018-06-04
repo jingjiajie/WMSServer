@@ -17,6 +17,8 @@ public interface StockRecordService
 
     StockRecordView[] find(String accountBook, StockRecordFind stockRecordFind);
 
+    StockRecordView[] findNewest(String accountBook, Condition condition);
+
     Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind,String ids);
 
     Object[] findCheckSupplyAmountAll(String accountBook, StockRecordFind stockRecordFind,String ids);
