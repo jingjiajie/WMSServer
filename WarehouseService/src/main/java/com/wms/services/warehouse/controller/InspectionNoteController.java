@@ -1,6 +1,8 @@
 package com.wms.services.warehouse.controller;
 
 import com.wms.services.warehouse.datastructures.InspectFinishArgs;
+import com.wms.services.warehouse.datastructures.InspectionNoteAndItems;
+import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
 import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.InspectionNote;
@@ -15,4 +17,7 @@ public interface InspectionNoteController {
     void inspectFinish(String accountBook, InspectFinishArgs inspectFinishArgs);
     long findCount(String accountBook,String condStr);
     void updateState(String accountBook, List<Integer> ids) throws WMSServiceException;
+
+    List<InspectionNoteAndItems> getPreviewData(String accountBook, String strIDs);
+    List<InspectionNoteAndItems> getPreviewDataQualifiedOnly(String accountBook, String strIDs);
 }

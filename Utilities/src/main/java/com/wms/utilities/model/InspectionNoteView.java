@@ -26,6 +26,9 @@ public class InspectionNoteView {
     private String warehouseName;
     private String createPersonName;
     private String lastUpdatePersonName;
+    private String inboundDeliveryOrderNo;
+    private String purchaseOrderNo;
+    private String sapNo;
 
     @Id
     @Basic
@@ -226,5 +229,35 @@ public class InspectionNoteView {
     public int hashCode() {
 
         return Objects.hash(id, warehouseEntryId, warehouseId, no, state, description, inspectionTime, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime, warehouseEntryNo, supplierNo, supplierName, warehouseName, createPersonName, lastUpdatePersonName);
+    }
+
+    @Basic
+    @Column(name = "InboundDeliveryOrderNo", nullable = true, length = 64)
+    public String getInboundDeliveryOrderNo() {
+        return inboundDeliveryOrderNo;
+    }
+
+    public void setInboundDeliveryOrderNo(String inboundDeliveryOrderNo) {
+        this.inboundDeliveryOrderNo = inboundDeliveryOrderNo;
+    }
+
+    @Basic
+    @Column(name = "PurchaseOrderNo", nullable = true, length = 64)
+    public String getPurchaseOrderNo() {
+        return purchaseOrderNo;
+    }
+
+    public void setPurchaseOrderNo(String purchaseOrderNo) {
+        this.purchaseOrderNo = purchaseOrderNo;
+    }
+
+    @Basic
+    @Column(name = "SAPNo", nullable = true, length = 64)
+    public String getSapNo() {
+        return sapNo;
+    }
+
+    public void setSapNo(String sapNo) {
+        this.sapNo = sapNo;
     }
 }

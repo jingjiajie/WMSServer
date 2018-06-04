@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.datastructures.InspectFinishArgs;
 import com.wms.services.warehouse.datastructures.InspectFinishItem;
+import com.wms.services.warehouse.datastructures.InspectionNoteAndItems;
+import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
 import com.wms.services.warehouse.service.InspectionNoteService;
 import com.wms.services.warehouse.service.WarehouseEntryService;
 import com.wms.utilities.datastructures.Condition;
@@ -63,8 +65,8 @@ public class InspectionNoteControllerImpl implements InspectionNoteController {
         List<Integer> inspectionNoteIDs = new ArrayList<>();
         inspectionNoteIDs.add(inspectFinishArgs.getInspectionNoteId());
         warehouseEntryIDs.add(inspectFinishArgs.getWarehouseEntryId());
-        this.inspectionNoteService.updateState(accountBook,inspectionNoteIDs);
-        this.warehouseEntryService.updateState(accountBook,warehouseEntryIDs);
+        this.inspectionNoteService.updateState(accountBook, inspectionNoteIDs);
+        this.warehouseEntryService.updateState(accountBook, warehouseEntryIDs);
     }
 
     @Override
@@ -81,8 +83,29 @@ public class InspectionNoteControllerImpl implements InspectionNoteController {
     public void updateState(
             @PathVariable("accountBook") String accountBook,
             @RequestBody List<Integer> ids) throws WMSServiceException {
-        this.inspectionNoteService.updateState(accountBook,ids);
+        this.inspectionNoteService.updateState(accountBook, ids);
     }
 
+    @Override
+    @RequestMapping(value = "/preview/{strIDs}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<InspectionNoteAndItems> getPreviewData(@PathVariable("accountBook") String accountBook,
+                                                       @PathVariable("strIDs") String strIDs) {
+        Gson gson = new Gson();
+        List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {
+        }.getType());
+        return inspectionNoteService.getPreviewData(accountBook, ids, false);
+    }
+
+    @Override
+    @RequestMapping(value = "/preview/qualified/{strIDs}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<InspectionNoteAndItems> getPreviewDataQualifiedOnly(@PathVariable("accountBook") String accountBook,
+                                                                    @PathVariable("strIDs") String strIDs) {
+        Gson gson = new Gson();
+        List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {
+        }.getType());
+        return inspectionNoteService.getPreviewData(accountBook, ids, true);
+    }
 
 }
