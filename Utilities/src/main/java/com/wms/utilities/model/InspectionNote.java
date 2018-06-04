@@ -17,6 +17,7 @@ public class InspectionNote {
     private Timestamp createTime;
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
+    private String sapNo;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -151,5 +152,15 @@ public class InspectionNote {
     public int hashCode() {
 
         return Objects.hash(id, warehouseEntryId, warehouseId, no, state, description, inspectionTime, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime);
+    }
+
+    @Basic
+    @Column(name = "SAPNo", nullable = true, length = 64)
+    public String getSapNo() {
+        return sapNo;
+    }
+
+    public void setSapNo(String sapNo) {
+        this.sapNo = sapNo;
     }
 }

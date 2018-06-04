@@ -30,6 +30,9 @@ public class InspectionNoteItemView {
     private String materialProductLine;
     private Integer supplierId;
     private Integer materialId;
+    private String warehouseEntryItemUnit;
+    private BigDecimal warehouseEntryItemUnitAmount;
+    private BigDecimal warehouseEntryItemRealAmount;
 
     @Id
     @Basic
@@ -102,7 +105,6 @@ public class InspectionNoteItemView {
         this.unitAmount = unitAmount;
     }
 
-
     @Basic
     @Column(name = "ReturnAmount", nullable = true, precision = 3)
     public BigDecimal getReturnAmount() {
@@ -132,7 +134,6 @@ public class InspectionNoteItemView {
     public void setReturnUnitAmount(BigDecimal returnUnitAmount) {
         this.returnUnitAmount = returnUnitAmount;
     }
-
 
     @Basic
     @Column(name = "Comment", nullable = true, length = 64)
@@ -273,5 +274,35 @@ public class InspectionNoteItemView {
 
     public void setMaterialId(Integer materialId) {
         this.materialId = materialId;
+    }
+
+    @Basic
+    @Column(name = "WarehouseEntryItemUnit", nullable = true, length = 64)
+    public String getWarehouseEntryItemUnit() {
+        return warehouseEntryItemUnit;
+    }
+
+    public void setWarehouseEntryItemUnit(String warehouseEntryItemUnit) {
+        this.warehouseEntryItemUnit = warehouseEntryItemUnit;
+    }
+
+    @Basic
+    @Column(name = "WarehouseEntryItemUnitAmount", nullable = true, precision = 3)
+    public BigDecimal getWarehouseEntryItemUnitAmount() {
+        return warehouseEntryItemUnitAmount;
+    }
+
+    public void setWarehouseEntryItemUnitAmount(BigDecimal warehouseEntryItemUnitAmount) {
+        this.warehouseEntryItemUnitAmount = warehouseEntryItemUnitAmount;
+    }
+
+    @Basic
+    @Column(name = "WarehouseEntryItemRealAmount", nullable = true, precision = 3)
+    public BigDecimal getWarehouseEntryItemRealAmount() {
+        return warehouseEntryItemRealAmount;
+    }
+
+    public void setWarehouseEntryItemRealAmount(BigDecimal warehouseEntryItemRealAmount) {
+        this.warehouseEntryItemRealAmount = warehouseEntryItemRealAmount;
     }
 }

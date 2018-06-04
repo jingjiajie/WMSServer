@@ -1273,8 +1273,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         return resultArray;
     }
 
-
-
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
         return this.stockRecordDAO.findCount(accountBook,cond);
