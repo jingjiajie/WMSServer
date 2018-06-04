@@ -2,13 +2,12 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.InspectionNoteDAO;
-import com.wms.services.warehouse.datastructures.InspectFinishArgs;
-import com.wms.services.warehouse.datastructures.InspectFinishItem;
-import com.wms.services.warehouse.datastructures.TransferStock;
+import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
@@ -210,5 +209,28 @@ public class InspectionNoteServiceImpl
             }
         }
         this.update(accountBook, ReflectHelper.listToArray(inspectionNotesToUpdate,InspectionNote.class));
+    }
+
+    @Override
+    public List<InspectionNoteAndItems> getPreviewData(String accountBook, List<Integer> inspectionNoteIDs,boolean qualifiedOnly) throws WMSServiceException{
+        InspectionNoteView[] inspectionNoteViews = this.inspectionNoteDAO.find(accountBook,new Condition().addCondition("id",inspectionNoteIDs.toArray(), ConditionItem.Relation.IN));
+        Condition condItem = new Condition().addCondition("inspectionNoteId",inspectionNoteIDs.toArray(), ConditionItem.Relation.IN);
+        if(qualifiedOnly){
+            condItem.addCondition("state",InspectionNoteItemService.QUALIFIED);
+        }
+        InspectionNoteItemView[] itemViews = this.inspectionNoteItemService.find(accountBook,condItem);
+        List<InspectionNoteAndItems> result = new ArrayList<>();
+        for(InspectionNoteView inspectionNoteView : inspectionNoteViews){
+            InspectionNoteAndItems inspectionNoteAndItems = new InspectionNoteAndItems();
+            inspectionNoteAndItems.setInspectionNote(inspectionNoteView);
+            inspectionNoteAndItems.setInspectionNoteItems(new ArrayList<>());
+            result.add(inspectionNoteAndItems);
+            for(InspectionNoteItemView itemView : itemViews){
+                if(itemView.getInspectionNoteId() == inspectionNoteView.getId()){
+                    inspectionNoteAndItems.getInspectionNoteItems().add(itemView);
+                }
+            }
+        }
+        return result;
     }
 }
