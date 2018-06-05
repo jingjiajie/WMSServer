@@ -186,6 +186,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
                 }
             });
+            //TODO 尝试更新移库单时间
+            //transferOrderItemService.updateTransferOrder(accountBook,newTransferOrderID ,transferArgs.getTransferItems()[0].getTransferOrder().getCreatePersonId());
         });
     }
 
@@ -206,7 +208,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         for(int i=0;i<safetyStockViews.length;i++){
             StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
                     new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
-            if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[0].getAmount()) == -1) {
+            if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1) {
                 TransferOrderItem transferOrderItem = new TransferOrderItem();
                 transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
                 transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
@@ -227,7 +229,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
         transferArgs.setTransferItems(new TransferItem[]{transferItem});
         transferArgs.setAutoCommit(true);
+        //boolean a = true;
+        //transferOrderItemService.autoTrans(a);
         this.transferPakage(accountBook, transferArgs);
+
 
     }
 
