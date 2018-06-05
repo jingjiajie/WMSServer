@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import com.wms.utilities.model.DeliveryOrder;
 import com.wms.utilities.model.DeliveryOrderView;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/{accountBook}/delivery_order")
 public class DeliveryOrderControllerImpl implements DeliveryOrderController {
@@ -68,6 +70,14 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     public void transferAuto(@PathVariable("accountBook") String accountBook,
                                @RequestBody TransferAuto transferAuto){
         this.deliveryOrderService.transferAuto(accountBook,transferAuto);
+    }
+
+    @Override
+    @RequestMapping(value = "/delivey_finish",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void deliveryFinish(@PathVariable("accountBook") String accountBook,
+                             @RequestBody List<Integer> ids){
+        this.deliveryOrderService.deliveryFinish(accountBook,ids);
     }
 
     @Override

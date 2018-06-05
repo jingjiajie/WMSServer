@@ -24,6 +24,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import com.wms.utilities.ReflectHelper;
 
 @Service
 @Transactional
@@ -234,6 +235,61 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         this.transferPakage(accountBook, transferArgs);
 
 
+    }
+
+    @Override
+    public void deliveryFinish(String accountBook,List<Integer> ids) throws WMSServiceException{
+        if (ids.size() == 0) {
+            throw new WMSServiceException("请选择至少一个出库单！");
+        }
+        DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook, new Condition().addCondition("id", ids.toArray()));
+        if (deliveryOrderViews.length == 0) return;
+        Stream.of(deliveryOrderViews).forEach(deliveryOrderView -> {
+            if (deliveryOrderView.getState() ==TransferOrderItemService.STATE_ALL_FINISH) {
+                throw new WMSServiceException("入库单条目已经完成移库，请勿重复操作！");
+            }
+        });
+
+/*
+        if(transferFinishArgs.isAllFinish()){ //整单完成
+            TransferOrderItemView[] transferOrderItemViews = this.transferOrderItemService.find(accountBook,new Condition().addCondition("transferOrderId",new Integer[]{transferFinishArgs.getTransferOrderId()}));
+            TransferOrderItem[] transferOrderItems = ReflectHelper.createAndCopyFields(transferOrderItemViews,TransferOrderItem.class);
+
+            //如果设置了人员，将每个条目的人员设置为相应人员。否则遵循各个条目原设置
+            if(transferFinishArgs.getPersonId() != -1){
+                idChecker.check(PersonService.class,accountBook,transferFinishArgs.getPersonId(),"作业人员");//外检检测
+                Stream.of(transferOrderItems).forEach(transferOrderItem -> transferOrderItem.setPersonId(transferFinishArgs.getPersonId()));
+            }
+            //将每一条的实际移动数量同步成计划移动数量
+            Stream.of(transferOrderItems).forEach(transferOrderItem -> {
+                transferOrderItem.setRealAmount(transferOrderItem.getScheduledAmount());
+            });
+            //整单完成所有状态变更为移库完成 2
+
+            Stream.of(transferOrderItems).forEach(transferOrderItem -> transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH));
+
+            this.transferOrderItemService.update(accountBook, transferOrderItems);
+        }
+        else { //部分完成
+
+            Stream.of(transferFinishItems).forEach(transferFinishItem -> {
+
+                TransferOrderItemView transferOrderItemView = this.transferOrderItemService.find(accountBook, new Condition().addCondition("id",new Integer[]{ transferFinishItem.getTransferOrderItemId()}))[0];
+                TransferOrderItem transferOrderItem = ReflectHelper.createAndCopyFields(transferOrderItemView, TransferOrderItem.class);
+
+                //把请求移动的数量加上已经移动的实际数量
+                transferOrderItem.setRealAmount(transferOrderItem.getScheduledAmount());
+
+                if(transferFinishItem.getPersonId() != -1){
+                    transferOrderItem.setPersonId(transferFinishItem.getPersonId());
+                }
+                //部分完成移库操作
+                transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+
+                this.transferOrderItemService.update(accountBook, new TransferOrderItem[]{transferOrderItem});
+            });
+        }
+        */
     }
 
 
