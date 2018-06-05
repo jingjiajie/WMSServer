@@ -56,17 +56,17 @@ public class WarehouseService {
         StockRecordService stockRecordService=applicationContext.getBean(StockRecordService.class);
 
         TransferStock transferStock=new TransferStock();
-        transferStock.setSupplyId(23);
-        transferStock.setUnit("个");
+        transferStock.setSupplyId(16);
+        transferStock.setUnit("去");
         transferStock.setUnitAmount(new BigDecimal(1));
-        transferStock.setSourceStorageLocationId(37);
-        transferStock.setNewStorageLocationId(37);
-        //transferStock.setNewUnit("1");
-        //transferStock.setNewUnitAmount(new BigDecimal(1));
+        transferStock.setSourceStorageLocationId(23156);
+        transferStock.setNewStorageLocationId(23154);
+        transferStock.setNewUnit("1.2");
+        transferStock.setNewUnitAmount(new BigDecimal(1.2));
         transferStock.setAmount(new BigDecimal(10));
         transferStock.setRelatedOrderNo("xxxxxxxxxxxx");
         //stockRecordService.addAmount("WMS_Template",transferStock);
-        stockRecordService.RealTransformStock("WMS_Template",transferStock);
+        stockRecordService.RealTransferStockUnitFlexible("WMS_Template",transferStock);
         /*
         SupplierServices supplierServices = applicationContext.getBean(SupplierServices.class);
         Supplier supplier=new Supplier();
