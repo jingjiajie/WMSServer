@@ -266,7 +266,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount());
-                    int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNewSave});
+                    int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecord});
                     if(newStockRecordId.length!=1)
                     {
                         throw new WMSServiceException("添加新库存记录失败！");

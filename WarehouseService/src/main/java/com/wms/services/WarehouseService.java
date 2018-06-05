@@ -53,18 +53,20 @@ public class WarehouseService {
         stockTakingOrderIds.add(new Integer(1));
         StockTakingOrderService stockTakingOrderService=applicationContext.getBean(StockTakingOrderService.class);
         List<StockTakingOrderAndItems> stockTakingOrderAndItems=stockTakingOrderService.getPreviewData("WMS_Template",stockTakingOrderIds);
-        /*
+        StockRecordService stockRecordService=applicationContext.getBean(StockRecordService.class);
+
         TransferStock transferStock=new TransferStock();
-        transferStock.setSupplyId(5);
-        transferStock.setUnit("1");
+        transferStock.setSupplyId(23);
+        transferStock.setUnit("个");
         transferStock.setUnitAmount(new BigDecimal(1));
-        transferStock.setSourceStorageLocationId(23154);
-        transferStock.setNewStorageLocationId(23154);
-        transferStock.setNewUnit("1");
-        transferStock.setNewUnitAmount(new BigDecimal(1));
+        transferStock.setSourceStorageLocationId(37);
+        transferStock.setNewStorageLocationId(37);
+        //transferStock.setNewUnit("1");
+        //transferStock.setNewUnitAmount(new BigDecimal(1));
         transferStock.setAmount(new BigDecimal(10));
         transferStock.setRelatedOrderNo("xxxxxxxxxxxx");
-        stockRecordService.RealTransferStockUnitFlexible("WMS_Template",transferStock);
+        //stockRecordService.addAmount("WMS_Template",transferStock);
+        stockRecordService.RealTransformStock("WMS_Template",transferStock);
         /*
         SupplierServices supplierServices = applicationContext.getBean(SupplierServices.class);
         Supplier supplier=new Supplier();
