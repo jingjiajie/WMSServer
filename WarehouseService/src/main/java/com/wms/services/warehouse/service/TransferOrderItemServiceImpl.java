@@ -119,7 +119,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             {
                 //todo 是移库前先把当前一步实际数量加回去可用数量
                 TransferStock fixTransferStock = new TransferStock();
-                fixTransferStock.setModifyAvailableAmount(transferOrderItem.getRealAmount());//实际要移动的数量加回到可用数量
+                fixTransferStock.setModifyAvailableAmount(transferOrderItem.getRealAmount().subtract(oriItemViews[0].getRealAmount()));//实际要移动的数量差值加回到可用数量
                 fixTransferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位
                 fixTransferStock.setSupplyId(transferOrderItem.getSupplyId());
                 fixTransferStock.setUnit(transferOrderItem.getUnit());

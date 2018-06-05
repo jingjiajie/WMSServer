@@ -146,9 +146,9 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
                 this.stockRecordService.addAmount(accountBook, transferStock);
             }
-            deliveryOrderItem.setState(1);
+            deliveryOrderItem.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
             if (deliveryOrderItem.getScheduledAmount().equals(deliveryOrderItem.getRealAmount())){
-                deliveryOrderItem.setState(2);
+                deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
             }
         });
         this.deliveryOrderItemDAO.update(accountBook,deliveryOrderItems);

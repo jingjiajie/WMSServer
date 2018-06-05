@@ -73,7 +73,7 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     }
 
     @Override
-    @RequestMapping(value = "/delivey_finish",method = RequestMethod.POST)
+    @RequestMapping(value = "/delivery_finish",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void deliveryFinish(@PathVariable("accountBook") String accountBook,
                              @RequestBody List<Integer> ids){

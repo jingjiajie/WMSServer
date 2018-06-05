@@ -49,6 +49,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     StockRecordService stockRecordService;
     @Autowired
     SupplyService supplyService;
+    @Autowired
+    DeliveryOrderItemService deliveryOrderItemService;
 
 
     private static final String NO_PREFIX = "D";
@@ -209,6 +211,12 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         for(int i=0;i<safetyStockViews.length;i++){
             StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
                     new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
+            StockRecordView[] stockRecordViews1 = stockRecordService.find(accountBook,
+                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
+
+            if (stockRecordViews1[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1){
+                throw new WMSServiceException(String.format("当前备货区(%s)库存充足，不需要备货", safetyStockViews[i].getSourceStorageLocationName()));
+            }
             if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1) {
                 TransferOrderItem transferOrderItem = new TransferOrderItem();
                 transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
@@ -239,18 +247,52 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
     @Override
     public void deliveryFinish(String accountBook,List<Integer> ids) throws WMSServiceException{
+
+        //TODO 人员id没往下传
         if (ids.size() == 0) {
             throw new WMSServiceException("请选择至少一个出库单！");
         }
-        DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook, new Condition().addCondition("id", ids.toArray()));
+        //DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook, new Condition().addCondition("id", ids.toArray()));
+
+        DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook,new Condition().addCondition("id",ids.toArray(), ConditionItem.Relation.IN));
         if (deliveryOrderViews.length == 0) return;
+        DeliveryOrder[] deliveryOrders = ReflectHelper.createAndCopyFields(deliveryOrderViews,DeliveryOrder.class);
+
+        DeliveryOrderItemView[] itemViews = this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("deliveryOrderId",ids.toArray(), ConditionItem.Relation.IN));
+        DeliveryOrderItem[] deliveryOrderItems = ReflectHelper.createAndCopyFields(itemViews,DeliveryOrderItem.class);
+
+        Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
+            if (deliveryOrderItem.getState() !=TransferOrderItemService.STATE_ALL_FINISH) {
+                deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
+                deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+            }
+        });
+        this.deliveryOrderItemService.update(accountBook,deliveryOrderItems);
+        Stream.of(deliveryOrders).forEach(deliveryOrder -> {
+            if (deliveryOrder.getState() !=TransferOrderItemService.STATE_ALL_FINISH) {
+                deliveryOrder.setState(TransferOrderItemService.STATE_ALL_FINISH);
+            }
+        });
+        this.update(accountBook,deliveryOrders);
+
+
+/*
+
+
         Stream.of(deliveryOrderViews).forEach(deliveryOrderView -> {
             if (deliveryOrderView.getState() ==TransferOrderItemService.STATE_ALL_FINISH) {
                 throw new WMSServiceException("入库单条目已经完成移库，请勿重复操作！");
             }
+            DeliveryOrderItemView[] deliveryOrderItemViews = this.deliveryOrderItemService.find(accountBook, new Condition().addCondition("deliveryOrderId", new Integer[]{ deliveryOrderView.getId()}));
+            Stream.of(deliveryOrderItemViews).forEach(deliveryOrderItemView -> {
+            DeliveryOrderItem deliveryOrderItem=new DeliveryOrderItem();
+            deliveryOrderItem.setTransferOrderItemId(transferOrderItemViews[i].getId());
+            deliveryOrderItem.setPersonId(transferOrderItemViews[i].getPersonId());
+            deliveryOrderItem.add(transferFinishItem);
+            });
         });
 
-/*
+
         if(transferFinishArgs.isAllFinish()){ //整单完成
             TransferOrderItemView[] transferOrderItemViews = this.transferOrderItemService.find(accountBook,new Condition().addCondition("transferOrderId",new Integer[]{transferFinishArgs.getTransferOrderId()}));
             TransferOrderItem[] transferOrderItems = ReflectHelper.createAndCopyFields(transferOrderItemViews,TransferOrderItem.class);
