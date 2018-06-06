@@ -104,7 +104,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 throw new WMSServiceException("无法修改移库单条目的实际移动数量，如要操作请新建移库单");
             }
 
-            if (deliveryOrderItem.getScheduledAmount().equals(oriItemView.getScheduledAmount()))//如果计划移库数量发生变化
+            if (!deliveryOrderItem.getScheduledAmount().equals(oriItemView.getScheduledAmount()))//如果计划移库数量发生变化
             {
                 if (deliveryOrderItem.getScheduledAmount().subtract(oriItemView.getRealAmount()).compareTo(new BigDecimal(0))<=0)//如果新修改时计划数量小于当前实际已经移动的数量
                 {
@@ -135,7 +135,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
 
                 TransferStock transferStock=new TransferStock();
-                transferStock.setAmount(deltaRealAmount);//TODO 待定
+                transferStock.setAmount(new BigDecimal(0).subtract(deltaRealAmount));//TODO 待定
                 transferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
                 transferStock.setRelatedOrderNo(deliveryOrderView.getNo());
                 transferStock.setSupplyId(deliveryOrderItem.getSupplyId());

@@ -125,6 +125,7 @@ public class SupplyServiceImpl implements SupplyService {
             Condition cond = new Condition();
             cond.addCondition("supplierId",new Integer[]{supplies[i].getSupplierId()});
             cond.addCondition("materialId",new Integer[]{supplies[i].getMaterialId()});
+            cond.addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()});
             cond.addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
 
 
