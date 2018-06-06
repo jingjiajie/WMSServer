@@ -3,10 +3,7 @@ import com.wms.services.warehouse.datastructures.StockRecordGroup;
 import com.wms.services.warehouse.datastructures.StockTakingOrderAndItems;
 import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import com.wms.services.warehouse.datastructures.TransferStock;
-import com.wms.services.warehouse.service.StockRecordService;
-import com.wms.services.warehouse.service.StockTakingOrderItemService;
-import com.wms.services.warehouse.service.StockTakingOrderService;
-import com.wms.services.warehouse.service.WarehouseEntryService;
+import com.wms.services.warehouse.service.*;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.*;
@@ -38,17 +35,7 @@ public class WarehouseService {
     public static void main(String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
-        WarehouseEntryService warehouseEntryService = applicationContext.getBean(WarehouseEntryService.class);
-        warehouseEntryService.test();
-/*
-        StockRecordService stockRecordService=applicationContext.getBean(StockRecordService.class);
-        TransferStock transferStock=new TransferStock();
-        transferStock.setAmount(new BigDecimal(-1));
-        transferStock.setUnitAmount(new BigDecimal(1));
-        transferStock.setUnit("个");
-        transferStock.setSourceStorageLocationId(29);
-        transferStock.setRelatedOrderNo("xxx");
-        transferStock.setSupplyId(5);
-        stockRecordService.addAmount("WMS_Template",transferStock);*/
+        TestService testService = applicationContext.getBean(TestService.class);
+        testService.test();
     }
 }
