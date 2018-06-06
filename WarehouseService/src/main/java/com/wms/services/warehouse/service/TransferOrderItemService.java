@@ -11,4 +11,5 @@ public interface TransferOrderItemService
     int STATE_PARTIAL_FINNISH = 1;
     int STATE_ALL_FINISH = 2;
     public void autoTrans(boolean a);
+    void test();
 }

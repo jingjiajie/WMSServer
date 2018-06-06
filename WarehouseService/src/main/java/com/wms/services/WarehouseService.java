@@ -39,8 +39,8 @@ public class WarehouseService {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
         WarehouseEntryService warehouseEntryService = applicationContext.getBean(WarehouseEntryService.class);
-       // warehouseEntryService.test();
-
+        warehouseEntryService.test();
+/*
         StockRecordService stockRecordService=applicationContext.getBean(StockRecordService.class);
         TransferStock transferStock=new TransferStock();
         transferStock.setAmount(new BigDecimal(-1));
@@ -49,6 +49,6 @@ public class WarehouseService {
         transferStock.setSourceStorageLocationId(29);
         transferStock.setRelatedOrderNo("xxx");
         transferStock.setSupplyId(5);
-        stockRecordService.addAmount("WMS_Template",transferStock);
+        stockRecordService.addAmount("WMS_Template",transferStock);*/
     }
 }

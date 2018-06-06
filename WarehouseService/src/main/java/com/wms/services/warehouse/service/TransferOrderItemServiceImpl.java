@@ -265,4 +265,9 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         transferOrder.setState(transferOrderViews[0].getState());
         transferOrderService.update(accountBook,new TransferOrder[]{transferOrder});
     }
+
+    @Transactional
+    public void test(){
+       //stockRecordService.modifyAvailableAmount("WMS_Template",);
+    }
 }
