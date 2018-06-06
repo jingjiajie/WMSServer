@@ -237,7 +237,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                 if (!idAndReturnAmount.containsKey(warehouseEntryItemID)) {
                     throw new WMSServiceException("Receive返回数量参数未包含ID：" + warehouseEntryItemID);
                 }
-                transferStock.setAmount(idAndReturnAmount.get(warehouseEntryItemID));
+                transferStock.setAmount(warehouseEntryItem.getRealAmount().subtract(warehouseEntryItem.getInspectionAmount().subtract(idAndReturnAmount.get(warehouseEntryItemID))));
             }else{
                 transferStock.setAmount(warehouseEntryItem.getRealAmount());
             }
@@ -276,7 +276,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                 if (!idAndReturnAmount.containsKey(warehouseEntryItemID)) {
                     throw new WMSServiceException("Receive返回数量参数未包含ID：" + warehouseEntryItemID);
                 }
-                transferStock.setAmount(idAndReturnAmount.get(warehouseEntryItemID));
+                transferStock.setAmount(warehouseEntryItem.getRealAmount().subtract(warehouseEntryItem.getInspectionAmount().subtract(idAndReturnAmount.get(warehouseEntryItemID))));
             }else{
                 transferStock.setAmount(warehouseEntryItem.getRealAmount());
             }

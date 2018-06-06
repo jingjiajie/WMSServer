@@ -172,16 +172,16 @@ public class InspectionNoteServiceImpl
         }
     }
 
-    private void validateEntities(String accpountBook,InspectionNote[] inspectionNotes) throws WMSServiceException{
+    private void validateEntities(String accountBook,InspectionNote[] inspectionNotes) throws WMSServiceException{
         Stream.of(inspectionNotes).forEach((inspectionNote -> {
             new Validator("状态").min(0).max(2).validate(inspectionNote.getState());
             new Validator("创建时间").notnull().validate(inspectionNote.getCreateTime());
 
-            idChecker.check(WarehouseEntryService.class,accpountBook,inspectionNote.getWarehouseEntryId(),"关联入库单")
-                    .check(WarehouseService.class,accpountBook,inspectionNote.getWarehouseId(),"仓库")
-                    .check(PersonService.class,accpountBook,inspectionNote.getCreatePersonId(),"创建人员");
+            idChecker.check(WarehouseEntryService.class,accountBook,inspectionNote.getWarehouseEntryId(),"关联入库单")
+                    .check(WarehouseService.class,accountBook,inspectionNote.getWarehouseId(),"仓库")
+                    .check(PersonService.class,accountBook,inspectionNote.getCreatePersonId(),"创建人员");
             if(inspectionNote.getLastUpdatePersonId() != null){
-                idChecker.check(PersonService.class,accpountBook,inspectionNote.getLastUpdatePersonId(),"最后更新人员");
+                idChecker.check(PersonService.class,accountBook,inspectionNote.getLastUpdatePersonId(),"最后更新人员");
             }
         }));
     }

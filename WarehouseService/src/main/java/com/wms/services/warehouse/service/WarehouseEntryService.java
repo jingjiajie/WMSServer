@@ -33,4 +33,6 @@ public interface WarehouseEntryService
     List<WarehouseEntryAndItems> getPreviewData(String accountBook, List<Integer> warehouseEntryIDs) throws WMSServiceException;
     void receive(String accountBook,List<Integer> id) throws WMSServiceException;
     void reject(String accountBook,List<Integer> id) throws WMSServiceException;
+
+    void test();
 }
