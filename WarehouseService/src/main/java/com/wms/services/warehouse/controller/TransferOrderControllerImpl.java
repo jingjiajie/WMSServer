@@ -2,6 +2,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.TransferOrderAndItems;
 import com.wms.services.warehouse.datastructures.TransferFinishArgs;
 import com.wms.services.warehouse.service.TransferOrderService;
 import com.wms.utilities.datastructures.Condition;
@@ -68,5 +69,15 @@ public class TransferOrderControllerImpl implements  TransferOrderController{
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.transferOrderService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/preview/{strIDs}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<TransferOrderAndItems> getPreviewData(@PathVariable("accountBook") String accountBook,
+                                                      @PathVariable("strIDs") String strIDs){
+        Gson gson = new Gson();
+        List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {}.getType());
+        return transferOrderService.getPreviewData(accountBook,ids);
     }
 }

@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.TransferOrderDAO;
+import com.wms.services.warehouse.datastructures.TransferOrderAndItems;
 import com.wms.services.warehouse.datastructures.TransferFinishArgs;
 import com.wms.services.warehouse.datastructures.TransferFinishItem;
 import com.wms.utilities.IDChecker;
@@ -205,9 +206,27 @@ public class TransferOrderServiceImpl implements TransferOrderService{
 
     }
 
-
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
         return this.transferOrderDAO.findCount(accountBook,cond);
+    }
+
+    @Override
+    public List<TransferOrderAndItems> getPreviewData(String accountBook, List<Integer> transferOrderIDs) throws WMSServiceException{
+        TransferOrderView[] transferOrderViews = this.transferOrderDAO.find(accountBook,new Condition().addCondition("id",transferOrderIDs.toArray(), ConditionItem.Relation.IN));
+        TransferOrderItemView[] itemViews = this.transferOrderItemService.find(accountBook,new Condition().addCondition("transferOrderId",transferOrderIDs.toArray(), ConditionItem.Relation.IN));
+        List<TransferOrderAndItems> result = new ArrayList<>();
+        for(TransferOrderView transferOrderView : transferOrderViews){
+            TransferOrderAndItems transferOrderAndItems = new TransferOrderAndItems();
+            transferOrderAndItems.setTransferOrder(transferOrderView);
+            transferOrderAndItems.setTransferOrderItems(new ArrayList<>());
+            result.add(transferOrderAndItems);
+            for(TransferOrderItemView itemView : itemViews){
+                if(itemView.getTransferOrderId() == transferOrderView.getId()){
+                    transferOrderAndItems.getTransferOrderItems().add(itemView);
+                }
+            }
+        }
+        return result;
     }
 }

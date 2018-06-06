@@ -283,7 +283,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     @Override
     public List<DeliveryOrderAndItems> getPreviewData(String accountBook, List<Integer> deliveryOrderIDs) throws WMSServiceException{
         DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook,new Condition().addCondition("id",deliveryOrderIDs.toArray(), ConditionItem.Relation.IN));
-        DeliveryOrderItemView[] itemViews = this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("warehouseEntryId",deliveryOrderIDs.toArray(), ConditionItem.Relation.IN));
+        DeliveryOrderItemView[] itemViews = this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("deliveryOrderId",deliveryOrderIDs.toArray(), ConditionItem.Relation.IN));
         List<DeliveryOrderAndItems> result = new ArrayList<>();
         for(DeliveryOrderView deliveryOrderView : deliveryOrderViews){
             DeliveryOrderAndItems deliveryOrderAndItems = new DeliveryOrderAndItems();
