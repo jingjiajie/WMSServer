@@ -17,6 +17,8 @@ import com.wms.utilities.vaildator.Validator;
 import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -31,9 +33,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import java.sql.Timestamp;
-
+//@Transactional(propagation = Propagation.MANDATORY)
+@Transactional()
 @Service
-@Transactional
 public class StockRecordServiceImpl implements StockRecordService {
     @Autowired
     StockRecordDAO stockRecordDAO;
@@ -470,7 +472,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setAvailableAmount(amount);
                 addId=stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
-                //transferRecord.setWarehouseId(warehouseId[0].intValue());
+                transferRecord.setWarehouseId(warehouseId[0].intValue());
                 transferRecord.setNewStockRecordId(addId[0]);
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
@@ -491,8 +493,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
-                transferRecord.setNewStockRecordId(addId[0]);
-                //transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
+                //transferRecord.setNewStockRecordId(addId[0]);
+                transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
             else
@@ -557,7 +559,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     TransferRecord transferRecord=new TransferRecord();
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
                     //transferRecord.setNewStockRecordId(addId[0]);
-                    transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
+                    transferRecord.setSourceStockRecordId(stockRecordSource[i].getId());
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
                 else{
@@ -579,7 +581,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     TransferRecord transferRecord=new TransferRecord();
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
                     //transferRecord.setNewStockRecordId(addId[0]);
-                    transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
+                    transferRecord.setSourceStockRecordId(stockRecordSource[i].getId());
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
             }

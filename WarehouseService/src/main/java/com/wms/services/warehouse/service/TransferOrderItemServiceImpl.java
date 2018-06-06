@@ -10,6 +10,7 @@ import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.utilities.model.TransferOrderItem;
 import com.wms.utilities.model.TransferOrderItemView;
@@ -21,7 +22,7 @@ import java.sql.Timestamp;
 import java.util.stream.Stream;
 
 @Service
-@Transactional
+@Transactional(isolation = Isolation.READ_UNCOMMITTED)
 public class TransferOrderItemServiceImpl implements TransferOrderItemService{
     @Autowired
     TransferOrderItemDAO transferOrderItemDAO;

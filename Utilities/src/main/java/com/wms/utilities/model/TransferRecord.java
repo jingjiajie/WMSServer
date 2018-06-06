@@ -1,18 +1,17 @@
 package com.wms.utilities.model;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 public class TransferRecord {
     private int id;
     private int warehouseId;
-    private int sourceStockRecordId;
-    private int newStockRecordId;
+    private Integer sourceStockRecordId;
+    private Integer newStockRecordId;
 
     @Id
-    @Column(name = "ID", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -22,7 +21,7 @@ public class TransferRecord {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
@@ -32,22 +31,22 @@ public class TransferRecord {
     }
 
     @Basic
-    @Column(name = "SourceStockRecordID", nullable = false)
-    public int getSourceStockRecordId() {
+    @Column(name = "SourceStockRecordID")
+    public Integer getSourceStockRecordId() {
         return sourceStockRecordId;
     }
 
-    public void setSourceStockRecordId(int sourceStockRecordId) {
+    public void setSourceStockRecordId(Integer sourceStockRecordId) {
         this.sourceStockRecordId = sourceStockRecordId;
     }
 
     @Basic
-    @Column(name = "NewStockRecordID", nullable = false)
-    public int getNewStockRecordId() {
+    @Column(name = "NewStockRecordID")
+    public Integer getNewStockRecordId() {
         return newStockRecordId;
     }
 
-    public void setNewStockRecordId(int newStockRecordId) {
+    public void setNewStockRecordId(Integer newStockRecordId) {
         this.newStockRecordId = newStockRecordId;
     }
 
@@ -55,16 +54,25 @@ public class TransferRecord {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         TransferRecord that = (TransferRecord) o;
-        return id == that.id &&
-                warehouseId == that.warehouseId &&
-                sourceStockRecordId == that.sourceStockRecordId &&
-                newStockRecordId == that.newStockRecordId;
+
+        if (id != that.id) return false;
+        if (warehouseId != that.warehouseId) return false;
+        if (sourceStockRecordId != null ? !sourceStockRecordId.equals(that.sourceStockRecordId) : that.sourceStockRecordId != null)
+            return false;
+        if (newStockRecordId != null ? !newStockRecordId.equals(that.newStockRecordId) : that.newStockRecordId != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, warehouseId, sourceStockRecordId, newStockRecordId);
+        int result = id;
+        result = 31 * result + warehouseId;
+        result = 31 * result + (sourceStockRecordId != null ? sourceStockRecordId.hashCode() : 0);
+        result = 31 * result + (newStockRecordId != null ? newStockRecordId.hashCode() : 0);
+        return result;
     }
 }
