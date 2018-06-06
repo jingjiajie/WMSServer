@@ -265,7 +265,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
     @Transactional
     public void test(){
-        WarehouseEntry warehouseEntry = this.warehouseEntryDAO.findTable("WMS_Template",new Condition().addCondition("id",2))[0];
+        WarehouseEntry warehouseEntry = this.warehouseEntryDAO.get("WMS_Template",2);
         System.out.println("直接查询到的单号:"+warehouseEntry.getNo());
         warehouseEntry.setNo("!!!");
         this.update("WMS_Template",new WarehouseEntry[]{warehouseEntry});
