@@ -1,31 +1,23 @@
 package com.wms.services;
-import com.wms.services.warehouse.datastructures.StockRecordGroup;
 import com.wms.services.warehouse.datastructures.StockTakingOrderAndItems;
-import com.wms.services.warehouse.datastructures.StockTakingOrderItemAdd;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.services.warehouse.service.StockRecordService;
-import com.wms.services.warehouse.service.StockTakingOrderItemService;
 import com.wms.services.warehouse.service.StockTakingOrderService;
+import com.wms.services.warehouse.service.TransferRecordService;
 import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.model.StockRecordView;
-import com.wms.utilities.model.StockTakingOrder;
+import com.wms.utilities.model.TransferRecordView;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SpringBootApplication
 //@EnableDiscoveryClient
@@ -66,7 +58,9 @@ public class WarehouseService {
         transferStock.setAmount(new BigDecimal(-1));
         transferStock.setRelatedOrderNo("xxxxxxxxxxxx");
         //stockRecordService.addAmount("WMS_Template",transferStock);
-        stockRecordService.addAmount("WMS_Template",transferStock);
+        //tockRecordService.addAmount("WMS_Template",transferStock);
+        TransferRecordService transferRecordService=applicationContext.getBean(TransferRecordService.class);
+        TransferRecordView[] transferRecordViews=transferRecordService.find("WMS_Template",new Condition());
         /*
         SupplierServices supplierServices = applicationContext.getBean(SupplierServices.class);
         Supplier supplier=new Supplier();

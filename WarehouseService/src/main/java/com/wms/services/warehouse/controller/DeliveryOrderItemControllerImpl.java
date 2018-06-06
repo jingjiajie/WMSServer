@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.service.DeliveryOrderItemService;
 import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.DeliveryOrderItem;
 import com.wms.utilities.model.DeliveryOrderItemView;
 import org.springframework.beans.factory.annotation.Autowired;

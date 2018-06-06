@@ -17,6 +17,8 @@ import com.wms.utilities.vaildator.Validator;
 import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -31,9 +33,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import java.sql.Timestamp;
-
+@Transactional(propagation = Propagation.MANDATORY)
 @Service
-@Transactional
 public class StockRecordServiceImpl implements StockRecordService {
     @Autowired
     StockRecordDAO stockRecordDAO;
