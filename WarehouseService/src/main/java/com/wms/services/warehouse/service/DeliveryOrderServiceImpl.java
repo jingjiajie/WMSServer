@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.datastructures.TransferArgs;
 import com.wms.services.warehouse.datastructures.TransferItem;
+import com.wms.services.warehouse.datastructures.DeliveryOrderAndItems;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -215,7 +216,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
 
             if (stockRecordViews1[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1){
-                throw new WMSServiceException(String.format("当前备货区(%s)库存充足，不需要备货", safetyStockViews[i].getSourceStorageLocationName()));
+                throw new WMSServiceException(String.format("当前备货源库位(%s)库存不足，无法备货", safetyStockViews[i].getSourceStorageLocationName()));
             }
             if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1) {
                 TransferOrderItem transferOrderItem = new TransferOrderItem();
@@ -276,64 +277,27 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         this.update(accountBook,deliveryOrders);
 
 
-/*
 
-
-        Stream.of(deliveryOrderViews).forEach(deliveryOrderView -> {
-            if (deliveryOrderView.getState() ==TransferOrderItemService.STATE_ALL_FINISH) {
-                throw new WMSServiceException("入库单条目已经完成移库，请勿重复操作！");
-            }
-            DeliveryOrderItemView[] deliveryOrderItemViews = this.deliveryOrderItemService.find(accountBook, new Condition().addCondition("deliveryOrderId", new Integer[]{ deliveryOrderView.getId()}));
-            Stream.of(deliveryOrderItemViews).forEach(deliveryOrderItemView -> {
-            DeliveryOrderItem deliveryOrderItem=new DeliveryOrderItem();
-            deliveryOrderItem.setTransferOrderItemId(transferOrderItemViews[i].getId());
-            deliveryOrderItem.setPersonId(transferOrderItemViews[i].getPersonId());
-            deliveryOrderItem.add(transferFinishItem);
-            });
-        });
-
-
-        if(transferFinishArgs.isAllFinish()){ //整单完成
-            TransferOrderItemView[] transferOrderItemViews = this.transferOrderItemService.find(accountBook,new Condition().addCondition("transferOrderId",new Integer[]{transferFinishArgs.getTransferOrderId()}));
-            TransferOrderItem[] transferOrderItems = ReflectHelper.createAndCopyFields(transferOrderItemViews,TransferOrderItem.class);
-
-            //如果设置了人员，将每个条目的人员设置为相应人员。否则遵循各个条目原设置
-            if(transferFinishArgs.getPersonId() != -1){
-                idChecker.check(PersonService.class,accountBook,transferFinishArgs.getPersonId(),"作业人员");//外检检测
-                Stream.of(transferOrderItems).forEach(transferOrderItem -> transferOrderItem.setPersonId(transferFinishArgs.getPersonId()));
-            }
-            //将每一条的实际移动数量同步成计划移动数量
-            Stream.of(transferOrderItems).forEach(transferOrderItem -> {
-                transferOrderItem.setRealAmount(transferOrderItem.getScheduledAmount());
-            });
-            //整单完成所有状态变更为移库完成 2
-
-            Stream.of(transferOrderItems).forEach(transferOrderItem -> transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH));
-
-            this.transferOrderItemService.update(accountBook, transferOrderItems);
-        }
-        else { //部分完成
-
-            Stream.of(transferFinishItems).forEach(transferFinishItem -> {
-
-                TransferOrderItemView transferOrderItemView = this.transferOrderItemService.find(accountBook, new Condition().addCondition("id",new Integer[]{ transferFinishItem.getTransferOrderItemId()}))[0];
-                TransferOrderItem transferOrderItem = ReflectHelper.createAndCopyFields(transferOrderItemView, TransferOrderItem.class);
-
-                //把请求移动的数量加上已经移动的实际数量
-                transferOrderItem.setRealAmount(transferOrderItem.getScheduledAmount());
-
-                if(transferFinishItem.getPersonId() != -1){
-                    transferOrderItem.setPersonId(transferFinishItem.getPersonId());
-                }
-                //部分完成移库操作
-                transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
-
-                this.transferOrderItemService.update(accountBook, new TransferOrderItem[]{transferOrderItem});
-            });
-        }
-        */
     }
 
+    @Override
+    public List<DeliveryOrderAndItems> getPreviewData(String accountBook, List<Integer> deliveryOrderIDs) throws WMSServiceException{
+        DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook,new Condition().addCondition("id",deliveryOrderIDs.toArray(), ConditionItem.Relation.IN));
+        DeliveryOrderItemView[] itemViews = this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("warehouseEntryId",deliveryOrderIDs.toArray(), ConditionItem.Relation.IN));
+        List<DeliveryOrderAndItems> result = new ArrayList<>();
+        for(DeliveryOrderView deliveryOrderView : deliveryOrderViews){
+            DeliveryOrderAndItems deliveryOrderAndItems = new DeliveryOrderAndItems();
+            deliveryOrderAndItems.setDeliveryOrder(deliveryOrderView);
+            deliveryOrderAndItems.setDeliveryOrderItems(new ArrayList<>());
+            result.add(deliveryOrderAndItems);
+            for(DeliveryOrderItemView itemView : itemViews){
+                if(itemView.getDeliveryOrderId() == deliveryOrderView.getId()){
+                    deliveryOrderAndItems.getDeliveryOrderItems().add(itemView);
+                }
+            }
+        }
+        return result;
+    }
 
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
