@@ -245,7 +245,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         if(iNeed==-1){
             StorageLocationView[] storageLocationViews1= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews1=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
-            throw new WMSServiceException("物料“"+supplyViews1[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews1[0].getName()+"”上数量不足。需要库存数量："+transferStock.getAmount().negate()+"，现有库存："+amountAvailableAll); }
+            throw new WMSServiceException("物料“"+supplyViews1[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews1[0].getName()+"”上数量不足。需要库存数量："+transferStock.getAmount()+"，现有库存："+amountAvailableAll); }
 
         //判断新库位和源库位是否相同
         //如果相同新建一条完全相同的 然后增加移位记录
@@ -266,7 +266,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount());
-                    int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNewSave});
+                    int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecord});
                     if(newStockRecordId.length!=1)
                     {
                         throw new WMSServiceException("添加新库存记录失败！");
@@ -453,6 +453,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
         //移入的情况
         if(transferStock.getAmount().compareTo(new BigDecimal(0)) >=0){
+            int addId[]={};
             // 没有相关记录，就新建一条,这种记录没有生产日期和失效日期
             if(stockRecordSource.length==0) {
                 StockRecord stockRecord = new StockRecord();
@@ -467,7 +468,11 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(amount);
                 stockRecord.setAvailableAmount(amount);
-                stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+                addId=stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+                TransferRecord transferRecord=new TransferRecord();
+                //transferRecord.setWarehouseId(warehouseId[0].intValue());
+                transferRecord.setNewStockRecordId(addId[0]);
+                transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
             //找到一条记录，则可以合并
             else if(stockRecordSource.length==1){
@@ -483,7 +488,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(stockRecordSource[0].getAmount().add(amount));
                 stockRecord.setAvailableAmount(stockRecordSource[0].getAmount().add(amount));
-                stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+                addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+                TransferRecord transferRecord=new TransferRecord();
+                transferRecord.setWarehouseId(warehouseId[0].intValue());
+                transferRecord.setNewStockRecordId(addId[0]);
+                //transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
+                transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
             else
             {
@@ -493,6 +503,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         //如果为移出
         else
         {
+            int addId[]={};
            StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
            SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
            if (stockRecordSource.length==0)
@@ -542,7 +553,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setAmount(stockRecordSource[i].getAmount().subtract(stockRecordSource[i].getAvailableAmount()));
                     stockRecord.setAvailableAmount(new BigDecimal(0));
-                    stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+                    addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+                    TransferRecord transferRecord=new TransferRecord();
+                    transferRecord.setWarehouseId(warehouseId[0].intValue());
+                    //transferRecord.setNewStockRecordId(addId[0]);
+                    transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
+                    transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
                 else{
                     StockRecord stockRecord1 = new StockRecord();
@@ -559,7 +575,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     //stockRecord.setAvailableAmount(stockRecordSource[i].getAvailableAmount().subtract(stockRecordSource[i].getAmount().subtract(amountAvailableAll.add(transferStock.getAmount()))));
                     stockRecord1.setAmount(stockRecordSource[i].getAmount().subtract(stockRecordSource[i].getAvailableAmount().subtract(amountAvailableAll.add(transferStock.getAmount()))));
                     stockRecord1.setAvailableAmount(amountAvailableAll.add(transferStock.getAmount()));
-                    stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord1});
+                    addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord1});
+                    TransferRecord transferRecord=new TransferRecord();
+                    transferRecord.setWarehouseId(warehouseId[0].intValue());
+                    //transferRecord.setNewStockRecordId(addId[0]);
+                    transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
+                    transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
             }
         }
@@ -682,7 +703,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
             //throw new WMSServiceException("没查到符合要求的源库存记录，请检查相关信息！");
-            throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上数量不足。需要库存数量："+transferStock.getAmount().negate()+"，现有库存：0");
+            throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上数量不足。需要库存数量："+transferStock.getAmount()+"，现有库存：0");
         }
 
         //进行排序
@@ -710,7 +731,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         }
         StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
         SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
-        if(iNeed==-1){ throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上数量不足。需要库存数量："+transferStock.getAmount().negate()+"，现有库存："+amountAvailableAll); }
+        if(iNeed==-1){ throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上数量不足。需要库存数量："+transferStock.getAmount()+"，现有库存："+amountAvailableAll); }
 
         //相同的情况
         if(newStorageLocationId==sourceStorageLocationId&&newUnit.equals(unit)&&newUnitAmount.equals(unitAmount)){

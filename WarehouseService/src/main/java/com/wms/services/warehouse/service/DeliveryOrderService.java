@@ -6,9 +6,14 @@ import com.wms.utilities.service.BaseService;
 import com.wms.utilities.model.DeliveryOrder;
 import com.wms.utilities.model.DeliveryOrderView;
 
+import java.util.List;
+
 public interface DeliveryOrderService
  extends BaseService<DeliveryOrder,DeliveryOrderView>{
 
     public void transferPakage(String accountBook, TransferArgs transferArgs);
     public void transferAuto(String accountBook, TransferAuto TransferAuto);
+    public void deliveryFinish(String accountBook,List<Integer> ids);
+
+
 }

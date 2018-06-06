@@ -6,10 +6,13 @@ import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.model.DeliveryOrder;
 import com.wms.utilities.model.DeliveryOrderView;
 
+import java.util.List;
+
 public interface DeliveryOrderController
     extends BaseController<DeliveryOrder,DeliveryOrderView>{
 
     void transferPakage(String accountBook, TransferArgs transferArgs);
     void transferAuto(String accountBook, TransferAuto transferAuto);
+    void deliveryFinish(String accountBook,List<Integer> ids);
 
 }
