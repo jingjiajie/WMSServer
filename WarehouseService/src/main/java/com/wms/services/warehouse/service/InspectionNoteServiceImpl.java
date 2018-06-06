@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -81,27 +83,27 @@ public class InspectionNoteServiceImpl
     }
 
     @Override
-    public void inspectFinish(String accountBook, InspectFinishArgs inspectFinishArgs) throws WMSServiceException{
-        if(inspectFinishArgs.isAllFinish()){ //整单完成
+    public void inspectFinish(String accountBook, InspectFinishArgs inspectFinishArgs) throws WMSServiceException {
+        if (inspectFinishArgs.isAllFinish()) { //整单完成
             //this.idChecker.check(InspectionNoteService.class,accountBook,inspectFinishArgs.getInspectionNoteId(),"送检单");
-            InspectionNote inspectionNote = this.inspectionNoteDAO.get(accountBook,inspectFinishArgs.getInspectionNoteId());
-            if(inspectionNote.getState() == ALL_INSPECTED){
-                throw new WMSServiceException("送检单 "+inspectionNote.getNo()+" 已送检完成，请不要重复操作！");
+            InspectionNote inspectionNote = this.inspectionNoteDAO.get(accountBook, inspectFinishArgs.getInspectionNoteId());
+            if (inspectionNote.getState() == ALL_INSPECTED) {
+                throw new WMSServiceException("送检单 " + inspectionNote.getNo() + " 已送检完成，请不要重复操作！");
             }
             inspectionNote.setState(ALL_INSPECTED);
             inspectionNote.setLastUpdatePersonId(inspectFinishArgs.getPersonId());
-            this.update(accountBook,new InspectionNote[]{inspectionNote});
+            this.update(accountBook, new InspectionNote[]{inspectionNote});
             InspectionNoteItemView[] inspectionNoteItemViews = this.inspectionNoteItemService.find(accountBook,
-                    new Condition().addCondition("inspectionNoteId",inspectFinishArgs.getInspectionNoteId())
-                                    .addCondition("state",InspectionNoteItemService.NOT_INSPECTED));
-            if(inspectionNoteItemViews.length == 0){
+                    new Condition().addCondition("inspectionNoteId", inspectFinishArgs.getInspectionNoteId())
+                            .addCondition("state", InspectionNoteItemService.NOT_INSPECTED));
+            if (inspectionNoteItemViews.length == 0) {
                 return;
             }
-            InspectionNoteItem[] inspectionNoteItems = ReflectHelper.createAndCopyFields(inspectionNoteItemViews,InspectionNoteItem.class);
+            InspectionNoteItem[] inspectionNoteItems = ReflectHelper.createAndCopyFields(inspectionNoteItemViews, InspectionNoteItem.class);
 
             //如果设置了人员，将每个条目的人员设置为相应人员。否则遵循各个条目原设置
-            if(inspectFinishArgs.getPersonId() != -1){
-                idChecker.check(PersonService.class,accountBook,inspectFinishArgs.getPersonId(),"作业人员");
+            if (inspectFinishArgs.getPersonId() != -1) {
+                idChecker.check(PersonService.class, accountBook, inspectFinishArgs.getPersonId(), "作业人员");
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setPersonId(inspectFinishArgs.getPersonId()));
             }
             //将每一条的返回数量设置为满额，单位设置成送检相同单位
@@ -111,15 +113,16 @@ public class InspectionNoteServiceImpl
                 inspectionNoteItem.setReturnUnitAmount(inspectionNoteItem.getUnitAmount());
             });
             //如果是合格，则将每一项状态更新为合格，否则为不合格，并调用入库单的收货功能。
-            if(inspectFinishArgs.isQualified()){
+            if (inspectFinishArgs.isQualified()) {
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.QUALIFIED));
-                this.warehouseEntryItemService.receive(accountBook,Stream.of(inspectionNoteItems).map((item)->item.getWarehouseEntryItemId()).collect(Collectors.toList()));
-            }else{
+                this.warehouseEntryItemService.receive(accountBook, Stream.of(inspectionNoteItems).map((item) -> item.getWarehouseEntryItemId()).collect(Collectors.toList()),null);
+            } else {
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.UNQUALIFIED));
-                this.warehouseEntryItemService.reject(accountBook,Stream.of(inspectionNoteItems).map((item)->item.getWarehouseEntryItemId()).collect(Collectors.toList()));
+                this.warehouseEntryItemService.reject(accountBook, Stream.of(inspectionNoteItems).map((item) -> item.getWarehouseEntryItemId()).collect(Collectors.toList()),null);
             }
             this.inspectionNoteItemService.update(accountBook, inspectionNoteItems);
-        }else { //部分完成
+        } else { //部分完成
+            Map<Integer, BigDecimal> warehouseEntryItemAndReturnAmount = new HashMap<>();
             List<Integer> warehouseEntryIDsToReceive = new ArrayList<>();
             List<Integer> warehouseEntryIDsToReject = new ArrayList<>();
             List<InspectionNoteItem> inspectionNoteItemsToUpdate = new ArrayList<>();
@@ -131,6 +134,7 @@ public class InspectionNoteServiceImpl
                 inspectionNoteItem.setReturnUnit(inspectFinishItem.getReturnUnit());
                 inspectionNoteItem.setReturnUnitAmount(inspectFinishItem.getReturnAmount());
                 WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getWarehouseEntryItemId()))[0];
+                warehouseEntryItemAndReturnAmount.put(inspectionNoteItem.getWarehouseEntryItemId(), inspectionNoteItem.getReturnAmount());
                 //如果返回数量小于送检数量，则将差值从入库单条目的库存里扣除，再收货。
                 BigDecimal unreturnedAmount = inspectionNoteItem.getAmount().subtract(inspectionNoteItem.getReturnAmount());
                 if (unreturnedAmount.compareTo(BigDecimal.ZERO) != 0) {
@@ -155,15 +159,15 @@ public class InspectionNoteServiceImpl
                 }
                 inspectionNoteItemsToUpdate.add(inspectionNoteItem);
             });
-            if(inspectionNoteItemsToUpdate.size() == 0) {
+            if (inspectionNoteItemsToUpdate.size() == 0) {
                 return;
             }
             this.inspectionNoteItemService.update(accountBook, ReflectHelper.listToArray(inspectionNoteItemsToUpdate, InspectionNoteItem.class));
             if (warehouseEntryIDsToReceive.size() > 0) {
-                this.warehouseEntryItemService.receive(accountBook, warehouseEntryIDsToReceive);
+                this.warehouseEntryItemService.receive(accountBook, warehouseEntryIDsToReceive,warehouseEntryItemAndReturnAmount);
             }
             if (warehouseEntryIDsToReject.size() > 0) {
-                this.warehouseEntryItemService.reject(accountBook, warehouseEntryIDsToReject);
+                this.warehouseEntryItemService.reject(accountBook, warehouseEntryIDsToReject,warehouseEntryItemAndReturnAmount);
             }
         }
     }

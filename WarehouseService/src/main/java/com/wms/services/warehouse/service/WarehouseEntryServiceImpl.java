@@ -225,6 +225,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                 }
             }
         }
+        //throw new WMSServiceException("测试热启动");
         return result;
     }
 
@@ -256,9 +257,9 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         List<Integer> itemIDs = Stream.of(warehouseEntryItemViews).map(item -> item.getId()).collect(Collectors.toList());
         //更新入库单条目
         if (ifQualified) {
-            this.warehouseEntryItemService.receive(accountBook, itemIDs);
+            this.warehouseEntryItemService.receive(accountBook, itemIDs,null);
         } else {
-            this.warehouseEntryItemService.reject(accountBook, itemIDs);
+            this.warehouseEntryItemService.reject(accountBook, itemIDs,null);
         }
     }
 }
