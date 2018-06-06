@@ -3,6 +3,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.DeliveryOrderAndItems;
 import com.wms.services.warehouse.datastructures.TransferArgs;
 import com.wms.services.warehouse.datastructures.TransferAuto;
 import com.wms.services.warehouse.service.DeliveryOrderService;
@@ -86,5 +87,15 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.deliveryOrderService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/preview/{strIDs}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<DeliveryOrderAndItems> getPreviewData(@PathVariable("accountBook") String accountBook,
+                                                         @PathVariable("strIDs") String strIDs){
+        Gson gson = new Gson();
+        List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {}.getType());
+        return deliveryOrderService.getPreviewData(accountBook,ids);
     }
 }
