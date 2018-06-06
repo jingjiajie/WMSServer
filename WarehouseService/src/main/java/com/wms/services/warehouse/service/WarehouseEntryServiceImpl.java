@@ -225,6 +225,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
                 }
             }
         }
+        //throw new WMSServiceException("测试热启动");
         return result;
     }
 
@@ -256,9 +257,20 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         List<Integer> itemIDs = Stream.of(warehouseEntryItemViews).map(item -> item.getId()).collect(Collectors.toList());
         //更新入库单条目
         if (ifQualified) {
-            this.warehouseEntryItemService.receive(accountBook, itemIDs);
+            this.warehouseEntryItemService.receive(accountBook, itemIDs,null);
         } else {
-            this.warehouseEntryItemService.reject(accountBook, itemIDs);
+            this.warehouseEntryItemService.reject(accountBook, itemIDs,null);
         }
+    }
+
+    @Transactional
+    public void test(){
+        WarehouseEntry warehouseEntry = this.warehouseEntryDAO.findTable("WMS_Template",new Condition().addCondition("id",2))[0];
+        System.out.println("直接查询到的单号:"+warehouseEntry.getNo());
+        warehouseEntry.setNo("!!!");
+        this.update("WMS_Template",new WarehouseEntry[]{warehouseEntry});
+        WarehouseEntry warehouseEntry1 = this.warehouseEntryDAO.findTable("WMS_Template",new Condition().addCondition("id",2))[0];
+        System.out.println("更新后未提交时查询到的单号:"+warehouseEntry1.getNo());
+        throw new WMSServiceException("抛出测试错误");
     }
 }

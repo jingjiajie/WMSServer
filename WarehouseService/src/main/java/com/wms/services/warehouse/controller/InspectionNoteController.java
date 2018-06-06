@@ -20,4 +20,5 @@ public interface InspectionNoteController {
 
     List<InspectionNoteAndItems> getPreviewData(String accountBook, String strIDs);
     List<InspectionNoteAndItems> getPreviewDataQualifiedOnly(String accountBook, String strIDs);
+
 }

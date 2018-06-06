@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @Service
@@ -213,7 +214,8 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
     }
 
     @Override
-    public void receive(String accountBook, List<Integer> ids) {
+    @SuppressWarnings("all")
+    public void receive(String accountBook, List<Integer> ids, Map<Integer,BigDecimal> idAndReturnAmount) {
 
         WarehouseEntryItem[] warehouseEntryItems = this.warehouseEntryItemDAO.findTable(accountBook, new Condition().addCondition("id", ReflectHelper.listToArray(ids,Integer.class), ConditionItem.Relation.IN));
         List<Integer> warehouseEntryIDs = new ArrayList<>();
@@ -230,7 +232,15 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             TransferStock transferStock = new TransferStock();
             transferStock.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId());
             transferStock.setNewStorageLocationId(warehouseEntryItem.getQualifiedStorageLocationId());
-            transferStock.setAmount(warehouseEntryItem.getRealAmount());
+            if(idAndReturnAmount != null) {
+                Integer warehouseEntryItemID = warehouseEntryItem.getId();
+                if (!idAndReturnAmount.containsKey(warehouseEntryItemID)) {
+                    throw new WMSServiceException("Receive返回数量参数未包含ID：" + warehouseEntryItemID);
+                }
+                transferStock.setAmount(warehouseEntryItem.getRealAmount().subtract(warehouseEntryItem.getInspectionAmount().subtract(idAndReturnAmount.get(warehouseEntryItemID))));
+            }else{
+                transferStock.setAmount(warehouseEntryItem.getRealAmount());
+            }
             transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
@@ -244,7 +254,8 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
     }
 
     @Override
-    public void reject(String accountBook, List<Integer> ids) {
+    @SuppressWarnings("all")
+    public void reject(String accountBook, List<Integer> ids,Map<Integer,BigDecimal> idAndReturnAmount) {
         WarehouseEntryItem[] warehouseEntryItems = this.warehouseEntryItemDAO.findTable(accountBook, new Condition().addCondition("id", ReflectHelper.listToArray(ids,Integer.class), ConditionItem.Relation.IN));
         List<Integer> warehouseEntryIDs = new ArrayList<>();
         Stream.of(warehouseEntryItems).forEach((warehouseEntryItem -> {
@@ -260,7 +271,15 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             TransferStock transferStock = new TransferStock();
             transferStock.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId());
             transferStock.setNewStorageLocationId(warehouseEntryItem.getUnqualifiedStorageLocationId());
-            transferStock.setAmount(warehouseEntryItem.getRealAmount());
+            if(idAndReturnAmount != null) {
+                Integer warehouseEntryItemID = warehouseEntryItem.getId();
+                if (!idAndReturnAmount.containsKey(warehouseEntryItemID)) {
+                    throw new WMSServiceException("Receive返回数量参数未包含ID：" + warehouseEntryItemID);
+                }
+                transferStock.setAmount(warehouseEntryItem.getRealAmount().subtract(warehouseEntryItem.getInspectionAmount().subtract(idAndReturnAmount.get(warehouseEntryItemID))));
+            }else{
+                transferStock.setAmount(warehouseEntryItem.getRealAmount());
+            }
             transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
