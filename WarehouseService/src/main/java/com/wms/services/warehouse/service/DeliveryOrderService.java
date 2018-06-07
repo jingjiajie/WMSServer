@@ -13,6 +13,11 @@ import java.util.List;
 public interface DeliveryOrderService
  extends BaseService<DeliveryOrder,DeliveryOrderView>{
 
+    int STATE_IN_LOADING = 0;
+    int STATE_PARTIAL_LOADING = 1;
+    int STATE_ALL_LOADING = 2;
+    int STATE_IN_DELIVER = 3;
+    int STATE_DELIVER_FINNISH = 4;
     public void transferPakage(String accountBook, TransferArgs transferArgs);
     public void transferAuto(String accountBook, TransferAuto TransferAuto);
     public void deliveryFinish(String accountBook,List<Integer> ids);

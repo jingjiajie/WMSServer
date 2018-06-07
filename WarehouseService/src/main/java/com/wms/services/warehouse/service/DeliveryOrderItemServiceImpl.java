@@ -1,10 +1,14 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
+import com.wms.services.warehouse.dao.DeliveryOrderDAO;
 import com.wms.services.warehouse.dao.DeliveryOrderItemDAO;
 import com.wms.services.warehouse.datastructures.TransferStock;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.DeliveryOrder;
 import com.wms.utilities.model.DeliveryOrderItem;
 import com.wms.utilities.model.DeliveryOrderItemView;
 import com.wms.utilities.model.DeliveryOrderView;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.stream.Stream;
 import java.sql.Timestamp;
 
@@ -238,9 +243,99 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         return deliveryOrderView;
     }
 
-
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
         return this.deliveryOrderItemDAO.findCount(accountBook,cond);
     }
+
+
+    @Override
+    public void loadingALL(String accountBook,List<Integer> ids) throws WMSServiceException{
+
+        //TODO 这里传的ID是出库单ID
+        //先找出库单
+        DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderService.find(accountBook,new Condition().addCondition("id",ids.toArray(), ConditionItem.Relation.IN));
+        if (deliveryOrderViews.length == 0) return;
+        DeliveryOrder[] deliveryOrders = ReflectHelper.createAndCopyFields(deliveryOrderViews,DeliveryOrder.class);
+        //再找条目
+        DeliveryOrderItemView[] itemViews = this.find(accountBook,new Condition().addCondition("deliveryOrderId",ids.toArray(), ConditionItem.Relation.IN));
+        DeliveryOrderItem[] deliveryOrderItems = ReflectHelper.createAndCopyFields(itemViews,DeliveryOrderItem.class);
+
+        Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
+            if (deliveryOrderItem.getState() !=TransferOrderItemService.STATE_ALL_FINISH) {
+                deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
+                deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+            }
+        });
+        this.update(accountBook,deliveryOrderItems);
+        //更新出库单状态
+        Stream.of(deliveryOrders).forEach(deliveryOrder -> {
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_DELIVER) {
+                throw new WMSServiceException(String.format("当前出库单（%s）正在发运，无法重复装车工作", deliveryOrder.getNo()));
+            }
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_DELIVER_FINNISH) {
+                throw new WMSServiceException(String.format("当前出库单（%s）已经发运完成，无法重复装车工作", deliveryOrder.getNo()));
+            }
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_DELIVER) {
+                throw new WMSServiceException(String.format("当前出库单（%s）已经完成整单装车，无法重复装车工作", deliveryOrder.getNo()));
+            }
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_LOADING) {
+                deliveryOrder.setState(DeliveryOrderService.STATE_ALL_LOADING);
+            }
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_PARTIAL_LOADING) {
+                deliveryOrder.setState(DeliveryOrderService.STATE_ALL_LOADING);
+            }
+
+        });
+        this.deliveryOrderService.update(accountBook,deliveryOrders);
+
+    }
+
+    @Override
+    public void loadingSome(String accountBook,List<Integer> ids) throws WMSServiceException{
+
+        //TODO 这里传的是出库单条目ID，人员id没往下传
+        if (ids.size() == 0) {
+            throw new WMSServiceException("请选择至少一个出库单条目！");
+        }
+        //先找条目
+        DeliveryOrderItemView[] itemViews = this.find(accountBook,new Condition().addCondition("id",ids.toArray(), ConditionItem.Relation.IN));
+        DeliveryOrderItem[] deliveryOrderItems = ReflectHelper.createAndCopyFields(itemViews,DeliveryOrderItem.class);
+        //再找对应出库单
+        DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{deliveryOrderItems[0].getDeliveryOrderId()}));
+        if (deliveryOrderViews.length == 0) return;
+        DeliveryOrder[] deliveryOrders = ReflectHelper.createAndCopyFields(deliveryOrderViews,DeliveryOrder.class);
+
+        Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
+            if (deliveryOrderItem.getState() !=TransferOrderItemService.STATE_ALL_FINISH) {
+                deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
+                deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+            }
+        });
+        this.update(accountBook,deliveryOrderItems);
+        //TODO 如果部分更新的时候是全部完成，需要补逻辑
+        //更新出库单状态,应该是只有一个单子
+        Stream.of(deliveryOrders).forEach(deliveryOrder -> {
+            boolean judgeState =true;
+            DeliveryOrderItem[] allItems = this.deliveryOrderItemDAO.findTable(accountBook,new Condition().addCondition("deliveryOrderId",deliveryOrder.getId(), ConditionItem.Relation.IN));
+            for (int i=0;i<allItems.length;i++){
+                if (allItems[i].getState()==DeliveryOrderService.STATE_ALL_LOADING){
+
+                }
+                else {
+                    judgeState=false;
+                }
+            }
+            if (judgeState){
+                deliveryOrder.setState(DeliveryOrderService.STATE_ALL_LOADING);
+            }else{
+                deliveryOrder.setState(DeliveryOrderService.STATE_ALL_LOADING);
+            }
+
+        });
+        this.deliveryOrderService.update(accountBook, deliveryOrders);
+
+    }
+
+
 }
