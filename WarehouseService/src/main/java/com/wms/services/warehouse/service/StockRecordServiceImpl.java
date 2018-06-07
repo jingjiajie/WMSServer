@@ -89,6 +89,100 @@ public class StockRecordServiceImpl implements StockRecordService {
         return stockRecordDAO.add(accountBook,stockRecords);
     }
 
+    @Override
+    public void returnSupply(String accountBook, StockRecord[] stockRecords) throws WMSServiceException {
+        int[] addId={};
+        for(int i=0;i<stockRecords.length;i++) {
+            new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
+            new Validator("单位").notnull().notEmpty().validate(stockRecords[i].getUnit());
+            new Validator("单位数量").notnull().notEmpty().min(0).validate(stockRecords[i].getUnitAmount());
+        }
+        //外键检测
+        Stream.of(stockRecords).forEach(
+                (stockRecord)->{
+                    if(this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id",stockRecord.getWarehouseId())).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",stockRecord.getWarehouseId()));
+                    }
+                    else  if(this.storageLocationService.find(accountBook,
+                            new Condition().addCondition("id",stockRecord.getStorageLocationId())).length == 0)
+                    {
+                        throw new WMSServiceException(String.format("库位不存在，请重新提交！(%d)",stockRecord.getStorageLocationId()));
+                    }
+                    else if( this.supplyService.find(accountBook,
+                            new Condition().addCondition("id",stockRecord.getSupplyId())).length == 0){
+                        throw new WMSServiceException(String.format("供货信息不存在，请重新提交！(%d)",stockRecord.getSupplyId()));
+                    }
+                }
+        );
+        for (int i=0;i<stockRecords.length;i++)
+        {
+            stockRecords[i].setTime(new Timestamp(System.currentTimeMillis()));
+            stockRecords[i].setBatchNo(this.batchTransfer(new Timestamp(System.currentTimeMillis())));
+            stockRecords[i].setInventoryDate(new Timestamp(System.currentTimeMillis()));
+        }
+        for(int i=0;i<stockRecords.length;i++){
+            int StorageLocationId=stockRecords[i].getStorageLocationId();
+            int supplyId=stockRecords[i].getSupplyId();
+            Integer[] warehouseId=warehouseIdFind(accountBook,StorageLocationId);//至少能返回一个
+            idChecker.check(StorageLocationService.class,accountBook,StorageLocationId,"库位");
+            idChecker.check(WarehouseService.class,accountBook,warehouseId[0],"仓库");
+            idChecker.check(SupplyService.class,accountBook,supplyId,"供货");
+            StockRecordFind stockRecordFind=new StockRecordFind();
+            stockRecordFind.setSupplyId(stockRecords[i].getSupplyId());
+            stockRecordFind.setStorageLocationId(stockRecords[i].getStorageLocationId());
+            stockRecordFind.setWarehouseId(warehouseId[0]);
+            stockRecordFind.setUnit(stockRecords[i].getUnit());
+            stockRecordFind.setUnitAmount(stockRecords[i].getUnitAmount());
+            stockRecordFind.setInventoryDate(stockRecords[i].getInventoryDate());
+            stockRecordFind.setReturnMode("batch");
+            StockRecord[]   stockRecords1=this.find(accountBook,stockRecordFind);
+            if(stockRecords1.length==0) {
+                StockRecord stockRecord = new StockRecord();
+                stockRecord.setUnit(stockRecords[i].getUnit());
+                stockRecord.setUnitAmount(stockRecords[i].getUnitAmount());
+                stockRecord.setRelatedOrderNo(stockRecords[i].getRelatedOrderNo());
+                stockRecord.setWarehouseId(warehouseId[0]);
+                stockRecord.setBatchNo(stockRecords[i].getBatchNo());
+                stockRecord.setInventoryDate(stockRecords[i].getInventoryDate());
+                stockRecord.setStorageLocationId(StorageLocationId);
+                stockRecord.setSupplyId(supplyId);
+                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setAmount(stockRecords[i].getAmount());
+                stockRecord.setAvailableAmount(stockRecords[i].getAvailableAmount());
+                addId=stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+                TransferRecord transferRecord=new TransferRecord();
+                transferRecord.setWarehouseId(warehouseId[0].intValue());
+                transferRecord.setNewStockRecordId(addId[0]);
+                transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
+            }
+            //找到一条记录，则可以合并
+            else if(stockRecords1.length==1){
+                StockRecord stockRecord = new StockRecord();
+                stockRecord.setUnit(stockRecords[i].getUnit());
+                stockRecord.setUnitAmount(stockRecords[i].getUnitAmount());
+                stockRecord.setRelatedOrderNo(stockRecords[i].getRelatedOrderNo());
+                stockRecord.setWarehouseId(warehouseId[0]);
+                stockRecord.setBatchNo(stockRecords[i].getBatchNo());
+                stockRecord.setInventoryDate(stockRecords[i].getInventoryDate());
+                stockRecord.setStorageLocationId(StorageLocationId);
+                stockRecord.setSupplyId(supplyId);
+                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setAmount(stockRecords1[0].getAmount().add(stockRecords[i].getAmount()));
+                stockRecord.setAvailableAmount(stockRecords1[0].getAmount().add(stockRecords[i].getAvailableAmount()));
+                addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+                TransferRecord transferRecord=new TransferRecord();
+                transferRecord.setWarehouseId(warehouseId[0].intValue());
+                transferRecord.setNewStockRecordId(addId[0]);
+                transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
+            }
+            else
+            {
+                throw new WMSServiceException("查询库存记录出现问题，请检查输入条件!");
+            }
+        }
+    }
+
 @Override
 public  void update(String accountBook,StockRecord[] stockRecords) throws WMSServiceException {
     for(int i=0;i<stockRecords.length;i++) {
@@ -496,8 +590,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
-                //transferRecord.setNewStockRecordId(addId[0]);
-                transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
+                transferRecord.setNewStockRecordId(addId[0]);
+                //transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
             else
