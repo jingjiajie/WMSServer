@@ -169,7 +169,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecord.setSupplyId(supplyId);
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(stockRecords1[0].getAmount().add(stockRecords[i].getAmount()));
-                stockRecord.setAvailableAmount(stockRecords1[0].getAmount().add(stockRecords[i].getAvailableAmount()));
+                stockRecord.setAvailableAmount(stockRecords1[0].getAvailableAmount().add(stockRecords[i].getAvailableAmount()));
                 addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -1205,7 +1205,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     "\n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time \n" +
                     "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo \n";
-            query=session.createNativeQuery(sqlNew,StockRecordView.class);
+            query=session.createNativeQuery(sqlNew,StockRecord.class);
             query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
             query.setParameter("storageLocationId",stockRecordFind.getStorageLocationId());
             query.setParameter("supplyId",stockRecordFind.getSupplyId());
