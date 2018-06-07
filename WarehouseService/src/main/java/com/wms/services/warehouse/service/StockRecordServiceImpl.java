@@ -138,8 +138,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     @Override
-    public StockRecordView[] findNewest(String accountBook, Condition cond) throws WMSServiceException{
-        StockRecordView[] stockRecordViews=this.stockRecordDAO.find(accountBook, cond);
+    public StockRecordViewNewest[] findNewest(String accountBook, Condition cond) throws WMSServiceException{
+        return this.stockRecordDAO.findNewest(accountBook,cond);
+        /*StockRecordView[] stockRecordViews=this.stockRecordDAO.find(accountBook, cond);
         List<StockRecordGroup> stockRecordGroupList=new ArrayList<>();
         for(int i=0;i<stockRecordViews.length;i++){
             StockRecordGroup stockRecordGroup=new StockRecordGroup();
@@ -185,7 +186,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         StockRecordView[] result=null;
         result = (StockRecordView[]) Array.newInstance(StockRecordView.class,stockRecordViewList.size());
         stockRecordViewList.toArray(result);
-        return result;
+        return result;*/
     }
 
     @Override

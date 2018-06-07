@@ -57,7 +57,7 @@ public class StockRecordControllerImpl implements StockRecordController {
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/find_newest/{strCond}", method = RequestMethod.GET)
-    public StockRecordView[] findNewest(@PathVariable("accountBook") String accountBook,
+    public StockRecordViewNewest[] findNewest(@PathVariable("accountBook") String accountBook,
                                         @PathVariable("strCond") String condStr) {
         return stockRecordService.findNewest(accountBook, Condition.fromJson(condStr));
     }
