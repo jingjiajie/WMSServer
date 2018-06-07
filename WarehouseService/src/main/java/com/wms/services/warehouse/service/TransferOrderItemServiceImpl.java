@@ -8,6 +8,8 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -34,7 +36,8 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
     StockRecordService stockRecordService;
     @Autowired
     IDChecker idChecker;
-
+    @Autowired
+    SessionFactory sessionFactory;
     private static boolean autotransfer=false;
 
     public void autoTrans(boolean a){

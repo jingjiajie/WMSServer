@@ -81,6 +81,14 @@ public class StockRecordControllerImpl implements StockRecordController {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/return_supply", method = RequestMethod.POST)
+    public void returnSupply(@PathVariable("accountBook") String accountBook,
+                          @RequestBody StockRecord[] stockRecords) {
+        stockRecordService.returnSupply(accountBook, stockRecords);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/modify_available_amount", method = RequestMethod.POST)
     public void modifyAvailableAmount(@PathVariable("accountBook") String accountBook,
                                       @RequestBody TransferStock transferStock) {
@@ -90,7 +98,7 @@ public class StockRecordControllerImpl implements StockRecordController {
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/stock_record_find", method = RequestMethod.POST)
-    public StockRecordView[] find(@PathVariable("accountBook") String accountBook,
+    public StockRecord[] find(@PathVariable("accountBook") String accountBook,
                                   @RequestBody StockRecordFind stockRecordFind) {
         return stockRecordService.find(accountBook, stockRecordFind);
     }
