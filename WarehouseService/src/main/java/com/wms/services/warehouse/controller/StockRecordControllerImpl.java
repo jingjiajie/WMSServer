@@ -90,7 +90,7 @@ public class StockRecordControllerImpl implements StockRecordController {
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/stock_record_find", method = RequestMethod.POST)
-    public StockRecordView[] find(@PathVariable("accountBook") String accountBook,
+    public StockRecord[] find(@PathVariable("accountBook") String accountBook,
                                   @RequestBody StockRecordFind stockRecordFind) {
         return stockRecordService.find(accountBook, stockRecordFind);
     }

@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class TestService {
     @Autowired
     WarehouseEntryService warehouseEntryService;
+    @Autowired
+    TransferRecordService transferRecordService;
 
     @Transactional
     public void test(){
@@ -22,5 +24,11 @@ public class TestService {
         WarehouseEntryView warehouseEntry1 = this.warehouseEntryService.find("WMS_Template",new Condition().addCondition("id",2))[0];
         System.out.println("更新后未提交时查询到的单号:"+warehouseEntry1.getNo());
         throw new WMSServiceException("抛出测试错误");
+    }
+
+    @Transactional
+    public void testTransfer(){
+transferRecordService.test1();
+transferRecordService.test2();
     }
 }

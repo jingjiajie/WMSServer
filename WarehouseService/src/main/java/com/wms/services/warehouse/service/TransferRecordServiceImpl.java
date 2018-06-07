@@ -7,6 +7,8 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.TransferRecord;
 import com.wms.utilities.model.TransferRecordView;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,8 @@ public class TransferRecordServiceImpl implements TransferRecordService {
     TransferRecordDAO transferRecordDAO;
     @Autowired
     IDChecker idChecker;
+    @Autowired
+    SessionFactory sessionFactory;
 
     @Override
 
@@ -44,13 +48,16 @@ public class TransferRecordServiceImpl implements TransferRecordService {
     @Override
     public void test1() throws WMSServiceException{
         TransferRecord transferRecord=new TransferRecord();
-        transferRecord.setWarehouseId(1);
+        transferRecord.setWarehouseId(2);
         transferRecord.setId(127);
         this.transferRecordDAO.update("WMS_Template",new TransferRecord[]{transferRecord});
     }
 
     @Override
     public void test2() throws WMSServiceException{
+        Session session=sessionFactory.getCurrentSession();
+        //session.flush();
         TransferRecordView[] transferRecordViews=this.transferRecordDAO.find("WMS_Template",new Condition().addCondition("id",new Integer[]{127}));
+        TransferRecord[] transferRecordView=this.transferRecordDAO.findTable("WMS_Template",new Condition().addCondition("id",new Integer[]{127}));
     }
 }

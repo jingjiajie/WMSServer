@@ -14,7 +14,7 @@ extends BaseController<StockRecord,StockRecordView> {
   void RealTransferStock(String accountbook, TransferStock transferStock);
   void addAmount(String accountbook, TransferStock transferStock);
   void modifyAvailableAmount(String accountbook, TransferStock transferStock);
-  StockRecordView[] find(String accountbook, StockRecordFind stockRecordFind);
+  StockRecord[] find(String accountbook, StockRecordFind stockRecordFind);
   StockRecordViewNewest[] findNewest(String accountbook, String condition);
   long findCount(String accountBook,String condStr);
 }

@@ -43,8 +43,22 @@ public class StockRecordDAOImpl
         } catch (Throwable ex) {
             throw new WMSDAOException(ex.getMessage());
         }
+    }
 
-
+    public long findCountNew(String database, Condition cond) throws WMSDAOException {
+        Session session = sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + database + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(database);
+        }
+        try {
+            Query query = cond.createQuery(StockRecordViewNewest.class, session,true);
+            long result = (long)query.list().get(0);
+            return result;
+        } catch (Throwable ex) {
+            throw new WMSDAOException(ex.getMessage());
+        }
     }
 
 }

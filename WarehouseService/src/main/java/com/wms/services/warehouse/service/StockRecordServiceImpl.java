@@ -216,7 +216,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
         stockRecordFind.setReturnMode("new");
-        StockRecordView[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
+        StockRecord[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
+        //StockRecordView[]   stockRecordSource2=this.find(accountBook,new Condition().addCondition("id",new Integer[]{512}));
+        StockRecord[]   stockRecordSource3=stockRecordDAO.findTable(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordSource1[0].getId()}));
         if(stockRecordSource1.length==0)
         {
             throw new WMSServiceException("没查到符合要求的源库存记录，请检查相关信息！");
@@ -229,7 +231,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             {
                 if(stockRecordSource1[i].getInventoryDate().compareTo(stockRecordSource1[j].getInventoryDate())<=0)
                 {
-                    StockRecordView temp=stockRecordSource1[i];
+                    StockRecord temp=stockRecordSource1[i];
                     stockRecordSource1[i]=stockRecordSource1[j];
                     stockRecordSource1[j]=temp;
                 }
@@ -452,7 +454,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             stockRecordFind.setReturnMode("batch");
         }
         //根据以上条件如果为增加只应该有一条 如果为减少则应该为所有批次
-        StockRecordView[] stockRecordSource= this.find(accountBook,stockRecordFind);
+        StockRecord[] stockRecordSource= this.find(accountBook,stockRecordFind);
 
         //移入的情况
         if(transferStock.getAmount().compareTo(new BigDecimal(0)) >=0){
@@ -520,7 +522,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 {
                     if(stockRecordSource[i].getInventoryDate().compareTo(stockRecordSource[j].getInventoryDate())<=0)
                     {
-                        StockRecordView temp=stockRecordSource[i];
+                        StockRecord temp=stockRecordSource[i];
                         stockRecordSource[i]=stockRecordSource[j];
                         stockRecordSource[j]=temp;
                     }
@@ -700,7 +702,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
         stockRecordFind.setReturnMode("new");
-        StockRecordView[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
+        StockRecord[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
         if(stockRecordSource1.length==0)
         {
             StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
@@ -716,7 +718,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             {
                 if(stockRecordSource1[i].getInventoryDate().compareTo(stockRecordSource1[j].getInventoryDate())<=0)
                 {
-                    StockRecordView temp=stockRecordSource1[i];
+                    StockRecord temp=stockRecordSource1[i];
                     stockRecordSource1[i]=stockRecordSource1[j];
                     stockRecordSource1[j]=temp;
                 }
@@ -939,7 +941,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
         stockRecordFind.setReturnMode("new");
-        StockRecordView[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
+        StockRecord[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
 
         //进行排序
         for(int i=0;i<stockRecordSource1.length;i++)
@@ -948,7 +950,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             {
                 if(stockRecordSource1[i].getInventoryDate().compareTo(stockRecordSource1[j].getInventoryDate())<=0)
                 {
-                    StockRecordView temp=stockRecordSource1[i];
+                    StockRecord temp=stockRecordSource1[i];
                     stockRecordSource1[i]=stockRecordSource1[j];
                     stockRecordSource1[j]=temp;
                 }
@@ -1065,8 +1067,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         }
     }
 
-    public StockRecordView[] find(String accountBook,StockRecordFind stockRecordFind){
-        Session session= sessionFactory.getCurrentSession();
+    public StockRecord[] find(String accountBook,StockRecordFind stockRecordFind){
+        Session session=this.sessionFactory.getCurrentSession();
+        session.flush();
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
         } catch (Throwable ex) {
@@ -1086,7 +1089,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     "\n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time \n" +
                     "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo \n";
-            query=session.createNativeQuery(sqlNew,StockRecordView.class);
+            session.flush();
+            query=session.createNativeQuery(sqlNew,StockRecord.class);
             query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
             query.setParameter("storageLocationId",stockRecordFind.getStorageLocationId());
             query.setParameter("supplyId",stockRecordFind.getSupplyId());
@@ -1115,9 +1119,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             query.setParameter("unitAmount",stockRecordFind.getUnitAmount());
             query.setParameter("batchNo1",this.batchTransfer(stockRecordFind.getInventoryDate()));
         }
-        StockRecordView[] resultArray=null;
-        List<StockRecordView> resultList = query.list();
-        resultArray = (StockRecordView[]) Array.newInstance(StockRecordView.class,resultList.size());
+        StockRecord[] resultArray=null;
+        List<StockRecord> resultList = query.list();
+        resultArray = (StockRecord[]) Array.newInstance(StockRecord.class,resultList.size());
         resultList.toArray(resultArray);
         return resultArray;
     }
@@ -1299,6 +1303,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
-        return this.stockRecordDAO.findCount(accountBook,cond);
+        return this.stockRecordDAO.findCountNew(accountBook,cond);
     }
 }
