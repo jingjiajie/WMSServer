@@ -263,15 +263,14 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         DeliveryOrderItem[] deliveryOrderItems = ReflectHelper.createAndCopyFields(itemViews,DeliveryOrderItem.class);
 
         Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
-            if (deliveryOrderItem.getState() !=TransferOrderItemService.STATE_ALL_FINISH) {
-                deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
-                deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+            if (deliveryOrderItem.getState() !=DeliveryOrderService.STATE_ALL_LOADING) {
+                throw new WMSServiceException(String.format("当前出库单（%d）未完成装车，无法发运", deliveryOrderItem.getDeliveryOrderId()));
             }
         });
         this.deliveryOrderItemService.update(accountBook,deliveryOrderItems);
         Stream.of(deliveryOrders).forEach(deliveryOrder -> {
-            if (deliveryOrder.getState() !=TransferOrderItemService.STATE_ALL_FINISH) {
-                deliveryOrder.setState(TransferOrderItemService.STATE_ALL_FINISH);
+            if (deliveryOrder.getState() !=DeliveryOrderService.STATE_IN_DELIVER) {
+                deliveryOrder.setState(DeliveryOrderService.STATE_IN_DELIVER);
             }
         });
         this.update(accountBook,deliveryOrders);
