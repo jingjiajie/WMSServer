@@ -32,6 +32,7 @@ public class StockRecordViewNewest {
     private BigDecimal availableAmount;
     private Integer materialId;
     private Integer supplierId;
+    private String materialProductLine;
 
     @Basic
     @Id
@@ -264,6 +265,16 @@ public class StockRecordViewNewest {
         this.supplierId = supplierId;
     }
 
+    @Basic
+    @Column(name = "MaterialProductLine")
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -301,7 +312,8 @@ public class StockRecordViewNewest {
             return false;
         if (materialId != null ? !materialId.equals(that.materialId) : that.materialId != null) return false;
         if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
-
+        if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
+            return false;
         return true;
     }
 
@@ -330,6 +342,7 @@ public class StockRecordViewNewest {
         result = 31 * result + (availableAmount != null ? availableAmount.hashCode() : 0);
         result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
+        result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
         return result;
     }
 }

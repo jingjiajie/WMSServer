@@ -11,7 +11,6 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.wms.utilities.model.StockRecord;
-import com.wms.utilities.model.StockRecordView;
 
 import java.lang.reflect.Array;
 import java.util.List;

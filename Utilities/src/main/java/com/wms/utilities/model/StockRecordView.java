@@ -30,7 +30,11 @@ public class StockRecordView {
     private String storageLocationName;
     private String batchNo;
     private BigDecimal availableAmount;
+    private Integer materialId;
+    private Integer supplierId;
+    private String materialProductLine;
 
+    @Basic
     @Id
     @Column(name = "ID")
     public int getId() {
@@ -241,6 +245,36 @@ public class StockRecordView {
         this.availableAmount = availableAmount;
     }
 
+    @Basic
+    @Column(name = "MaterialID")
+    public Integer getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(Integer materialId) {
+        this.materialId = materialId;
+    }
+
+    @Basic
+    @Column(name = "SupplierID")
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    @Basic
+    @Column(name = "MaterialProductLine")
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -276,6 +310,10 @@ public class StockRecordView {
         if (batchNo != null ? !batchNo.equals(that.batchNo) : that.batchNo != null) return false;
         if (availableAmount != null ? !availableAmount.equals(that.availableAmount) : that.availableAmount != null)
             return false;
+        if (materialId != null ? !materialId.equals(that.materialId) : that.materialId != null) return false;
+        if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
+        if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
+            return false;
 
         return true;
     }
@@ -303,6 +341,9 @@ public class StockRecordView {
         result = 31 * result + (storageLocationName != null ? storageLocationName.hashCode() : 0);
         result = 31 * result + (batchNo != null ? batchNo.hashCode() : 0);
         result = 31 * result + (availableAmount != null ? availableAmount.hashCode() : 0);
+        result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
+        result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
+        result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
         return result;
     }
 }
