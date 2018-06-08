@@ -6,6 +6,7 @@ import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -85,6 +86,13 @@ public class StockRecordControllerImpl implements StockRecordController {
     public void returnSupply(@PathVariable("accountBook") String accountBook,
                           @RequestBody StockRecord[] stockRecords) {
         stockRecordService.returnSupply(accountBook, stockRecords);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/throw", method = RequestMethod.POST)
+    public void throwException() {
+       throw new WMSServiceException("无法修改库存记录!");
     }
 
     @Override

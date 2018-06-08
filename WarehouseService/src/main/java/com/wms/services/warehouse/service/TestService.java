@@ -28,6 +28,7 @@ public class TestService {
 
     @Transactional
     public void testTransfer(){
+
 transferRecordService.test1();
 transferRecordService.test2();
     }
