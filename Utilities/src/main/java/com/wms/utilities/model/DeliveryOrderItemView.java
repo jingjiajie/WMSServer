@@ -30,6 +30,9 @@ public class DeliveryOrderItemView {
     private String personName;
     private String sourceStorageLocationNo;
     private String sourceStorageLocationName;
+    private String materialProductLine;
+    private Integer supplierId;
+    private Integer materialId;
 
     @Id
     @Basic
@@ -263,5 +266,35 @@ public class DeliveryOrderItemView {
     public int hashCode() {
 
         return Objects.hash(id, deliveryOrderId, supplyId, sourceStorageLocationId, state, scheduledAmount, realAmount, loadingTime, unit, unitAmount, comment, personId, deliveryOrderNo, materialNo, materialName, supplierNo, supplierName, personName, sourceStorageLocationNo, sourceStorageLocationName);
+    }
+
+    @Basic
+    @Column(name = "MaterialProductLine")
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
+    @Basic
+    @Column(name = "SupplierID")
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    @Basic
+    @Column(name = "MaterialID")
+    public Integer getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(Integer materialId) {
+        this.materialId = materialId;
     }
 }

@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Entity
-public class StockRecordView {
+public class StockRecordViewNewest {
     private int id;
     private int warehouseId;
     private int storageLocationId;
@@ -280,7 +280,7 @@ public class StockRecordView {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        StockRecordView that = (StockRecordView) o;
+        StockRecordViewNewest that = (StockRecordViewNewest) o;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
@@ -314,7 +314,6 @@ public class StockRecordView {
         if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
         if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
             return false;
-
         return true;
     }
 

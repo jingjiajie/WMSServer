@@ -6,6 +6,7 @@ import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,14 @@ public class StockRecordControllerImpl implements StockRecordController {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/find_newest/{strCond}", method = RequestMethod.GET)
+    public StockRecordViewNewest[] findNewest(@PathVariable("accountBook") String accountBook,
+                                        @PathVariable("strCond") String condStr) {
+        return stockRecordService.findNewest(accountBook, Condition.fromJson(condStr));
+    }
+    
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/real_transfer", method = RequestMethod.POST)
     public void RealTransferStock(@PathVariable("accountBook") String accountBook,
                                   @RequestBody TransferStock transferStock) {
@@ -73,6 +82,21 @@ public class StockRecordControllerImpl implements StockRecordController {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/return_supply", method = RequestMethod.POST)
+    public void returnSupply(@PathVariable("accountBook") String accountBook,
+                          @RequestBody StockRecord[] stockRecords) {
+        stockRecordService.returnSupply(accountBook, stockRecords);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/throw", method = RequestMethod.POST)
+    public void throwException() {
+       throw new WMSServiceException("无法修改库存记录!");
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/modify_available_amount", method = RequestMethod.POST)
     public void modifyAvailableAmount(@PathVariable("accountBook") String accountBook,
                                       @RequestBody TransferStock transferStock) {
@@ -82,7 +106,7 @@ public class StockRecordControllerImpl implements StockRecordController {
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/stock_record_find", method = RequestMethod.POST)
-    public StockRecordView[] find(@PathVariable("accountBook") String accountBook,
+    public StockRecord[] find(@PathVariable("accountBook") String accountBook,
                                   @RequestBody StockRecordFind stockRecordFind) {
         return stockRecordService.find(accountBook, stockRecordFind);
     }

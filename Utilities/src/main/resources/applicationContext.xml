@@ -55,6 +55,7 @@
                 <value>com.wms.utilities.model.PersonView</value>
                 <value>com.wms.utilities.model.SafetyStockView</value>
                 <value>com.wms.utilities.model.StockRecordView</value>
+                <value>com.wms.utilities.model.StockRecordViewNewest</value>
                 <value>com.wms.utilities.model.StockTakingOrderItemView</value>
                 <value>com.wms.utilities.model.StockTakingOrderView</value>
                 <value>com.wms.utilities.model.StorageAreaView</value>

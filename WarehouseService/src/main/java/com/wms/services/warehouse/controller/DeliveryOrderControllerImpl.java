@@ -3,6 +3,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.DeliveryOrderAndItems;
 import com.wms.services.warehouse.datastructures.TransferArgs;
 import com.wms.services.warehouse.datastructures.TransferAuto;
 import com.wms.services.warehouse.service.DeliveryOrderService;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import com.wms.utilities.model.DeliveryOrder;
 import com.wms.utilities.model.DeliveryOrderView;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/{accountBook}/delivery_order")
@@ -71,10 +74,28 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     }
 
     @Override
+    @RequestMapping(value = "/delivery_finish",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void deliveryFinish(@PathVariable("accountBook") String accountBook,
+                             @RequestBody List<Integer> ids){
+        this.deliveryOrderService.deliveryFinish(accountBook,ids);
+    }
+
+    @Override
     @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.deliveryOrderService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/preview/{strIDs}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<DeliveryOrderAndItems> getPreviewData(@PathVariable("accountBook") String accountBook,
+                                                         @PathVariable("strIDs") String strIDs){
+        Gson gson = new Gson();
+        List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {}.getType());
+        return deliveryOrderService.getPreviewData(accountBook,ids);
     }
 }

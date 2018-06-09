@@ -5,14 +5,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 public class TransferRecordView {
+
     private int id;
     private int warehouseId;
-    private int sourceStockRecordId;
-    private int newStockRecordId;
+    private Integer sourceStockRecordId;
+    private Integer newStockRecordId;
     private BigDecimal originalAmount;
     private String originalUnit;
     private BigDecimal originalUnitAmount;
@@ -31,9 +31,9 @@ public class TransferRecordView {
     private String supplierNo;
     private String supplierName;
 
-    @Id
     @Basic
-    @Column(name = "ID", nullable = false)
+    @Id
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -43,7 +43,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
@@ -53,27 +53,27 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "SourceStockRecordID", nullable = false)
-    public int getSourceStockRecordId() {
+    @Column(name = "SourceStockRecordID")
+    public Integer getSourceStockRecordId() {
         return sourceStockRecordId;
     }
 
-    public void setSourceStockRecordId(int sourceStockRecordId) {
+    public void setSourceStockRecordId(Integer sourceStockRecordId) {
         this.sourceStockRecordId = sourceStockRecordId;
     }
 
     @Basic
-    @Column(name = "NewStockRecordID", nullable = false)
-    public int getNewStockRecordId() {
+    @Column(name = "NewStockRecordID")
+    public Integer getNewStockRecordId() {
         return newStockRecordId;
     }
 
-    public void setNewStockRecordId(int newStockRecordId) {
+    public void setNewStockRecordId(Integer newStockRecordId) {
         this.newStockRecordId = newStockRecordId;
     }
 
     @Basic
-    @Column(name = "OriginalAmount", nullable = true, precision = 3)
+    @Column(name = "OriginalAmount")
     public BigDecimal getOriginalAmount() {
         return originalAmount;
     }
@@ -83,7 +83,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "OriginalUnit", nullable = true, length = 64)
+    @Column(name = "OriginalUnit")
     public String getOriginalUnit() {
         return originalUnit;
     }
@@ -93,7 +93,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "OriginalUnitAmount", nullable = true, precision = 3)
+    @Column(name = "OriginalUnitAmount")
     public BigDecimal getOriginalUnitAmount() {
         return originalUnitAmount;
     }
@@ -103,7 +103,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "TransferAmount", nullable = true, precision = 3)
+    @Column(name = "TransferAmount")
     public BigDecimal getTransferAmount() {
         return transferAmount;
     }
@@ -113,7 +113,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "TransferUnit", nullable = true, length = 64)
+    @Column(name = "TransferUnit")
     public String getTransferUnit() {
         return transferUnit;
     }
@@ -123,7 +123,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "TransferUnitAmount", nullable = true, precision = 3)
+    @Column(name = "TransferUnitAmount")
     public BigDecimal getTransferUnitAmount() {
         return transferUnitAmount;
     }
@@ -133,7 +133,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "SourceStorageLocationID", nullable = true)
+    @Column(name = "SourceStorageLocationID")
     public Integer getSourceStorageLocationId() {
         return sourceStorageLocationId;
     }
@@ -143,7 +143,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "SourceStorageLocationNo", nullable = true, length = 64)
+    @Column(name = "SourceStorageLocationNo")
     public String getSourceStorageLocationNo() {
         return sourceStorageLocationNo;
     }
@@ -153,7 +153,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "SourceStorageLocationName", nullable = true, length = 64)
+    @Column(name = "SourceStorageLocationName")
     public String getSourceStorageLocationName() {
         return sourceStorageLocationName;
     }
@@ -163,7 +163,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "NewStorageLocationID", nullable = true)
+    @Column(name = "NewStorageLocationID")
     public Integer getNewStorageLocationId() {
         return newStorageLocationId;
     }
@@ -173,7 +173,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "NewStorageLocationNo", nullable = true, length = 64)
+    @Column(name = "NewStorageLocationNo")
     public String getNewStorageLocationNo() {
         return newStorageLocationNo;
     }
@@ -183,7 +183,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "NewStorageLocationName", nullable = true, length = 64)
+    @Column(name = "NewStorageLocationName")
     public String getNewStorageLocationName() {
         return newStorageLocationName;
     }
@@ -193,7 +193,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "WarehouseName", nullable = true, length = 64)
+    @Column(name = "WarehouseName")
     public String getWarehouseName() {
         return warehouseName;
     }
@@ -203,7 +203,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "MaterialNo", nullable = true, length = 64)
+    @Column(name = "MaterialNo")
     public String getMaterialNo() {
         return materialNo;
     }
@@ -213,7 +213,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "MaterialName", nullable = true, length = 64)
+    @Column(name = "MaterialName")
     public String getMaterialName() {
         return materialName;
     }
@@ -223,7 +223,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "SupplierNo", nullable = true, length = 64)
+    @Column(name = "SupplierNo")
     public String getSupplierNo() {
         return supplierNo;
     }
@@ -233,7 +233,7 @@ public class TransferRecordView {
     }
 
     @Basic
-    @Column(name = "SupplierName", nullable = true, length = 64)
+    @Column(name = "SupplierName")
     public String getSupplierName() {
         return supplierName;
     }
@@ -246,33 +246,70 @@ public class TransferRecordView {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         TransferRecordView that = (TransferRecordView) o;
-        return id == that.id &&
-                warehouseId == that.warehouseId &&
-                sourceStockRecordId == that.sourceStockRecordId &&
-                newStockRecordId == that.newStockRecordId &&
-                Objects.equals(originalAmount, that.originalAmount) &&
-                Objects.equals(originalUnit, that.originalUnit) &&
-                Objects.equals(originalUnitAmount, that.originalUnitAmount) &&
-                Objects.equals(transferAmount, that.transferAmount) &&
-                Objects.equals(transferUnit, that.transferUnit) &&
-                Objects.equals(transferUnitAmount, that.transferUnitAmount) &&
-                Objects.equals(sourceStorageLocationId, that.sourceStorageLocationId) &&
-                Objects.equals(sourceStorageLocationNo, that.sourceStorageLocationNo) &&
-                Objects.equals(sourceStorageLocationName, that.sourceStorageLocationName) &&
-                Objects.equals(newStorageLocationId, that.newStorageLocationId) &&
-                Objects.equals(newStorageLocationNo, that.newStorageLocationNo) &&
-                Objects.equals(newStorageLocationName, that.newStorageLocationName) &&
-                Objects.equals(warehouseName, that.warehouseName) &&
-                Objects.equals(materialNo, that.materialNo) &&
-                Objects.equals(materialName, that.materialName) &&
-                Objects.equals(supplierNo, that.supplierNo) &&
-                Objects.equals(supplierName, that.supplierName);
+
+        if (id != that.id) return false;
+        if (warehouseId != that.warehouseId) return false;
+        if (sourceStockRecordId != null ? !sourceStockRecordId.equals(that.sourceStockRecordId) : that.sourceStockRecordId != null)
+            return false;
+        if (newStockRecordId != null ? !newStockRecordId.equals(that.newStockRecordId) : that.newStockRecordId != null)
+            return false;
+        if (originalAmount != null ? !originalAmount.equals(that.originalAmount) : that.originalAmount != null)
+            return false;
+        if (originalUnit != null ? !originalUnit.equals(that.originalUnit) : that.originalUnit != null) return false;
+        if (originalUnitAmount != null ? !originalUnitAmount.equals(that.originalUnitAmount) : that.originalUnitAmount != null)
+            return false;
+        if (transferAmount != null ? !transferAmount.equals(that.transferAmount) : that.transferAmount != null)
+            return false;
+        if (transferUnit != null ? !transferUnit.equals(that.transferUnit) : that.transferUnit != null) return false;
+        if (transferUnitAmount != null ? !transferUnitAmount.equals(that.transferUnitAmount) : that.transferUnitAmount != null)
+            return false;
+        if (sourceStorageLocationId != null ? !sourceStorageLocationId.equals(that.sourceStorageLocationId) : that.sourceStorageLocationId != null)
+            return false;
+        if (sourceStorageLocationNo != null ? !sourceStorageLocationNo.equals(that.sourceStorageLocationNo) : that.sourceStorageLocationNo != null)
+            return false;
+        if (sourceStorageLocationName != null ? !sourceStorageLocationName.equals(that.sourceStorageLocationName) : that.sourceStorageLocationName != null)
+            return false;
+        if (newStorageLocationId != null ? !newStorageLocationId.equals(that.newStorageLocationId) : that.newStorageLocationId != null)
+            return false;
+        if (newStorageLocationNo != null ? !newStorageLocationNo.equals(that.newStorageLocationNo) : that.newStorageLocationNo != null)
+            return false;
+        if (newStorageLocationName != null ? !newStorageLocationName.equals(that.newStorageLocationName) : that.newStorageLocationName != null)
+            return false;
+        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
+            return false;
+        if (materialNo != null ? !materialNo.equals(that.materialNo) : that.materialNo != null) return false;
+        if (materialName != null ? !materialName.equals(that.materialName) : that.materialName != null) return false;
+        if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
+        if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, warehouseId, sourceStockRecordId, newStockRecordId, originalAmount, originalUnit, originalUnitAmount, transferAmount, transferUnit, transferUnitAmount, sourceStorageLocationId, sourceStorageLocationNo, sourceStorageLocationName, newStorageLocationId, newStorageLocationNo, newStorageLocationName, warehouseName, materialNo, materialName, supplierNo, supplierName);
+        int result = id;
+        result = 31 * result + warehouseId;
+        result = 31 * result + (sourceStockRecordId != null ? sourceStockRecordId.hashCode() : 0);
+        result = 31 * result + (newStockRecordId != null ? newStockRecordId.hashCode() : 0);
+        result = 31 * result + (originalAmount != null ? originalAmount.hashCode() : 0);
+        result = 31 * result + (originalUnit != null ? originalUnit.hashCode() : 0);
+        result = 31 * result + (originalUnitAmount != null ? originalUnitAmount.hashCode() : 0);
+        result = 31 * result + (transferAmount != null ? transferAmount.hashCode() : 0);
+        result = 31 * result + (transferUnit != null ? transferUnit.hashCode() : 0);
+        result = 31 * result + (transferUnitAmount != null ? transferUnitAmount.hashCode() : 0);
+        result = 31 * result + (sourceStorageLocationId != null ? sourceStorageLocationId.hashCode() : 0);
+        result = 31 * result + (sourceStorageLocationNo != null ? sourceStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (sourceStorageLocationName != null ? sourceStorageLocationName.hashCode() : 0);
+        result = 31 * result + (newStorageLocationId != null ? newStorageLocationId.hashCode() : 0);
+        result = 31 * result + (newStorageLocationNo != null ? newStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (newStorageLocationName != null ? newStorageLocationName.hashCode() : 0);
+        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
+        result = 31 * result + (materialNo != null ? materialNo.hashCode() : 0);
+        result = 31 * result + (materialName != null ? materialName.hashCode() : 0);
+        result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
+        result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
+        return result;
     }
 }

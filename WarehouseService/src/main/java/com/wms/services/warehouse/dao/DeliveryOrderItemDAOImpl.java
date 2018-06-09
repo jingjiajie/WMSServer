@@ -1,9 +1,9 @@
 package com.wms.services.warehouse.dao;
 
 import com.wms.utilities.dao.BaseDAOImpl;
+import com.wms.utilities.model.DeliveryOrderItemView;
 import org.springframework.stereotype.Repository;
 import com.wms.utilities.model.DeliveryOrderItem;
-import com.wms.utilities.model.DeliveryOrderItemView;
 
 @Repository
 public class DeliveryOrderItemDAOImpl

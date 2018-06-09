@@ -15,7 +15,11 @@ public interface StockRecordService
 
     void addAmount(String accountBook, TransferStock transferStock);
 
-    StockRecordView[] find(String accountBook, StockRecordFind stockRecordFind);
+    void returnSupply(String accountBook, StockRecord[] stockRecords);
+
+    StockRecord[] find(String accountBook, StockRecordFind stockRecordFind);
+
+    StockRecordViewNewest[] findNewest(String accountBook, Condition condition);
 
     Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind,String ids);
 

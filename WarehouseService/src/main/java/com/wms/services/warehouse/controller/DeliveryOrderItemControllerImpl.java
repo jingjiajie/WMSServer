@@ -4,12 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.service.DeliveryOrderItemService;
 import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.DeliveryOrderItem;
 import com.wms.utilities.model.DeliveryOrderItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/{accountBook}/delivery_order_item")
@@ -58,6 +59,22 @@ public class DeliveryOrderItemControllerImpl implements DeliveryOrderItemControl
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.deliveryOrderItemService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value = "/loading_some",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void loadingSome(@PathVariable("accountBook") String accountBook,
+                               @RequestBody List<Integer> ids){
+        this.deliveryOrderItemService.loadingSome(accountBook,ids);
+    }
+
+    @Override
+    @RequestMapping(value = "/loading_all",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void loadingALL(@PathVariable("accountBook") String accountBook,
+                               @RequestBody List<Integer> ids){
+        this.deliveryOrderItemService.loadingALL(accountBook,ids);
     }
 
 }

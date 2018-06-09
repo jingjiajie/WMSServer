@@ -2,18 +2,21 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.StockTakingOrderDAO;
+import com.wms.services.warehouse.datastructures.StockTakingOrderAndItems;
+import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.StockTakingOrder;
-import com.wms.utilities.model.StockTakingOrderView;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -27,6 +30,8 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
     PersonService personService;
     @Autowired
     OrderNoGenerator orderNoGenerator;
+    @Autowired
+    StockTakingOrderItemService stockTakingOrderItemService;
     private static final String NO_PREFIX = "P";
     @Override
     public int[] add(String accountBook,StockTakingOrder[] stockTakingOrders) throws WMSServiceException {
@@ -140,5 +145,24 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
         return this.stockTakingOrderDAO.findCount(accountBook,cond);
+    }
+
+    @Override
+    public List<StockTakingOrderAndItems> getPreviewData(String accountBook, List<Integer> StockTakingOrderIDs) throws WMSServiceException{
+        StockTakingOrderView[] stockTakingOrderViews = this.stockTakingOrderDAO.find(accountBook,new Condition().addCondition("id", StockTakingOrderIDs.toArray(), ConditionItem.Relation.IN));
+        StockTakingOrderItemView[] itemViews = this.stockTakingOrderItemService.find(accountBook,new Condition().addCondition("stockTakingOrderId", StockTakingOrderIDs.toArray(), ConditionItem.Relation.IN));
+        List<StockTakingOrderAndItems> result = new ArrayList<>();
+        for(StockTakingOrderView stockTakingOrderView : stockTakingOrderViews){
+            StockTakingOrderAndItems stockTakingOrderAndItems= new StockTakingOrderAndItems();
+            stockTakingOrderAndItems.setStockTakingOrderView(stockTakingOrderView);
+            stockTakingOrderAndItems.setStockTakingOrderItems(new ArrayList<>());
+            result.add(stockTakingOrderAndItems);
+            for(StockTakingOrderItemView itemView : itemViews){
+                if(itemView.getStockTakingOrderId() == stockTakingOrderView.getId()){
+                    stockTakingOrderAndItems.getStockTakingOrderItems().add(itemView);
+                }
+            }
+        }
+        return result;
     }
 }

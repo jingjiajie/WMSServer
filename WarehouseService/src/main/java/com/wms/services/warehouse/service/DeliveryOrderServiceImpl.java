@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.warehouse.datastructures.TransferArgs;
 import com.wms.services.warehouse.datastructures.TransferItem;
+import com.wms.services.warehouse.datastructures.DeliveryOrderAndItems;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import com.wms.utilities.ReflectHelper;
 
 @Service
 @Transactional
@@ -48,6 +50,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     StockRecordService stockRecordService;
     @Autowired
     SupplyService supplyService;
+    @Autowired
+    DeliveryOrderItemService deliveryOrderItemService;
 
 
     private static final String NO_PREFIX = "D";
@@ -186,6 +190,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
                 }
             });
+            //TODO 尝试更新移库单时间
+            //transferOrderItemService.updateTransferOrder(accountBook,newTransferOrderID ,transferArgs.getTransferItems()[0].getTransferOrder().getCreatePersonId());
         });
     }
 
@@ -206,7 +212,13 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         for(int i=0;i<safetyStockViews.length;i++){
             StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
                     new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
-            if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[0].getAmount()) == -1) {
+            StockRecordView[] stockRecordViews1 = stockRecordService.find(accountBook,
+                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
+
+            if (stockRecordViews1[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1){
+                throw new WMSServiceException(String.format("当前备货源库位(%s)库存不足，无法备货", safetyStockViews[i].getSourceStorageLocationName()));
+            }
+            if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1) {
                 TransferOrderItem transferOrderItem = new TransferOrderItem();
                 transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
                 transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
@@ -227,10 +239,64 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
         transferArgs.setTransferItems(new TransferItem[]{transferItem});
         transferArgs.setAutoCommit(true);
+        //boolean a = true;
+        //transferOrderItemService.autoTrans(a);
         this.transferPakage(accountBook, transferArgs);
+
 
     }
 
+    @Override
+    public void deliveryFinish(String accountBook,List<Integer> ids) throws WMSServiceException{
+
+        //TODO 人员id没往下传
+        if (ids.size() == 0) {
+            throw new WMSServiceException("请选择至少一个出库单！");
+        }
+        //DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook, new Condition().addCondition("id", ids.toArray()));
+
+        DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook,new Condition().addCondition("id",ids.toArray(), ConditionItem.Relation.IN));
+        if (deliveryOrderViews.length == 0) return;
+        DeliveryOrder[] deliveryOrders = ReflectHelper.createAndCopyFields(deliveryOrderViews,DeliveryOrder.class);
+
+        DeliveryOrderItemView[] itemViews = this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("deliveryOrderId",ids.toArray(), ConditionItem.Relation.IN));
+        DeliveryOrderItem[] deliveryOrderItems = ReflectHelper.createAndCopyFields(itemViews,DeliveryOrderItem.class);
+
+        Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
+            if (deliveryOrderItem.getState() !=DeliveryOrderService.STATE_ALL_LOADING) {
+                throw new WMSServiceException(String.format("当前出库单（%d）未完成装车，无法发运", deliveryOrderItem.getDeliveryOrderId()));
+            }
+        });
+        this.deliveryOrderItemService.update(accountBook,deliveryOrderItems);
+        Stream.of(deliveryOrders).forEach(deliveryOrder -> {
+            if (deliveryOrder.getState() !=DeliveryOrderService.STATE_IN_DELIVER) {
+                deliveryOrder.setState(DeliveryOrderService.STATE_IN_DELIVER);
+            }
+        });
+        this.update(accountBook,deliveryOrders);
+
+
+
+    }
+
+    @Override
+    public List<DeliveryOrderAndItems> getPreviewData(String accountBook, List<Integer> deliveryOrderIDs) throws WMSServiceException{
+        DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook,new Condition().addCondition("id",deliveryOrderIDs.toArray(), ConditionItem.Relation.IN));
+        DeliveryOrderItemView[] itemViews = this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("deliveryOrderId",deliveryOrderIDs.toArray(), ConditionItem.Relation.IN));
+        List<DeliveryOrderAndItems> result = new ArrayList<>();
+        for(DeliveryOrderView deliveryOrderView : deliveryOrderViews){
+            DeliveryOrderAndItems deliveryOrderAndItems = new DeliveryOrderAndItems();
+            deliveryOrderAndItems.setDeliveryOrder(deliveryOrderView);
+            deliveryOrderAndItems.setDeliveryOrderItems(new ArrayList<>());
+            result.add(deliveryOrderAndItems);
+            for(DeliveryOrderItemView itemView : itemViews){
+                if(itemView.getDeliveryOrderId() == deliveryOrderView.getId()){
+                    deliveryOrderAndItems.getDeliveryOrderItems().add(itemView);
+                }
+            }
+        }
+        return result;
+    }
 
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
