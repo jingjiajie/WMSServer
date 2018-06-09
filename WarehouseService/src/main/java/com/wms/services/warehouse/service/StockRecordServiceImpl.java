@@ -1229,6 +1229,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             throw new DatabaseNotFoundException(accountBook);
         }
         Query query=null;
+        String sqlCheckNewPerfix="SELECT q.* from ( \n";
         String sqlCheckNew2="SELECT s_all.*,sum(s_all.Amount) as sumAmount FROM \n" +
                     "(SELECT s1.* FROM StockRecordView AS s1\n" +
                     "INNER JOIN\n" +
@@ -1237,9 +1238,11 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID) as s3\n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo) \n" +
                     "as s_all GROUP BY s_all.Unit,s_all.UnitAmount,s_all.StorageLocationID";
-        query=session.createNativeQuery(sqlCheckNew2);
+        String sqlCheckNewSuffix="\n ) as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId and item.amount=q.sumAmount and item.unitamount=q.unitamount and item.unit=q.unit and item.supplyId=q.supplyid and item.storagelocationid=q.storagelocationid and item.comment=\"详细数目\")=0";
+        query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
+        query.setParameter("stockTakingOrderId",34);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1255,15 +1258,18 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             throw new DatabaseNotFoundException(accountBook);
         }
         Query query=null;
+        String sqlCheckNewPerfix="SELECT q.* from ( \n";
         String sqlCheckNew2="SELECT s2.*,sum(s2.RealAmount) as sum from (SELECT loading.* from DeliveryOrderItemView as loading\n" +
                 "INNER JOIN \n" +
                 "(SELECT  a.id ,a.state from DeliveryOrderView as a) as a1\n" +
                 "on a1.id=loading.DeliveryOrderID and a1.state!=4 \n" +
                 "WHERE loading.SupplyID in (SELECT su.id from SupplyView as su where su.warehouseId=:warehouseId) and loading.State!=0 and loading.loadingtime<:endTime)as s2\n" +
                 "GROUP BY s2.supplyId ";
-        query=session.createNativeQuery(sqlCheckNew2);
+        String sqlCheckNewSuffix="\n ) as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId and item.amount=q.sum and item.unitamount=q.unitamount and item.unitamount=q.unitamount and item.supplyId=q.supplyid and item.comment=\"在途数量\")=0";
+        query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
+        query.setParameter("stockTakingOrderId",34);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1279,14 +1285,17 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             throw new DatabaseNotFoundException(accountBook);
         }
         Query query=null;
+        String sqlCheckNewPerfix="SELECT q.* from ( \n";
         String sqlCheckNew2="SELECT s2.*,sum(s2.RealAmount) as sum from (SELECT loading.* from DeliveryOrderItemView as loading\n" +
                 "INNER JOIN \n" +
                 "(SELECT  a.id ,a.state from DeliveryOrderView as a) as a1\n" +
                 "on a1.id=loading.DeliveryOrderID and a1.state!=4 \n" +
-                "WHERE loading.SupplyID IN "+ids+" and loading.State!=0 and loading.loadingtime<:endTime)as s2 \n" +
+                "WHERE loading.SupplyID IN "+ids+" and loading.State!=0 and loading.loadingtime<:endTime) as s2 \n" +
                 "GROUP BY s2.supplyId";
-        query=session.createNativeQuery(sqlCheckNew2);
+        String sqlCheckNewSuffix="\n )as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId and item.amount=q.sum  and item.supplyId=q.supplyid and item.comment=\"在途数量\")=0";
+        query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
+        query.setParameter("stockTakingOrderId",34);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1302,17 +1311,20 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             throw new DatabaseNotFoundException(accountBook);
         }
         Query query=null;
+        String sqlCheckNewPerfix="SELECT q.* from ( \n";
         String sqlCheckNew2="SELECT s_all.*,sum(s_all.Amount) as sumAmount FROM \n" +
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
-                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2  where s2.WarehouseID=:warehouseId and s2.SupplyID IN and s3.TIME <:end" +ids+
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2  where s2.WarehouseID=:warehouseId and  s2.TIME <:end1 and s2.SupplyID IN " +ids+
                 "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID) as s3\n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo)\n" +
                 "as s_all \n" +
                 "GROUP BY s_all.supplyId";
-        query=session.createNativeQuery(sqlCheckNew2);
+        String sqlCheckNewSuffix="\n ) as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId and item.amount=q.sumamount  and item.supplyId=q.supplyid and item.comment=\"仓库总数\")=0";
+        query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
-        query.setParameter("end",stockRecordFind.getTimeEnd());
+        query.setParameter("end1",stockRecordFind.getTimeEnd());
+        query.setParameter("stockTakingOrderId",34);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1328,6 +1340,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             throw new DatabaseNotFoundException(accountBook);
         }
         Query query=null;
+        String sqlCheckNewPerfix="SELECT q.* from ( \n";
         String sqlCheckNew2="SELECT s_all.*,sum(s_all.Amount) as sumAmount FROM \n" +
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
@@ -1337,9 +1350,11 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo) \n" +
                 "as s_all \n" +
                 "GROUP BY s_all.supplyid";
-        query=session.createNativeQuery(sqlCheckNew2);
+        String sqlCheckNewSuffix="\n ) as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId and item.amount=q.sumAmount   and item.supplyId=q.supplyid  and item.comment=\"仓库总数\")=0";
+        query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
+        query.setParameter("stockTakingOrderId",34);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1355,6 +1370,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             throw new DatabaseNotFoundException(accountBook);
         }
         Query query=null;
+        String sqlCheckNewPerfix="SELECT q.* from ( \n";
         String sqlCheckNew2="SELECT s_all.*,sum(s_all.Amount) as sumAmount FROM \n" +
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
@@ -1364,9 +1380,11 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo) \n" +
                 "as s_all \n" +
                 "GROUP BY s_all.Unit,s_all.UnitAmount,s_all.StorageLocationID,s_all.supplyid";
-        query=session.createNativeQuery(sqlCheckNew2);
+        String sqlCheckNewSuffix="\n ) as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId and item.amount=q.sumAmount and item.unitamount=q.unitamount and item.unit=q.unit and item.supplyId=q.supplyid and item.storagelocationid=q.storagelocationid and item.comment=\"详细数目\")=0";
+        query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
+        query.setParameter("stockTakingOrderId",34);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
