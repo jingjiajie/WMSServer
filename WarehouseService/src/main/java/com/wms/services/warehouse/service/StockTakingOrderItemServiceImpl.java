@@ -198,8 +198,8 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
                 stockTakingOrderItem.setRealAmount((BigDecimal) objects[6]);}
             else{
                 stockTakingOrderItem.setSupplyId((int) objects[3]);
-                stockTakingOrderItem.setAmount((BigDecimal) objects[23]);
-                stockTakingOrderItem.setRealAmount((BigDecimal) objects[23]);}
+                stockTakingOrderItem.setAmount((BigDecimal) objects[24]);
+                stockTakingOrderItem.setRealAmount((BigDecimal) objects[24]);}
                 stockTakingOrderItemList.add(stockTakingOrderItem);
         }
             StockTakingOrderItem[] stockTakingOrderItems=null;
