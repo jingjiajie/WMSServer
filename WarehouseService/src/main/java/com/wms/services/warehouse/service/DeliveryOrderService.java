@@ -21,6 +21,7 @@ public interface DeliveryOrderService
     public void transferPakage(String accountBook, TransferArgs transferArgs);
     public void transferAuto(String accountBook, TransferAuto TransferAuto);
     public void deliveryFinish(String accountBook,List<Integer> ids);
+    public void decreaseInAccounting(String accountBook,List<Integer> ids);
     List<DeliveryOrderAndItems> getPreviewData(String accountBook, List<Integer> deliveryOrderIDs) throws WMSServiceException;
 
 

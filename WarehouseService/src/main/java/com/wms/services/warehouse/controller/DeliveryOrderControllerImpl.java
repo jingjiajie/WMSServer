@@ -82,6 +82,14 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     }
 
     @Override
+    @RequestMapping(value = "/decrease_in_accounting",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void decreaseInAccounting(@PathVariable("accountBook") String accountBook,
+                               @RequestBody List<Integer> ids){
+        this.deliveryOrderService.decreaseInAccounting(accountBook,ids);
+    }
+
+    @Override
     @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public long findCount(@PathVariable("accountBook") String accountBook,

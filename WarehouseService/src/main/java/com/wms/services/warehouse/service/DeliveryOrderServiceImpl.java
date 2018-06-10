@@ -258,9 +258,21 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook,new Condition().addCondition("id",ids.toArray(), ConditionItem.Relation.IN));
         if (deliveryOrderViews.length == 0) return;
         DeliveryOrder[] deliveryOrders = ReflectHelper.createAndCopyFields(deliveryOrderViews,DeliveryOrder.class);
+        Stream.of(deliveryOrders).forEach(deliveryOrder -> {
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_LOADING||deliveryOrder.getState() ==DeliveryOrderService.STATE_PARTIAL_LOADING) {
+                throw new WMSServiceException(String.format("当前出库单（%s）未完成装车，无法发运", deliveryOrder.getNo()));
+            }
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_DELIVER) {
+                throw new WMSServiceException(String.format("当前出库单（%s）已经发运在途，无法重复发运", deliveryOrder.getNo()));
+            }
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_DELIVER_FINNISH) {
+                throw new WMSServiceException(String.format("当前出库单（%s）已经确认核减，无法进行发运操作", deliveryOrder.getNo()));
+            }
+        });
 
         DeliveryOrderItemView[] itemViews = this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("deliveryOrderId",ids.toArray(), ConditionItem.Relation.IN));
         DeliveryOrderItem[] deliveryOrderItems = ReflectHelper.createAndCopyFields(itemViews,DeliveryOrderItem.class);
+        if (deliveryOrderItems.length == 0) return;
 
         Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
             if (deliveryOrderItem.getState() !=DeliveryOrderService.STATE_ALL_LOADING) {
@@ -275,7 +287,34 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         });
         this.update(accountBook,deliveryOrders);
 
+    }
 
+    @Override
+    public void decreaseInAccounting(String accountBook,List<Integer> ids) throws WMSServiceException{
+
+        //TODO 人员id没往下传
+        if (ids.size() == 0) {
+            throw new WMSServiceException("请选择至少一个出库单！");
+        }
+        //DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook, new Condition().addCondition("id", ids.toArray()));
+
+        DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderDAO.find(accountBook,new Condition().addCondition("id",ids.toArray(), ConditionItem.Relation.IN));
+        if (deliveryOrderViews.length == 0) return;
+        DeliveryOrder[] deliveryOrders = ReflectHelper.createAndCopyFields(deliveryOrderViews,DeliveryOrder.class);
+        Stream.of(deliveryOrders).forEach(deliveryOrder -> {
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_DELIVER_FINNISH) {
+                throw new WMSServiceException(String.format("当前出库单（%s）已经核减完成，无法重复操作", deliveryOrder.getNo()));
+            }
+            if (deliveryOrder.getState() !=DeliveryOrderService.STATE_IN_DELIVER) {
+                throw new WMSServiceException(String.format("当前出库单（%s）未完成发运，无法核减", deliveryOrder.getNo()));
+            }
+
+
+        });
+        Stream.of(deliveryOrders).forEach(deliveryOrder -> {
+            deliveryOrder.setState(DeliveryOrderService.STATE_DELIVER_FINNISH);
+        });
+        this.update(accountBook,deliveryOrders);
 
     }
 

@@ -15,6 +15,7 @@ public interface DeliveryOrderController
     void transferPakage(String accountBook, TransferArgs transferArgs);
     void transferAuto(String accountBook, TransferAuto transferAuto);
     void deliveryFinish(String accountBook,List<Integer> ids);
+    void decreaseInAccounting(String accountBook,List<Integer> ids);
     List<DeliveryOrderAndItems> getPreviewData(String accountBook, String strIDs);
 
 }

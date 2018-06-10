@@ -42,6 +42,12 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
     public int[] add(String accountBook, DeliveryOrderItem[] deliveryOrderItems) throws WMSServiceException {
         if (deliveryOrderItems.length == 0) return new int[]{};
         DeliveryOrderView deliveryOrderView = this.getDeliveryOrderView(accountBook,deliveryOrderItems);
+        if(deliveryOrderView.getState()==DeliveryOrderService.STATE_IN_DELIVER){
+            throw new WMSServiceException(String.format("当前出库单（%s）已经发运在途，无法再添加出库单条目", deliveryOrderView.getNo()));
+        }
+        if(deliveryOrderView.getState()==DeliveryOrderService.STATE_DELIVER_FINNISH){
+            throw new WMSServiceException(String.format("当前出库单（%s）已经发运核减，无法再添加出库单条目", deliveryOrderView.getNo()));
+        }
         //验证字段
         this.validateEntities(accountBook,deliveryOrderItems);
         //修改库存
@@ -91,6 +97,14 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
     @Override
     public void update(String accountBook, DeliveryOrderItem[] deliveryOrderItems) throws WMSServiceException {
         DeliveryOrderView deliveryOrderView = this.getDeliveryOrderView(accountBook,deliveryOrderItems);
+
+        if(deliveryOrderView.getState()==DeliveryOrderService.STATE_IN_DELIVER){
+            throw new WMSServiceException(String.format("当前出库单（%s）已经发运在途，无法再修改出库单条目", deliveryOrderView.getNo()));
+        }
+        if(deliveryOrderView.getState()==DeliveryOrderService.STATE_DELIVER_FINNISH){
+            throw new WMSServiceException(String.format("当前出库单（%s）已经发运核减，无法再修改出库单条目", deliveryOrderView.getNo()));
+        }
+
         //数据验证
         this.validateEntities(accountBook,deliveryOrderItems);
 
