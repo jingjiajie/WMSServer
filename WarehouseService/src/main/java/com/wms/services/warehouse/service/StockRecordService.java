@@ -21,17 +21,17 @@ public interface StockRecordService
 
     StockRecordViewNewest[] findNewest(String accountBook, Condition condition);
 
-    Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind,String ids);
+    Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind,String ids,int stockTakingOrderId);
 
-    Object[] findCheckSupplyAmountAll(String accountBook, StockRecordFind stockRecordFind,String ids);
+    Object[] findCheckSupplyAmountAll(String accountBook, StockRecordFind stockRecordFind,String ids,int stockTakingOrderId);
 
-    Object[] findCheckWarehouse(String accountBook, StockRecordFind stockRecordFind);
+    Object[] findCheckWarehouse(String accountBook, StockRecordFind stockRecordFind,int stockTakingOrderId);
 
-    Object[] findCheckWarehouseAmountAll(String accountBook, StockRecordFind stockRecordFind);
+    Object[] findCheckWarehouseAmountAll(String accountBook, StockRecordFind stockRecordFind,int stockTakingOrderId);
 
-    Object[] findLoadingWarehouse(String accountBook, StockRecordFind stockRecordFind);
+    Object[] findLoadingWarehouse(String accountBook, StockRecordFind stockRecordFind,int stockTakingOrderId);
 
-    Object[] findLoadingSupply (String accountBook, StockRecordFind stockRecordFind,String ids);
+    Object[] findLoadingSupply (String accountBook, StockRecordFind stockRecordFind,String ids,int stockTakingOrderId);
 
     Object[] findBySql(String accountBook, String sql, Object[] o);
 

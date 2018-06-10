@@ -138,9 +138,9 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockRecordFind.setWarehouseId(stockTakingOrderItemAdd.getWarehouseId());
         stockRecordFind.setTimeEnd(stockTakingOrderItemAdd.getCheckTime());
         stockTakingOrderItemAdd.setAddMode("all");
-        this.addItemToDatabase(accountBook,stockRecordService.findCheckWarehouse(accountBook,stockRecordFind),stockTakingOrderItemAdd,"详细数目");
-        this.addItemToDatabase(accountBook,stockRecordService.findCheckWarehouseAmountAll(accountBook,stockRecordFind),stockTakingOrderItemAdd,"仓库总数");
-        this.addItemToDatabase(accountBook,stockRecordService.findLoadingWarehouse(accountBook,stockRecordFind),stockTakingOrderItemAdd,"在途数量");
+        this.addItemToDatabase(accountBook,stockRecordService.findCheckWarehouse(accountBook,stockRecordFind,stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"详细数目");
+        this.addItemToDatabase(accountBook,stockRecordService.findCheckWarehouseAmountAll(accountBook,stockRecordFind,stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"仓库总数");
+        this.addItemToDatabase(accountBook,stockRecordService.findLoadingWarehouse(accountBook,stockRecordFind,stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"在途数量");
         this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 
@@ -167,9 +167,9 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
             }
         }
         stringBuffer.append(")");
-        this.addItemToDatabase(accountBook,stockRecordService.findCheckSupply(accountBook,stockRecordFind,stringBuffer.toString()),stockTakingOrderItemAdd,"详细数目");
-        this.addItemToDatabase(accountBook,stockRecordService.findCheckSupplyAmountAll(accountBook,stockRecordFind,stringBuffer.toString()),stockTakingOrderItemAdd,"仓库总数");
-        this.addItemToDatabase(accountBook,stockRecordService.findLoadingSupply(accountBook,stockRecordFind,stringBuffer.toString()),stockTakingOrderItemAdd,"在途数量");
+        this.addItemToDatabase(accountBook,stockRecordService.findCheckSupply(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"详细数目");
+        this.addItemToDatabase(accountBook,stockRecordService.findCheckSupplyAmountAll(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"仓库总数");
+        this.addItemToDatabase(accountBook,stockRecordService.findLoadingSupply(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"在途数量");
         this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 

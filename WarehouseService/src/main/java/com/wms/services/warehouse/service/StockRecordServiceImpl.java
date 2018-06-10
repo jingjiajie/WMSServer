@@ -1221,7 +1221,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     //盘点单一用
-    public Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind,String ids){
+    public Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind,String ids,int stockTakingOrderId){
         Session session= sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -1242,7 +1242,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
-        query.setParameter("stockTakingOrderId",34);
+        query.setParameter("stockTakingOrderId",stockTakingOrderId);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1250,7 +1250,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     //盘点单在途数量仓库
-    public Object[] findLoadingWarehouse(String accountBook, StockRecordFind stockRecordFind){
+    public Object[] findLoadingWarehouse(String accountBook, StockRecordFind stockRecordFind,int stockTakingOrderId){
         Session session= sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -1269,7 +1269,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
-        query.setParameter("stockTakingOrderId",34);
+        query.setParameter("stockTakingOrderId",stockTakingOrderId);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1277,7 +1277,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     //盘点单在途数量供货
-    public Object[] findLoadingSupply(String accountBook, StockRecordFind stockRecordFind,String ids){
+    public Object[] findLoadingSupply(String accountBook, StockRecordFind stockRecordFind,String ids,int stockTakingOrderId){
         Session session= sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -1295,7 +1295,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         String sqlCheckNewSuffix="\n )as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId and item.amount=q.sum  and item.supplyId=q.supplyid and item.comment=\"在途数量\")=0";
         query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
-        query.setParameter("stockTakingOrderId",34);
+        query.setParameter("stockTakingOrderId",stockTakingOrderId);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1303,7 +1303,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     //盘点供货总数用
-    public Object[] findCheckSupplyAmountAll(String accountBook,StockRecordFind stockRecordFind,String ids){
+    public Object[] findCheckSupplyAmountAll(String accountBook,StockRecordFind stockRecordFind,String ids,int stockTakingOrderId){
         Session session= sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -1324,7 +1324,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
         query.setParameter("end1",stockRecordFind.getTimeEnd());
-        query.setParameter("stockTakingOrderId",34);
+        query.setParameter("stockTakingOrderId",stockTakingOrderId);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1332,7 +1332,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     //盘点仓库总数
-    public Object[] findCheckWarehouseAmountAll(String accountBook, StockRecordFind stockRecordFind){
+    public Object[] findCheckWarehouseAmountAll(String accountBook, StockRecordFind stockRecordFind,int stockTakingOrderId){
         Session session= sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -1354,7 +1354,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
-        query.setParameter("stockTakingOrderId",34);
+        query.setParameter("stockTakingOrderId",stockTakingOrderId);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1362,7 +1362,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     //盘点仓库
-    public Object[] findCheckWarehouse(String accountBook, StockRecordFind stockRecordFind){
+    public Object[] findCheckWarehouse(String accountBook, StockRecordFind stockRecordFind,int stockTakingOrderId){
         Session session= sessionFactory.getCurrentSession();
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -1384,7 +1384,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
-        query.setParameter("stockTakingOrderId",34);
+        query.setParameter("stockTakingOrderId",stockTakingOrderId);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
