@@ -7,6 +7,7 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.service.BaseService;
 import com.wms.utilities.model.DeliveryOrder;
 import com.wms.utilities.model.DeliveryOrderView;
+import com.wms.services.warehouse.datastructures.DeliveryByPakage;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public interface DeliveryOrderService
     public void transferAuto(String accountBook, TransferAuto TransferAuto);
     public void deliveryFinish(String accountBook,List<Integer> ids);
     public void decreaseInAccounting(String accountBook,List<Integer> ids);
+    public void deliveryByPakage(String accountBook,DeliveryByPakage deliveryByPakage);
     List<DeliveryOrderAndItems> getPreviewData(String accountBook, List<Integer> deliveryOrderIDs) throws WMSServiceException;
 
 
