@@ -2,7 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.DeliveryOrderDAO;
-import com.wms.services.warehouse.datastructures.TransferAuto;
+import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.datastructures.Condition;
@@ -15,9 +15,6 @@ import com.wms.utilities.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.wms.services.warehouse.datastructures.TransferArgs;
-import com.wms.services.warehouse.datastructures.TransferItem;
-import com.wms.services.warehouse.datastructures.DeliveryOrderAndItems;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -52,6 +49,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     SupplyService supplyService;
     @Autowired
     DeliveryOrderItemService deliveryOrderItemService;
+    @Autowired
+    PackageItemService packageItemService;
+    @Autowired
+    PackageService packageService;
 
 
     private static final String NO_PREFIX = "D";
@@ -335,6 +336,54 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             }
         }
         return result;
+    }
+
+    @Override
+    public void deliveryByPakage(String accountBook,DeliveryByPakage deliveryByPakage) throws WMSServiceException{
+
+        //TODO 传的是发货套餐ID
+        Integer curId=deliveryByPakage.getPakageId();
+
+        PackageView[] curPakageViews = this.packageService.find(accountBook,new Condition().addCondition("id",curId, ConditionItem.Relation.IN));
+        PackageItemView[] itemViews = this.packageItemService.find(accountBook,new Condition().addCondition("pakageId",curId, ConditionItem.Relation.IN));
+        if (itemViews.length == 0) {
+            throw new WMSServiceException(String.format("当前发货套餐未包括条目信息，套餐名称（%S），无法创建出库单", curPakageViews[0].getName()));
+        }
+        //新建出库单
+        DeliveryOrder deliveryOrder=new DeliveryOrder();
+        deliveryOrder.setCreatePersonId(deliveryByPakage.getPersonId());
+        deliveryOrder.setWarehouseId(deliveryByPakage.getWarehouseId());
+        deliveryOrder.setState(DeliveryOrderService.STATE_IN_LOADING);
+        deliveryOrder.setDescription("套餐一键发货");
+        int newDeliveryOrderID = this.add(accountBook, new DeliveryOrder[]{deliveryOrder})[0];
+
+        List<DeliveryOrderItem> deliveryOrderItemList=new ArrayList();
+        for(int i=0;i<itemViews.length;i++){
+            //寻找供货
+            SupplyView[] supplyViews=supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{itemViews[i].getSupplyId()}));
+            StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
+                    new Condition().addCondition("storageLocationId", new Integer[]{supplyViews[0].getDefaultDeliveryStorageLocationId()}).addCondition("supplyId", new Integer[]{itemViews[i].getSupplyId()}));
+
+            if (stockRecordViews[0].getAmount().compareTo(itemViews[i].getDefaultDeliveryAmount()) == -1){
+                throw new WMSServiceException(String.format("当前出库库位(%s)库存不足，无法出库", stockRecordViews[0].getStorageLocationName()));
+            }
+
+            DeliveryOrderItem deliveryOrderItem = new DeliveryOrderItem();
+            deliveryOrderItem.setSourceStorageLocationId(supplyViews[0].getDefaultDeliveryStorageLocationId());
+            deliveryOrderItem.setUnit(itemViews[i].getDefaultDeliveryUnit());
+            deliveryOrderItem.setUnitAmount(itemViews[i].getDefaultDeliveryUnitAmount());
+            deliveryOrderItem.setSupplyId(itemViews[i].getSupplyId());
+            deliveryOrderItem.setScheduledAmount(itemViews[i].getDefaultDeliveryAmount());
+            deliveryOrderItem.setPersonId(deliveryByPakage.getPersonId());
+            deliveryOrderItemList.add(deliveryOrderItem);
+
+        }
+        DeliveryOrderItem[] deliveryOrderItems=null;
+        deliveryOrderItems = (DeliveryOrderItem[]) Array.newInstance(DeliveryOrderItem.class,deliveryOrderItemList.size());
+        deliveryOrderItemList.toArray(deliveryOrderItems);
+
+
+
     }
 
     @Override
