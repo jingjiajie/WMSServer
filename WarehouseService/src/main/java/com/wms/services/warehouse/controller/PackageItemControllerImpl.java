@@ -6,8 +6,6 @@ import com.wms.services.warehouse.service.PackageItemService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.PackageItem;
 import com.wms.utilities.model.PackageItemView;
-import com.wms.utilities.model.WarehouseEntryItem;
-import com.wms.utilities.model.WarehouseEntryItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +45,7 @@ public class PackageItemControllerImpl implements PackageItemController {
     @Override
     @RequestMapping(value = "/{cond}",method = RequestMethod.GET)
     public ResponseEntity<PackageItemView[]> find(@PathVariable("accountBook") String accountBook,
-                                                         @PathVariable("cond") String strCond) {
+                                                  @PathVariable("cond") String strCond) {
         return new ResponseEntity<>(this.packageItemService.find(accountBook, Condition.fromJson(strCond)),HttpStatus.OK);
     }
     @Override

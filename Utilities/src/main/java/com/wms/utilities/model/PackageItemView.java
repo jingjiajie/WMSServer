@@ -22,8 +22,10 @@ public class PackageItemView {
     private Integer materialId;
     private Integer supplierId;
     private String materialProductLine;
-
-    @Id
+    private int defaultDeliveryStorageLocationId;
+    private String defaultDeliveryStorageLocationNo;
+    private String defaultDeliveryStorageLocationName;
+@Id
     @Basic
     @Column(name = "ID")
     public int getId() {
@@ -164,6 +166,36 @@ public class PackageItemView {
         this.materialProductLine = materialProductLine;
     }
 
+    @Basic
+    @Column(name = "DefaultDeliveryStorageLocationID")
+    public int getDefaultDeliveryStorageLocationId() {
+        return defaultDeliveryStorageLocationId;
+    }
+
+    public void setDefaultDeliveryStorageLocationId(int defaultDeliveryStorageLocationId) {
+        this.defaultDeliveryStorageLocationId = defaultDeliveryStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultDeliveryStorageLocationNo")
+    public String getDefaultDeliveryStorageLocationNo() {
+        return defaultDeliveryStorageLocationNo;
+    }
+
+    public void setDefaultDeliveryStorageLocationNo(String defaultDeliveryStorageLocationNo) {
+        this.defaultDeliveryStorageLocationNo = defaultDeliveryStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultDeliveryStorageLocationName")
+    public String getDefaultDeliveryStorageLocationName() {
+        return defaultDeliveryStorageLocationName;
+    }
+
+    public void setDefaultDeliveryStorageLocationName(String defaultDeliveryStorageLocationName) {
+        this.defaultDeliveryStorageLocationName = defaultDeliveryStorageLocationName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -174,6 +206,7 @@ public class PackageItemView {
         if (id != that.id) return false;
         if (packageId != that.packageId) return false;
         if (supplyId != that.supplyId) return false;
+        if (defaultDeliveryStorageLocationId != that.defaultDeliveryStorageLocationId) return false;
         if (defaultDeliveryAmount != null ? !defaultDeliveryAmount.equals(that.defaultDeliveryAmount) : that.defaultDeliveryAmount != null)
             return false;
         if (defaultDeliveryUnit != null ? !defaultDeliveryUnit.equals(that.defaultDeliveryUnit) : that.defaultDeliveryUnit != null)
@@ -188,6 +221,10 @@ public class PackageItemView {
         if (materialId != null ? !materialId.equals(that.materialId) : that.materialId != null) return false;
         if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
         if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
+            return false;
+        if (defaultDeliveryStorageLocationNo != null ? !defaultDeliveryStorageLocationNo.equals(that.defaultDeliveryStorageLocationNo) : that.defaultDeliveryStorageLocationNo != null)
+            return false;
+        if (defaultDeliveryStorageLocationName != null ? !defaultDeliveryStorageLocationName.equals(that.defaultDeliveryStorageLocationName) : that.defaultDeliveryStorageLocationName != null)
             return false;
 
         return true;
@@ -209,6 +246,9 @@ public class PackageItemView {
         result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
         result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
+        result = 31 * result + defaultDeliveryStorageLocationId;
+        result = 31 * result + (defaultDeliveryStorageLocationNo != null ? defaultDeliveryStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (defaultDeliveryStorageLocationName != null ? defaultDeliveryStorageLocationName.hashCode() : 0);
         return result;
     }
 }

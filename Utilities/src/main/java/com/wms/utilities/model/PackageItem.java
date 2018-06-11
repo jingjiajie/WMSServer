@@ -1,8 +1,10 @@
 package com.wms.utilities.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 public class PackageItem {
@@ -12,10 +14,10 @@ public class PackageItem {
     private BigDecimal defaultDeliveryAmount;
     private String defaultDeliveryUnit;
     private BigDecimal defaultDeliveryUnitAmount;
+    private int defaultDeliveryStorageLocationId;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -25,7 +27,7 @@ public class PackageItem {
     }
 
     @Basic
-    @Column(name = "PackageID", nullable = false)
+    @Column(name = "PackageID")
     public int getPackageId() {
         return packageId;
     }
@@ -35,7 +37,7 @@ public class PackageItem {
     }
 
     @Basic
-    @Column(name = "SupplyID", nullable = false)
+    @Column(name = "SupplyID")
     public int getSupplyId() {
         return supplyId;
     }
@@ -45,7 +47,7 @@ public class PackageItem {
     }
 
     @Basic
-    @Column(name = "DefaultDeliveryAmount", nullable = false, precision = 3)
+    @Column(name = "DefaultDeliveryAmount")
     public BigDecimal getDefaultDeliveryAmount() {
         return defaultDeliveryAmount;
     }
@@ -55,7 +57,7 @@ public class PackageItem {
     }
 
     @Basic
-    @Column(name = "DefaultDeliveryUnit", nullable = false, length = 64)
+    @Column(name = "DefaultDeliveryUnit")
     public String getDefaultDeliveryUnit() {
         return defaultDeliveryUnit;
     }
@@ -65,7 +67,7 @@ public class PackageItem {
     }
 
     @Basic
-    @Column(name = "DefaultDeliveryUnitAmount", nullable = false, precision = 3)
+    @Column(name = "DefaultDeliveryUnitAmount")
     public BigDecimal getDefaultDeliveryUnitAmount() {
         return defaultDeliveryUnitAmount;
     }
@@ -74,22 +76,46 @@ public class PackageItem {
         this.defaultDeliveryUnitAmount = defaultDeliveryUnitAmount;
     }
 
+    @Basic
+    @Column(name = "DefaultDeliveryStorageLocationID")
+    public int getDefaultDeliveryStorageLocationId() {
+        return defaultDeliveryStorageLocationId;
+    }
+
+    public void setDefaultDeliveryStorageLocationId(int defaultDeliveryStorageLocationId) {
+        this.defaultDeliveryStorageLocationId = defaultDeliveryStorageLocationId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         PackageItem that = (PackageItem) o;
-        return id == that.id &&
-                packageId == that.packageId &&
-                supplyId == that.supplyId &&
-                Objects.equals(defaultDeliveryAmount, that.defaultDeliveryAmount) &&
-                Objects.equals(defaultDeliveryUnit, that.defaultDeliveryUnit) &&
-                Objects.equals(defaultDeliveryUnitAmount, that.defaultDeliveryUnitAmount);
+
+        if (id != that.id) return false;
+        if (packageId != that.packageId) return false;
+        if (supplyId != that.supplyId) return false;
+        if (defaultDeliveryStorageLocationId != that.defaultDeliveryStorageLocationId) return false;
+        if (defaultDeliveryAmount != null ? !defaultDeliveryAmount.equals(that.defaultDeliveryAmount) : that.defaultDeliveryAmount != null)
+            return false;
+        if (defaultDeliveryUnit != null ? !defaultDeliveryUnit.equals(that.defaultDeliveryUnit) : that.defaultDeliveryUnit != null)
+            return false;
+        if (defaultDeliveryUnitAmount != null ? !defaultDeliveryUnitAmount.equals(that.defaultDeliveryUnitAmount) : that.defaultDeliveryUnitAmount != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, packageId, supplyId, defaultDeliveryAmount, defaultDeliveryUnit, defaultDeliveryUnitAmount);
+        int result = id;
+        result = 31 * result + packageId;
+        result = 31 * result + supplyId;
+        result = 31 * result + (defaultDeliveryAmount != null ? defaultDeliveryAmount.hashCode() : 0);
+        result = 31 * result + (defaultDeliveryUnit != null ? defaultDeliveryUnit.hashCode() : 0);
+        result = 31 * result + (defaultDeliveryUnitAmount != null ? defaultDeliveryUnitAmount.hashCode() : 0);
+        result = 31 * result + defaultDeliveryStorageLocationId;
+        return result;
     }
 }
