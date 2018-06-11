@@ -4,6 +4,7 @@ package com.wms.services.warehouse.service;
 import com.sun.xml.internal.bind.api.impl.NameConverter;
 import com.wms.services.warehouse.dao.StockRecordDAO;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
+import com.wms.services.warehouse.datastructures.StockRecordFindByTime;
 import com.wms.services.warehouse.datastructures.StockRecordGroup;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
@@ -1410,6 +1411,43 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
+        return resultArray;
+    }
+
+    @Override
+    public StockRecord[] findByTime(String accountBook,StockRecordFindByTime stockRecordFindByTime){
+        Session session=this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query=null;
+        String storageLocationId=" s2.storageLocationId ";
+        String supplyId=" s2.supplyId ";
+        String unitAmount=" s2.unitAmount ";
+        String batchNo=" s2.batchNo ";
+        String unit=" s2.unit ";
+        if(stockRecordFindByTime.getStorageLocationId()!=null){storageLocationId=stockRecordFindByTime.getStorageLocationId().toString();}
+        if(stockRecordFindByTime.getSupplyId()!=null){supplyId=stockRecordFindByTime.getSupplyId().toString(); }
+        if(!stockRecordFindByTime.getUnit().equals("")){ unit=stockRecordFindByTime.getUnit();}
+        if(stockRecordFindByTime.getUnitAmount()!=null){ unitAmount=stockRecordFindByTime.getUnitAmount().toString();}
+        if(!stockRecordFindByTime.getBatchNo().equals("")){ batchNo=stockRecordFindByTime.getBatchNo();}
+            String sql1="SELECT s1.* FROM StockRecord AS s1 \n" +
+                    "INNER JOIN \n" +
+                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.storagelocationid,s2.supplyid  FROM StockRecord As s2\n" +
+                    "where  s2.StorageLocationID="+storageLocationId+" and s2.SupplyID="+supplyId+"and s2.time<=:endTime and s2.unitamount="+unitAmount+" and s2.batchno="+batchNo+" and s2.unit="+unit+" \n" +
+                    "GROUP BY s2.SupplyID,s2.BatchNo,s2.unit,s2.UnitAmount,s2.StorageLocationID) AS s3 \n" +
+                    "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time\n" +
+                    "and s1.SupplyID=s3.supplyid and s1.StorageLocationID=s3.StorageLocationID   AND s1.BatchNo=s3.BatchNo";
+            session.flush();
+            query=session.createNativeQuery(sql1,StockRecord.class);
+            query.setParameter("endTime",stockRecordFindByTime.getEndTime());
+        StockRecord[] resultArray=null;
+        List<StockRecord> resultList = query.list();
+        resultArray = (StockRecord[]) Array.newInstance(StockRecord.class,resultList.size());
+        resultList.toArray(resultArray);
         return resultArray;
     }
 
