@@ -142,7 +142,8 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
 
             BigDecimal deltaRealAmount = deliveryOrderItem.getRealAmount().subtract(oriItemView.getRealAmount());
             //修改实收数量，更新库存
-            if(!deltaRealAmount.equals(new BigDecimal(0))){
+            //TODO 如果输入有实际数量变化
+            if(deltaRealAmount.compareTo(BigDecimal.ZERO)!=0){
 
                 //todo 是移库前先把当前一步实际数量加回去可用数量
                 TransferStock fixTransferStock = new TransferStock();
