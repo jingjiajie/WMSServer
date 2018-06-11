@@ -48,28 +48,56 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
     @Override
     public int[] add(String accountBook, TransferOrderItem[] transferOrderItems) throws WMSServiceException {
         //根据每条移库单条目，更新移库单条目的移货数量
+        //获取移库单
+        int transferOrderId = transferOrderItems[0].getTransferOrderId();
+        TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
+        if(foundTransferOrders.length == 0){
+            throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)",transferOrderId));
+        }
+        if(foundTransferOrders[0].getState()==TransferOrderItemService.STATE_ALL_FINISH){
+            throw new WMSServiceException(String.format("当前移库单（%s）已经完成作业，无法再添加条目", foundTransferOrders[0].getNo()));
+        }
+        this.validateEntities(accountBook, transferOrderItems);
         Stream.of(transferOrderItems).forEach(transferOrderItem -> {
+            //更新库存
 
-            //获取移库单
-            int transferOrderId = transferOrderItem.getTransferOrderId();
-            TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
-            if(foundTransferOrders.length == 0){
-                throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)",transferOrderId));
+            if (transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))==0) {
+                //没有实际数输入就只改变可用数量
+                TransferStock transferStock = new TransferStock();
+                transferStock.setModifyAvailableAmount(new BigDecimal(0).subtract(transferOrderItem.getScheduledAmount()));//计划数量
+                transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
+                transferStock.setSupplyId(transferOrderItem.getSupplyId());
+                transferStock.setUnit(transferOrderItem.getUnit());
+                transferStock.setUnitAmount(transferOrderItem.getUnitAmount());
+                //transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
+                transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
+            }
+            else{
+                //先移动
+                TransferStock transferStock = new TransferStock();
+                transferStock.setAmount(new BigDecimal(0).subtract(transferOrderItem.getRealAmount()));
+                transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());
+                transferStock.setRelatedOrderNo(foundTransferOrders[0].getNo());
+                transferStock.setSupplyId(transferOrderItem.getSupplyId());
+                transferStock.setUnit(transferOrderItem.getUnit());
+                transferStock.setUnitAmount(transferOrderItem.getUnitAmount());
+                transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                this.stockRecordService.addAmount(accountBook, transferStock);//直接改数
+
+                //再改可用数量
+                TransferStock rdTransferStock = new TransferStock();
+                rdTransferStock.setModifyAvailableAmount(transferOrderItem.getScheduledAmount().subtract(transferOrderItem.getRealAmount()));
+                rdTransferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());
+                rdTransferStock.setSupplyId(transferOrderItem.getSupplyId());
+                rdTransferStock.setUnit(transferOrderItem.getUnit());
+                rdTransferStock.setUnitAmount(transferOrderItem.getUnitAmount());
+                this.stockRecordService.modifyAvailableAmount(accountBook, rdTransferStock);//直接改可用数量
+                transferOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
             }
 
-            //更新库存
-            TransferStock transferStock = new TransferStock();
-            transferStock.setModifyAvailableAmount(new BigDecimal(0).subtract(transferOrderItem.getScheduledAmount()));//计划数量
-            transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
-            transferStock.setSupplyId(transferOrderItem.getSupplyId());
-            transferStock.setUnit(transferOrderItem.getUnit());
-            transferStock.setUnitAmount(transferOrderItem.getUnitAmount());
-            //transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
-            this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
-            transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
-
         });
-        this.validateEntities(accountBook, transferOrderItems);
+
         //if (!autotransfer) {
             //this.updateTransferOrder(accountBook, transferOrderItems[0].getTransferOrderId(), transferOrderItems[0].getPersonId());
         //}
@@ -92,6 +120,9 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)",transferOrderId));
             }
             TransferOrderView transferOrderView = foundTransferOrders[0];
+            if(foundTransferOrders[0].getState()==TransferOrderItemService.STATE_ALL_FINISH){
+                throw new WMSServiceException(String.format("当前移库单（%s）已经完成作业，无法再修改条目", foundTransferOrders[0].getNo()));
+            }
             //无法中途修改目标库位
             if (transferOrderItem.getTargetStorageLocationId()!=oriItemViews[0].getTargetStorageLocationId())
             {
@@ -174,9 +205,9 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                     transferStock.setUnitAmount(oriItemViews[0].getUnitAmount());
                     this.stockRecordService.RealTransformStock(accountBook, transferStock);
                 }
-                transferOrderItem.setState(1);
+                transferOrderItem.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
                 if (transferOrderItem.getScheduledAmount().equals(transferOrderItem.getRealAmount())){
-                    transferOrderItem.setState(2);
+                    transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
                 }
             }
 
