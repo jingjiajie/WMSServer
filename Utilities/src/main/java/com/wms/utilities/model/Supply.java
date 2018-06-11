@@ -63,9 +63,15 @@ public class Supply {
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
     private int enabled;
+    private Integer defaultEntryStorageLocationId;
+    private Integer defaultInspectionStorageLocationId;
+    private Integer defaultQualifiedStorageLocationId;
+    private Integer defaultUnqualifiedStorageLocationId;
+    private Integer defaultDeliveryStorageLocationId;
+    private Integer defaultPrepareTargetStorageLocationId;
 
     @Id
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -75,7 +81,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = true)
+    @Column(name = "WarehouseID")
     public Integer getWarehouseId() {
         return warehouseId;
     }
@@ -85,7 +91,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SupplierID", nullable = true)
+    @Column(name = "SupplierID")
     public Integer getSupplierId() {
         return supplierId;
     }
@@ -95,7 +101,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "MaterialID", nullable = true)
+    @Column(name = "MaterialID")
     public Integer getMaterialId() {
         return materialId;
     }
@@ -105,7 +111,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DefaultEntryAmount", nullable = true, precision = 3)
+    @Column(name = "DefaultEntryAmount")
     public BigDecimal getDefaultEntryAmount() {
         return defaultEntryAmount;
     }
@@ -115,7 +121,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DefaultEntryUnit", nullable = true, length = 64)
+    @Column(name = "DefaultEntryUnit")
     public String getDefaultEntryUnit() {
         return defaultEntryUnit;
     }
@@ -125,7 +131,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DefaultEntryUnitAmount", nullable = true, precision = 3)
+    @Column(name = "DefaultEntryUnitAmount")
     public BigDecimal getDefaultEntryUnitAmount() {
         return defaultEntryUnitAmount;
     }
@@ -135,17 +141,17 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "defaultInspectionAmount", nullable = true, precision = 3)
-    public BigDecimal getdefaultInspectionAmount() {
+    @Column(name = "DefaultInspectionAmount")
+    public BigDecimal getDefaultInspectionAmount() {
         return defaultInspectionAmount;
     }
 
-    public void setdefaultInspectionAmount(BigDecimal defaultInspectionAmount) {
+    public void setDefaultInspectionAmount(BigDecimal defaultInspectionAmount) {
         this.defaultInspectionAmount = defaultInspectionAmount;
     }
 
     @Basic
-    @Column(name = "DefaultInspectionUnit", nullable = true, length = 64)
+    @Column(name = "DefaultInspectionUnit")
     public String getDefaultInspectionUnit() {
         return defaultInspectionUnit;
     }
@@ -155,7 +161,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DefaultInspectionUnitAmount", nullable = true, precision = 3)
+    @Column(name = "DefaultInspectionUnitAmount")
     public BigDecimal getDefaultInspectionUnitAmount() {
         return defaultInspectionUnitAmount;
     }
@@ -165,7 +171,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DefaultDeliveryAmount", nullable = true, precision = 3)
+    @Column(name = "DefaultDeliveryAmount")
     public BigDecimal getDefaultDeliveryAmount() {
         return defaultDeliveryAmount;
     }
@@ -175,7 +181,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DefaultDeliveryUnit", nullable = true, length = 64)
+    @Column(name = "DefaultDeliveryUnit")
     public String getDefaultDeliveryUnit() {
         return defaultDeliveryUnit;
     }
@@ -185,7 +191,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DefaultDeliveryUnitAmount", nullable = true, precision = 3)
+    @Column(name = "DefaultDeliveryUnitAmount")
     public BigDecimal getDefaultDeliveryUnitAmount() {
         return defaultDeliveryUnitAmount;
     }
@@ -195,7 +201,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "ValidPeriod", nullable = true, precision = 3)
+    @Column(name = "ValidPeriod")
     public BigDecimal getValidPeriod() {
         return validPeriod;
     }
@@ -205,7 +211,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "PhotoIndex", nullable = true, length = 64)
+    @Column(name = "PhotoIndex")
     public String getPhotoIndex() {
         return photoIndex;
     }
@@ -215,7 +221,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "ContainerNo", nullable = true, length = 64)
+    @Column(name = "ContainerNo")
     public String getContainerNo() {
         return containerNo;
     }
@@ -225,7 +231,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "Factory", nullable = true, length = 64)
+    @Column(name = "Factory")
     public String getFactory() {
         return factory;
     }
@@ -235,7 +241,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "WorkPosition", nullable = true, length = 64)
+    @Column(name = "WorkPosition")
     public String getWorkPosition() {
         return workPosition;
     }
@@ -245,7 +251,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SupplierType", nullable = true, length = 64)
+    @Column(name = "SupplierType")
     public String getSupplierType() {
         return supplierType;
     }
@@ -255,7 +261,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "Type", nullable = true, length = 64)
+    @Column(name = "Type")
     public String getType() {
         return type;
     }
@@ -265,7 +271,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "Size", nullable = true, length = 64)
+    @Column(name = "Size")
     public String getSize() {
         return size;
     }
@@ -275,7 +281,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "GroupPrincipal", nullable = true, length = 64)
+    @Column(name = "GroupPrincipal")
     public String getGroupPrincipal() {
         return groupPrincipal;
     }
@@ -285,7 +291,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxPhotoIndex", nullable = true, length = 64)
+    @Column(name = "SingleBoxPhotoIndex")
     public String getSingleBoxPhotoIndex() {
         return singleBoxPhotoIndex;
     }
@@ -295,7 +301,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxPackagingBoxType", nullable = true, length = 64)
+    @Column(name = "SingleBoxPackagingBoxType")
     public String getSingleBoxPackagingBoxType() {
         return singleBoxPackagingBoxType;
     }
@@ -305,7 +311,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxLength", nullable = true, precision = 3)
+    @Column(name = "SingleBoxLength")
     public BigDecimal getSingleBoxLength() {
         return singleBoxLength;
     }
@@ -315,7 +321,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxWidth", nullable = true, precision = 3)
+    @Column(name = "SingleBoxWidth")
     public BigDecimal getSingleBoxWidth() {
         return singleBoxWidth;
     }
@@ -325,7 +331,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxHeight", nullable = true, precision = 3)
+    @Column(name = "SingleBoxHeight")
     public BigDecimal getSingleBoxHeight() {
         return singleBoxHeight;
     }
@@ -335,7 +341,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxSNP", nullable = true, precision = 3)
+    @Column(name = "SingleBoxSNP")
     public BigDecimal getSingleBoxSnp() {
         return singleBoxSnp;
     }
@@ -345,7 +351,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxRatedMinimumBoxCount", nullable = true, precision = 3)
+    @Column(name = "SingleBoxRatedMinimumBoxCount")
     public BigDecimal getSingleBoxRatedMinimumBoxCount() {
         return singleBoxRatedMinimumBoxCount;
     }
@@ -355,7 +361,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxWeight", nullable = true, precision = 3)
+    @Column(name = "SingleBoxWeight")
     public BigDecimal getSingleBoxWeight() {
         return singleBoxWeight;
     }
@@ -365,7 +371,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxLayerCount", nullable = true, precision = 3)
+    @Column(name = "SingleBoxLayerCount")
     public BigDecimal getSingleBoxLayerCount() {
         return singleBoxLayerCount;
     }
@@ -375,7 +381,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxStorageCount", nullable = true, precision = 3)
+    @Column(name = "SingleBoxStorageCount")
     public BigDecimal getSingleBoxStorageCount() {
         return singleBoxStorageCount;
     }
@@ -385,7 +391,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxTheoreticalLayerCount", nullable = true, precision = 3)
+    @Column(name = "SingleBoxTheoreticalLayerCount")
     public BigDecimal getSingleBoxTheoreticalLayerCount() {
         return singleBoxTheoreticalLayerCount;
     }
@@ -395,7 +401,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxTheoreticalStorageHeight", nullable = true, precision = 3)
+    @Column(name = "SingleBoxTheoreticalStorageHeight")
     public BigDecimal getSingleBoxTheoreticalStorageHeight() {
         return singleBoxTheoreticalStorageHeight;
     }
@@ -405,7 +411,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "SingleBoxThroreticalStorageCount", nullable = true, precision = 3)
+    @Column(name = "SingleBoxThroreticalStorageCount")
     public BigDecimal getSingleBoxThroreticalStorageCount() {
         return singleBoxThroreticalStorageCount;
     }
@@ -415,7 +421,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "OuterPackingPhotoIndex", nullable = true, length = 64)
+    @Column(name = "OuterPackingPhotoIndex")
     public String getOuterPackingPhotoIndex() {
         return outerPackingPhotoIndex;
     }
@@ -425,7 +431,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "OuterPackingBoxType", nullable = true, length = 64)
+    @Column(name = "OuterPackingBoxType")
     public String getOuterPackingBoxType() {
         return outerPackingBoxType;
     }
@@ -435,7 +441,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "OuterPackingLength", nullable = true, precision = 3)
+    @Column(name = "OuterPackingLength")
     public BigDecimal getOuterPackingLength() {
         return outerPackingLength;
     }
@@ -445,7 +451,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "OuterPackingWidth", nullable = true, precision = 3)
+    @Column(name = "OuterPackingWidth")
     public BigDecimal getOuterPackingWidth() {
         return outerPackingWidth;
     }
@@ -455,7 +461,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "OuterPackingHeight", nullable = true, precision = 3)
+    @Column(name = "OuterPackingHeight")
     public BigDecimal getOuterPackingHeight() {
         return outerPackingHeight;
     }
@@ -465,7 +471,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "OuterPackingSNP", nullable = true, length = 64)
+    @Column(name = "OuterPackingSNP")
     public String getOuterPackingSnp() {
         return outerPackingSnp;
     }
@@ -475,7 +481,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "OuterPackingComment", nullable = true, length = 64)
+    @Column(name = "OuterPackingComment")
     public String getOuterPackingComment() {
         return outerPackingComment;
     }
@@ -485,7 +491,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "OuterPackingRequiredLayers", nullable = true, precision = 3)
+    @Column(name = "OuterPackingRequiredLayers")
     public BigDecimal getOuterPackingRequiredLayers() {
         return outerPackingRequiredLayers;
     }
@@ -495,7 +501,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DeliveryBoxType", nullable = true, length = 64)
+    @Column(name = "DeliveryBoxType")
     public String getDeliveryBoxType() {
         return deliveryBoxType;
     }
@@ -505,7 +511,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DeliveryBoxLength", nullable = true, precision = 3)
+    @Column(name = "DeliveryBoxLength")
     public BigDecimal getDeliveryBoxLength() {
         return deliveryBoxLength;
     }
@@ -515,7 +521,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DeliveryBoxWidth", nullable = true, precision = 3)
+    @Column(name = "DeliveryBoxWidth")
     public BigDecimal getDeliveryBoxWidth() {
         return deliveryBoxWidth;
     }
@@ -525,7 +531,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "DeliveryBoxHeight", nullable = true, precision = 3)
+    @Column(name = "DeliveryBoxHeight")
     public BigDecimal getDeliveryBoxHeight() {
         return deliveryBoxHeight;
     }
@@ -535,7 +541,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "IsHistory", nullable = true)
+    @Column(name = "IsHistory")
     public Integer getIsHistory() {
         return isHistory;
     }
@@ -545,7 +551,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "NewestSupplyID", nullable = true)
+    @Column(name = "NewestSupplyID")
     public Integer getNewestSupplyId() {
         return newestSupplyId;
     }
@@ -555,7 +561,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "CreatePersonID", nullable = false)
+    @Column(name = "CreatePersonID")
     public int getCreatePersonId() {
         return createPersonId;
     }
@@ -565,7 +571,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "CreateTime", nullable = false)
+    @Column(name = "CreateTime")
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -575,7 +581,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "LastUpdatePersonID", nullable = true)
+    @Column(name = "LastUpdatePersonID")
     public Integer getLastUpdatePersonId() {
         return lastUpdatePersonId;
     }
@@ -585,7 +591,7 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "LastUpdateTime", nullable = true)
+    @Column(name = "LastUpdateTime")
     public Timestamp getLastUpdateTime() {
         return lastUpdateTime;
     }
@@ -595,13 +601,73 @@ public class Supply {
     }
 
     @Basic
-    @Column(name = "Enabled", nullable = false)
+    @Column(name = "Enabled")
     public int getEnabled() {
         return enabled;
     }
 
     public void setEnabled(int enabled) {
         this.enabled = enabled;
+    }
+
+    @Basic
+    @Column(name = "DefaultEntryStorageLocationID")
+    public Integer getDefaultEntryStorageLocationId() {
+        return defaultEntryStorageLocationId;
+    }
+
+    public void setDefaultEntryStorageLocationId(Integer defaultEntryStorageLocationId) {
+        this.defaultEntryStorageLocationId = defaultEntryStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionStorageLocationID")
+    public Integer getDefaultInspectionStorageLocationId() {
+        return defaultInspectionStorageLocationId;
+    }
+
+    public void setDefaultInspectionStorageLocationId(Integer defaultInspectionStorageLocationId) {
+        this.defaultInspectionStorageLocationId = defaultInspectionStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultQualifiedStorageLocationID")
+    public Integer getDefaultQualifiedStorageLocationId() {
+        return defaultQualifiedStorageLocationId;
+    }
+
+    public void setDefaultQualifiedStorageLocationId(Integer defaultQualifiedStorageLocationId) {
+        this.defaultQualifiedStorageLocationId = defaultQualifiedStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultUnqualifiedStorageLocationID")
+    public Integer getDefaultUnqualifiedStorageLocationId() {
+        return defaultUnqualifiedStorageLocationId;
+    }
+
+    public void setDefaultUnqualifiedStorageLocationId(Integer defaultUnqualifiedStorageLocationId) {
+        this.defaultUnqualifiedStorageLocationId = defaultUnqualifiedStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultDeliveryStorageLocationID")
+    public Integer getDefaultDeliveryStorageLocationId() {
+        return defaultDeliveryStorageLocationId;
+    }
+
+    public void setDefaultDeliveryStorageLocationId(Integer defaultDeliveryStorageLocationId) {
+        this.defaultDeliveryStorageLocationId = defaultDeliveryStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "DefaultPrepareTargetStorageLocationID")
+    public Integer getDefaultPrepareTargetStorageLocationId() {
+        return defaultPrepareTargetStorageLocationId;
+    }
+
+    public void setDefaultPrepareTargetStorageLocationId(Integer defaultPrepareTargetStorageLocationId) {
+        this.defaultPrepareTargetStorageLocationId = defaultPrepareTargetStorageLocationId;
     }
 
     @Override
@@ -705,6 +771,18 @@ public class Supply {
             return false;
         if (lastUpdateTime != null ? !lastUpdateTime.equals(supply.lastUpdateTime) : supply.lastUpdateTime != null)
             return false;
+        if (defaultEntryStorageLocationId != null ? !defaultEntryStorageLocationId.equals(supply.defaultEntryStorageLocationId) : supply.defaultEntryStorageLocationId != null)
+            return false;
+        if (defaultInspectionStorageLocationId != null ? !defaultInspectionStorageLocationId.equals(supply.defaultInspectionStorageLocationId) : supply.defaultInspectionStorageLocationId != null)
+            return false;
+        if (defaultQualifiedStorageLocationId != null ? !defaultQualifiedStorageLocationId.equals(supply.defaultQualifiedStorageLocationId) : supply.defaultQualifiedStorageLocationId != null)
+            return false;
+        if (defaultUnqualifiedStorageLocationId != null ? !defaultUnqualifiedStorageLocationId.equals(supply.defaultUnqualifiedStorageLocationId) : supply.defaultUnqualifiedStorageLocationId != null)
+            return false;
+        if (defaultDeliveryStorageLocationId != null ? !defaultDeliveryStorageLocationId.equals(supply.defaultDeliveryStorageLocationId) : supply.defaultDeliveryStorageLocationId != null)
+            return false;
+        if (defaultPrepareTargetStorageLocationId != null ? !defaultPrepareTargetStorageLocationId.equals(supply.defaultPrepareTargetStorageLocationId) : supply.defaultPrepareTargetStorageLocationId != null)
+            return false;
 
         return true;
     }
@@ -765,6 +843,12 @@ public class Supply {
         result = 31 * result + (lastUpdatePersonId != null ? lastUpdatePersonId.hashCode() : 0);
         result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
         result = 31 * result + enabled;
+        result = 31 * result + (defaultEntryStorageLocationId != null ? defaultEntryStorageLocationId.hashCode() : 0);
+        result = 31 * result + (defaultInspectionStorageLocationId != null ? defaultInspectionStorageLocationId.hashCode() : 0);
+        result = 31 * result + (defaultQualifiedStorageLocationId != null ? defaultQualifiedStorageLocationId.hashCode() : 0);
+        result = 31 * result + (defaultUnqualifiedStorageLocationId != null ? defaultUnqualifiedStorageLocationId.hashCode() : 0);
+        result = 31 * result + (defaultDeliveryStorageLocationId != null ? defaultDeliveryStorageLocationId.hashCode() : 0);
+        result = 31 * result + (defaultPrepareTargetStorageLocationId != null ? defaultPrepareTargetStorageLocationId.hashCode() : 0);
         return result;
     }
 }
