@@ -3,6 +3,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.DeliveryByPakage;
 import com.wms.services.warehouse.datastructures.DeliveryOrderAndItems;
 import com.wms.services.warehouse.datastructures.TransferArgs;
 import com.wms.services.warehouse.datastructures.TransferAuto;
@@ -105,5 +106,13 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
         Gson gson = new Gson();
         List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {}.getType());
         return deliveryOrderService.getPreviewData(accountBook,ids);
+    }
+
+    @Override
+    @RequestMapping(value = "/delivery_by_pakage",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void deliveryByPakage(@PathVariable("accountBook") String accountBook,
+                             @RequestBody DeliveryByPakage deliveryByPakage){
+        this.deliveryOrderService.deliveryByPakage(accountBook,deliveryByPakage);
     }
 }
