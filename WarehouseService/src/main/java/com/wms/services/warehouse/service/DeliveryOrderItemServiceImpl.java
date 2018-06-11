@@ -65,6 +65,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setUnit(deliveryOrderItem.getUnit());
                 transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
                 this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);//仅修改可用数量
+                deliveryOrderItem.setState(DeliveryOrderService.STATE_IN_LOADING);
             }
             else{
                 //先移动
@@ -86,6 +87,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 rdTransferStock.setUnit(deliveryOrderItem.getUnit());
                 rdTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
                 this.stockRecordService.modifyAvailableAmount(accountBook, rdTransferStock);//直接改可用数量
+                deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
             }
         });
         //添加到数据库中
@@ -116,18 +118,18 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             //无法中途修改出库库位
             if (deliveryOrderItem.getSourceStorageLocationId()!=oriItemView.getSourceStorageLocationId())
             {
-                throw new WMSServiceException("无法修改移库单条目的目标库位:(%s)，如要操作请新建移库单"+oriItemView.getSourceStorageLocationName());
+                throw new WMSServiceException("无法修改出库单条目的出库库位:(%s)，如要操作请新建出库单"+oriItemView.getSourceStorageLocationName());
             }
             if (deliveryOrderItem.getRealAmount().compareTo(oriItemView.getRealAmount())<0)
             {
-                throw new WMSServiceException("无法修改移库单条目的实际移动数量，如要操作请新建移库单");
+                throw new WMSServiceException("无法修改出库单条目的实际移动数量，如要操作请新建移库单");
             }
 
             if (!deliveryOrderItem.getScheduledAmount().equals(oriItemView.getScheduledAmount()))//如果计划移库数量发生变化
             {
                 if (deliveryOrderItem.getScheduledAmount().subtract(oriItemView.getRealAmount()).compareTo(new BigDecimal(0))<=0)//如果新修改时计划数量小于当前实际已经移动的数量
                 {
-                    throw new WMSServiceException(String.format("无法修改移库单条目计划数量单号：(%s)，移库操作基本完成，如需操作请新建移库单作业",deliveryOrderView.getNo()));
+                    throw new WMSServiceException(String.format("无法修改出库单条目计划数量单号：(%s)，装车作业基本完成，如需操作请新建移库单作业",deliveryOrderView.getNo()));
                 }
                 //否则修改计划移库数量并同步到库存记录可用数量
                 TransferStock fixTransferStock = new TransferStock();
@@ -164,9 +166,9 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
                 this.stockRecordService.addAmount(accountBook, transferStock);
             }
-            deliveryOrderItem.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
+            deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
             if (deliveryOrderItem.getScheduledAmount().equals(deliveryOrderItem.getRealAmount())){
-                deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+                deliveryOrderItem.setState(DeliveryOrderService.STATE_ALL_LOADING);
             }
         });
         this.deliveryOrderItemDAO.update(accountBook,deliveryOrderItems);
