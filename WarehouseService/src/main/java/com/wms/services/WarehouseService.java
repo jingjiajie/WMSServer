@@ -3,6 +3,7 @@ import com.wms.services.warehouse.datastructures.*;
 import com.wms.services.warehouse.service.*;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -34,6 +35,7 @@ public class WarehouseService {
         System.out.println("仓库服务启动...");
        // TestService testService = applicationContext.getBean(TestService.class);
         //testService.testTransfer();
+        /*
         StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
         StockRecordFindByTime stockRecordFindByTime=new StockRecordFindByTime();
         stockRecordFindByTime.setStorageLocationId(new Integer(1));
@@ -48,6 +50,11 @@ public class WarehouseService {
         gc.set(Calendar.MILLISECOND,200);//设置毫秒
         date = gc.getTime();
         Timestamp time2 =new Timestamp(date.getTime());
+        */
+        DeliveryOrderItemService deliveryOrderItemService=applicationContext.getBean(DeliveryOrderItemService.class);
+        //DeliveryOrderItemView[] deliveryOrderItemViews= deliveryOrderItemService.find("WMS_Template",new Condition().addCondition("id",12));
+        //deliveryOrderItemService.remove("WMS_Template",new int[] {12});
+
         //stockRecordFindByTime.setEndTime(time2);
         //StockRecord[] stockRecords= stockRecordService.findByTime("WMS_Template",stockRecordFindByTime);
         //StockRecordViewNewest[] stockRecordViewNewest=stockRecordService.findNewest("WMS_Template",new Condition());

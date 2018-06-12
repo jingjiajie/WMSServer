@@ -176,20 +176,15 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
 
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
-        try {
-            this.deliveryOrderItemDAO.remove(accountBook, ids);
-        } catch (Throwable ex) {
-            throw new WMSServiceException("删除失败，如果条目已经被引用，需要先删除引用项目");
-        }
-        for (int id : ids) {
-            //todo idChecker.check(this.getClass(), accountBook, id, "删除的移库单条目");
+        for (int i=0;i<ids.length;i++) {
+            //idChecker.check(this.getClass(), accountBook, id, "删除的移库单条目");
 
-            DeliveryOrderItemView[] oriItemViews = this.deliveryOrderItemDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{id}));
+            DeliveryOrderItemView[] oriItemViews = this.find(accountBook, new Condition().addCondition("id", new Integer[]{ids[i]}));
             if (oriItemViews.length == 0) {
-                throw new WMSServiceException(String.format("出库单条目不存在，删除失败(%d)", id));
+                throw new WMSServiceException(String.format("出库单条目不存在，删除失败(%d)", ids[i]));
             }
             DeliveryOrderItemView oriItemView=oriItemViews[0];
-            if (oriItemView.getState()==0&&oriItemView.getRealAmount().equals(new BigDecimal(0)))
+            if (oriItemView.getState()==0&&oriItemView.getRealAmount().compareTo(BigDecimal.ZERO)==0)
             {
                 //删除了未经过操作的单，更新库存可用数量
                 TransferStock transferStock = new TransferStock();
@@ -205,6 +200,11 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 throw new WMSServiceException(String.format("出库单正在作业，无法删除(%s)", oriItemView.getId()));
 
             }
+        }
+        try {
+            this.deliveryOrderItemDAO.remove(accountBook, ids);
+        } catch (Throwable ex) {
+            throw new WMSServiceException("删除失败，如果条目已经被引用，需要先删除引用项目");
         }
     }
 
@@ -283,6 +283,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
                 deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
             }
+            deliveryOrderItem.setLoadingTime(new Timestamp(System.currentTimeMillis()));
         });
         this.update(accountBook,deliveryOrderItems);
         //更新出库单状态

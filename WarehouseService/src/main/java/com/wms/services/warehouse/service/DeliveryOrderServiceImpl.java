@@ -285,6 +285,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             if (deliveryOrder.getState() !=DeliveryOrderService.STATE_IN_DELIVER) {
                 deliveryOrder.setState(DeliveryOrderService.STATE_IN_DELIVER);
             }
+            deliveryOrder.setDeliverTime(new Timestamp(System.currentTimeMillis()));
         });
         this.update(accountBook,deliveryOrders);
 
@@ -314,6 +315,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         });
         Stream.of(deliveryOrders).forEach(deliveryOrder -> {
             deliveryOrder.setState(DeliveryOrderService.STATE_DELIVER_FINNISH);
+            deliveryOrder.setReturnNoteTime(new Timestamp(System.currentTimeMillis()));
         });
         this.update(accountBook,deliveryOrders);
 
@@ -376,6 +378,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             deliveryOrderItem.setScheduledAmount(itemViews[i].getDefaultDeliveryAmount());
             deliveryOrderItem.setPersonId(deliveryByPakage.getPersonId());
             deliveryOrderItem.setDeliveryOrderId(newDeliveryOrderID);
+            deliveryOrderItem.setRealAmount(BigDecimal.ZERO);
+            deliveryOrderItem.setComment("套餐发货项");
             deliveryOrderItemList.add(deliveryOrderItem);
 
         }
