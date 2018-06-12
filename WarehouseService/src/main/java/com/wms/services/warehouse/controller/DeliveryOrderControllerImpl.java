@@ -109,7 +109,7 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     }
 
     @Override
-    @RequestMapping(value = "/delivery_by_pakage",method = RequestMethod.POST)
+    @RequestMapping(value = "/delivery_by_package",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void deliveryByPakage(@PathVariable("accountBook") String accountBook,
                              @RequestBody DeliveryByPakage deliveryByPakage){

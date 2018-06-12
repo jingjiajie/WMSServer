@@ -342,10 +342,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     public void deliveryByPakage(String accountBook,DeliveryByPakage deliveryByPakage) throws WMSServiceException{
 
         //TODO 传的是发货套餐ID
-        Integer curId=deliveryByPakage.getPakageId();
+        Integer curId=deliveryByPakage.getPackageId();
 
         PackageView[] curPakageViews = this.packageService.find(accountBook,new Condition().addCondition("id",curId, ConditionItem.Relation.IN));
-        PackageItemView[] itemViews = this.packageItemService.find(accountBook,new Condition().addCondition("pakageId",curId, ConditionItem.Relation.IN));
+        PackageItemView[] itemViews = this.packageItemService.find(accountBook,new Condition().addCondition("packageId",curId, ConditionItem.Relation.IN));
         if (itemViews.length == 0) {
             throw new WMSServiceException(String.format("当前发货套餐未包括条目信息，套餐名称（%S），无法创建出库单", curPakageViews[0].getName()));
         }
