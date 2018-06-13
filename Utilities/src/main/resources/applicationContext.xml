@@ -70,6 +70,7 @@
                 <value>com.wms.utilities.model.WarehouseEntryItemView</value>
                 <value>com.wms.utilities.model.WarehouseEntryView</value>
                 <value>com.wms.utilities.model.WarehouseView</value>
+                <value>com.wms.utilities.model.StockRecordViewAndSum</value>
                 <value>com.wms.utilities.model.CommonData</value>
             </list>
         </property>

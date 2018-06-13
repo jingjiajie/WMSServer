@@ -3,7 +3,11 @@ import com.wms.services.warehouse.datastructures.*;
 import com.wms.services.warehouse.service.*;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.model.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,9 +38,10 @@ public class WarehouseService {
         System.out.println("仓库服务启动...");
        // TestService testService = applicationContext.getBean(TestService.class);
         //testService.testTransfer();
-        StockRecordService stockRecordService = applicationContext.getBean(StockRecordService.class);
-        StockRecordFindByTime stockRecordFindByTime=new StockRecordFindByTime();
-        stockRecordFindByTime.setStorageLocationId(new Integer(1));
+        StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
+        StockRecordFindByTime[] stockRecordFindByTime={};
+
+        stockRecordService.findByTime("WMS_Template",stockRecordFindByTime);
         Date date = new Date();
         GregorianCalendar gc = new GregorianCalendar();
         gc.set(Calendar.YEAR,2018);//设置年
@@ -48,8 +53,30 @@ public class WarehouseService {
         gc.set(Calendar.MILLISECOND,200);//设置毫秒
         date = gc.getTime();
         Timestamp time2 =new Timestamp(date.getTime());
-        //stockRecordFindByTime.setEndTime(time2);
-        //StockRecord[] stockRecords= stockRecordService.findByTime("WMS_Template",stockRecordFindByTime);
-        //StockRecordViewNewest[] stockRecordViewNewest=stockRecordService.findNewest("WMS_Template",new Condition());
+        SessionFactory sessionFactory=applicationContext.getBean(SessionFactory.class);
+        Session session=sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + "WMS_Template" + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException("WMS_Template");
+        }
+        Query query=null;
+        String sql1="SELECT s1.* FROM StockRecord AS s1 \n" +
+                "INNER JOIN\n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.storagelocationid,s2.supplyid  FROM StockRecord As s2\n" +
+                "where   s2.SupplyID in (5,13,15)+and s2.time<=:endTime\n" +
+                "GROUP BY s2.SupplyID,s2.BatchNo,s2.unit,s2.UnitAmount,s2.StorageLocationID) AS s3 \n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time\n" +
+                "and s1.SupplyID=s3.supplyid and s1.StorageLocationID=s3.StorageLocationID   AND s1.BatchNo=s3.BatchNo";
+        session.flush();
+        query=session.createNativeQuery(sql1,StockRecord.class);
+        query.setParameter("endTime",time2);
+        StockRecord[] resultArray=null;
+        List<StockRecord> resultList = query.list();
+        resultArray = (StockRecord[]) Array.newInstance(StockRecord.class,resultList.size());
+        resultList.toArray(resultArray);
+        Map<Integer, List<StockRecord>> groupByPriceMap =
+                Stream.of(resultArray).collect(Collectors.groupingBy(StockRecord::getSupplyId));
+
     }
 }

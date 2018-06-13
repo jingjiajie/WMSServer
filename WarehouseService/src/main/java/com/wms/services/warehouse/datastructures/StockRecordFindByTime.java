@@ -8,14 +8,22 @@ public class StockRecordFindByTime {
         return endTime;
     }
 
-    public Integer getStorageLocationId() {
-        return storageLocationId;
+    public void setEndTime(Timestamp endTime) {
+        this.endTime = endTime;
     }
+
+    //public Integer getStorageLocationId() {
+    //    return storageLocationId;
+    //}
 
     public Integer getSupplyId() {
         return supplyId;
     }
 
+    public void setSupplyId(Integer supplyId) {
+        this.supplyId = supplyId;
+    }
+/*
     public String getUnit() {
         return unit;
     }
@@ -28,17 +36,13 @@ public class StockRecordFindByTime {
         return batchNo;
     }
 
-    public void setEndTime(Timestamp endTime) {
-        this.endTime = endTime;
-    }
+
 
     public void setStorageLocationId(Integer storageLocationId) {
         this.storageLocationId = storageLocationId;
     }
 
-    public void setSupplyId(Integer supplyId) {
-        this.supplyId = supplyId;
-    }
+
 
     public void setUnit(String unit) {
         this.unit = unit;
@@ -51,11 +55,13 @@ public class StockRecordFindByTime {
     public void setBatchNo(String batchNo) {
         this.batchNo = batchNo;
     }
-
+*/
     private Timestamp endTime=new Timestamp(System.currentTimeMillis());
-    private Integer storageLocationId;
+    //private Integer storageLocationId;
+
     private Integer supplyId;
+    /*
     private String unit="";
     private BigDecimal unitAmount;
-    private String batchNo="";
+    private String batchNo="";*/
 }

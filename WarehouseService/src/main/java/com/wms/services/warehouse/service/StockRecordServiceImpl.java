@@ -3,10 +3,7 @@ package com.wms.services.warehouse.service;
 
 import com.sun.xml.internal.bind.api.impl.NameConverter;
 import com.wms.services.warehouse.dao.StockRecordDAO;
-import com.wms.services.warehouse.datastructures.StockRecordFind;
-import com.wms.services.warehouse.datastructures.StockRecordFindByTime;
-import com.wms.services.warehouse.datastructures.StockRecordGroup;
-import com.wms.services.warehouse.datastructures.TransferStock;
+import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -1415,7 +1412,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     @Override
-    public StockRecord[] findByTime(String accountBook,StockRecordFindByTime stockRecordFindByTime){
+
+    //返回每个位置每种供货每种单位的总数量
+    public Object[] findByTime(String accountBook,StockRecordFindByTime[] stockRecordFindByTimes){
         Session session=this.sessionFactory.getCurrentSession();
         session.flush();
         try {
@@ -1423,31 +1422,56 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         } catch (Throwable ex) {
             throw new DatabaseNotFoundException(accountBook);
         }
+        StringBuffer sql=new StringBuffer();
+
+        for(int i=0;i<stockRecordFindByTimes.length;i++){
+            sql.append("s2.supplyId=");
+            sql.append(stockRecordFindByTimes[i].getSupplyId());
+            sql.append("and");
+            sql.append("s2.time<=");
+            sql.append(stockRecordFindByTimes[i].getEndTime());
+            if(i!=stockRecordFindByTimes.length-1){
+                sql.append("or");
+            }
+        }
+        sql.append(" ");
         Query query=null;
-        String storageLocationId=" s2.storageLocationId ";
-        String supplyId=" s2.supplyId ";
-        String unitAmount=" s2.unitAmount ";
-        String batchNo=" s2.batchNo ";
-        String unit=" s2.unit ";
-        if(stockRecordFindByTime.getStorageLocationId()!=null){storageLocationId=stockRecordFindByTime.getStorageLocationId().toString();}
-        if(stockRecordFindByTime.getSupplyId()!=null){supplyId=stockRecordFindByTime.getSupplyId().toString(); }
-        if(!stockRecordFindByTime.getUnit().equals("")){ unit=stockRecordFindByTime.getUnit();}
-        if(stockRecordFindByTime.getUnitAmount()!=null){ unitAmount=stockRecordFindByTime.getUnitAmount().toString();}
-        if(!stockRecordFindByTime.getBatchNo().equals("")){ batchNo=stockRecordFindByTime.getBatchNo();}
-            String sql1="SELECT s1.* FROM StockRecord AS s1 \n" +
-                    "INNER JOIN \n" +
-                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.storagelocationid,s2.supplyid  FROM StockRecord As s2\n" +
-                    "where  s2.StorageLocationID="+storageLocationId+" and s2.SupplyID="+supplyId+"and s2.time<=:endTime and s2.unitamount="+unitAmount+" and s2.batchno="+batchNo+" and s2.unit="+unit+" \n" +
+            String sql1="SELECT s4.* ,sum(s4.amount) as Sum from \n" +
+                    "(SELECT s1.* FROM StockRecordView AS s1 \n" +
+                    "INNER JOIN\n" +
+                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.storagelocationid,s2.supplyid  FROM StockRecordView As s2\n" +
+                    "where   s2.SupplyID =5 and s2.time<=\"2018/8/8\" or s2.SupplyID=15 and s2.Time<\"2018/8/8\"\n" +
                     "GROUP BY s2.SupplyID,s2.BatchNo,s2.unit,s2.UnitAmount,s2.StorageLocationID) AS s3 \n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time\n" +
-                    "and s1.SupplyID=s3.supplyid and s1.StorageLocationID=s3.StorageLocationID   AND s1.BatchNo=s3.BatchNo";
-            session.flush();
-            query=session.createNativeQuery(sql1,StockRecord.class);
-            query.setParameter("endTime",stockRecordFindByTime.getEndTime());
-        StockRecord[] resultArray=null;
-        List<StockRecord> resultList = query.list();
-        resultArray = (StockRecord[]) Array.newInstance(StockRecord.class,resultList.size());
+                    "and s1.SupplyID=s3.supplyid and s1.StorageLocationID=s3.StorageLocationID   AND s1.BatchNo=s3.BatchNo) AS s4\n" +
+                    "GROUp BY s4.supplyid,s4.unit,s4.storagelocationid";
+        session.flush();
+        query=session.createNativeQuery(sql1).addEntity(StockRecordViewAndSum.class);
+        StockRecordViewAndSum[] resultArray=null;
+        List<StockRecordViewAndSum> resultList = query.list();
+        resultArray = (StockRecordViewAndSum[]) Array.newInstance(StockRecordViewAndSum.class,resultList.size());
         resultList.toArray(resultArray);
+        Map<Integer, List<StockRecordViewAndSum>> groupBySupplyIdMap =
+                Stream.of(resultArray).collect(Collectors.groupingBy(StockRecordViewAndSum::getSupplyId));
+
+        Iterator<Map.Entry<Integer,List<StockRecordViewAndSum>>> entries = groupBySupplyIdMap.entrySet().iterator();
+        List<StockRecordGroup> resultListGroup=new ArrayList<>();
+        StockRecordGroup[] resultArrayGroup=null;
+        //将每组最新的加到一个列表中
+        while (entries.hasNext()) {
+            Map.Entry<Integer, List<StockRecordViewAndSum>> entry = entries.next();
+            List<StockRecordViewAndSum> stockRecordViewAndSumList=entry.getValue();
+            Integer supplyId=entry.getKey();
+            StockRecordGroup stockRecordGroup=new StockRecordGroup();
+            StockRecordViewAndSum[] stockRecordViewAndSum=null;
+            stockRecordViewAndSum = (StockRecordViewAndSum[]) Array.newInstance(StockRecordViewAndSum.class,stockRecordViewAndSumList.size());
+            stockRecordViewAndSumList.toArray(stockRecordViewAndSum);
+            stockRecordGroup.setStockRecords(stockRecordViewAndSum);
+            stockRecordGroup.setGroup(supplyId);
+            resultListGroup.add(stockRecordGroup);
+    }
+    resultArrayGroup=(StockRecordGroup[])Array.newInstance(StockRecordGroup.class,resultListGroup.size());
+        resultListGroup.toArray(resultArrayGroup);
         return resultArray;
     }
 
