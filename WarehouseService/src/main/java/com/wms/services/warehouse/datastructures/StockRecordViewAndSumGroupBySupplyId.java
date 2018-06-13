@@ -1,28 +1,25 @@
 package com.wms.services.warehouse.datastructures;
 
-import com.wms.utilities.model.StockRecord;
-import com.wms.utilities.model.StockRecordView;
 import com.wms.utilities.model.StockRecordViewAndSum;
-import org.omg.CORBA.OBJ_ADAPTER;
 
-public class StockRecordGroup {
+public class StockRecordViewAndSumGroupBySupplyId {
     public StockRecordViewAndSum[] getStockRecord() {
         return stockRecordViewAndSums;
     }
 
-    public Object getGroup() {
-        return group;
+    public Object getSupplyId() {
+        return supplyId;
     }
 
     public void setStockRecords(StockRecordViewAndSum[] stockRecords) {
         this.stockRecordViewAndSums = stockRecords;
     }
 
-    public void setGroup(Integer group) {
-        this.group = group;
+    public void setSupplyId(Integer supplyId) {
+        this.supplyId = supplyId;
     }
 
     private StockRecordViewAndSum[] stockRecordViewAndSums;
-    private Integer group;
+    private Integer supplyId;
 }
 

@@ -1,22 +1,17 @@
 package com.wms.services.warehouse.service;
 
 
-import com.sun.xml.internal.bind.api.impl.NameConverter;
 import com.wms.services.warehouse.dao.StockRecordDAO;
 import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.datastructures.OrderItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
-import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -24,7 +19,6 @@ import org.hibernate.SessionFactory;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -233,9 +227,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     public StockRecordViewNewest[] findNewest(String accountBook, Condition cond) throws WMSServiceException{
         return this.stockRecordDAO.findNewest(accountBook,cond);
         /*StockRecordView[] stockRecordViews=this.stockRecordDAO.find(accountBook, cond);
-        List<StockRecordGroup> stockRecordGroupList=new ArrayList<>();
+        List<StockRecordViewAndSumGroupBySupplyId> stockRecordGroupList=new ArrayList<>();
         for(int i=0;i<stockRecordViews.length;i++){
-            StockRecordGroup stockRecordGroup=new StockRecordGroup();
+            StockRecordViewAndSumGroupBySupplyId stockRecordGroup=new StockRecordViewAndSumGroupBySupplyId();
             StringBuffer stringBuffer=new StringBuffer();
             //if(stockRecordViews[i].getUnit()==null||stockRecordViews[i].getUnit().equals("")){stringBuffer.append("empty");}
             stringBuffer.append(stockRecordViews[i].getUnit());
@@ -250,22 +244,22 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             stringBuffer.append(stockRecordViews[i].getWarehouseId());
             stringBuffer.append(";");
             stringBuffer.append(stockRecordViews[i].getBatchNo());
-            stockRecordGroup.setGroup(stringBuffer.toString());
+            stockRecordGroup.setSupplyId(stringBuffer.toString());
             stockRecordGroup.setStockRecordView(stockRecordViews[i]);
             stockRecordGroupList.add(stockRecordGroup);
         }
-        StockRecordGroup[] resultArray=null;
-        resultArray = (StockRecordGroup[]) Array.newInstance(StockRecordGroup.class,stockRecordGroupList.size());
+        StockRecordViewAndSumGroupBySupplyId[] resultArray=null;
+        resultArray = (StockRecordViewAndSumGroupBySupplyId[]) Array.newInstance(StockRecordViewAndSumGroupBySupplyId.class,stockRecordGroupList.size());
         stockRecordGroupList.toArray(resultArray);
-        Map<String,List<StockRecordGroup>> stockRecordGroup = Stream.of(resultArray).collect(Collectors.groupingBy(StockRecordGroup::getGroup));
-        Iterator<Map.Entry<String,List<StockRecordGroup>>> entries = stockRecordGroup.entrySet().iterator();
+        Map<String,List<StockRecordViewAndSumGroupBySupplyId>> stockRecordGroup = Stream.of(resultArray).collect(Collectors.groupingBy(StockRecordViewAndSumGroupBySupplyId::getSupplyId));
+        Iterator<Map.Entry<String,List<StockRecordViewAndSumGroupBySupplyId>>> entries = stockRecordGroup.entrySet().iterator();
         List<StockRecordView> stockRecordViewList=new ArrayList<>();
         //将每组最新的加到一个列表中
         while (entries.hasNext()) {
-            Map.Entry<String, List<StockRecordGroup>> entry = entries.next();
-            List<StockRecordGroup> stockRecordGroup1=entry.getValue();
-            StockRecordGroup[] resultArray1=null;
-            resultArray1 = (StockRecordGroup[]) Array.newInstance(StockRecordGroup.class,stockRecordGroup1.size());
+            Map.Entry<String, List<StockRecordViewAndSumGroupBySupplyId>> entry = entries.next();
+            List<StockRecordViewAndSumGroupBySupplyId> stockRecordGroup1=entry.getValue();
+            StockRecordViewAndSumGroupBySupplyId[] resultArray1=null;
+            resultArray1 = (StockRecordViewAndSumGroupBySupplyId[]) Array.newInstance(StockRecordViewAndSumGroupBySupplyId.class,stockRecordGroup1.size());
             stockRecordGroup1.toArray(resultArray1);
             StockRecordView stockRecordViewNewest = resultArray1[0].getStockRecordView();
             for(int i=1;i<resultArray1.length-1;i++){
@@ -1414,7 +1408,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     @Override
 
     //返回每个位置每种供货每种单位的总数量
-    public Object[] findByTime(String accountBook,StockRecordFindByTime[] stockRecordFindByTimes){
+    public StockRecordViewAndSumGroupBySupplyId[] findByTime(String accountBook,StockRecordFindByTime[] stockRecordFindByTimes){
         Session session=this.sessionFactory.getCurrentSession();
         session.flush();
         try {
@@ -1425,13 +1419,14 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         StringBuffer sql=new StringBuffer();
 
         for(int i=0;i<stockRecordFindByTimes.length;i++){
-            sql.append("s2.supplyId=");
+            sql.append(" s2.supplyId= ");
             sql.append(stockRecordFindByTimes[i].getSupplyId());
-            sql.append("and");
-            sql.append("s2.time<=");
+            sql.append(" and ");
+            sql.append(" s2.time<=\" ");
             sql.append(stockRecordFindByTimes[i].getEndTime());
+            sql.append(" \" ");
             if(i!=stockRecordFindByTimes.length-1){
-                sql.append("or");
+                sql.append(" or ");
             }
         }
         sql.append(" ");
@@ -1440,7 +1435,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     "(SELECT s1.* FROM StockRecordView AS s1 \n" +
                     "INNER JOIN\n" +
                     "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.storagelocationid,s2.supplyid  FROM StockRecordView As s2\n" +
-                    "where   s2.SupplyID =5 and s2.time<=\"2018/8/8\" or s2.SupplyID=15 and s2.Time<\"2018/8/8\"\n" +
+                    "where " +sql+
                     "GROUP BY s2.SupplyID,s2.BatchNo,s2.unit,s2.UnitAmount,s2.StorageLocationID) AS s3 \n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time\n" +
                     "and s1.SupplyID=s3.supplyid and s1.StorageLocationID=s3.StorageLocationID   AND s1.BatchNo=s3.BatchNo) AS s4\n" +
@@ -1455,24 +1450,24 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 Stream.of(resultArray).collect(Collectors.groupingBy(StockRecordViewAndSum::getSupplyId));
 
         Iterator<Map.Entry<Integer,List<StockRecordViewAndSum>>> entries = groupBySupplyIdMap.entrySet().iterator();
-        List<StockRecordGroup> resultListGroup=new ArrayList<>();
-        StockRecordGroup[] resultArrayGroup=null;
+        List<StockRecordViewAndSumGroupBySupplyId> resultListGroup=new ArrayList<>();
+        StockRecordViewAndSumGroupBySupplyId[] resultArrayGroup=null;
         //将每组最新的加到一个列表中
         while (entries.hasNext()) {
             Map.Entry<Integer, List<StockRecordViewAndSum>> entry = entries.next();
             List<StockRecordViewAndSum> stockRecordViewAndSumList=entry.getValue();
             Integer supplyId=entry.getKey();
-            StockRecordGroup stockRecordGroup=new StockRecordGroup();
+            StockRecordViewAndSumGroupBySupplyId stockRecordViewAndSumGroupBySupplyId =new StockRecordViewAndSumGroupBySupplyId();
             StockRecordViewAndSum[] stockRecordViewAndSum=null;
             stockRecordViewAndSum = (StockRecordViewAndSum[]) Array.newInstance(StockRecordViewAndSum.class,stockRecordViewAndSumList.size());
             stockRecordViewAndSumList.toArray(stockRecordViewAndSum);
-            stockRecordGroup.setStockRecords(stockRecordViewAndSum);
-            stockRecordGroup.setGroup(supplyId);
-            resultListGroup.add(stockRecordGroup);
+            stockRecordViewAndSumGroupBySupplyId.setStockRecords(stockRecordViewAndSum);
+            stockRecordViewAndSumGroupBySupplyId.setSupplyId(supplyId);
+            resultListGroup.add(stockRecordViewAndSumGroupBySupplyId);
     }
-    resultArrayGroup=(StockRecordGroup[])Array.newInstance(StockRecordGroup.class,resultListGroup.size());
+    resultArrayGroup=(StockRecordViewAndSumGroupBySupplyId[])Array.newInstance(StockRecordViewAndSumGroupBySupplyId.class,resultListGroup.size());
         resultListGroup.toArray(resultArrayGroup);
-        return resultArray;
+        return resultArrayGroup;
     }
 
     @Override

@@ -39,9 +39,13 @@ public class WarehouseService {
        // TestService testService = applicationContext.getBean(TestService.class);
         //testService.testTransfer();
         StockRecordService stockRecordService= applicationContext.getBean(StockRecordService.class);
-        StockRecordFindByTime[] stockRecordFindByTime={};
+        StockRecordFindByTime stockRecordFindByTime=new StockRecordFindByTime();
+        stockRecordFindByTime.setSupplyId(5);
+        StockRecordFindByTime stockRecordFindByTime1=new StockRecordFindByTime();
+        stockRecordFindByTime1.setSupplyId(15);
+        StockRecordFindByTime[] stockRecordFindByTimes={stockRecordFindByTime,stockRecordFindByTime1};
 
-        stockRecordService.findByTime("WMS_Template",stockRecordFindByTime);
+        stockRecordService.findByTime("WMS_Template",stockRecordFindByTimes);
         Date date = new Date();
         GregorianCalendar gc = new GregorianCalendar();
         gc.set(Calendar.YEAR,2018);//设置年

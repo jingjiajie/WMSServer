@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.StockRecordFindByTime;
+import com.wms.services.warehouse.datastructures.StockRecordViewAndSumGroupBySupplyId;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -20,7 +21,7 @@ public interface StockRecordService
 
     StockRecord[] find(String accountBook, StockRecordFind stockRecordFind);
 
-    Object[] findByTime(String accountBook, StockRecordFindByTime[] stockRecordFindByTimes);
+    StockRecordViewAndSumGroupBySupplyId[] findByTime(String accountBook, StockRecordFindByTime[] stockRecordFindByTimes);
 
     StockRecordViewNewest[] findNewest(String accountBook, Condition condition);
 
