@@ -9,8 +9,8 @@ public class DeliveryByPakage {
         return warehouseId;
     }
 
-    public int getPakageId() {
-        return pakageId;
+    public int getPackageId() {
+        return packageId;
     }
 
     public void setPersonId(Integer personId) {
@@ -21,11 +21,11 @@ public class DeliveryByPakage {
         this.warehouseId = warehouseId;
     }
 
-    public void setPakageId(int pakageId) {
-        this.pakageId = pakageId;
+    public void setPackageId(int packageId) {
+        this.packageId = packageId;
     }
 
     private Integer personId;
     private int warehouseId;
-    private int pakageId;
+    private int packageId;
 }
