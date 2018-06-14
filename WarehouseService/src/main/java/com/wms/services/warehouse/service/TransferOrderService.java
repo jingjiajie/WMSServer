@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.service;
 
+import com.wms.services.warehouse.datastructures.TransferArgs;
 import com.wms.services.warehouse.datastructures.TransferOrderAndItems;
 import com.wms.services.warehouse.datastructures.TransferFinishArgs;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -17,5 +18,6 @@ public interface TransferOrderService
 
     void transferFinish(String accountBook, TransferFinishArgs transferFinishArgs) throws WMSServiceException;
     void transferSome(String accountBook, List<Integer> ids) throws WMSServiceException;
+    void transfer(String accountBook, TransferArgs transferArgs) throws WMSServiceException;
     List<TransferOrderAndItems> getPreviewData(String accountBook, List<Integer> transferOrderIDs) throws WMSServiceException;
 }
