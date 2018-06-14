@@ -6,11 +6,11 @@ import com.wms.services.warehouse.datastructures.TransferOrderAndItems;
 import com.wms.services.warehouse.datastructures.TransferFinishArgs;
 import com.wms.services.warehouse.service.TransferOrderService;
 import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.model.TransferOrder;
-import com.wms.utilities.model.TransferOrderView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import com.wms.utilities.model.TransferOrder;
+import com.wms.utilities.model.TransferOrderView;
 
 import java.util.List;
 

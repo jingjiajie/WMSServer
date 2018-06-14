@@ -15,6 +15,8 @@ import com.wms.utilities.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.wms.utilities.model.TransferOrder;
+import com.wms.utilities.model.TransferOrderView;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -170,8 +172,6 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                             new Condition().addCondition("targetStorageLocationId", new Integer[]{transferOrderItem.getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{transferOrderItem.getSupplyId()}));
                     StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
                             new Condition().addCondition("storageLocationId", new Integer[]{transferOrderItem.getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{transferOrderItem.getSupplyId()}));
-                    StockRecordView[] sourseStockRecordViews = stockRecordService.find(accountBook,
-                            new Condition().addCondition("storageLocationId", new Integer[]{transferOrderItem.getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{transferOrderItem.getSupplyId()}));
                     if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[0].getAmount()) == -1)//如果库存数量小于安全库存数量
                     {
                         transferOrderItem.setScheduledAmount(safetyStockViews[0].getAmount().subtract(stockRecordViews[0].getAmount()));//设置计划数量为与安全库存的差值

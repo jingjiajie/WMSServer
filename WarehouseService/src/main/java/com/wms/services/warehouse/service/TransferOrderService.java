@@ -11,6 +11,9 @@ import java.util.List;
 
 public interface TransferOrderService
     extends BaseService<TransferOrder,TransferOrderView>{
+    int TYPE_PUT = 0;
+    int TYPE_PACKAGE = 1;
+
 
     void transferFinish(String accountBook, TransferFinishArgs transferFinishArgs) throws WMSServiceException;
     void transferSome(String accountBook, List<Integer> ids) throws WMSServiceException;
