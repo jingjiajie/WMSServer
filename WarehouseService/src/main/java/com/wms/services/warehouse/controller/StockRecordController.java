@@ -1,6 +1,8 @@
 package com.wms.services.warehouse.controller;
 
 import com.wms.services.warehouse.datastructures.StockRecordFind;
+import com.wms.services.warehouse.datastructures.StockRecordFindByTime;
+import com.wms.services.warehouse.datastructures.StockRecordViewAndSumGroupBySupplyId;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.model.StockRecord;
@@ -17,5 +19,6 @@ extends BaseController<StockRecord,StockRecordView> {
   void modifyAvailableAmount(String accountbook, TransferStock transferStock);
   StockRecord[] find(String accountbook, StockRecordFind stockRecordFind);
   StockRecordViewNewest[] findNewest(String accountbook, String condition);
+  StockRecordViewAndSumGroupBySupplyId[] findByTime(String accountbook, StockRecordFindByTime[] stockRecordFindByTimes);
   long findCount(String accountBook,String condStr);
 }

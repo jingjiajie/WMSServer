@@ -7,7 +7,7 @@ public class StockRecordViewAndSumGroupBySupplyId {
         return stockRecordViewAndSums;
     }
 
-    public Object getSupplyId() {
+    public Integer getSupplyId() {
         return supplyId;
     }
 
