@@ -2,9 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.TransferOrderDAO;
-import com.wms.services.warehouse.datastructures.TransferOrderAndItems;
-import com.wms.services.warehouse.datastructures.TransferFinishArgs;
-import com.wms.services.warehouse.datastructures.TransferFinishItem;
+import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
@@ -16,6 +14,8 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.wms.utilities.model.TransferOrder;
+import com.wms.utilities.model.TransferOrderView;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -40,12 +40,17 @@ public class TransferOrderServiceImpl implements TransferOrderService{
     PersonService personService;
 
     private static final String PREFIX = "T";
+    private static final String PREFIX1 = "P";
 
     @Override
     public int[] add(String accountBook, TransferOrder[] objs) throws WMSServiceException {
         Stream.of(objs).forEach(obj->{
             if(obj.getNo() == null || obj.getNo().isEmpty()) {
-                obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX));
+                if(obj.getType()==TransferOrderService.TYPE_PACKAGE){
+                    obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX));
+                }else if(obj.getType()==TransferOrderService.TYPE_PUT){
+                    obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX1));
+                }
             }
             obj.setState(TransferOrderItemService.STATE_IN_TRANSFER);//新建移库单记为状态0
             obj.setPrintTimes(new BigDecimal(0));
@@ -206,6 +211,31 @@ public class TransferOrderServiceImpl implements TransferOrderService{
 
     }
 
+    public void transfer(String accountBook, TransferArgs transferArgs) {
+        TransferItem[] transferItems = transferArgs.getTransferItems();
+        Stream.of(transferItems).forEach((transferItem) -> {
+            //创建新的移库单
+            TransferOrder transferOrder = transferItem.getTransferOrder();
+            new Validator("移库单信息").notnull().validate(transferOrder);
+
+            int newTransferOrderID = this.add(accountBook, new TransferOrder[]{transferOrder})[0];
+
+            //按照安全库存信息，生成移库单条目
+            TransferOrderItem[] transferOrderItems=transferItem.getTransferOrderItems();
+            Stream.of(transferOrderItems).forEach((transferOrderItem)->{
+                //创建新的移库单条目
+                //找到对应供货对应库位的安全库存信息
+                    transferOrderItem.setRealAmount(new BigDecimal(0));
+                    transferOrderItem.setComment("成功创建移库");
+                    transferOrderItem.setOperateTime(new Timestamp(System.currentTimeMillis()));
+                    transferOrderItem.setState(0);
+                    transferOrderItem.setTransferOrderId(newTransferOrderID);
+            });
+            this.transferOrderItemService.add(accountBook, transferOrderItems);
+            //TODO 尝试更新移库单时间
+            //transferOrderItemService.updateTransferOrder(accountBook,newTransferOrderID ,transferArgs.getTransferItems()[0].getTransferOrder().getCreatePersonId());
+        });
+    }
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
         return this.transferOrderDAO.findCount(accountBook,cond);

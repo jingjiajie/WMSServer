@@ -293,7 +293,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         transferOrder.setDescription(transferOrderViews[0].getDescription());
         transferOrder.setNo(transferOrderViews[0].getNo());
         transferOrder.setWarehouseId(transferOrderViews[0].getWarehouseId());
-        transferOrder.setLastUpdatePersonId(""+lastUpdatePersonId);
+        transferOrder.setLastUpdatePersonId(lastUpdatePersonId);
         transferOrder.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
         transferOrder.setPrintTimes(transferOrderViews[0].getPrintTimes());
         transferOrder.setState(transferOrderViews[0].getState());

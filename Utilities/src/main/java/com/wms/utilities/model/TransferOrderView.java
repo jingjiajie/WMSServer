@@ -1,6 +1,9 @@
 package com.wms.utilities.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -19,11 +22,11 @@ public class TransferOrderView {
     private String warehouseName;
     private String createPersonName;
     private String lastUpdatePersonName;
+    private int type;
 
-    @Id
     @Basic
+    @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -152,6 +155,16 @@ public class TransferOrderView {
         this.lastUpdatePersonName = lastUpdatePersonName;
     }
 
+    @Basic
+    @Column(name = "Type")
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -163,6 +176,7 @@ public class TransferOrderView {
         if (warehouseId != that.warehouseId) return false;
         if (state != that.state) return false;
         if (createPersonId != that.createPersonId) return false;
+        if (type != that.type) return false;
         if (no != null ? !no.equals(that.no) : that.no != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (printTimes != null ? !printTimes.equals(that.printTimes) : that.printTimes != null) return false;
@@ -196,6 +210,7 @@ public class TransferOrderView {
         result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
         result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
         result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
+        result = 31 * result + type;
         return result;
     }
 }

@@ -1,9 +1,11 @@
 package com.wms.utilities.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 public class TransferOrder {
@@ -15,12 +17,12 @@ public class TransferOrder {
     private BigDecimal printTimes;
     private int createPersonId;
     private Timestamp createTime;
-    private String lastUpdatePersonId;
+    private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
+    private int type;
 
     @Id
-    @Column(name = "ID", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -30,7 +32,7 @@ public class TransferOrder {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
@@ -40,7 +42,7 @@ public class TransferOrder {
     }
 
     @Basic
-    @Column(name = "No", nullable = false, length = 64)
+    @Column(name = "No")
     public String getNo() {
         return no;
     }
@@ -50,7 +52,7 @@ public class TransferOrder {
     }
 
     @Basic
-    @Column(name = "Description", nullable = true, length = 64)
+    @Column(name = "Description")
     public String getDescription() {
         return description;
     }
@@ -60,7 +62,7 @@ public class TransferOrder {
     }
 
     @Basic
-    @Column(name = "State", nullable = false)
+    @Column(name = "State")
     public int getState() {
         return state;
     }
@@ -70,7 +72,7 @@ public class TransferOrder {
     }
 
     @Basic
-    @Column(name = "PrintTimes", nullable = false, precision = 3)
+    @Column(name = "PrintTimes")
     public BigDecimal getPrintTimes() {
         return printTimes;
     }
@@ -80,7 +82,7 @@ public class TransferOrder {
     }
 
     @Basic
-    @Column(name = "CreatePersonID", nullable = false)
+    @Column(name = "CreatePersonID")
     public int getCreatePersonId() {
         return createPersonId;
     }
@@ -90,7 +92,7 @@ public class TransferOrder {
     }
 
     @Basic
-    @Column(name = "CreateTime", nullable = false)
+    @Column(name = "CreateTime")
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -100,17 +102,17 @@ public class TransferOrder {
     }
 
     @Basic
-    @Column(name = "LastUpdatePersonID", nullable = true, length = 64)
-    public String getLastUpdatePersonId() {
+    @Column(name = "LastUpdatePersonID")
+    public Integer getLastUpdatePersonId() {
         return lastUpdatePersonId;
     }
 
-    public void setLastUpdatePersonId(String lastUpdatePersonId) {
+    public void setLastUpdatePersonId(Integer lastUpdatePersonId) {
         this.lastUpdatePersonId = lastUpdatePersonId;
     }
 
     @Basic
-    @Column(name = "LastUpdateTime", nullable = true)
+    @Column(name = "LastUpdateTime")
     public Timestamp getLastUpdateTime() {
         return lastUpdateTime;
     }
@@ -119,26 +121,53 @@ public class TransferOrder {
         this.lastUpdateTime = lastUpdateTime;
     }
 
+    @Basic
+    @Column(name = "Type")
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         TransferOrder that = (TransferOrder) o;
-        return id == that.id &&
-                warehouseId == that.warehouseId &&
-                state == that.state &&
-                createPersonId == that.createPersonId &&
-                Objects.equals(no, that.no) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(printTimes, that.printTimes) &&
-                Objects.equals(createTime, that.createTime) &&
-                Objects.equals(lastUpdatePersonId, that.lastUpdatePersonId) &&
-                Objects.equals(lastUpdateTime, that.lastUpdateTime);
+
+        if (id != that.id) return false;
+        if (warehouseId != that.warehouseId) return false;
+        if (state != that.state) return false;
+        if (createPersonId != that.createPersonId) return false;
+        if (type != that.type) return false;
+        if (no != null ? !no.equals(that.no) : that.no != null) return false;
+        if (description != null ? !description.equals(that.description) : that.description != null) return false;
+        if (printTimes != null ? !printTimes.equals(that.printTimes) : that.printTimes != null) return false;
+        if (createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) return false;
+        if (lastUpdatePersonId != null ? !lastUpdatePersonId.equals(that.lastUpdatePersonId) : that.lastUpdatePersonId != null)
+            return false;
+        if (lastUpdateTime != null ? !lastUpdateTime.equals(that.lastUpdateTime) : that.lastUpdateTime != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, warehouseId, no, description, state, printTimes, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime);
+        int result = id;
+        result = 31 * result + warehouseId;
+        result = 31 * result + (no != null ? no.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + state;
+        result = 31 * result + (printTimes != null ? printTimes.hashCode() : 0);
+        result = 31 * result + createPersonId;
+        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
+        result = 31 * result + (lastUpdatePersonId != null ? lastUpdatePersonId.hashCode() : 0);
+        result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
+        result = 31 * result + type;
+        return result;
     }
 }
