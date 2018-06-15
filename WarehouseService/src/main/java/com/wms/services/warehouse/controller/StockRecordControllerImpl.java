@@ -3,6 +3,8 @@ package com.wms.services.warehouse.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
+import com.wms.services.warehouse.datastructures.StockRecordFindByTime;
+import com.wms.services.warehouse.datastructures.StockRecordViewAndSumGroupBySupplyId;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.utilities.datastructures.Condition;
@@ -101,6 +103,14 @@ public class StockRecordControllerImpl implements StockRecordController {
     public void modifyAvailableAmount(@PathVariable("accountBook") String accountBook,
                                       @RequestBody TransferStock transferStock) {
         stockRecordService.modifyAvailableAmount(accountBook, transferStock);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/find_by_time", method = RequestMethod.POST)
+    public StockRecordViewAndSumGroupBySupplyId[] findByTime(@PathVariable("accountBook") String accountBook,
+                                                             @RequestBody StockRecordFindByTime[] stockRecordFindByTimes) {
+      return   stockRecordService.findByTime(accountBook, stockRecordFindByTimes);
     }
 
     @Override
