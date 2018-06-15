@@ -198,28 +198,35 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
     public void transferAuto(String accountBook, TransferAuto TransferAuto) {
         new Validator("人员").notnull().validate(TransferAuto.getPersonId());
+        new Validator("移库类型").min(0).max(2).validate(TransferAuto.getTransferType());
+
         idChecker.check(com.wms.services.warehouse.service.WarehouseService.class, accountBook, TransferAuto.getWarehouseId(), " 仓库");
-        SafetyStockView[] safetyStockViews=safetyStockService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{TransferAuto.getWarehouseId()}));
+        //区分安全库存类型
+        int transferType=TransferAuto.getTransferType();
+
+        SafetyStockView[] safetyStockViews=safetyStockService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{TransferAuto.getWarehouseId()}).addCondition("type",new Integer[]{transferType}));
         if(safetyStockViews.length==0){throw new WMSServiceException("当前仓库无任何安全库存记录，无法自动添加移库作业单单条目！");}
         TransferArgs transferArgs=new TransferArgs();
         TransferItem transferItem=new TransferItem();
 
         TransferOrder transferOrder=new TransferOrder();
+        transferOrder.setType(transferType);
         transferOrder.setWarehouseId(TransferAuto.getWarehouseId());
         transferOrder.setCreatePersonId(TransferAuto.getPersonId());
+
 
         //新建列表存放条目
         List<TransferOrderItem> transferOrderItemsList=new ArrayList();
         for(int i=0;i<safetyStockViews.length;i++){
-            StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
-                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
-            StockRecordView[] stockRecordViews1 = stockRecordService.find(accountBook,
-                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
+            //StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
+                   // new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
+            //StockRecordView[] stockRecordViews1 = stockRecordService.find(accountBook,
+            //        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}));
 
-            if (stockRecordViews1[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1){
-                throw new WMSServiceException(String.format("当前备货源库位(%s)库存不足，无法备货", safetyStockViews[i].getSourceStorageLocationName()));
-            }
-            if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1) {
+            //if (stockRecordViews1[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1){
+               // throw new WMSServiceException(String.format("当前备货源库位(%s)库存不足，无法备货", safetyStockViews[i].getSourceStorageLocationName()));
+           // }
+            //if (stockRecordViews[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1) {
                 TransferOrderItem transferOrderItem = new TransferOrderItem();
                 transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
                 transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
@@ -229,7 +236,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 transferOrderItem.setScheduledAmount(new BigDecimal(0));
                 transferOrderItem.setPersonId(TransferAuto.getPersonId());
                 transferOrderItemsList.add(transferOrderItem);
-            }
+           // }
         }
         TransferOrderItem[] transferOrderItems=null;
         transferOrderItems = (TransferOrderItem[]) Array.newInstance(TransferOrderItem.class,transferOrderItemsList.size());

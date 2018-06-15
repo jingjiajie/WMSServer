@@ -1,16 +1,24 @@
 package com.wms.services.warehouse.datastructures;
 
+import com.wms.services.warehouse.service.SafetyStockService;
+
 public class TransferAuto {
     private int warehouseId;
-    private int supplyId;
+
+    public int getTransferType() {
+        return transferType;
+    }
+
+    public void setTransferType(int transferType) {
+        this.transferType = transferType;
+    }
+
+    private int transferType= SafetyStockService.TYPE_READY;
 
     public int getWarehouseId() {
         return warehouseId;
     }
 
-    public int getSupplyId() {
-        return supplyId;
-    }
 
     public Integer getPersonId() {
         return personId;
@@ -20,9 +28,6 @@ public class TransferAuto {
         this.warehouseId = warehouseId;
     }
 
-    public void setSupplyId(int supplyId) {
-        this.supplyId = supplyId;
-    }
 
     public void setPersonId(Integer personId) {
         this.personId = personId;
