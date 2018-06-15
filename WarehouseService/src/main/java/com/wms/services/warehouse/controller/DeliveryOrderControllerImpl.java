@@ -59,7 +59,7 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     }
 
     @Override
-    @RequestMapping(value = "/transfer",method = RequestMethod.POST)
+    @RequestMapping(value = "/transfer_package",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void transferPakage(@PathVariable("accountBook") String accountBook,
                         @RequestBody TransferArgs transferArgs){

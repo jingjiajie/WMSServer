@@ -20,6 +20,14 @@ public class TransferOrderControllerImpl implements  TransferOrderController{
     @Autowired
     TransferOrderService transferOrderService;
 
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    @Override
+    public int[] add(@PathVariable("accountBook") String accountBook,
+                     @RequestBody TransferOrder[] transferOrders) {
+        return transferOrderService.add(accountBook, transferOrders);
+    }
+
     @Override
     @RequestMapping(value = "/{strIDs}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.OK)

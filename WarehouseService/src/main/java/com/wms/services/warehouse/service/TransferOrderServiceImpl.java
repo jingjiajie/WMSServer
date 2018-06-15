@@ -236,6 +236,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             //transferOrderItemService.updateTransferOrder(accountBook,newTransferOrderID ,transferArgs.getTransferItems()[0].getTransferOrder().getCreatePersonId());
         });
     }
+
     @Override
     public long findCount(String accountBook, Condition cond) throws WMSServiceException{
         return this.transferOrderDAO.findCount(accountBook,cond);

@@ -176,11 +176,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     {
                         transferOrderItem.setScheduledAmount(safetyStockViews[0].getAmount().subtract(stockRecordViews[0].getAmount()));//设置计划数量为与安全库存的差值
                         transferOrderItem.setRealAmount(new BigDecimal(0));
-                        transferOrderItem.setComment("成功一件备货");
+                        transferOrderItem.setComment("成功一键移库");
                         transferOrderItem.setOperateTime(new Timestamp(System.currentTimeMillis()));
                         transferOrderItem.setTransferOrderId(newTransferOrderID);
                         transferOrderItem.setState(0);
-                        this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
                     } else {
                         //库存充足取消备货
                         throw new WMSServiceException(String.format("当前备货区(%s)库存充足，不需要备货", safetyStockViews[0].getTargetStorageLocationName()));
@@ -188,9 +187,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 }else{
                     transferOrderItem.setState(0);
                     transferOrderItem.setTransferOrderId(newTransferOrderID);
-                    this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
+
                 }
             });
+            this.transferOrderItemService.add(accountBook, transferOrderItems);
             //TODO 尝试更新移库单时间
             //transferOrderItemService.updateTransferOrder(accountBook,newTransferOrderID ,transferArgs.getTransferItems()[0].getTransferOrder().getCreatePersonId());
         });
