@@ -49,9 +49,9 @@ public class StockRecordServiceImpl implements StockRecordService {
     @Override
     public int[] add(String accountBook, StockRecord[] stockRecords) throws WMSServiceException {
         for(int i=0;i<stockRecords.length;i++) {
-            new Validator("数量").notnull().notEmpty().min(0);
-            new Validator("单位").notnull().notEmpty();
-            new Validator("单位数量").notnull().notEmpty().min(0);
+            new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
+            new Validator("单位").notnull().notEmpty().validate(stockRecords[i].getUnit());
+            new Validator("单位数量").notnull().notEmpty().min(0).validate(stockRecords[i].getUnitAmount());
             new Validator("存货日期").notnull().validate(stockRecords[i].getInventoryDate());
         }
         //外键检测
