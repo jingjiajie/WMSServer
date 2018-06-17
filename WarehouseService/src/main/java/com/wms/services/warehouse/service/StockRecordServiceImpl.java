@@ -1115,7 +1115,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
             if (iNeed == -1) {
-                throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上数量不足。需要库存数量："+transferStock.getAmount().negate()+"，现有库存："+amountAvailableAll);
+                throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上数量不足。需要库存数量："+transferStock.getModifyAvailableAmount().negate()+"，现有库存："+amountAvailableAll);
             }
             for(int i=stockRecordSource1.length-1;i>=iNeed;i--) {
                 StockRecord stockRecordNewSave = new StockRecord();
