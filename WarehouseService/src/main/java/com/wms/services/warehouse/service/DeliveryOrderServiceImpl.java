@@ -245,7 +245,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             //}
 
             //todo 目标库位少于安全库存数量才会进行
-            if (sourceAmount.compareTo(safetyStockViews[i].getAmount()) == -1) {
+            if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) == -1) {
                 TransferOrderItem transferOrderItem = new TransferOrderItem();
                 transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
                 transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
@@ -253,7 +253,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
                 transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
                 //预设计划数量
-                transferOrderItem.setScheduledAmount(safetyStockViews[i].getAmount().subtract(stockRecordViews[0].getAmount()));
+                transferOrderItem.setScheduledAmount(safetyStockViews[i].getAmount().subtract(sourceAmount));
                 transferOrderItem.setPersonId(TransferAuto.getPersonId());
                 transferOrderItemsList.add(transferOrderItem);
             }
