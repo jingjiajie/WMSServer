@@ -7,7 +7,7 @@ import com.wms.utilities.service.BaseService;
 
 public interface SafetyStockService
     extends BaseService<SafetyStock,SafetyStockView>{
-    int TYPE_READY = 0;
-    int TYPE_OUT = 1;
+    int TYPE_READY = 1;
+    int TYPE_OUT = 0;
     int TYPE_OTHER = 2;
 }

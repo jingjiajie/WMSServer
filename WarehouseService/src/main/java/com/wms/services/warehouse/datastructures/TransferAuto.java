@@ -13,7 +13,7 @@ public class TransferAuto {
         this.transferType = transferType;
     }
 
-    private int transferType= SafetyStockService.TYPE_READY;
+    private int transferType;
 
     public int getWarehouseId() {
         return warehouseId;
