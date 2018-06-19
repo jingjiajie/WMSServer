@@ -291,15 +291,17 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         if (deliveryOrderViews.length == 0) return;
         DeliveryOrder[] deliveryOrders = ReflectHelper.createAndCopyFields(deliveryOrderViews,DeliveryOrder.class);
         Stream.of(deliveryOrders).forEach(deliveryOrder -> {
-            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_LOADING||deliveryOrder.getState() ==DeliveryOrderService.STATE_PARTIAL_LOADING) {
-                throw new WMSServiceException(String.format("当前出库单（%s）未完成装车，无法发运", deliveryOrder.getNo()));
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_DELIVER_FINNISH) {
+                throw new WMSServiceException(String.format("当前出库单（%s）已经确认核减，无法进行发运操作", deliveryOrder.getNo()));
             }
             if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_DELIVER) {
                 throw new WMSServiceException(String.format("当前出库单（%s）已经发运在途，无法重复发运", deliveryOrder.getNo()));
             }
-            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_DELIVER_FINNISH) {
-                throw new WMSServiceException(String.format("当前出库单（%s）已经确认核减，无法进行发运操作", deliveryOrder.getNo()));
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_LOADING||deliveryOrder.getState() ==DeliveryOrderService.STATE_PARTIAL_LOADING) {
+                throw new WMSServiceException(String.format("当前出库单（%s）未完成装车，无法发运", deliveryOrder.getNo()));
             }
+
+
         });
 
         DeliveryOrderItemView[] itemViews = this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("deliveryOrderId",ids.toArray(), ConditionItem.Relation.IN));
