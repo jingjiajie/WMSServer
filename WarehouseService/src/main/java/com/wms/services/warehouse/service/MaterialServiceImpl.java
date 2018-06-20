@@ -30,8 +30,8 @@ public class MaterialServiceImpl implements MaterialService {
     {
         this.validateEntities(accountBook,materials);
         Stream.of(materials).forEach((material)->{
-            if(materialDAO.find(accountBook,new Condition().addCondition("name",new String[]{material.getName()})).length > 0) {
-                throw new WMSServiceException("物料名：" + material.getName() + "已经存在!");
+            if(materialDAO.find(accountBook,new Condition().addCondition("name",new String[]{material.getName()}).addCondition("productLine",new String[]{material.getProductLine()})).length > 0) {
+                throw new WMSServiceException("物料名：" + material.getName() + "系列："+material.getProductLine()+"已经存在!");
             }
             if(materialDAO.find(accountBook,new Condition().addCondition("no",new String[]{material.getNo()})).length > 0){
                 throw new WMSServiceException("物料代号："+material.getNo()+"已经存在!");
@@ -47,9 +47,10 @@ public class MaterialServiceImpl implements MaterialService {
         for(int i=0;i<materials.length;i++){
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{materials[i].getName()});
+            cond.addCondition("productLine",new String[]{materials[i].getProductLine()});
             cond.addCondition("id",new Integer[]{materials[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(materialDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("物料名称重复："+materials[i].getName());
+                throw new WMSServiceException("已存在相同系列-物料名称重复："+materials[i].getName());
             }
         }
         Stream.of(materials).forEach((material)->{
