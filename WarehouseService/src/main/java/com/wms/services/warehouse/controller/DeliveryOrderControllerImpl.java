@@ -3,10 +3,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.services.warehouse.datastructures.DeliveryByPakage;
-import com.wms.services.warehouse.datastructures.DeliveryOrderAndItems;
-import com.wms.services.warehouse.datastructures.TransferArgs;
-import com.wms.services.warehouse.datastructures.TransferAuto;
+import com.wms.services.warehouse.datastructures.*;
 import com.wms.services.warehouse.service.DeliveryOrderService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.DeliveryOrder;
@@ -78,8 +75,8 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     @RequestMapping(value = "/delivery_finish",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void deliveryFinish(@PathVariable("accountBook") String accountBook,
-                             @RequestBody List<Integer> ids){
-        this.deliveryOrderService.deliveryFinish(accountBook,ids);
+                             @RequestBody DeliveryFinish deliveryFinish){
+        this.deliveryOrderService.deliveryFinish(accountBook,deliveryFinish);
     }
 
     @Override
