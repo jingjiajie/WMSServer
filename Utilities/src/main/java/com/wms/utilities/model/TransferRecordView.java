@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 
 @Entity
 public class TransferRecordView {
-
     private int id;
     private int warehouseId;
     private Integer sourceStockRecordId;
@@ -30,6 +29,7 @@ public class TransferRecordView {
     private String materialName;
     private String supplierNo;
     private String supplierName;
+    private Integer supplyId;
 
     @Basic
     @Id
@@ -242,6 +242,16 @@ public class TransferRecordView {
         this.supplierName = supplierName;
     }
 
+    @Basic
+    @Column(name = "SupplyID")
+    public Integer getSupplyId() {
+        return supplyId;
+    }
+
+    public void setSupplyId(Integer supplyId) {
+        this.supplyId = supplyId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -283,6 +293,7 @@ public class TransferRecordView {
         if (materialName != null ? !materialName.equals(that.materialName) : that.materialName != null) return false;
         if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
         if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
+        if (supplyId != null ? !supplyId.equals(that.supplyId) : that.supplyId != null) return false;
 
         return true;
     }
@@ -310,6 +321,7 @@ public class TransferRecordView {
         result = 31 * result + (materialName != null ? materialName.hashCode() : 0);
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
         result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
+        result = 31 * result + (supplyId != null ? supplyId.hashCode() : 0);
         return result;
     }
 }

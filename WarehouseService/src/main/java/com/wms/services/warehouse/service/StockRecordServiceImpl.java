@@ -147,6 +147,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
                 transferRecord.setNewStockRecordId(addId[0]);
+                transferRecord.setSupplyId(supplyId);
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
             //找到一条记录，则可以合并
@@ -167,6 +168,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
                 transferRecord.setNewStockRecordId(addId[0]);
+                transferRecord.setSupplyId(supplyId);
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
             else
@@ -368,6 +370,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     transferRecord.setNewStockRecordId(newStockRecordId[0]);
                     transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
                     transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
+                    transferRecord.setSupplyId(supplyId);
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
             }
@@ -501,6 +504,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 transferRecord.setNewStockRecordId(newStockRecordId[0]);
                 transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
                 transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
+                transferRecord.setSupplyId(supplyId);
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
         }
@@ -564,6 +568,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
                 transferRecord.setNewStockRecordId(addId[0]);
+                transferRecord.setSupplyId(supplyId);
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
             //找到一条记录，则可以合并
@@ -584,6 +589,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
                 transferRecord.setNewStockRecordId(addId[0]);
+                transferRecord.setSupplyId(supplyId);
                 //transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
@@ -650,6 +656,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
                     //transferRecord.setNewStockRecordId(addId[0]);
                     transferRecord.setSourceStockRecordId(stockRecordSource[i].getId());
+                    transferRecord.setSupplyId(supplyId);
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
                 else{
@@ -672,6 +679,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
                     //transferRecord.setNewStockRecordId(addId[0]);
                     transferRecord.setSourceStockRecordId(stockRecordSource[i].getId());
+                    transferRecord.setSupplyId(supplyId);
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
             }
@@ -855,6 +863,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                         transferRecord.setNewStockRecordId(newStockRecordId[0]);
                         transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
                         transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
+                        transferRecord.setSupplyId(supplyId);
                         transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                     }
                 }
@@ -989,6 +998,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 transferRecord.setNewStockRecordId(newStockRecordId[0]);
                 transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
                 transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
+                transferRecord.setSupplyId(supplyId);
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
         }}

@@ -1,7 +1,6 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.TransferRecordDAO;
-import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -30,6 +29,7 @@ public class TransferRecordServiceImpl implements TransferRecordService {
     public int[] add(String accountBook, TransferRecord[] transferRecords) throws WMSServiceException {
         Stream.of(transferRecords).forEach(transferRecord -> {
             this.idChecker.check(WarehouseService.class,accountBook,transferRecord.getWarehouseId(),"仓库");
+            this.idChecker.check(SupplyService.class,accountBook,transferRecord.getSupplyId(),"供货");
         });
         return this.transferRecordDAO.add(accountBook,transferRecords);
 

@@ -5,7 +5,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 public class DeliveryOrderView {
@@ -24,10 +23,12 @@ public class DeliveryOrderView {
     private String warehouseName;
     private String createPersonName;
     private String lastUpdatePersonName;
+    private String driverName;
+    private String liscensePlateNumber;
 
-    @Id
     @Basic
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
+    @Id
     public int getId() {
         return id;
     }
@@ -37,7 +38,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
@@ -47,7 +48,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "No", nullable = false, length = 64)
+    @Column(name = "No")
     public String getNo() {
         return no;
     }
@@ -57,7 +58,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "Description", nullable = true, length = 64)
+    @Column(name = "Description")
     public String getDescription() {
         return description;
     }
@@ -67,7 +68,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "State", nullable = false)
+    @Column(name = "State")
     public int getState() {
         return state;
     }
@@ -77,7 +78,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "DeliverTime", nullable = true)
+    @Column(name = "DeliverTime")
     public Timestamp getDeliverTime() {
         return deliverTime;
     }
@@ -87,7 +88,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "ReturnNoteNo", nullable = true, length = 64)
+    @Column(name = "ReturnNoteNo")
     public String getReturnNoteNo() {
         return returnNoteNo;
     }
@@ -97,7 +98,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "ReturnNoteTime", nullable = true)
+    @Column(name = "ReturnNoteTime")
     public Timestamp getReturnNoteTime() {
         return returnNoteTime;
     }
@@ -107,7 +108,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "CreatePersonID", nullable = false)
+    @Column(name = "CreatePersonID")
     public int getCreatePersonId() {
         return createPersonId;
     }
@@ -117,7 +118,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "CreateTime", nullable = false)
+    @Column(name = "CreateTime")
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -127,7 +128,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "LastUpdatePersonID", nullable = true)
+    @Column(name = "LastUpdatePersonID")
     public Integer getLastUpdatePersonId() {
         return lastUpdatePersonId;
     }
@@ -137,7 +138,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "LastUpdateTime", nullable = true)
+    @Column(name = "LastUpdateTime")
     public Timestamp getLastUpdateTime() {
         return lastUpdateTime;
     }
@@ -147,7 +148,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "WarehouseName", nullable = true, length = 64)
+    @Column(name = "WarehouseName")
     public String getWarehouseName() {
         return warehouseName;
     }
@@ -157,7 +158,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "CreatePersonName", nullable = true, length = 64)
+    @Column(name = "CreatePersonName")
     public String getCreatePersonName() {
         return createPersonName;
     }
@@ -167,7 +168,7 @@ public class DeliveryOrderView {
     }
 
     @Basic
-    @Column(name = "LastUpdatePersonName", nullable = true, length = 64)
+    @Column(name = "LastUpdatePersonName")
     public String getLastUpdatePersonName() {
         return lastUpdatePersonName;
     }
@@ -176,31 +177,80 @@ public class DeliveryOrderView {
         this.lastUpdatePersonName = lastUpdatePersonName;
     }
 
+    @Basic
+    @Column(name = "DriverName")
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
+    }
+
+    @Basic
+    @Column(name = "LiscensePlateNumber")
+    public String getLiscensePlateNumber() {
+        return liscensePlateNumber;
+    }
+
+    public void setLiscensePlateNumber(String liscensePlateNumber) {
+        this.liscensePlateNumber = liscensePlateNumber;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         DeliveryOrderView that = (DeliveryOrderView) o;
-        return id == that.id &&
-                warehouseId == that.warehouseId &&
-                state == that.state &&
-                createPersonId == that.createPersonId &&
-                Objects.equals(no, that.no) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(deliverTime, that.deliverTime) &&
-                Objects.equals(returnNoteNo, that.returnNoteNo) &&
-                Objects.equals(returnNoteTime, that.returnNoteTime) &&
-                Objects.equals(createTime, that.createTime) &&
-                Objects.equals(lastUpdatePersonId, that.lastUpdatePersonId) &&
-                Objects.equals(lastUpdateTime, that.lastUpdateTime) &&
-                Objects.equals(warehouseName, that.warehouseName) &&
-                Objects.equals(createPersonName, that.createPersonName) &&
-                Objects.equals(lastUpdatePersonName, that.lastUpdatePersonName);
+
+        if (id != that.id) return false;
+        if (warehouseId != that.warehouseId) return false;
+        if (state != that.state) return false;
+        if (createPersonId != that.createPersonId) return false;
+        if (no != null ? !no.equals(that.no) : that.no != null) return false;
+        if (description != null ? !description.equals(that.description) : that.description != null) return false;
+        if (deliverTime != null ? !deliverTime.equals(that.deliverTime) : that.deliverTime != null) return false;
+        if (returnNoteNo != null ? !returnNoteNo.equals(that.returnNoteNo) : that.returnNoteNo != null) return false;
+        if (returnNoteTime != null ? !returnNoteTime.equals(that.returnNoteTime) : that.returnNoteTime != null)
+            return false;
+        if (createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) return false;
+        if (lastUpdatePersonId != null ? !lastUpdatePersonId.equals(that.lastUpdatePersonId) : that.lastUpdatePersonId != null)
+            return false;
+        if (lastUpdateTime != null ? !lastUpdateTime.equals(that.lastUpdateTime) : that.lastUpdateTime != null)
+            return false;
+        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
+            return false;
+        if (createPersonName != null ? !createPersonName.equals(that.createPersonName) : that.createPersonName != null)
+            return false;
+        if (lastUpdatePersonName != null ? !lastUpdatePersonName.equals(that.lastUpdatePersonName) : that.lastUpdatePersonName != null)
+            return false;
+        if (driverName != null ? !driverName.equals(that.driverName) : that.driverName != null) return false;
+        if (liscensePlateNumber != null ? !liscensePlateNumber.equals(that.liscensePlateNumber) : that.liscensePlateNumber != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, warehouseId, no, description, state, deliverTime, returnNoteNo, returnNoteTime, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime, warehouseName, createPersonName, lastUpdatePersonName);
+        int result = id;
+        result = 31 * result + warehouseId;
+        result = 31 * result + (no != null ? no.hashCode() : 0);
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + state;
+        result = 31 * result + (deliverTime != null ? deliverTime.hashCode() : 0);
+        result = 31 * result + (returnNoteNo != null ? returnNoteNo.hashCode() : 0);
+        result = 31 * result + (returnNoteTime != null ? returnNoteTime.hashCode() : 0);
+        result = 31 * result + createPersonId;
+        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
+        result = 31 * result + (lastUpdatePersonId != null ? lastUpdatePersonId.hashCode() : 0);
+        result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
+        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
+        result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
+        result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
+        result = 31 * result + (driverName != null ? driverName.hashCode() : 0);
+        result = 31 * result + (liscensePlateNumber != null ? liscensePlateNumber.hashCode() : 0);
+        return result;
     }
 }

@@ -94,6 +94,9 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 rdTransferStock.setUnitAmount(transferOrderItem.getUnitAmount());
                 this.stockRecordService.modifyAvailableAmount(accountBook, rdTransferStock);//直接改可用数量
                 transferOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
+                if (transferOrderItem.getScheduledAmount().equals(transferOrderItem.getRealAmount())){
+                    transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+                }
             }
 
         });
@@ -135,7 +138,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             // TODO 如果计划移库数量发生变化,还是需要改进
             if (transferOrderItem.getScheduledAmount().equals(oriItemViews[0].getScheduledAmount()))//如果计划移库数量发生变化
             {
-                if (transferOrderItem.getScheduledAmount().subtract(oriItemViews[0].getRealAmount()).compareTo(new BigDecimal(0))<=0)//如果新修改时计划数量小于当前实际已经移动的数量
+                if (transferOrderItem.getScheduledAmount().subtract(oriItemViews[0].getRealAmount()).compareTo(new BigDecimal(0))<0)//如果新修改时计划数量小于当前实际已经移动的数量
                 {
                     throw new WMSServiceException(String.format("无法修改移库单条目计划数量单号：(%s)，移库操作基本完成，如需操作请新建移库单作业",transferOrderView.getNo()));
                 }
