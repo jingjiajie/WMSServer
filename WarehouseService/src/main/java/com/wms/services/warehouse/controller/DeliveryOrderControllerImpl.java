@@ -9,11 +9,11 @@ import com.wms.services.warehouse.datastructures.TransferArgs;
 import com.wms.services.warehouse.datastructures.TransferAuto;
 import com.wms.services.warehouse.service.DeliveryOrderService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.DeliveryOrder;
+import com.wms.utilities.model.DeliveryOrderView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import com.wms.utilities.model.DeliveryOrder;
-import com.wms.utilities.model.DeliveryOrderView;
 
 import java.util.List;
 
@@ -54,7 +54,7 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{strCond}", method = RequestMethod.GET)
     public DeliveryOrderView[] find(@PathVariable("accountBook") String accountBook,
-                                     @PathVariable("strCond") String condStr) {
+                                    @PathVariable("strCond") String condStr) {
         return deliveryOrderService.find(accountBook, Condition.fromJson(condStr));
     }
 

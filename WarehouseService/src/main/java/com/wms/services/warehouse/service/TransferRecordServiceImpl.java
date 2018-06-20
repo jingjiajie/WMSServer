@@ -1,7 +1,6 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.TransferRecordDAO;
-import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;

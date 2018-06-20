@@ -1,6 +1,9 @@
 package com.wms.utilities.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
 public class TransferRecord {
@@ -8,9 +11,9 @@ public class TransferRecord {
     private int warehouseId;
     private Integer sourceStockRecordId;
     private Integer newStockRecordId;
+    private Integer supplyId;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     public int getId() {
         return id;
@@ -50,6 +53,16 @@ public class TransferRecord {
         this.newStockRecordId = newStockRecordId;
     }
 
+    @Basic
+    @Column(name = "SupplyID")
+    public Integer getSupplyId() {
+        return supplyId;
+    }
+
+    public void setSupplyId(Integer supplyId) {
+        this.supplyId = supplyId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,6 +76,7 @@ public class TransferRecord {
             return false;
         if (newStockRecordId != null ? !newStockRecordId.equals(that.newStockRecordId) : that.newStockRecordId != null)
             return false;
+        if (supplyId != null ? !supplyId.equals(that.supplyId) : that.supplyId != null) return false;
 
         return true;
     }
@@ -73,6 +87,7 @@ public class TransferRecord {
         result = 31 * result + warehouseId;
         result = 31 * result + (sourceStockRecordId != null ? sourceStockRecordId.hashCode() : 0);
         result = 31 * result + (newStockRecordId != null ? newStockRecordId.hashCode() : 0);
+        result = 31 * result + (supplyId != null ? supplyId.hashCode() : 0);
         return result;
     }
 }

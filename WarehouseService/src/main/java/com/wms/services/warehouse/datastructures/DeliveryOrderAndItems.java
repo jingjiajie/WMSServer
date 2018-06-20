@@ -1,8 +1,8 @@
 package com.wms.services.warehouse.datastructures;
 
 
-import com.wms.utilities.model.DeliveryOrderView;
 import com.wms.utilities.model.DeliveryOrderItemView;
+import com.wms.utilities.model.DeliveryOrderView;
 
 import java.util.List;
 
