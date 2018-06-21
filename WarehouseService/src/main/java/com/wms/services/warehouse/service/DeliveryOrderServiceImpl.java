@@ -276,9 +276,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     }
 
     @Override
-    public void deliveryFinish(String accountBook,List<Integer> ids) throws WMSServiceException{
+    public void deliveryFinish(String accountBook,DeliveryFinish deliveryFinish) throws WMSServiceException{
 
         //TODO 人员id没往下传
+        List<Integer>ids=deliveryFinish.getDeliveryOrderIds();
         if (ids.size() == 0) {
             throw new WMSServiceException("请选择至少一个出库单！");
         }
@@ -315,6 +316,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             if (deliveryOrder.getState() !=DeliveryOrderService.STATE_IN_DELIVER) {
                 deliveryOrder.setState(DeliveryOrderService.STATE_IN_DELIVER);
             }
+            deliveryOrder.setLiscensePlateNumber(deliveryFinish.getLiscensePlateNumber());
+            deliveryOrder.setDriverName(deliveryFinish.getDriverName());
             deliveryOrder.setDeliverTime(new Timestamp(System.currentTimeMillis()));
         });
         this.update(accountBook,deliveryOrders);
