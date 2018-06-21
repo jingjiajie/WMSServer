@@ -39,6 +39,7 @@ public class PackageServiceImpl implements PackageService {
                 (package1) -> {
                     Condition cond = new Condition();
                     cond.addCondition("name", new String[]{package1.getName()});
+                    cond.addCondition("warehouseId",new Integer[]{package1.getWarehouseId()});
                     if (packageDAO.find(accountBook, cond).length > 0) {
                         throw new WMSServiceException("发货套餐名称重复：" + package1.getName());
                     }
@@ -58,6 +59,7 @@ public class PackageServiceImpl implements PackageService {
         for (int i = 0; i < packages.length; i++) {
             Condition cond = new Condition();
             cond.addCondition("name", new String[]{packages[i].getName()});
+            cond.addCondition("warehouseId",new Integer[]{packages[i].getWarehouseId()});
             cond.addCondition("id", new Integer[]{packages[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
             if (packageDAO.find(accountBook, cond).length > 0) {
                 throw new WMSServiceException("发货套餐名称重复：" + packages[i].getName());
