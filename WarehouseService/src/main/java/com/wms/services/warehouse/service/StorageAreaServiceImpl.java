@@ -31,12 +31,12 @@ public class StorageAreaServiceImpl implements StorageAreaService{
         }
         for(int i=0;i<storageAreas.length;i++){
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{storageAreas[i].getName()});
+            cond.addCondition("name",new String[]{storageAreas[i].getName()}).addCondition("warehouseId",storageAreas[i].getWarehouseId());
             if(storageAreaDAO.find(accountBook,cond).length > 0) {
                 throw new WMSServiceException("库区名称重复：" + storageAreas[i].getName());
             }
                 Condition cond1 = new Condition();
-                cond1.addCondition("no",new String[]{storageAreas[i].getNo()});
+                cond1.addCondition("no",new String[]{storageAreas[i].getNo()}).addCondition("warehouseId",storageAreas[i].getWarehouseId());
             if(storageAreaDAO.find(accountBook,cond1).length > 0) {
                 throw new WMSServiceException("库区代号重复：" + storageAreas[i].getNo());
             }
@@ -76,12 +76,14 @@ public class StorageAreaServiceImpl implements StorageAreaService{
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{storageAreas[i].getName()});
             cond.addCondition("id",new Integer[]{storageAreas[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            cond.addCondition("warehouseId",storageAreas[i].getWarehouseId());
             if(storageAreaDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("库区名称重复："+storageAreas[i].getName());
             }
             Condition cond1 = new Condition();
             cond1.addCondition("no",new String[]{storageAreas[i].getNo()});
             cond1.addCondition("id",new Integer[]{storageAreas[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            cond.addCondition("warehouseId",storageAreas[i].getWarehouseId());
             if(storageAreaDAO.find(accountBook,cond1).length > 0) {
                 throw new WMSServiceException("库区代号重复：" + storageAreas[i].getNo());
             }

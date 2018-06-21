@@ -52,14 +52,14 @@ public class SupplierServicesImpl implements SupplierServices{
 
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{supplier.getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+            cond.addCondition("name",new String[]{supplier.getName()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商名："+supplier.getName()+"已经存在!");
             }
         });
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商代号："+supplier.getNo()+"已经存在!");
             }
@@ -125,7 +125,7 @@ public class SupplierServicesImpl implements SupplierServices{
 
     for(int i=0;i<suppliers.length;i++){
         Condition cond = new Condition();
-        cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+        cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",suppliers[i].getWarehouseId());
         cond.addCondition("id",new Integer[]{suppliers[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
         if(supplierDAO.find(accountBook,cond).length > 0){
             throw new WMSServiceException("供应商名称重复："+suppliers[i].getName());
@@ -133,7 +133,7 @@ public class SupplierServicesImpl implements SupplierServices{
     }
     Stream.of(suppliers).forEach((supplier)->{
         Condition cond = new Condition();
-        cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+        cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
         cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
         if(supplierDAO.find(accountBook,cond).length > 0){
             throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
@@ -200,7 +200,7 @@ public class SupplierServicesImpl implements SupplierServices{
 
         for(int i=0;i<suppliers.length;i++){
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+            cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",suppliers[i].getWarehouseId());
             cond.addCondition("id",new Integer[]{suppliers[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商名称重复："+suppliers[i].getName());
@@ -208,7 +208,7 @@ public class SupplierServicesImpl implements SupplierServices{
         }
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
             cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");

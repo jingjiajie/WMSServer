@@ -2,6 +2,7 @@ package com.wms.services.ledger.service;
 
 
 import com.wms.services.ledger.dao.PersonDAO;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.model.Person;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.Stream;
+
 @Service
 public class PersonServiceImpl implements PersonService {
     @Autowired
@@ -17,9 +20,12 @@ public class PersonServiceImpl implements PersonService {
 
     @Transactional
     public int[] add(String accountBook, Person[] persons) throws WMSServiceException {
-
+        Object[] personNames = Stream.of(persons).map(Person::getName).toArray();
+        int sameNamePersons = this.find(accountBook,new Condition().addCondition("name",personNames,ConditionItem.Relation.IN)).length;
+        if(sameNamePersons > 0){
+            throw new WMSServiceException("人员姓名不允许重复！");
+        }
         for (int i = 0; i < persons.length; i++) {
-
             String personName = persons[i].getName();
             if (personName == null || personName.trim().length() <= 0) {       //判断是否输入姓名
                 throw new WMSServiceException("人员姓名不能为空!");
@@ -34,18 +40,19 @@ public class PersonServiceImpl implements PersonService {
             if (personRole == null || personRole.trim().length() <= 0) {       //判断是否输入角色
                 throw new WMSServiceException("角色不能为空!");
             }
-
-            persons[i].setAuthorityString("AAA");//预设权限字符串
-
+            persons[i].setAuthorityString("N");//预设权限字符串
         }
         return personDAO.add(accountBook, persons);
     }
 
     @Transactional
     public void update(String accountBook, Person[] persons) throws WMSServiceException {
-
+        Object[] personNames = Stream.of(persons).map(Person::getName).toArray();
+        int sameNamePersons = this.find(accountBook,new Condition().addCondition("name",personNames,ConditionItem.Relation.IN)).length;
+        if(sameNamePersons > 0){
+            throw new WMSServiceException("人员姓名不允许重复！");
+        }
         for (int i = 0; i < persons.length; i++) {
-
             int actid = persons[i].getId();//获取要修改信息的Id
             if (actid == 0) {       //判断id，参考AccountTitle
                 throw new WMSServiceException("修改失败，所选人员条目不存在!");
@@ -67,7 +74,6 @@ public class PersonServiceImpl implements PersonService {
             }
 
         }
-
         personDAO.update(accountBook, persons);
     }
 
