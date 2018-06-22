@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.sql.Timestamp;
 import java.util.stream.Stream;
@@ -50,16 +51,28 @@ public class SupplierServicesImpl implements SupplierServices{
             {throw new WMSServiceException("合同截止时间必须在合同开始时间之后！");}
         }
 
+       for(int i=0;i<suppliers.length;i++){
+            for(int j=i+1;j<suppliers.length;j++){
+                String no=suppliers[i].getNo();
+                if(no.equals(suppliers[j].getNo())){throw new WMSServiceException("供应商代号"+no+"在添加的列表中重复!");}
+            }
+       }
+        for(int i=0;i<suppliers.length;i++){
+            for(int j=i+1;j<suppliers.length;j++){
+                String name=suppliers[i].getName();
+                if(name.equals(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
+            }
+        }
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{supplier.getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+            cond.addCondition("name",new String[]{supplier.getName()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商名："+supplier.getName()+"已经存在!");
             }
         });
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商代号："+supplier.getNo()+"已经存在!");
             }
@@ -113,6 +126,20 @@ public class SupplierServicesImpl implements SupplierServices{
         if(suppliers[i].getContractEndTime()!=null&&suppliers[i].getContractStartTime()!=null&&suppliers[i].getContractStartTime().compareTo(suppliers[i].getContractEndTime())>=0)
         {throw new WMSServiceException("合同截止时间必须在合同开始时间之后！");}
     }
+
+        for(int i=0;i<suppliers.length;i++){
+            for(int j=i+1;j<suppliers.length;j++){
+                String no=suppliers[i].getNo();
+                if(no.equals(suppliers[j].getNo())){throw new WMSServiceException("供应商代号"+no+"在添加的列表中重复!");}
+            }
+        }
+        for(int i=0;i<suppliers.length;i++){
+            for(int j=i+1;j<suppliers.length;j++){
+                String name=suppliers[i].getName();
+                if(name.equals(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
+            }
+        }
+
     Stream.of(suppliers).forEach(
             (supplier)->{
                 if(this.supplierDAO.find(accountBook,
@@ -125,7 +152,7 @@ public class SupplierServicesImpl implements SupplierServices{
 
     for(int i=0;i<suppliers.length;i++){
         Condition cond = new Condition();
-        cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+        cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",suppliers[i].getWarehouseId());
         cond.addCondition("id",new Integer[]{suppliers[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
         if(supplierDAO.find(accountBook,cond).length > 0){
             throw new WMSServiceException("供应商名称重复："+suppliers[i].getName());
@@ -133,7 +160,7 @@ public class SupplierServicesImpl implements SupplierServices{
     }
     Stream.of(suppliers).forEach((supplier)->{
         Condition cond = new Condition();
-        cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+        cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
         cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
         if(supplierDAO.find(accountBook,cond).length > 0){
             throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
@@ -197,10 +224,23 @@ public class SupplierServicesImpl implements SupplierServices{
                 }
         );
 
+        for(int i=0;i<suppliers.length;i++){
+            for(int j=i+1;j<suppliers.length;j++){
+                String no=suppliers[i].getNo();
+                if(no.equals(suppliers[j].getNo())){throw new WMSServiceException("供应商代号"+no+"在添加的列表中重复!");}
+            }
+        }
+        for(int i=0;i<suppliers.length;i++){
+            for(int j=i+1;j<suppliers.length;j++){
+                String name=suppliers[i].getName();
+                if(name.equals(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
+            }
+        }
+
 
         for(int i=0;i<suppliers.length;i++){
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+            cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",suppliers[i].getWarehouseId());
             cond.addCondition("id",new Integer[]{suppliers[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商名称重复："+suppliers[i].getName());
@@ -208,7 +248,7 @@ public class SupplierServicesImpl implements SupplierServices{
         }
         Stream.of(suppliers).forEach((supplier)->{
             Condition cond = new Condition();
-            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)});
+            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
             cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(supplierDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
