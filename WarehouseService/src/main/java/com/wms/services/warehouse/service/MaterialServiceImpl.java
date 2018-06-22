@@ -29,12 +29,20 @@ public class MaterialServiceImpl implements MaterialService {
     public int[] add(String accountBook, Material[] materials) throws WMSServiceException
     {
         this.validateEntities(accountBook,materials);
-        Stream.of(materials).forEach((material)->{
-            if(materialDAO.find(accountBook,new Condition().addCondition("name",new String[]{material.getName()}).addCondition("productLine",new String[]{material.getProductLine()}).addCondition("warehouseId",new Integer[]{material.getWarehouseId()})).length > 0) {
-                throw new WMSServiceException("物料名：" + material.getName() + "系列："+material.getProductLine()+"已经存在!");
+        for(int i=0;i<materials.length;i++){
+            for(int j=i+1;j<materials.length;j++){
+                String no=materials[i].getNo();
+                String name=materials[i].getName();
+                String productLine=materials[i].getProductLine();
+                if(no.equals(materials[j].getNo()) && name.equals(materials[j].getName()) &&productLine.equals(materials[j].getNo()))
+                {
+                    throw new WMSServiceException("物料名：" +name +"物料代号：" +no+ "系列："+productLine+"在添加的列表中重复!");
+                }
             }
-            if(materialDAO.find(accountBook,new Condition().addCondition("no",new String[]{material.getNo()}).addCondition("warehouseId",new Integer[]{material.getWarehouseId()})).length > 0){
-                throw new WMSServiceException("物料代号："+material.getNo()+"已经存在!");
+        }
+        Stream.of(materials).forEach((material)->{
+            if(materialDAO.find(accountBook,new Condition().addCondition("name",new String[]{material.getName()}).addCondition("no",new String[]{material.getNo()}).addCondition("productLine",new String[]{material.getProductLine()}).addCondition("warehouseId",new Integer[]{material.getWarehouseId()})).length > 0) {
+                throw new WMSServiceException("物料名：" + material.getName() +"物料代号：" + material.getNo()+ "系列："+material.getProductLine()+"已经存在!");
             }
         });
         return materialDAO.add(accountBook,materials);
@@ -45,13 +53,25 @@ public class MaterialServiceImpl implements MaterialService {
     {
         this.validateEntities(accountBook,materials);
         for(int i=0;i<materials.length;i++){
+            for(int j=i+1;j<materials.length;j++){
+                String no=materials[i].getNo();
+                String name=materials[i].getName();
+                String productLine=materials[i].getProductLine();
+                if(no.equals(materials[j].getNo()) && name.equals(materials[j].getName()) &&productLine.equals(materials[j].getNo()))
+                {
+                    throw new WMSServiceException("物料名：" +name +"物料代号：" +no+ "系列："+productLine+"在添加的列表中重复!");
+                }
+            }
+        }
+        for(int i=0;i<materials.length;i++){
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{materials[i].getName()});
             cond.addCondition("productLine",new String[]{materials[i].getProductLine()});
             cond.addCondition("warehouseId",new Integer[]{materials[i].getWarehouseId()});
+            cond.addCondition("no",new String[]{materials[i].getNo()});
             cond.addCondition("id",new Integer[]{materials[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(materialDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("已存在相同系列-物料名称重复："+materials[i].getName());
+                throw new WMSServiceException("已存在相同系列-相同代号名称物料重复："+materials[i].getName());
             }
         }
         Stream.of(materials).forEach((material)->{
