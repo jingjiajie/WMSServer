@@ -29,6 +29,7 @@ public class WarehouseControllerImpl implements WarehouseController {
                        @RequestBody Warehouse[] warehouses) {
         warehouseService.update(accountBook,warehouses);
     }
+
     @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
     @ResponseBody
     public void remove(@PathVariable("accountBook") String accountBook,
@@ -37,6 +38,7 @@ public class WarehouseControllerImpl implements WarehouseController {
         int ids[] = gson.fromJson(strIDs,new TypeToken<int[]>(){}.getType());
         warehouseService.remove(accountBook,ids);
     }
+
     @RequestMapping(value = "/{condStr}",method = RequestMethod.GET)
     public ResponseEntity<WarehouseView[]> find(@PathVariable("accountBook") String accountBook,
                                            @PathVariable("condStr") String condStr) {

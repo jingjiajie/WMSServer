@@ -32,6 +32,13 @@ public class WarehouseServiceImpl implements WarehouseService{
                throw new WMSServiceException("是否启用只能为0和1！");
            }
        }
+
+        for(int i=0;i<warehouses.length;i++){
+            for(int j=i+1;j<warehouses.length;j++){
+                String name=warehouses[i].getName();
+                if(name.equals(warehouses[j].getName())){throw new WMSServiceException("仓库 名称"+name+"在添加的列表中重复!");}
+            }
+        }
         //重复
         Stream.of(warehouses).forEach((warehouse)->{
             Condition cond = new Condition();
@@ -54,7 +61,12 @@ public class WarehouseServiceImpl implements WarehouseService{
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
         }
-
+        for(int i=0;i<warehouses.length;i++){
+            for(int j=i+1;j<warehouses.length;j++){
+                String name=warehouses[i].getName();
+                if(name.equals(warehouses[j].getName())){throw new WMSServiceException("仓库 名称"+name+"在添加的列表中重复!");}
+            }
+        }
         Stream.of(warehouses).forEach(
                 (supplier)->{
                     if(this.warehouseDAO.find(accountBook,

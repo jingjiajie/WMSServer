@@ -30,6 +30,19 @@ public class StorageAreaServiceImpl implements StorageAreaService{
             validator1.notnull().validate(storageAreas[i].getNo());
         }
         for(int i=0;i<storageAreas.length;i++){
+            for(int j=i+1;j<storageAreas.length;j++){
+                String no=storageAreas[i].getNo();
+                if(no.equals(storageAreas[j].getNo())){throw new WMSServiceException("库区代号"+no+"在添加的列表中重复!");}
+            }
+        }
+        for(int i=0;i<storageAreas.length;i++){
+            for(int j=i+1;j<storageAreas.length;j++){
+                String name=storageAreas[i].getName();
+                if(name.equals(storageAreas[j].getName())){throw new WMSServiceException("库区名称"+name+"在添加的列表中重复!");}
+            }
+        }
+
+        for(int i=0;i<storageAreas.length;i++){
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{storageAreas[i].getName()}).addCondition("warehouseId",storageAreas[i].getWarehouseId());
             if(storageAreaDAO.find(accountBook,cond).length > 0) {
@@ -41,6 +54,7 @@ public class StorageAreaServiceImpl implements StorageAreaService{
                 throw new WMSServiceException("库区代号重复：" + storageAreas[i].getNo());
             }
         }
+
         //外键
         Stream.of(storageAreas).forEach(
                 (storageArea)->{
@@ -63,6 +77,19 @@ public class StorageAreaServiceImpl implements StorageAreaService{
             validator1.notnull().validate(storageAreas[i].getName());
         }
 
+        for(int i=0;i<storageAreas.length;i++){
+            for(int j=i+1;j<storageAreas.length;j++){
+                String no=storageAreas[i].getNo();
+                if(no.equals(storageAreas[j].getNo())){throw new WMSServiceException("库区代号"+no+"在添加的列表中重复!");}
+            }
+        }
+        for(int i=0;i<storageAreas.length;i++){
+            for(int j=i+1;j<storageAreas.length;j++){
+                String name=storageAreas[i].getName();
+                if(name.equals(storageAreas[j].getName())){throw new WMSServiceException("库区名称"+name+"在添加的列表中重复!");}
+            }
+        }
+
         Stream.of(storageAreas).forEach(
                 (storageArea)->{
                     if(this.storageAreaDAO.find(accountBook,
@@ -71,6 +98,7 @@ public class StorageAreaServiceImpl implements StorageAreaService{
                     }
                 }
         );
+
 
         for(int i=0;i<storageAreas.length;i++){
             Condition cond = new Condition();

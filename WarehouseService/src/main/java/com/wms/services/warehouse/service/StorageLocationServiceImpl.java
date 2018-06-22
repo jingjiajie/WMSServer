@@ -42,6 +42,19 @@ public class StorageLocationServiceImpl implements StorageLocationService{
                         throw new WMSServiceException("库位代号重复："+storageLocations[i].getNo());
                 }
             }
+
+        for(int i=0;i<storageLocations.length;i++){
+            for(int j=i+1;j<storageLocations.length;j++){
+                String no=storageLocations[i].getNo();
+                if(no.equals(storageLocations[j].getNo())){throw new WMSServiceException("库位代号"+no+"在添加的列表中重复!");}
+            }
+        }
+        for(int i=0;i<storageLocations.length;i++){
+            for(int j=i+1;j<storageLocations.length;j++){
+                String name=storageLocations[i].getName();
+                if(name.equals(storageLocations[j].getName())){throw new WMSServiceException("库位名称"+name+"在添加的列表中重复!");}
+            }
+        }
         String storageAreaNo;
         StorageAreaView[] storageAreaViews=null;
         //外键检测
@@ -70,6 +83,19 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             validator.notnull().validate(storageLocations[i].getNo());
             if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
+            }
+        }
+
+        for(int i=0;i<storageLocations.length;i++){
+            for(int j=i+1;j<storageLocations.length;j++){
+                String no=storageLocations[i].getNo();
+                if(no.equals(storageLocations[j].getNo())){throw new WMSServiceException("库位代号"+no+"在添加的列表中重复!");}
+            }
+        }
+        for(int i=0;i<storageLocations.length;i++){
+            for(int j=i+1;j<storageLocations.length;j++){
+                String name=storageLocations[i].getName();
+                if(name.equals(storageLocations[j].getName())){throw new WMSServiceException("库位名称"+name+"在添加的列表中重复!");}
             }
         }
         String storageAreaNo;
