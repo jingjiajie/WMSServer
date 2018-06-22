@@ -449,10 +449,17 @@ public class Condition {
             } else if (targetType == BigDecimal.class) {
                 return new BigDecimal(value.toString());
             } else if (targetType == Timestamp.class) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                sdf.setLenient(true);
+                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                sdf1.setLenient(true);
+                SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+                sdf2.setLenient(true);
                 try {
-                    return sdf.parse(value.toString());
+                    return sdf1.parse(value.toString());
+                } catch (Exception e) {
+
+                }
+                try {
+                    return sdf2.parse(value.toString());
                 } catch (Exception e) {
                     throw new WMSServiceException("\"" + value.toString() + "\"不是合法的日期字符串！");
                 }
