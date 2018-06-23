@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 @Service
@@ -29,12 +30,34 @@ public class PackageItemServiceImpl implements PackageItemService  {
 
     @Override
     public int[] add(String accountBook, PackageItem[] packageItems) throws WMSServiceException {
+
+        for(int i=0;i<packageItems.length;i++){
+            for(int j=i+1;j<packageItems.length;j++){
+                int supplyId=packageItems[i].getSupplyId();
+                int locationId=packageItems[i].getDefaultDeliveryStorageLocationId();
+                String unit=packageItems[i].getDefaultDeliveryUnit();
+                BigDecimal unitAmount=packageItems[i].getDefaultDeliveryUnitAmount();
+                if(unit.equals(packageItems[j].getDefaultDeliveryUnit())&&unitAmount.equals(packageItems[j].getDefaultDeliveryUnitAmount())
+                        &&supplyId==packageItems[j].getSupplyId()&&locationId==packageItems[j].getDefaultDeliveryStorageLocationId()){throw new WMSServiceException("套餐条目在添加的列表中重复!");}
+            }
+        }
         this.validateEntities(accountBook,packageItems);
         return this.packageItemDAO.add(accountBook,packageItems);
     }
 
     @Override
     public void update(String accountBook, PackageItem[] packageItems) throws WMSServiceException {
+
+        for(int i=0;i<packageItems.length;i++){
+            for(int j=i+1;j<packageItems.length;j++){
+                int supplyId=packageItems[i].getSupplyId();
+                int locationId=packageItems[i].getDefaultDeliveryStorageLocationId();
+                String unit=packageItems[i].getDefaultDeliveryUnit();
+                BigDecimal unitAmount=packageItems[i].getDefaultDeliveryUnitAmount();
+                if(unit.equals(packageItems[j].getDefaultDeliveryUnit())&&unitAmount.equals(packageItems[j].getDefaultDeliveryUnitAmount())
+                        &&supplyId==packageItems[j].getSupplyId()&&locationId==packageItems[j].getDefaultDeliveryStorageLocationId()){throw new WMSServiceException("套餐条目在添加的列表中重复!");}
+            }
+        }
         this.validateEntities(accountBook,packageItems);
         this.packageItemDAO.update(accountBook,packageItems);
     }
@@ -59,7 +82,7 @@ public class PackageItemServiceImpl implements PackageItemService  {
                 (packageItem)->{
                     new Validator("默认发货数量（个）").min(0).validate(packageItem.getDefaultDeliveryAmount());
                     new Validator("默认发货单位数量").min(0).validate(packageItem.getDefaultDeliveryUnitAmount());
-
+                    new Validator("默认出库库位ID").min(0).validate(packageItem.getDefaultDeliveryStorageLocationId());
                 }
         );
 
