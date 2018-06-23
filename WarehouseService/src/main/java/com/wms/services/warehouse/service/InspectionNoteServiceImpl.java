@@ -46,15 +46,16 @@ public class InspectionNoteServiceImpl
     private static final String PREFIX = "J";
 
     @Override
-    public int[] add(String accountBook, InspectionNote[] objs) throws WMSServiceException {
-        Stream.of(objs).forEach(obj->{
+    public int[] add(String accountBook, InspectionNote[] inspectionNotes) throws WMSServiceException {
+        Stream.of(inspectionNotes).forEach(obj->{
+            //如果单号为空，则生成单号
             if(obj.getNo() == null || obj.getNo().isEmpty()) {
                 obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX));
             }
             obj.setCreateTime(new Timestamp(System.currentTimeMillis()));
         });
-        this.validateEntities(accountBook,objs);
-        return inspectionNoteDAO.add(accountBook,objs);
+        this.validateEntities(accountBook, inspectionNotes);
+        return inspectionNoteDAO.add(accountBook, inspectionNotes);
     }
 
     @Override
