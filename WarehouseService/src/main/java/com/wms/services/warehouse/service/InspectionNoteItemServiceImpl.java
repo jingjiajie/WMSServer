@@ -48,7 +48,7 @@ public class InspectionNoteItemServiceImpl
             //由于数据库事务的原子性，可以保证上一条语句执行确定入库单条目存在和这一条语句之间，不会有任何进行任何其他的对该数据表进行的操作
             WarehouseEntryItem warehouseEntryItem = this.warehouseEntryItemService.get(accountBook,warehouseEntryItemID);
             new Validator("送检数量")
-                    .min(0)
+                    .greaterThan(0)
                     .max(warehouseEntryItem.getRealAmount().subtract(warehouseEntryItem.getInspectionAmount()))
                     .validate(inspectAmount);
             //更新入库单条目的送检数量
