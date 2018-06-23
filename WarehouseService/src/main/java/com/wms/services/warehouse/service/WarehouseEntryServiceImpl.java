@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -253,7 +254,13 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         //更新入库单
         this.update(accountBook, warehouseEntries);
         WarehouseEntryItemView[] warehouseEntryItemViews = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("warehouseEntryId", ids.toArray(), ConditionItem.Relation.IN));
-        if (warehouseEntryItemViews.length == 0) return;
+        Map<Integer,List<WarehouseEntryItemView>> itemGroups = Stream.of(warehouseEntryItemViews).collect(Collectors.groupingBy((item)->item.getWarehouseEntryId()));
+        for(WarehouseEntry warehouseEntry : warehouseEntries){
+            Integer id = warehouseEntry.getId();
+            if(!itemGroups.containsKey(id)){
+                throw new WMSServiceException(String.format("入库单：%s 为空，请先添加物料条目！",warehouseEntry.getNo()));
+            }
+        }
         List<Integer> itemIDs = Stream.of(warehouseEntryItemViews).map(item -> item.getId()).collect(Collectors.toList());
         //更新入库单条目
         if (ifQualified) {
