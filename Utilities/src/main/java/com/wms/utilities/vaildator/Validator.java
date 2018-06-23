@@ -103,7 +103,7 @@ class MinValidatorCondition extends ValidatorCondition {
             throw new WMSServiceException(key+"检查的数据无法转换为数字类型");
         }
         if (actualValue < min) {
-            throw new WMSServiceException(key+ "的值小于最低值");
+            throw new WMSServiceException(key+ "的值不能小于最低值"+min);
         }
     }
     public String getKey() {
@@ -135,7 +135,7 @@ class GreaterThanValidatorCondition extends ValidatorCondition {
             throw new WMSServiceException(key+"检查的数据无法转换为数字类型");
         }
         if (actualValue <= greaterThan) {
-            throw new WMSServiceException(key+ "的值不能小于或等于最低值");
+            throw new WMSServiceException(key+ "的值不能小于或等于最低值"+greaterThan);
         }
     }
     public String getKey() {
@@ -170,7 +170,7 @@ class MaxValidatorCondition extends ValidatorCondition {
             throw new WMSServiceException(key+"检查的数据无法转换为数字类型");
         }
         if (actualValue > max) {
-            throw new WMSServiceException(key+ "的值大于最大值");
+            throw new WMSServiceException(key+ "的值不能大于"+max);
         }
     }
 

@@ -20,11 +20,19 @@ public class PersonServiceImpl implements PersonService {
 
     @Transactional
     public int[] add(String accountBook, Person[] persons) throws WMSServiceException {
+
+        for(int i=0;i<persons.length;i++){
+            for(int j=i+1;j<persons.length;j++){
+                String name=persons[i].getName();
+                if(name.equals(persons[j].getName())){throw new WMSServiceException("人员名称"+name+"在添加的列表中重复!");}
+            }
+        }
         Object[] personNames = Stream.of(persons).map(Person::getName).toArray();
         int sameNamePersons = this.find(accountBook,new Condition().addCondition("name",personNames,ConditionItem.Relation.IN)).length;
         if(sameNamePersons > 0){
             throw new WMSServiceException("人员姓名不允许重复！");
         }
+
         for (int i = 0; i < persons.length; i++) {
             String personName = persons[i].getName();
             if (personName == null || personName.trim().length() <= 0) {       //判断是否输入姓名
