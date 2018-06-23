@@ -135,7 +135,7 @@ class GreaterThanValidatorCondition extends ValidatorCondition {
             throw new WMSServiceException(key+"检查的数据无法转换为数字类型");
         }
         if (actualValue <= greaterThan) {
-            throw new WMSServiceException(key+ "的值不能小于或等于最低值"+greaterThan);
+            throw new WMSServiceException(key+ "的值必须大于最低值"+greaterThan);
         }
     }
     public String getKey() {
