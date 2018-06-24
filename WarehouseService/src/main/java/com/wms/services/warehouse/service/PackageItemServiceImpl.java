@@ -6,6 +6,7 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.PackageItem;
 import com.wms.utilities.model.PackageItemView;
+import com.wms.utilities.model.StorageLocationView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,19 +83,23 @@ public class PackageItemServiceImpl implements PackageItemService  {
                 (packageItem)->{
                     new Validator("默认发货数量（个）").min(0).validate(packageItem.getDefaultDeliveryAmount());
                     new Validator("默认发货单位数量").min(0).validate(packageItem.getDefaultDeliveryUnitAmount());
-                    new Validator("默认出库库位ID").min(0).validate(packageItem.getDefaultDeliveryStorageLocationId());
+                    new Validator("默认出库库位ID").notEmpty().validate(packageItem.getDefaultDeliveryStorageLocationId());
                 }
         );
 
         //外键验证
         Stream.of(packageItems).forEach(
                 (packageItem) -> {
+                    StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", packageItem.getDefaultDeliveryStorageLocationId()));
                     if (this.packageService.find(accountBook,
                             new Condition().addCondition("id", packageItem.getPackageId())).length == 0) {
                         throw new WMSServiceException(String.format("供货套餐不存在，请重新提交！(%d)", packageItem.getPackageId()));
                     } else if (supplyService.find(accountBook,
                             new Condition().addCondition("id", packageItem.getSupplyId())).length == 0) {
                         throw new WMSServiceException(String.format("供货信息不存在，请重新提交！(%d)", packageItem.getSupplyId()));
+                    }
+                    else if (storageLocationViews.length == 0) {
+                        throw new WMSServiceException("库位不存在，请重新提交！");
                     }
                 }
         );
