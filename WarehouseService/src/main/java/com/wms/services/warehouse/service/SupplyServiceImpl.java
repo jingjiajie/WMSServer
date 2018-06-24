@@ -43,6 +43,16 @@ public class SupplyServiceImpl implements SupplyService {
 
         }
 
+        for(int i=0;i<supplies.length;i++){
+            for(int j=i+1;j<supplies.length;j++){
+                int materialId=supplies[i].getMaterialId();
+                int supplierId=supplies[i].getSupplierId();
+                if(materialId==supplies[j].getMaterialId()&&supplierId==supplies[j].getSupplierId())
+                {
+                    throw new WMSServiceException("供应商-物料关联条目在添加的列表中重复!");
+                }
+            }
+        }
 
         //外键检测
         Stream.of(supplies).forEach(
@@ -91,6 +101,16 @@ public class SupplyServiceImpl implements SupplyService {
 
     @Override
     public void update(String accountBook, Supply[] supplies) throws WMSServiceException{
+        for(int i=0;i<supplies.length;i++){
+            for(int j=i+1;j<supplies.length;j++){
+                int materialId=supplies[i].getMaterialId();
+                int supplierId=supplies[i].getSupplierId();
+                if(materialId==supplies[j].getMaterialId()&&supplierId==supplies[j].getSupplierId())
+                {
+                    throw new WMSServiceException("供应商-物料关联条目在添加的列表中重复!");
+                }
+            }
+        }
 
         for (int i=0;i<supplies.length;i++) {
             Validator validator=new Validator("供应商ID");

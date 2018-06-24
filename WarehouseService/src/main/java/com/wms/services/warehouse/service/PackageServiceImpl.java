@@ -25,6 +25,12 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public int[] add(String accountBook, Package[] packages) throws WMSServiceException {
 
+        for(int i=0;i<packages.length;i++){
+            for(int j=i+1;j<packages.length;j++){
+                String name=packages[i].getName();
+                if(name.equals(packages[j].getName())){throw new WMSServiceException("套餐名称"+name+"在添加的列表中重复!");}
+            }
+        }
         //外键检测
         Stream.of(packages).forEach(
                 (package1) -> {
@@ -50,6 +56,13 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public void update(String accountBook, Package[] packages) throws WMSServiceException {
+
+        for(int i=0;i<packages.length;i++){
+            for(int j=i+1;j<packages.length;j++){
+                String name=packages[i].getName();
+                if(name.equals(packages[j].getName())){throw new WMSServiceException("套餐名称"+name+"在添加的列表中重复!");}
+            }
+        }
         //数据验证
         Stream.of(packages).forEach((package1) -> {
             new Validator("套餐名称").notnull().notEmpty().validate(package1.getName());

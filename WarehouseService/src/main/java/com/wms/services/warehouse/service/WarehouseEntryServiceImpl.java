@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -84,7 +85,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         //生成/检测单号
         Stream.of(warehouseEntries).forEach((warehouseEntry) -> {
             //如果单号留空则自动生成
-            if (warehouseEntry.getNo() == null) {
+            if (warehouseEntry.getNo() == null || warehouseEntry.getNo().isEmpty()) {
                 warehouseEntry.setNo(this.orderNoGenerator.generateNextNo(accountBook, WarehouseEntryServiceImpl.NO_PREFIX));
             } else { //否则检查单号是否重复
                 Condition cond = new Condition();
@@ -253,7 +254,13 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         //更新入库单
         this.update(accountBook, warehouseEntries);
         WarehouseEntryItemView[] warehouseEntryItemViews = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("warehouseEntryId", ids.toArray(), ConditionItem.Relation.IN));
-        if (warehouseEntryItemViews.length == 0) return;
+        Map<Integer,List<WarehouseEntryItemView>> itemGroups = Stream.of(warehouseEntryItemViews).collect(Collectors.groupingBy((item)->item.getWarehouseEntryId()));
+        for(WarehouseEntry warehouseEntry : warehouseEntries){
+            Integer id = warehouseEntry.getId();
+            if(!itemGroups.containsKey(id)){
+                throw new WMSServiceException(String.format("入库单：%s 为空，请先添加物料条目！",warehouseEntry.getNo()));
+            }
+        }
         List<Integer> itemIDs = Stream.of(warehouseEntryItemViews).map(item -> item.getId()).collect(Collectors.toList());
         //更新入库单条目
         if (ifQualified) {
