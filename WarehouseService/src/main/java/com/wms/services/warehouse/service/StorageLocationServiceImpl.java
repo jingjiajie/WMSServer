@@ -23,38 +23,6 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     @Transactional
     public int[] add(String accountBook, StorageLocation[] storageLocations )throws WMSServiceException {
 
-        for(int i=0;i<storageLocations.length;i++) {
-            new Validator("库位名").notnull().validate(storageLocations[i].getName());
-            new Validator("库位代号").notnull().validate(storageLocations[i].getNo());
-            if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
-                throw new WMSServiceException("是否启用只能为0和1！");
-            }
-        }
-            for(int i=0;i<storageLocations.length;i++){
-                Condition cond = new Condition();
-                cond.addCondition("name",new String[]{storageLocations[i].getName()});
-                if(storageLocationDAO.find(accountBook,cond).length > 0) {
-                    throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());
-                }
-                    Condition cond1= new Condition();
-                    cond1.addCondition("no",new String[]{storageLocations[i].getNo()});
-                    if(storageLocationDAO.find(accountBook,cond1).length > 0){
-                        throw new WMSServiceException("库位代号重复："+storageLocations[i].getNo());
-                }
-            }
-
-        for(int i=0;i<storageLocations.length;i++){
-            for(int j=i+1;j<storageLocations.length;j++){
-                String no=storageLocations[i].getNo();
-                if(no.equals(storageLocations[j].getNo())){throw new WMSServiceException("库位代号"+no+"在添加的列表中重复!");}
-            }
-        }
-        for(int i=0;i<storageLocations.length;i++){
-            for(int j=i+1;j<storageLocations.length;j++){
-                String name=storageLocations[i].getName();
-                if(name.equals(storageLocations[j].getName())){throw new WMSServiceException("库位名称"+name+"在添加的列表中重复!");}
-            }
-        }
         String storageAreaNo;
         StorageAreaView[] storageAreaViews=null;
         //外键检测
@@ -70,6 +38,48 @@ public class StorageLocationServiceImpl implements StorageLocationService{
                 throw new WMSServiceException("库位编码"+storageLocations[i].getNo()+"不符合要求，必须以库区编码"+storageAreaNo+"为开头");
             }
         }
+
+        for(int i=0;i<storageLocations.length;i++) {
+            new Validator("库位名").notnull().validate(storageLocations[i].getName());
+            new Validator("库位代号").notnull().validate(storageLocations[i].getNo());
+            if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
+                throw new WMSServiceException("是否启用只能为0和1！");
+            }
+        }
+            for(int i=0;i<storageLocations.length;i++){
+                Condition cond = new Condition();
+                cond.addCondition("name",new String[]{storageLocations[i].getName()});
+                StorageLocationView[] storageLocationViews=storageLocationDAO.find(accountBook,cond);
+                StorageAreaView[] storageAreaViews1=storageAreaService.find(accountBook,new Condition().addCondition("id",storageLocations[i].getStorageAreaId()));
+                int warehouseId=storageAreaViews1[0].getWarehouseId();
+                for(int j=0;j<storageLocationViews.length;j++){
+                    if(storageLocationViews[j].getWarehouseId()==warehouseId)
+                    {throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());}
+                }
+                Condition cond1 = new Condition();
+                cond.addCondition("name",new String[]{storageLocations[i].getName()});
+                StorageLocationView[] storageLocationViews1=storageLocationDAO.find(accountBook,cond);
+                StorageAreaView[] storageAreaViews2=storageAreaService.find(accountBook,new Condition().addCondition("id",storageLocations[i].getStorageAreaId()));
+                int warehouseId1=storageAreaViews2[0].getWarehouseId();
+                for(int j=0;j<storageLocationViews1.length;j++){
+                    if(storageLocationViews[j].getWarehouseId()==warehouseId1)
+                    {throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());}
+                }
+            }
+
+        for(int i=0;i<storageLocations.length;i++){
+            for(int j=i+1;j<storageLocations.length;j++){
+                String no=storageLocations[i].getNo();
+                if(no.equals(storageLocations[j].getNo())){throw new WMSServiceException("库位代号"+no+"在添加的列表中重复!");}
+            }
+        }
+        for(int i=0;i<storageLocations.length;i++){
+            for(int j=i+1;j<storageLocations.length;j++){
+                String name=storageLocations[i].getName();
+                if(name.equals(storageLocations[j].getName())){throw new WMSServiceException("库位名称"+name+"在添加的列表中重复!");}
+            }
+        }
+
         return storageLocationDAO.add(accountBook,storageLocations);
     }
 
@@ -120,21 +130,45 @@ public class StorageLocationServiceImpl implements StorageLocationService{
                     }
                 }
         );
-
+/*
         for(int i=0;i<storageLocations.length;i++){
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{storageLocations[i].getName()});
             cond.addCondition("id",new Integer[]{storageLocations[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            StorageAreaView[] storageAreaViews1=storageAreaService.find(accountBook,new Condition().addCondition("id",storageLocations[i].getStorageAreaId()));
+            int warehouseId=storageAreaViews1[0].getWarehouseId();
+            cond.addCondition("warehouseId",warehouseId);
             if(storageLocationDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("库位名称重复："+storageLocations[i].getName());
             }
             Condition cond1= new Condition();
             cond1.addCondition("no",new String[]{storageLocations[i].getNo()});
             cond1.addCondition("id",new Integer[]{storageLocations[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            cond.addCondition("warehouseId",warehouseId);
             if(storageLocationDAO.find(accountBook,cond1).length > 0){
                 throw new WMSServiceException("库位代号重复："+storageLocations[i].getNo());
             }
 
+        }*/
+        for(int i=0;i<storageLocations.length;i++){
+            Condition cond = new Condition();
+            cond.addCondition("name",new String[]{storageLocations[i].getName()});
+            StorageLocationView[] storageLocationViews=storageLocationDAO.find(accountBook,cond);
+            StorageAreaView[] storageAreaViews1=storageAreaService.find(accountBook,new Condition().addCondition("id",storageLocations[i].getStorageAreaId()));
+            int warehouseId=storageAreaViews1[0].getWarehouseId();
+            for(int j=0;j<storageLocationViews.length;j++){
+                if(storageLocationViews[j].getWarehouseId()==warehouseId)
+                {throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());}
+            }
+            Condition cond1 = new Condition();
+            cond.addCondition("name",new String[]{storageLocations[i].getName()});
+            StorageLocationView[] storageLocationViews1=storageLocationDAO.find(accountBook,cond);
+            StorageAreaView[] storageAreaViews2=storageAreaService.find(accountBook,new Condition().addCondition("id",storageLocations[i].getStorageAreaId()));
+            int warehouseId1=storageAreaViews2[0].getWarehouseId();
+            for(int j=0;j<storageLocationViews1.length;j++){
+                if(storageLocationViews[j].getWarehouseId()==warehouseId1)
+                {throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());}
+            }
         }
             storageLocationDAO.update(accountBook, storageLocations);
     }

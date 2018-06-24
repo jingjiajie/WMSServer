@@ -21,4 +21,5 @@ extends BaseController<StockRecord,StockRecordView> {
   StockRecordViewNewest[] findNewest(String accountbook, String condition);
   StockRecordViewAndSumGroupBySupplyId[] findByTime(String accountbook, StockRecordFindByTime[] stockRecordFindByTimes);
   long findCount(String accountBook,String condStr);
+  void remove(String accountBook,String strIDs);
 }

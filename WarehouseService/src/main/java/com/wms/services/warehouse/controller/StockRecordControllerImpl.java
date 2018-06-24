@@ -38,6 +38,7 @@ public class StockRecordControllerImpl implements StockRecordController {
         stockRecordService.update(accountBook, stockRecords);
     }
 
+
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{strIDs}", method = RequestMethod.DELETE)
@@ -46,7 +47,7 @@ public class StockRecordControllerImpl implements StockRecordController {
         Gson gson = new Gson();
         int ids[] = gson.fromJson(strIDs, new TypeToken<int[]>() {
         }.getType());
-        stockRecordService.remove(accountBook, ids);
+        //stockRecordService.remove(accountBook, ids);
     }
 
     @Override
