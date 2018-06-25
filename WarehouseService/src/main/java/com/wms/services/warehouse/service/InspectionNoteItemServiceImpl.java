@@ -40,6 +40,9 @@ public class InspectionNoteItemServiceImpl
         List<WarehouseEntryItem> warehouseEntryItemsToUpdate = new ArrayList<>();
         //根据每条送检单条目，更新入库单条目的送检数量
         Stream.of(objs).forEach(inspectionNoteItem -> {
+            inspectionNoteItem.setReturnAmount(inspectionNoteItem.getAmount());
+            inspectionNoteItem.setReturnUnit(inspectionNoteItem.getUnit());
+            inspectionNoteItem.setReturnUnitAmount(inspectionNoteItem.getUnitAmount());
             int warehouseEntryItemID = inspectionNoteItem.getWarehouseEntryItemId(); //入库单条目ID
             BigDecimal inspectAmount = inspectionNoteItem.getAmount(); //入库单条目要送检的数量
             //检查送检的入库单条目是否存在
