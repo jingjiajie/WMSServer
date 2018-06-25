@@ -1,7 +1,5 @@
 package com.wms.services.warehouse.service;
 
-import com.wms.utilities.model.TransferOrderItem;
-import com.wms.utilities.model.TransferOrderItemView;
 import com.wms.utilities.service.BaseService;
 
 public interface TransferOrderItemService

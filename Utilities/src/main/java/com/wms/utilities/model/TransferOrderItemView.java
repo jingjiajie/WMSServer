@@ -1,6 +1,9 @@
 package com.wms.utilities.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -32,11 +35,12 @@ public class TransferOrderItemView {
     private String materialProductLine;
     private Integer supplierId;
     private Integer materialId;
+    private String sourceUnit;
+    private BigDecimal sourceUnitAmount;
 
-    @Id
     @Basic
+    @Id
     @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -295,6 +299,26 @@ public class TransferOrderItemView {
         this.materialId = materialId;
     }
 
+    @Basic
+    @Column(name = "SourceUnit")
+    public String getSourceUnit() {
+        return sourceUnit;
+    }
+
+    public void setSourceUnit(String sourceUnit) {
+        this.sourceUnit = sourceUnit;
+    }
+
+    @Basic
+    @Column(name = "SourceUnitAmount")
+    public BigDecimal getSourceUnitAmount() {
+        return sourceUnitAmount;
+    }
+
+    public void setSourceUnitAmount(BigDecimal sourceUnitAmount) {
+        this.sourceUnitAmount = sourceUnitAmount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -335,6 +359,9 @@ public class TransferOrderItemView {
             return false;
         if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
         if (materialId != null ? !materialId.equals(that.materialId) : that.materialId != null) return false;
+        if (sourceUnit != null ? !sourceUnit.equals(that.sourceUnit) : that.sourceUnit != null) return false;
+        if (sourceUnitAmount != null ? !sourceUnitAmount.equals(that.sourceUnitAmount) : that.sourceUnitAmount != null)
+            return false;
 
         return true;
     }
@@ -367,6 +394,8 @@ public class TransferOrderItemView {
         result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
         result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
+        result = 31 * result + (sourceUnit != null ? sourceUnit.hashCode() : 0);
+        result = 31 * result + (sourceUnitAmount != null ? sourceUnitAmount.hashCode() : 0);
         return result;
     }
 }

@@ -1,24 +1,18 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.TransferOrderItemDAO;
-import com.wms.services.warehouse.datastructures.TransferAuto;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import com.wms.utilities.model.TransferOrderItem;
-import com.wms.utilities.model.TransferOrderItemView;
 
-import javax.enterprise.inject.New;
-import javax.xml.bind.annotation.XmlElementDecl;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.stream.Stream;

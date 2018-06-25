@@ -19,10 +19,12 @@ public class TransferOrderItem {
     private Timestamp operateTime;
     private Integer personId;
     private int sourceStorageLocationId;
+    private String sourceUnit;
+    private BigDecimal sourceUnitAmount;
 
     @Id
-    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -151,6 +153,26 @@ public class TransferOrderItem {
         this.sourceStorageLocationId = sourceStorageLocationId;
     }
 
+    @Basic
+    @Column(name = "SourceUnit")
+    public String getSourceUnit() {
+        return sourceUnit;
+    }
+
+    public void setSourceUnit(String sourceUnit) {
+        this.sourceUnit = sourceUnit;
+    }
+
+    @Basic
+    @Column(name = "SourceUnitAmount")
+    public BigDecimal getSourceUnitAmount() {
+        return sourceUnitAmount;
+    }
+
+    public void setSourceUnitAmount(BigDecimal sourceUnitAmount) {
+        this.sourceUnitAmount = sourceUnitAmount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -172,6 +194,9 @@ public class TransferOrderItem {
         if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
         if (operateTime != null ? !operateTime.equals(that.operateTime) : that.operateTime != null) return false;
         if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
+        if (sourceUnit != null ? !sourceUnit.equals(that.sourceUnit) : that.sourceUnit != null) return false;
+        if (sourceUnitAmount != null ? !sourceUnitAmount.equals(that.sourceUnitAmount) : that.sourceUnitAmount != null)
+            return false;
 
         return true;
     }
@@ -191,6 +216,8 @@ public class TransferOrderItem {
         result = 31 * result + (operateTime != null ? operateTime.hashCode() : 0);
         result = 31 * result + (personId != null ? personId.hashCode() : 0);
         result = 31 * result + sourceStorageLocationId;
+        result = 31 * result + (sourceUnit != null ? sourceUnit.hashCode() : 0);
+        result = 31 * result + (sourceUnitAmount != null ? sourceUnitAmount.hashCode() : 0);
         return result;
     }
 }

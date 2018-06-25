@@ -1,8 +1,6 @@
 package com.wms.services.warehouse.dao;
 
 import com.wms.utilities.dao.BaseDAOImpl;
-import com.wms.utilities.model.TransferOrderItem;
-import com.wms.utilities.model.TransferOrderItemView;
 import org.springframework.stereotype.Repository;
 
 
