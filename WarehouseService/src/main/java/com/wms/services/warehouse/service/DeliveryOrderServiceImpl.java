@@ -228,7 +228,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             StockRecordViewNewest[] stockRecordViews3 = stockRecordService.findNewest(accountBook,
                     new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}));
             StockRecordViewNewest[] stockRecordViews4 = stockRecordService.findNewest(accountBook,
-                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}));
+                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getSourceUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getSourceUnit()}));
 
             BigDecimal sourceAmount= new BigDecimal(0);
             for(int j=0;j<stockRecordViews3.length;j++) {
@@ -245,9 +245,11 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) == -1) {
                 TransferOrderItem transferOrderItem = new TransferOrderItem();
                 transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
-                transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
                 transferOrderItem.setUnit(safetyStockViews[i].getUnit());
                 transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
+                transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
+                transferOrderItem.setSourceUnit(safetyStockViews[i].getSourceUnit());
+                transferOrderItem.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
                 transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
                 //预设计划数量
                 transferOrderItem.setScheduledAmount(safetyStockViews[i].getAmount().subtract(sourceAmount));
