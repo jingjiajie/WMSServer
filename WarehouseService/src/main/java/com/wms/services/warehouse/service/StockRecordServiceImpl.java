@@ -517,12 +517,13 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
         new Validator("数量").notnull().validate(transferStock.getAmount());
-        int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
+        //修改为
+        int newStorageLocationId=transferStock.getNewStorageLocationId();
         int supplyId=transferStock.getSupplyId();
         String batchNo="";
-        Integer[] warehouseId=warehouseIdFind(accountBook,sourceStorageLocationId);//至少能返回一个
+        Integer[] warehouseId=warehouseIdFind(accountBook,newStorageLocationId);//至少能返回一个
         idChecker.check(WarehouseService.class,accountBook,warehouseId[0],"仓库");
-        idChecker.check(StorageLocationService.class,accountBook,sourceStorageLocationId,"库位");
+        idChecker.check(StorageLocationService.class,accountBook,newStorageLocationId,"库位");
         idChecker.check(SupplyService.class,accountBook,supplyId,"供货");
         if(transferStock.getAmount().compareTo(new BigDecimal(0)) >=0){
             new Validator("存货日期").notnull().validate(transferStock.getInventoryDate());
@@ -534,7 +535,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         //先查出源库存记录
         StockRecordFind stockRecordFind=new StockRecordFind();
         stockRecordFind.setSupplyId(supplyId);
-        stockRecordFind.setStorageLocationId(sourceStorageLocationId);
+        stockRecordFind.setStorageLocationId(newStorageLocationId);
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
         stockRecordFind.setWarehouseId(warehouseId[0]);
@@ -558,7 +559,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setWarehouseId(warehouseId[0]);
                 stockRecord.setBatchNo(batchNo);
                 stockRecord.setInventoryDate(transferStock.getInventoryDate());
-                stockRecord.setStorageLocationId(sourceStorageLocationId);
+                stockRecord.setStorageLocationId(newStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(amount);
@@ -579,7 +580,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setWarehouseId(warehouseId[0]);
                 stockRecord.setBatchNo(batchNo);
                 stockRecord.setInventoryDate(transferStock.getInventoryDate());
-                stockRecord.setStorageLocationId(sourceStorageLocationId);
+                stockRecord.setStorageLocationId(newStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(stockRecordSource[0].getAmount().add(amount));
@@ -645,7 +646,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setWarehouseId(warehouseId[0]);
                     stockRecord.setBatchNo(stockRecordSource[i].getBatchNo());
                     stockRecord.setInventoryDate(stockRecordSource[i].getInventoryDate());
-                    stockRecord.setStorageLocationId(sourceStorageLocationId);
+                    stockRecord.setStorageLocationId(newStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setAmount(stockRecordSource[i].getAmount().subtract(stockRecordSource[i].getAvailableAmount()));
@@ -666,7 +667,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord1.setWarehouseId(warehouseId[0]);
                     stockRecord1.setBatchNo(stockRecordSource[i].getBatchNo());
                     stockRecord1.setInventoryDate(stockRecordSource[i].getInventoryDate());
-                    stockRecord1.setStorageLocationId(sourceStorageLocationId);
+                    stockRecord1.setStorageLocationId(newStorageLocationId);
                     stockRecord1.setSupplyId(supplyId);
                     stockRecord1.setTime(new Timestamp(System.currentTimeMillis()));
                     //stockRecord.setAmount(amountAvailableAll.add(transferStock.getAmount()));
