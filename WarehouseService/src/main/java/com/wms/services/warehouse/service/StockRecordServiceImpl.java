@@ -296,6 +296,14 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         idChecker.check(WarehouseService.class,accountBook,warehouseId[0],"仓库");
         idChecker.check(StorageLocationService.class,accountBook,sourceStorageLocationId,"库位");
         idChecker.check(SupplyService.class,accountBook,supplyId,"供货");
+        BigDecimal sourceStorageOriginalAmount;
+        BigDecimal sourceStorageNewAmount;
+        String sourceStorageLocationUnit;
+        BigDecimal sourceStorageLocationUnitAmount;
+        BigDecimal targetStorageLocationOriginalAmount=null;
+        BigDecimal targetStorageLocationNewAmount=null;
+        String targetStorageLocationUnit=null;
+        BigDecimal targetStorageLocationUnitAmount=null;
         //先查出最新源库存记录和新库位
         StockRecordFind stockRecordFind=new StockRecordFind();
         stockRecordFind.setSupplyId(supplyId);
@@ -347,6 +355,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 StockRecord stockRecordNewSave=new StockRecord();
                 if(stockRecordSource1[i].getAvailableAmount().compareTo(new BigDecimal(0))==0){continue;}
                 {
+                    sourceStorageLocationUnit=stockRecordSource1[i].getUnit();
+                    sourceStorageLocationUnitAmount=stockRecordSource1[i].getUnitAmount();
+                    sourceStorageOriginalAmount=stockRecordSource1[i].getAmount();
                     StockRecord stockRecord = new StockRecord();
                     stockRecord.setUnit(unit);
                     stockRecord.setUnitAmount(unitAmount);
@@ -359,17 +370,30 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount());
+                    sourceStorageNewAmount=stockRecord.getAmount();
                     int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecord});
                     if(newStockRecordId.length!=1)
                     {
                         throw new WMSServiceException("添加新库存记录失败！");
                     }
+
                     //添加一条移位记录
                     TransferRecord transferRecord=new TransferRecord();
-                    transferRecord.setNewStockRecordId(newStockRecordId[0]);
-                    transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
+                    //transferRecord.setNewStockRecordId(newStockRecordId[0]);
+                    //transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
                     transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
                     transferRecord.setSupplyId(supplyId);
+                    transferRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                    transferRecord.setSourceStorageLocationId(sourceStorageLocationId);
+                    transferRecord.setSourceStorageLocationNewAmount(sourceStorageNewAmount);
+                    transferRecord.setSourceStorageLocationUnitAmount(sourceStorageLocationUnitAmount);
+                    transferRecord.setSourceStorageLocationUnit(sourceStorageLocationUnit);
+                    transferRecord.setSourceStorageLocationOriginalAmount(sourceStorageOriginalAmount);
+                    transferRecord.setTargetStorageLocationId(newStorageLocationId);
+                    transferRecord.setTargetStorageLocationAmount(sourceStorageLocationUnitAmount);
+                    transferRecord.setTargetStorageLocationNewAmount(sourceStorageNewAmount);
+                    transferRecord.setTargetStorageLocationOriginalAmount(sourceStorageOriginalAmount);
+                    transferRecord.setTargetStorageLocationUnit(sourceStorageLocationUnit);
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
             }
@@ -394,7 +418,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount()));
                 stockRecord.setAvailableAmount(BigDecimal.ZERO);
                 stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
-
+                sourceStorageLocationUnit=stockRecordSource1[i].getUnit();
+                sourceStorageLocationUnitAmount=stockRecordSource1[i].getUnitAmount();
+                sourceStorageOriginalAmount=stockRecordSource1[i].getAmount();
+                sourceStorageNewAmount=stockRecord.getAmount();
                 //查到新库位上最新的相同供货的记录
                 StockRecordView[] stockRecordViews=stockRecordDAO.find(accountBook, new Condition().addCondition( "storageLocationId",new Integer[]{newStorageLocationId}).
                         addCondition("supplyId",new Integer[]{supplyId}).addCondition("unit",new String[]{unit}).addCondition("unitAmount",new BigDecimal[]{unitAmount}).
@@ -415,6 +442,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
+                    targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
+                    targetStorageLocationUnit=stockRecordViews[0].getUnit();
+                    targetStorageLocationUnitAmount=stockRecordViews[0].getUnitAmount();
                 }
                 else
                 {
@@ -432,7 +463,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
                 }
-
             }
             else if(i==iNeed){
                 StockRecord stockRecord = new StockRecord();
@@ -450,6 +480,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
                 stockRecord.setAvailableAmount(amountAvailableAll.subtract(transferStock.getAmount()));
                 stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+
+                sourceStorageLocationUnit=stockRecordSource1[i].getUnit();
+                sourceStorageLocationUnitAmount=stockRecordSource1[i].getUnitAmount();
+                sourceStorageOriginalAmount=stockRecordSource1[i].getAmount();
+                sourceStorageNewAmount=stockRecord.getAmount();
+
 
                 //查到新库位上最新的相同供货的记录
                 StockRecordView[] stockRecordViews=stockRecordDAO.find(accountBook, new Condition().addCondition( "storageLocationId",new Integer[]{newStorageLocationId}).
@@ -473,6 +509,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
+                    targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
+                    targetStorageLocationUnit=stockRecordViews[0].getUnit();
+                    targetStorageLocationUnitAmount=stockRecordViews[0].getUnitAmount();
                 }
                 else
                 {
@@ -500,10 +540,20 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 }
                 //添加一条移位记录
                 TransferRecord transferRecord=new TransferRecord();
-                transferRecord.setNewStockRecordId(newStockRecordId[0]);
-                transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
+                //transferRecord.setNewStockRecordId(newStockRecordId[0]);
+                //transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
                 transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
                 transferRecord.setSupplyId(supplyId);
+                transferRecord.setSourceStorageLocationId(sourceStorageLocationId);
+                transferRecord.setSourceStorageLocationNewAmount(sourceStorageNewAmount);
+                transferRecord.setSourceStorageLocationUnitAmount(sourceStorageLocationUnitAmount);
+                transferRecord.setSourceStorageLocationUnit(sourceStorageLocationUnit);
+                transferRecord.setSourceStorageLocationOriginalAmount(sourceStorageOriginalAmount);
+                transferRecord.setTargetStorageLocationId(newStorageLocationId);
+                transferRecord.setTargetStorageLocationAmount(targetStorageLocationUnitAmount);
+                transferRecord.setTargetStorageLocationNewAmount(targetStorageLocationNewAmount);
+                transferRecord.setTargetStorageLocationOriginalAmount(targetStorageLocationOriginalAmount);
+                transferRecord.setTargetStorageLocationUnit(targetStorageLocationUnit);
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
         }
@@ -567,7 +617,11 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 addId=stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
-                transferRecord.setNewStockRecordId(addId[0]);
+                //transferRecord.setNewStockRecordId(addId[0]);
+                transferRecord.setTargetStorageLocationUnit(unit);
+                transferRecord.setTargetStorageLocationOriginalAmount(new BigDecimal(0));
+                transferRecord.setTargetStorageLocationId(sourceStorageLocationId);
+                transferRecord.setTargetStorageLocationNewAmount(amount);
                 transferRecord.setSupplyId(supplyId);
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
@@ -588,8 +642,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
-                transferRecord.setNewStockRecordId(addId[0]);
+                //transferRecord.setNewStockRecordId(addId[0]);
                 transferRecord.setSupplyId(supplyId);
+                transferRecord.setTargetStorageLocationUnit(unit);
+                transferRecord.setTargetStorageLocationOriginalAmount(stockRecordSource[0].getAmount());
+                transferRecord.setTargetStorageLocationId(sourceStorageLocationId);
+                transferRecord.setTargetStorageLocationNewAmount(amount);
                 //transferRecord.setSourceStockRecordId(stockRecordSource[0].getId());
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
@@ -654,8 +712,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                     TransferRecord transferRecord=new TransferRecord();
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
-                    //transferRecord.setNewStockRecordId(addId[0]);
-                    transferRecord.setSourceStockRecordId(stockRecordSource[i].getId());
+                    transferRecord.setSourceStorageLocationUnitAmount(unitAmount);
+                    transferRecord.setSourceStorageLocationUnit(unit);
+                    transferRecord.setSourceStorageLocationId(sourceStorageLocationId);
+                    transferRecord.setSourceStorageLocationOriginalAmount(stockRecordSource[i].getAmount());
+                    transferRecord.setSourceStorageLocationNewAmount(stockRecord.getAmount());
+                    //transferRecord.setSourceStockRecordId(stockRecordSource[i].getId());
                     transferRecord.setSupplyId(supplyId);
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
@@ -677,8 +739,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord1});
                     TransferRecord transferRecord=new TransferRecord();
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
-                    //transferRecord.setNewStockRecordId(addId[0]);
-                    transferRecord.setSourceStockRecordId(stockRecordSource[i].getId());
+                    transferRecord.setSourceStorageLocationUnitAmount(unitAmount);
+                    transferRecord.setSourceStorageLocationUnit(unit);
+                    transferRecord.setSourceStorageLocationId(sourceStorageLocationId);
+                    transferRecord.setSourceStorageLocationOriginalAmount(stockRecordSource[i].getAmount());
+                    transferRecord.setSourceStorageLocationNewAmount(stockRecord1.getAmount());
+                    //transferRecord.setSourceStockRecordId(stockRecordSource[i].getId());
                     transferRecord.setSupplyId(supplyId);
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
