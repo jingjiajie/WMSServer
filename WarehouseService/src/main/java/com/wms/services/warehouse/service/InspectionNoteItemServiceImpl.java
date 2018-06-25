@@ -74,7 +74,7 @@ public class InspectionNoteItemServiceImpl
                 throw new WMSServiceException(String.format("送检单条目不存在，修改失败(%d)", inspectionNoteItem.getId()));
             }
             if(oriItem.getWarehouseEntryItemId() != inspectionNoteItem.getWarehouseEntryItemId()){
-                throw new WMSServiceException("不能修改送检单条目关联的收货单条目！");
+                throw new WMSServiceException("不能修改送检单条目关联的入库单条目！");
             }
             BigDecimal oriAmount = oriItem.getAmount(); //原送检数量
             BigDecimal deltaAmount = inspectionNoteItem.getAmount().subtract(oriAmount); //变化送检数量

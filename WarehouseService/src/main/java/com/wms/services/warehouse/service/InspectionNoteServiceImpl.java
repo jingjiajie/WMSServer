@@ -133,11 +133,12 @@ public class InspectionNoteServiceImpl
                 InspectionNoteItem inspectionNoteItem = this.inspectionNoteItemService.get(accountBook, inspectFinishItem.getInspectionNoteItemId());
                 inspectionNoteItem.setReturnAmount(inspectFinishItem.getReturnAmount());
                 inspectionNoteItem.setReturnUnit(inspectFinishItem.getReturnUnit());
-                inspectionNoteItem.setReturnUnitAmount(inspectFinishItem.getReturnAmount());
+                inspectionNoteItem.setReturnUnitAmount(inspectFinishItem.getReturnUnitAmount());
                 WarehouseEntryItemView warehouseEntryItemView = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("id", inspectionNoteItem.getWarehouseEntryItemId()))[0];
                 warehouseEntryItemAndReturnAmount.put(inspectionNoteItem.getWarehouseEntryItemId(), inspectionNoteItem.getReturnAmount());
                 //如果返回数量小于送检数量，则将差值从入库单条目的库存里扣除，再收货。
                 BigDecimal unreturnedAmount = inspectionNoteItem.getAmount().subtract(inspectionNoteItem.getReturnAmount());
+                if(unreturnedAmount.compareTo(BigDecimal.ZERO) < 0) throw new WMSServiceException("返回数量不能大于送检数量！");
                 if (unreturnedAmount.compareTo(BigDecimal.ZERO) != 0) {
                     TransferStock transferStock = new TransferStock();
                     transferStock.setAmount(unreturnedAmount.negate());
