@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.datastructures;
 
 import com.wms.utilities.model.TransferOrder;
+import com.wms.utilities.model.TransferOrderItem;
 
 public class TransferItem {
     private TransferOrder transferOrder;

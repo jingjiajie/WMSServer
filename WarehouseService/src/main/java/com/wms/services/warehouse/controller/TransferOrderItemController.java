@@ -1,6 +1,8 @@
 package com.wms.services.warehouse.controller;
 
 
+import com.wms.utilities.model.TransferOrderItem;
+import com.wms.utilities.model.TransferOrderItemView;
 import org.springframework.http.ResponseEntity;
 
 public interface TransferOrderItemController {
