@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.stream.Stream;
 @Service
 @Transactional
@@ -31,6 +32,9 @@ public class TransferRecordServiceImpl implements TransferRecordService {
             this.idChecker.check(WarehouseService.class,accountBook,transferRecord.getWarehouseId(),"仓库");
             this.idChecker.check(SupplyService.class,accountBook,transferRecord.getSupplyId(),"供货");
         });
+        for(int i=0;i<transferRecords.length;i++){
+            transferRecords[i].setTime(new Timestamp(System.currentTimeMillis()));
+        }
         return this.transferRecordDAO.add(accountBook,transferRecords);
 
     }

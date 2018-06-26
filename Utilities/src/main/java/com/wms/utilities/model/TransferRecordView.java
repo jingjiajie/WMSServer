@@ -32,6 +32,7 @@ public class TransferRecordView {
     private BigDecimal targetStorageLocationNewAmount;
     private String targetStorageLocationUnit;
     private BigDecimal targetStorageLocationAmount;
+    private String materialProductLine;
 
     @Basic
     @Id
@@ -264,6 +265,16 @@ public class TransferRecordView {
         this.targetStorageLocationAmount = targetStorageLocationAmount;
     }
 
+    @Basic
+    @Column(name = "MaterialProductLine")
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -309,6 +320,8 @@ public class TransferRecordView {
             return false;
         if (targetStorageLocationAmount != null ? !targetStorageLocationAmount.equals(that.targetStorageLocationAmount) : that.targetStorageLocationAmount != null)
             return false;
+        if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
+            return false;
 
         return true;
     }
@@ -338,6 +351,7 @@ public class TransferRecordView {
         result = 31 * result + (targetStorageLocationNewAmount != null ? targetStorageLocationNewAmount.hashCode() : 0);
         result = 31 * result + (targetStorageLocationUnit != null ? targetStorageLocationUnit.hashCode() : 0);
         result = 31 * result + (targetStorageLocationAmount != null ? targetStorageLocationAmount.hashCode() : 0);
+        result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
         return result;
     }
 }
