@@ -45,6 +45,15 @@ public class WarehouseService {
         stockRecordFindByTime1.setSupplyId(15);
         StockRecordFindByTime[] stockRecordFindByTimes={stockRecordFindByTime,stockRecordFindByTime1};
 
+        TransferStock transferStock=new TransferStock();
+transferStock.setSupplyId(36);
+transferStock.setSourceStorageLocationId(33);
+transferStock.setNewStorageLocationId(23180);
+transferStock.setUnit("个");
+transferStock.setAmount(new BigDecimal(2));
+transferStock.setUnitAmount(new BigDecimal(10));
+transferStock.setRelatedOrderNo("adasdadasdasdasdasdsada");
+stockRecordService.RealTransformStock("WMS_Template",transferStock);
         stockRecordService.findByTime("WMS_Template",stockRecordFindByTimes);
         Date date = new Date();
         GregorianCalendar gc = new GregorianCalendar();

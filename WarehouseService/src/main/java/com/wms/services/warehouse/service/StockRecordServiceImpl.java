@@ -470,6 +470,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
+                    targetStorageLocationOriginalAmount=new BigDecimal(0);
+                    targetStorageLocationUnit=unit;
+                    targetStorageLocationUnitAmount=unitAmount;
                 }
             }
             else if(i==iNeed){
@@ -539,6 +543,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
+                    targetStorageLocationOriginalAmount=new BigDecimal(0);
+                    targetStorageLocationUnit=unit;
+                    targetStorageLocationUnitAmount=unitAmount;
                 }
 
                 int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNewSave});
@@ -1029,6 +1037,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
+                    targetStorageLocationOriginalAmount=new BigDecimal(0);
+                    targetStorageLocationUnit=unit;
+                    targetStorageLocationUnitAmount=unitAmount;
                 }
             }
             else if(i==iNeed){
@@ -1097,6 +1109,10 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
+                    targetStorageLocationOriginalAmount=new BigDecimal(0);
+                    targetStorageLocationUnit=unit;
+                    targetStorageLocationUnitAmount=unitAmount;
                 }
 
                 int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNewSave});
