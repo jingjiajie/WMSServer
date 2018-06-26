@@ -262,7 +262,11 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         transferOrderItemsList.toArray(transferOrderItems);
 
         if (transferOrderItems.length==0){
-            throw new WMSServiceException(String.format("当前安全库存充足，无需备货"));
+            if(transferType==1){
+            throw new WMSServiceException("当前备货安全库存充足，无需备货");
+            }else if(transferType==0){
+                throw new WMSServiceException("当前上架安全库存充足，无需商家");
+            }
         }
 
         transferItem.setTransferOrder(transferOrder);
