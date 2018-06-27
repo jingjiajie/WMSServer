@@ -32,6 +32,7 @@ public class StockRecordViewAndSum {
     private Integer supplierId;
     private String materialProductLine;
     private BigDecimal sum;
+    private int state;
 
     @Basic
     @Id
@@ -274,6 +275,16 @@ public class StockRecordViewAndSum {
         this.materialProductLine = materialProductLine;
     }
 
+    @Basic
+    @Column(name = "State")
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
 
     @JoinColumn
     @Column(name = "Sum")
@@ -327,6 +338,8 @@ public class StockRecordViewAndSum {
             return false;
         if (sum != null ? !sum.equals(that.sum) : that.sum != null)
             return false;
+        if (state != that.state) return false;
+
         return true;
     }
 
@@ -357,6 +370,7 @@ public class StockRecordViewAndSum {
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
         result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
         result = 31 * result + (sum != null ? sum.hashCode() : 0);
+        result = 31 * result + state;
         return result;
     }
 }

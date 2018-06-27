@@ -33,6 +33,7 @@ public class StockRecordViewNewest {
     private Integer materialId;
     private Integer supplierId;
     private String materialProductLine;
+    private int state;
 
     @Basic
     @Id
@@ -275,6 +276,17 @@ public class StockRecordViewNewest {
         this.materialProductLine = materialProductLine;
     }
 
+    @Basic
+    @Column(name = "State")
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -314,6 +326,7 @@ public class StockRecordViewNewest {
         if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
         if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
             return false;
+        if (state != that.state) return false;
         return true;
     }
 
@@ -343,6 +356,7 @@ public class StockRecordViewNewest {
         result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
         result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
+        result = 31 * result + state;
         return result;
     }
 }
