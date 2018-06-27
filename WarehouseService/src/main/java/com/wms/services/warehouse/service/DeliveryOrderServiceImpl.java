@@ -390,13 +390,16 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         if (itemViews.length == 0) {
             throw new WMSServiceException(String.format("当前发货套餐未包括条目信息，套餐名称（%S），无法创建出库单", curPakageViews[0].getName()));
         }
-        //新建出库单
-        DeliveryOrder deliveryOrder=new DeliveryOrder();
-        deliveryOrder.setCreatePersonId(deliveryByPakage.getPersonId());
-        deliveryOrder.setWarehouseId(deliveryByPakage.getWarehouseId());
-        deliveryOrder.setState(DeliveryOrderService.STATE_IN_LOADING);
-        deliveryOrder.setDescription("套餐一键发货");
-        int newDeliveryOrderID = this.add(accountBook, new DeliveryOrder[]{deliveryOrder})[0];
+        int curDeliveryOrderId=deliveryByPakage.getDeliveryOrderId();
+        if (deliveryByPakage.getDeliveryOrderId()==-1) {
+            //新建出库单
+            DeliveryOrder deliveryOrder = new DeliveryOrder();
+            deliveryOrder.setCreatePersonId(deliveryByPakage.getPersonId());
+            deliveryOrder.setWarehouseId(deliveryByPakage.getWarehouseId());
+            deliveryOrder.setState(DeliveryOrderService.STATE_IN_LOADING);
+            deliveryOrder.setDescription("套餐一键发货");
+            curDeliveryOrderId = this.add(accountBook, new DeliveryOrder[]{deliveryOrder})[0];
+        }
 
         List<DeliveryOrderItem> deliveryOrderItemList=new ArrayList();
         for(int i=0;i<itemViews.length;i++){
@@ -416,7 +419,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             deliveryOrderItem.setSupplyId(itemViews[i].getSupplyId());
             deliveryOrderItem.setScheduledAmount(itemViews[i].getDefaultDeliveryAmount());
             deliveryOrderItem.setPersonId(deliveryByPakage.getPersonId());
-            deliveryOrderItem.setDeliveryOrderId(newDeliveryOrderID);
+            deliveryOrderItem.setDeliveryOrderId(curDeliveryOrderId);
             deliveryOrderItem.setRealAmount(BigDecimal.ZERO);
             deliveryOrderItem.setComment("套餐发货项");
             deliveryOrderItemList.add(deliveryOrderItem);
