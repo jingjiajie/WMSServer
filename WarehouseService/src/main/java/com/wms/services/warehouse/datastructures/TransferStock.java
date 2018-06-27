@@ -1,5 +1,7 @@
 package com.wms.services.warehouse.datastructures;
 
+import org.omg.CORBA.INTERNAL;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -17,7 +19,6 @@ public class TransferStock {
         return unit;
     }
 
-
     public String getRelatedOrderNo() {
         return relatedOrderNo;
     }
@@ -30,12 +31,9 @@ public class TransferStock {
         this.newStorageLocationId = newStorageLocationId;
     }
 
-
-
     public void setUnit(String unit) {
         this.unit = unit;
     }
-
 
     public void setRelatedOrderNo(String relatedOrderNo) {
         this.relatedOrderNo = relatedOrderNo;
@@ -128,4 +126,26 @@ public class TransferStock {
     private String newUnit;
 
     private BigDecimal newUnitAmount;
+
+    public int getState() {
+        return State;
+    }
+
+    public void setOldState(int oldState) {
+        this.State = oldState;
+    }
+
+    private  int State=-1;
+
+    public int getNewState() {
+        return newState;
+    }
+
+    public void setNewState(int newState) {
+        this.newState = newState;
+    }
+
+    private int newState=-1;
+
+    private final int STATE_DEFAULT_DEPENDENT=-1;
 }

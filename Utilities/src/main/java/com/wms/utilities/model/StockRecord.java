@@ -20,6 +20,7 @@ public class StockRecord {
     private Timestamp time;
     private String batchNo;
     private BigDecimal availableAmount;
+    private int state;
 
     @Id
     @Column(name = "ID")
@@ -162,6 +163,16 @@ public class StockRecord {
         this.availableAmount = availableAmount;
     }
 
+    @Basic
+    @Column(name = "State")
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -187,6 +198,7 @@ public class StockRecord {
         if (batchNo != null ? !batchNo.equals(that.batchNo) : that.batchNo != null) return false;
         if (availableAmount != null ? !availableAmount.equals(that.availableAmount) : that.availableAmount != null)
             return false;
+        if (state != that.state) return false;
 
         return true;
     }
@@ -207,6 +219,7 @@ public class StockRecord {
         result = 31 * result + (time != null ? time.hashCode() : 0);
         result = 31 * result + (batchNo != null ? batchNo.hashCode() : 0);
         result = 31 * result + (availableAmount != null ? availableAmount.hashCode() : 0);
+        result = 31 * result + state;
         return result;
     }
 }
