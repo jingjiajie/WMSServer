@@ -28,4 +28,14 @@ public class DeliveryByPakage {
     private Integer personId;
     private int warehouseId;
     private int packageId;
+
+    public int getDeliveryOrderId() {
+        return deliveryOrderId;
+    }
+
+    public void setDeliveryOrderId(int deliveryOrderId) {
+        this.deliveryOrderId = deliveryOrderId;
+    }
+
+    private int deliveryOrderId=-1;
 }
