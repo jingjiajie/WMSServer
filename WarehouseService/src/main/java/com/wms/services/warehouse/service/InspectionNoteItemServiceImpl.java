@@ -85,6 +85,9 @@ public class InspectionNoteItemServiceImpl
             }else if(oriItem.getUnitAmount().compareTo(inspectionNoteItem.getUnitAmount())!=0){
                 throw new WMSServiceException("不允许修改送检单位数量！");
             }
+            if(inspectionNoteItem.getReturnAmount().compareTo(inspectionNoteItem.getAmount()) > 0){
+                throw new WMSServiceException("返回数量不允许大于送检数量！");
+            }
             if(oriItem.getState() != inspectionNoteItem.getState() && !inspectionNotesToUpdateState.contains(inspectionNoteItem.getInspectionNoteId())){
                 inspectionNotesToUpdateState.add(inspectionNoteItem.getInspectionNoteId());
             }
