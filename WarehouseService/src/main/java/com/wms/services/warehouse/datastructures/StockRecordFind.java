@@ -109,4 +109,13 @@ public class StockRecordFind {
 
     private Timestamp inventoryDate;
 
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
+    private int state;
 }

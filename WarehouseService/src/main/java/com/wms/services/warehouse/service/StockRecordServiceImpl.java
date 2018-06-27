@@ -46,6 +46,8 @@ public class StockRecordServiceImpl implements StockRecordService {
     @Autowired
     private SessionFactory sessionFactory;
 
+    private final int STATE_DEFAULT_DEPENDENT=-1;
+
     @Override
     public int[] add(String accountBook, StockRecord[] stockRecords) throws WMSServiceException {
         for(int i=0;i<stockRecords.length;i++) {
@@ -295,6 +297,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
         int supplyId=transferStock.getSupplyId();
         int newStorageLocationId=transferStock.getNewStorageLocationId();
+        //默认找合格品
+        int oldState=2;
+        if(transferStock.getState()!=this.STATE_DEFAULT_DEPENDENT){oldState=transferStock.getState();}
+        //默认移动后也是合格品
+        int newState=oldState;
+        if(transferStock.getNewState()!=this.STATE_DEFAULT_DEPENDENT){newState=transferStock.getNewState();}
         Integer[] warehouseId=warehouseIdFind(accountBook,sourceStorageLocationId);//至少能返回一个
         BigDecimal amount=transferStock.getAmount();
         String unit=transferStock.getUnit();
@@ -320,6 +328,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
         stockRecordFind.setReturnMode("new");
+        stockRecordFind.setState(oldState);
         StockRecord[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
         //StockRecordView[]   stockRecordSource2=this.find(accountBook,new Condition().addCondition("id",new Integer[]{512}));
         StockRecord[]   stockRecordSource3=stockRecordDAO.findTable(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordSource1[0].getId()}));
@@ -354,8 +363,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         if(iNeed==-1){
             StorageLocationView[] storageLocationViews1= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews1=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
-            throw new WMSServiceException("物料“"+supplyViews1[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews1[0].getName()+"”上可用数量不足。需要库存数量："+transferStock.getAmount()+"，现有库存："+amountAvailableAll); }
-
+            throw new WMSServiceException("物料“"+supplyViews1[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”检测状态：“"+oldState+"”）在库位:“"+storageLocationViews1[0].getName()+"”上可用数量不足。需要库存数量："+transferStock.getAmount()+"，现有库存："+amountAvailableAll); }
+//TODO 状态转换
         //判断新库位和源库位是否相同
         //如果相同新建一条完全相同的 然后增加移位记录
         if(sourceStorageLocationId==newStorageLocationId){
@@ -378,6 +387,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount());
+                    stockRecord.setState(stockRecordSource1[i].getState());
                     sourceStorageNewAmount=stockRecord.getAmount();
                     int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecord});
                     if(newStockRecordId.length!=1)
@@ -425,6 +435,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount()));
                 stockRecord.setAvailableAmount(BigDecimal.ZERO);
+                stockRecord.setState(oldState);
                 stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 sourceStorageLocationUnit=stockRecordSource1[i].getUnit();
                 sourceStorageLocationUnitAmount=stockRecordSource1[i].getUnitAmount();
@@ -433,7 +444,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 //查到新库位上最新的相同供货的记录
                 StockRecordView[] stockRecordViews=stockRecordDAO.find(accountBook, new Condition().addCondition( "storageLocationId",new Integer[]{newStorageLocationId}).
                         addCondition("supplyId",new Integer[]{supplyId}).addCondition("unit",new String[]{unit}).addCondition("unitAmount",new BigDecimal[]{unitAmount}).
-                        addCondition("batchNo",new String[]{stockRecordSource1[i].getBatchNo()}).addOrder("time",OrderItem.Order.DESC)
+                        addCondition("batchNo",new String[]{stockRecordSource1[i].getBatchNo()}).addCondition("state",newState).addOrder("time",OrderItem.Order.DESC)
                 );
 
                 //已经找到最新的可以叠加的记录，则第二条为叠加
@@ -450,6 +461,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setState(newState);
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
                     targetStorageLocationUnit=stockRecordViews[0].getUnit();
@@ -470,6 +482,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setState(newState);
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=new BigDecimal(0);
                     targetStorageLocationUnit=unit;
@@ -487,6 +500,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecordNewSave.setState(newState);
                 //stockRecord.setAmount(amountAvailableAll.subtract(transferStock.getAmount()));
                 //stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount().subtract(stockRecordSource1[i].getAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
@@ -520,6 +534,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setWarehouseId(stockRecordSource1[i].getWarehouseId());
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
+                    stockRecordNewSave.setState(newState);
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
@@ -545,6 +560,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=new BigDecimal(0);
+                    stockRecordNewSave.setState(newState);
                     targetStorageLocationUnit=unit;
                     targetStorageLocationUnitAmount=unitAmount;
                 }
@@ -597,6 +613,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         BigDecimal amount=transferStock.getAmount();
         String unit=transferStock.getUnit();
         BigDecimal unitAmount=transferStock.getUnitAmount();
+        int state=0;
+        if(transferStock.getState()!=this.STATE_DEFAULT_DEPENDENT){ state=transferStock.getState(); }
 
         //先查出源库存记录
         StockRecordFind stockRecordFind=new StockRecordFind();
@@ -606,6 +624,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setUnitAmount(unitAmount);
         stockRecordFind.setWarehouseId(warehouseId[0]);
         stockRecordFind.setReturnMode("new");
+        stockRecordFind.setState(state);
         if(transferStock.getAmount().compareTo(new BigDecimal(0)) >=0){
             stockRecordFind.setInventoryDate(transferStock.getInventoryDate());
             stockRecordFind.setReturnMode("batch");
@@ -630,6 +649,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(amount);
                 stockRecord.setAvailableAmount(amount);
+                stockRecord.setState(state);
                 addId=stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -655,6 +675,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(stockRecordSource[0].getAmount().add(amount));
                 stockRecord.setAvailableAmount(stockRecordSource[0].getAmount().add(amount));
+                stockRecord.setState(state);
                 addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -680,7 +701,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
            SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
            if (stockRecordSource.length==0)
             {
-                throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上可用数量不足。需要库存数量："+transferStock.getAmount().negate()+"，现有库存：0");
+                throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”检测状态：“"+state+"”）在库位:“"+storageLocationViews[0].getName()+"”上可用数量不足。需要库存数量："+transferStock.getAmount().negate()+"，现有库存：0");
             }
             //首先找到最久的库存记录
             for(int i=0;i<stockRecordSource.length;i++)
@@ -725,6 +746,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setAmount(stockRecordSource[i].getAmount().subtract(stockRecordSource[i].getAvailableAmount()));
                     stockRecord.setAvailableAmount(new BigDecimal(0));
+                    stockRecord.setState(state);
                     addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                     TransferRecord transferRecord=new TransferRecord();
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -748,6 +770,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord1.setStorageLocationId(sourceStorageLocationId);
                     stockRecord1.setSupplyId(supplyId);
                     stockRecord1.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecord1.setState(state);
                     //stockRecord.setAmount(amountAvailableAll.add(transferStock.getAmount()));
                     //stockRecord.setAvailableAmount(stockRecordSource[i].getAvailableAmount().subtract(stockRecordSource[i].getAmount().subtract(amountAvailableAll.add(transferStock.getAmount()))));
                     stockRecord1.setAmount(stockRecordSource[i].getAmount().subtract(stockRecordSource[i].getAvailableAmount().subtract(amountAvailableAll.add(transferStock.getAmount()))));
@@ -859,6 +882,12 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
         int supplyId=transferStock.getSupplyId();
         int newStorageLocationId=transferStock.getNewStorageLocationId();
+        //默认找合格品
+        int oldState=2;
+        if(transferStock.getState()!=this.STATE_DEFAULT_DEPENDENT){oldState=transferStock.getState();}
+        //默认移动后也是合格品
+        int newState=oldState;
+        if(transferStock.getNewState()!=this.STATE_DEFAULT_DEPENDENT){newState=transferStock.getNewState();}
         Integer[] warehouseId=warehouseIdFind(accountBook,sourceStorageLocationId);//至少能返回一个
         BigDecimal amount=transferStock.getAmount();
         String unit=transferStock.getUnit();
@@ -886,13 +915,14 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setUnit(unit);
         stockRecordFind.setUnitAmount(unitAmount);
         stockRecordFind.setReturnMode("new");
+        stockRecordFind.setState(oldState);
         StockRecord[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
         if(stockRecordSource1.length==0)
         {
             StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
             //throw new WMSServiceException("没查到符合要求的源库存记录，请检查相关信息！");
-            throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上可用数量不足。需要库存数量："+transferStock.getAmount()+"，现有库存：0");
+            throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”检测状态：“"+oldState+"”）在库位:“"+storageLocationViews[0].getName()+"”上可用数量不足。需要库存数量："+transferStock.getAmount()+"，现有库存：0");
         }
 
         //进行排序
@@ -920,11 +950,11 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         }
         StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
         SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
-        if(iNeed==-1){ throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”）在库位:“"+storageLocationViews[0].getName()+"”上可用数量不足。需要库存数量："+transferStock.getAmount()+"，现有库存："+amountAvailableAll); }
+        if(iNeed==-1){ throw new WMSServiceException("物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”检测状态：“"+oldState+"”）在库位:“"+storageLocationViews[0].getName()+"”上可用数量不足。需要库存数量："+transferStock.getAmount()+"，现有库存："+amountAvailableAll); }
 
         //相同的情况
         if(newStorageLocationId==sourceStorageLocationId&&newUnit.equals(unit)&&newUnitAmount.equals(unitAmount)){
-            if(newUnit.equals(unit)&&newUnitAmount.equals(unitAmount)){
+            if(newUnit.equals(unit)&&newUnitAmount.equals(unitAmount)&&oldState==newState){
                 //如果完全相同
                 for(int i=stockRecordSource1.length-1;i>=iNeed;i--){
                     StockRecord stockRecordNewSave=new StockRecord();
@@ -942,6 +972,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                         stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                         stockRecord.setAmount(stockRecordSource1[i].getAmount());
                         stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount());
+                        stockRecord.setState(oldState);
                         int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecord});
                         sourceStorageNewAmount=stockRecord.getAmount();
                         sourceStorageLocationUnit=stockRecordSource1[i].getUnit();
@@ -990,6 +1021,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount()));
                 stockRecord.setAvailableAmount(BigDecimal.ZERO);
+                stockRecord.setState(oldState);
                 sourceStorageNewAmount=stockRecord.getAmount();
                 sourceStorageLocationUnit=stockRecordSource1[i].getUnit();
                 sourceStorageLocationUnitAmount=stockRecordSource1[i].getUnitAmount();
@@ -999,7 +1031,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 //查到新库位上最新的相同供货的记录
                 StockRecordView[] stockRecordViews=stockRecordDAO.find(accountBook, new Condition().addCondition( "storageLocationId",new Integer[]{newStorageLocationId}).
                         addCondition("supplyId",new Integer[]{supplyId}).addCondition("unit",new String[]{newUnit}).addCondition("unitAmount",new BigDecimal[]{newUnitAmount}).
-                        addCondition("batchNo",new String[]{stockRecordSource1[i].getBatchNo()}).addOrder("time",OrderItem.Order.DESC)
+                        addCondition("batchNo",new String[]{stockRecordSource1[i].getBatchNo()}).addCondition("state",newState).addOrder("time",OrderItem.Order.DESC)
                 );
 
                 //已经找到最新的可以叠加的记录，则第二条为叠加
@@ -1017,6 +1049,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setState(newState);
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
                     targetStorageLocationUnit=stockRecordViews[0].getUnit();
@@ -1037,6 +1070,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setState(newState);
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=new BigDecimal(0);
                     targetStorageLocationUnit=unit;
@@ -1054,6 +1088,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setState(oldState);
                 //stockRecord.setAmount(amountAvailableAll.subtract(transferStock.getAmount()));
                 //stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount().subtract(stockRecordSource1[i].getAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
@@ -1067,7 +1102,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 //查到新库位上最新的相同供货的记录
                 StockRecordView[] stockRecordViews=stockRecordDAO.find(accountBook, new Condition().addCondition( "storageLocationId",new Integer[]{newStorageLocationId}).
                         addCondition("supplyId",new Integer[]{supplyId}).addCondition("unit",new String[]{newUnit}).addCondition("unitAmount",new BigDecimal[]{newUnitAmount}).
-                        addCondition("batchNo",new String[]{stockRecordSource1[i].getBatchNo()}).addOrder("time",OrderItem.Order.DESC)
+                        addCondition("batchNo",new String[]{stockRecordSource1[i].getBatchNo()}).addCondition("state",newState).addOrder("time",OrderItem.Order.DESC)
                 );
                 //已经找到最新的可以叠加的记录，则第二条为叠加
                 if(stockRecordViews.length>0){
@@ -1085,6 +1120,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setWarehouseId(stockRecordSource1[i].getWarehouseId());
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
+                    stockRecordNewSave.setState(newState);
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
@@ -1109,6 +1145,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setState(newState);
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=new BigDecimal(0);
                     targetStorageLocationUnit=unit;
@@ -1315,7 +1352,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     "\n" +
                     "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME   FROM StockRecordView As s2 \n" +
                     "\n" +
-                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount\n" +
+                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount and s2.state=:state \n" +
                     "\n" +
                     "GROUP BY s2.BatchNo) AS s3 \n" +
                     "\n" +
@@ -1328,6 +1365,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             query.setParameter("supplyId",stockRecordFind.getSupplyId());
             query.setParameter("unit",stockRecordFind.getUnit());
             query.setParameter("unitAmount",stockRecordFind.getUnitAmount());
+            query.setParameter("state",stockRecordFind.getState());
         }
         //增加数量带批号用
         if(stockRecordFind.getReturnMode().equals("batch")){
@@ -1337,7 +1375,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     "\n" +
                     "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME   FROM StockRecordView As s2 \n" +
                     "\n" +
-                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount AND  s2.BatchNo=:batchNo1" +
+                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount AND  s2.BatchNo=:batchNo1 and s2.state=:state" +
                     "\n" +
                     "GROUP BY s2.BatchNo) AS s3 \n" +
                     "\n" +
@@ -1350,6 +1388,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             query.setParameter("unit",stockRecordFind.getUnit());
             query.setParameter("unitAmount",stockRecordFind.getUnitAmount());
             query.setParameter("batchNo1",this.batchTransfer(stockRecordFind.getInventoryDate()));
+            query.setParameter("state",stockRecordFind.getState());
         }
         StockRecord[] resultArray=null;
         List<StockRecord> resultList = query.list();
@@ -1372,7 +1411,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     "(SELECT s1.* FROM StockRecordView AS s1\n" +
                     "INNER JOIN\n" +
                     "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
-                    "where s2.WarehouseID=:warehouseId and s2.SupplyID IN "+ids+" AND s2.TIME<:endTime \n" +
+                    "where s2.WarehouseID=:warehouseId and s2.SupplyID IN "+ids+" AND s2.TIME<:endTime and s2.state=:state \n" +
                     "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID) as s3\n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo) \n" +
                     "as s_all GROUP BY s_all.Unit,s_all.UnitAmount,s_all.StorageLocationID";
@@ -1381,6 +1420,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
         query.setParameter("stockTakingOrderId",stockTakingOrderId);
+        query.setParameter("state",2);
         Object[] resultArray=null;
         List list = query.list();
         resultArray=list.toArray();
@@ -1453,7 +1493,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         String sqlCheckNew2="SELECT s_all.*,sum(s_all.Amount) as sumAmount FROM \n" +
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
-                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2  where s2.WarehouseID=:warehouseId and  s2.TIME <:end1 and s2.SupplyID IN " +ids+
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2  where s2.WarehouseID=:warehouseId and  s2.TIME <:end1  and s2.state=2 and s2.SupplyID IN " +ids+
                 "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID) as s3\n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo)\n" +
                 "as s_all \n" +
@@ -1483,7 +1523,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
-                "where s2.WarehouseID=:warehouseId AND s2.TIME<:endTime "+
+                "where s2.WarehouseID=:warehouseId AND s2.TIME<:endTime and s2.state=2 "+
                 "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID,s2.SupplyID) as s3\n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo) \n" +
                 "as s_all \n" +
@@ -1513,7 +1553,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
-                "where s2.WarehouseID=:warehouseId AND s2.TIME<:endTime "+
+                "where s2.WarehouseID=:warehouseId AND s2.TIME<:endTime and s2.state=2"+
                 "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID,s2.SupplyID) as s3\n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo) \n" +
                 "as s_all \n" +
@@ -1576,7 +1616,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 sql.append(" or ");
             }
         }
-        sql.append(" ");
         Query query=null;
             String sql1="SELECT s4.* ,sum(s4.amount) as Sum from \n" +
                     "(SELECT s1.* FROM StockRecordView AS s1 \n" +
