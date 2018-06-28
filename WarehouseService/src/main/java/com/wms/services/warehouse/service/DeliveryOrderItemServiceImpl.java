@@ -163,7 +163,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setUnit(deliveryOrderItem.getUnit());
                 transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
                 transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
-                transferStock.setOldState(2);
+                transferStock.setState(2);
                 this.stockRecordService.addAmount(accountBook, transferStock);
             }
             deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
