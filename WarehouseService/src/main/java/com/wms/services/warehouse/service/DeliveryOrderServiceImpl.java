@@ -241,7 +241,6 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 //throw new WMSServiceException(String.format("当前备货源库位(%s)库存不足，无法备货", safetyStockViews[i].getSourceStorageLocationName()));
             //}
 
-            //todo 目标库位少于安全库存数量才会进行
             if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) == -1) {
                 TransferOrderItem transferOrderItem = new TransferOrderItem();
                 transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
