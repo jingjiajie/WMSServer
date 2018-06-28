@@ -131,8 +131,8 @@ public class TransferStock {
         return State;
     }
 
-    public void setOldState(int oldState) {
-        this.State = oldState;
+    public void setState(int State) {
+        this.State = State;
     }
 
     private  int State=-1;
