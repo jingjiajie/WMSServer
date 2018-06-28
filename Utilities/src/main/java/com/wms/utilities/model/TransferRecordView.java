@@ -33,6 +33,9 @@ public class TransferRecordView {
     private String targetStorageLocationUnit;
     private BigDecimal targetStorageLocationAmount;
     private String materialProductLine;
+    private BigDecimal transferAmount;
+    private String transferUnit;
+    private BigDecimal transferUnitAmount;
 
     @Basic
     @Id
@@ -275,6 +278,36 @@ public class TransferRecordView {
         this.materialProductLine = materialProductLine;
     }
 
+    @Basic
+    @Column(name = "TransferAmount")
+    public BigDecimal getTransferAmount() {
+        return transferAmount;
+    }
+
+    public void setTransferAmount(BigDecimal transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+    @Basic
+    @Column(name = "TransferUnit")
+    public String getTransferUnit() {
+        return transferUnit;
+    }
+
+    public void setTransferUnit(String transferUnit) {
+        this.transferUnit = transferUnit;
+    }
+
+    @Basic
+    @Column(name = "TransferUnitAmount")
+    public BigDecimal getTransferUnitAmount() {
+        return transferUnitAmount;
+    }
+
+    public void setTransferUnitAmount(BigDecimal transferUnitAmount) {
+        this.transferUnitAmount = transferUnitAmount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -322,6 +355,11 @@ public class TransferRecordView {
             return false;
         if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
             return false;
+        if (transferAmount != null ? !transferAmount.equals(that.transferAmount) : that.transferAmount != null)
+            return false;
+        if (transferUnit != null ? !transferUnit.equals(that.transferUnit) : that.transferUnit != null) return false;
+        if (transferUnitAmount != null ? !transferUnitAmount.equals(that.transferUnitAmount) : that.transferUnitAmount != null)
+            return false;
 
         return true;
     }
@@ -352,6 +390,9 @@ public class TransferRecordView {
         result = 31 * result + (targetStorageLocationUnit != null ? targetStorageLocationUnit.hashCode() : 0);
         result = 31 * result + (targetStorageLocationAmount != null ? targetStorageLocationAmount.hashCode() : 0);
         result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
+        result = 31 * result + (transferAmount != null ? transferAmount.hashCode() : 0);
+        result = 31 * result + (transferUnit != null ? transferUnit.hashCode() : 0);
+        result = 31 * result + (transferUnitAmount != null ? transferUnitAmount.hashCode() : 0);
         return result;
     }
 }
