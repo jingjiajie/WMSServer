@@ -141,6 +141,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         this.addItemToDatabase(accountBook,stockRecordService.findCheckWarehouse(accountBook,stockRecordFind,stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"详细数目");
         this.addItemToDatabase(accountBook,stockRecordService.findCheckWarehouseAmountAll(accountBook,stockRecordFind,stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"仓库总数");
         this.addItemToDatabase(accountBook,stockRecordService.findLoadingWarehouse(accountBook,stockRecordFind,stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"在途数量");
+        this.addItemToDatabase(accountBook,stockRecordService.findQualifiedWarehouse(accountBook,stockRecordFind,stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"合格品数量");
         this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 
@@ -170,6 +171,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         this.addItemToDatabase(accountBook,stockRecordService.findCheckSupply(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"详细数目");
         this.addItemToDatabase(accountBook,stockRecordService.findCheckSupplyAmountAll(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"仓库总数");
         this.addItemToDatabase(accountBook,stockRecordService.findLoadingSupply(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"在途数量");
+        this.addItemToDatabase(accountBook,stockRecordService.findQualifiedSupply(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"合格品数量");
         this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 
@@ -183,7 +185,6 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
             stockTakingOrderItem.setStockTakingOrderId(stockTakingOrderItemAdd.getStockTakingOrderId());
             stockTakingOrderItem.setPersonId(stockTakingOrderItemAdd.getPersonId());
             stockTakingOrderItem.setComment(comment);
-
                 if (comment.equals("详细数目")) {
                     stockTakingOrderItem.setUnit((String) objects[5]);
                     stockTakingOrderItem.setStorageLocationId((Integer) objects[2]);
@@ -194,13 +195,18 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
                     stockTakingOrderItem.setUnitAmount(new BigDecimal(1));
                 }
             if(comment.equals("在途数量")) {stockTakingOrderItem.setSupplyId((int) objects[2]);
-                stockTakingOrderItem.setAmount((BigDecimal) objects[6]);
-                stockTakingOrderItem.setRealAmount((BigDecimal) objects[6]);}
-            else{
+                stockTakingOrderItem.setAmount((BigDecimal) objects[objects.length-1]);
+                stockTakingOrderItem.setRealAmount((BigDecimal) objects[objects.length-1]);}
+            else if(comment.equals("详细数目")||comment.equals("仓库总数")){
                 stockTakingOrderItem.setSupplyId((int) objects[3]);
                 stockTakingOrderItem.setAmount((BigDecimal) objects[25]);
                 stockTakingOrderItem.setRealAmount((BigDecimal) objects[25]);}
-                stockTakingOrderItemList.add(stockTakingOrderItem);
+            else if(comment.equals("合格品数量")) {
+                stockTakingOrderItem.setSupplyId((int) objects[3]);
+                stockTakingOrderItem.setAmount((BigDecimal) objects[26]);
+                stockTakingOrderItem.setRealAmount((BigDecimal) objects[26]);
+            }
+            stockTakingOrderItemList.add(stockTakingOrderItem);
         }
             StockTakingOrderItem[] stockTakingOrderItems=null;
             stockTakingOrderItems = (StockTakingOrderItem[])  Array.newInstance(StockTakingOrderItem.class,stockTakingOrderItemList.size());
