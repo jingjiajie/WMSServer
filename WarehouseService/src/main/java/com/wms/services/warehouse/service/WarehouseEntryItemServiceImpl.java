@@ -170,9 +170,6 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                     new Validator("拒收数量").min(0).max(warehouseEntryItem.getExpectedAmount()).validate(warehouseEntryItem.getRefuseAmount());
                     new Validator("拒收单位").notEmpty().validate(warehouseEntryItem.getRefuseUnit());
                     new Validator("拒收单位数量").min(0).validate(warehouseEntryItem.getRefuseUnitAmount());
-                    if(warehouseEntryItem.getRealAmount().compareTo(warehouseEntryItem.getExpectedAmount()) > 0){
-                        throw new WMSServiceException("实收数量不能大于订单数量！");
-                    }
                 }
         );
 
