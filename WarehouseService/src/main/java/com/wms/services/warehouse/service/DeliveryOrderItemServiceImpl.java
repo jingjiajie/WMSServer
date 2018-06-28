@@ -163,6 +163,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setUnit(deliveryOrderItem.getUnit());
                 transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
                 transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                transferStock.setOldState(2);
                 this.stockRecordService.addAmount(accountBook, transferStock);
             }
             deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
@@ -293,7 +294,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             if (deliveryOrder.getState() ==DeliveryOrderService.STATE_DELIVER_FINNISH) {
                 throw new WMSServiceException(String.format("当前出库单（%s）已经发运完成，无法重复装车工作", deliveryOrder.getNo()));
             }
-            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_DELIVER) {
+            if (deliveryOrder.getState() ==DeliveryOrderService.STATE_ALL_LOADING) {
                 throw new WMSServiceException(String.format("当前出库单（%s）已经完成整单装车，无法重复装车工作", deliveryOrder.getNo()));
             }
             if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_LOADING) {
@@ -346,7 +347,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             if (judgeState){
                 deliveryOrder.setState(DeliveryOrderService.STATE_ALL_LOADING);
             }else{
-                deliveryOrder.setState(DeliveryOrderService.STATE_ALL_LOADING);
+                deliveryOrder.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
             }
 
         });
