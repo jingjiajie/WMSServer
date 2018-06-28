@@ -85,7 +85,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             }
             //修改实收数量，单位或单位数量，或收货库区，更新库存
             if (deltaRealAmount.compareTo(BigDecimal.ZERO) != 0
-                    || oriItem.getUnit().compareTo(warehouseEntryItem.getUnit()) != 0
+                    || !oriItem.getUnit().equals(warehouseEntryItem.getUnit())
                     || oriItem.getUnitAmount().compareTo(warehouseEntryItem.getUnitAmount()) != 0
                     || oriItem.getStorageLocationId() != warehouseEntryItem.getStorageLocationId()) {
                 //如果已经送检，禁止修改入库数量
@@ -164,12 +164,15 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
         Stream.of(warehouseEntryItems).forEach(
                 (warehouseEntryItem) -> {
                     new Validator("订单数量").min(0).validate(warehouseEntryItem.getExpectedAmount());
-                    new Validator("实收数量").min(0).max(warehouseEntryItem.getExpectedAmount()).validate(warehouseEntryItem.getRealAmount());
+                    new Validator("实收数量").min(0).validate(warehouseEntryItem.getRealAmount());
                     new Validator("单位数量").min(0).validate(warehouseEntryItem.getUnitAmount());
                     new Validator("已分配送检数量").min(0).max(warehouseEntryItem.getRealAmount()).validate(warehouseEntryItem.getInspectionAmount());
                     new Validator("拒收数量").min(0).max(warehouseEntryItem.getExpectedAmount()).validate(warehouseEntryItem.getRefuseAmount());
                     new Validator("拒收单位").notEmpty().validate(warehouseEntryItem.getRefuseUnit());
                     new Validator("拒收单位数量").min(0).validate(warehouseEntryItem.getRefuseUnitAmount());
+                    if(warehouseEntryItem.getRealAmount().compareTo(warehouseEntryItem.getExpectedAmount()) > 0){
+                        throw new WMSServiceException("实收数量不能大于订单数量！");
+                    }
                 }
         );
 
