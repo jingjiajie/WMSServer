@@ -133,6 +133,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                 if (transferOrder.getState() ==TransferOrderItemService.STATE_PARTIAL_FINNISH) {
                     transferOrder.setState(TransferOrderItemService.STATE_ALL_FINISH);
                 }
+                transferOrder.setLastUpdatePersonId(transferFinishArgs.getPersonId());
 
             });
             this.update(accountBook,transferOrders);
@@ -177,6 +178,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                 }else{
                     transferOrder.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
                 }
+                transferOrder.setLastUpdatePersonId(transferFinishArgs.getPersonId());
 
             });
             this.update(accountBook, transferOrders);
