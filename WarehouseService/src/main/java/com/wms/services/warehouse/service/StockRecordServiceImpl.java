@@ -426,7 +426,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     transferRecord.setTargetStorageLocationUnit(sourceStorageLocationUnit);
                     transferRecord.setTransferUnit(unit);
                     transferRecord.setTransferUnitAmount(unitAmount);
-                    transferRecord.setTransferUnitAmount(amount);
+                    transferRecord.setTransferAmount(amount);
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
             }
@@ -603,7 +603,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 transferRecord.setTargetStorageLocationUnit(targetStorageLocationUnit);
                 transferRecord.setTransferUnit(unit);
                 transferRecord.setTransferUnitAmount(unitAmount);
-                transferRecord.setTransferUnitAmount(amount);
+                transferRecord.setTransferAmount(amount);
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
         }
@@ -1030,7 +1030,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                         transferRecord.setTargetStorageLocationUnit(sourceStorageLocationUnit);
                         transferRecord.setTransferUnit(unit);
                         transferRecord.setTransferUnitAmount(unitAmount);
-                        transferRecord.setTransferUnitAmount(amount);
+                        transferRecord.setTransferAmount(amount);
                         transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                     }
                 }
@@ -1207,7 +1207,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 transferRecord.setTargetStorageLocationUnit(targetStorageLocationUnit);
                 transferRecord.setTransferUnit(newUnit);
                 transferRecord.setTransferUnitAmount(newUnitAmount);
-                transferRecord.setTransferUnitAmount(amount);
+                transferRecord.setTransferAmount(amount);
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
         }}
