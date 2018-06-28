@@ -37,6 +37,10 @@ public interface StockRecordService
 
     Object[] findLoadingSupply (String accountBook, StockRecordFind stockRecordFind,String ids,int stockTakingOrderId);
 
+    Object[] findQualifiedWarehouse(String accountBook, StockRecordFind stockRecordFind,int stockTakingOrderId);
+
+    Object[] findQualifiedSupply(String accountBook, StockRecordFind stockRecordFind,String ids,int stockTakingOrderId);
+
     Object[] findBySql(String accountBook, String sql, Object[] o);
 
     void modifyAvailableAmount(String accountBook, TransferStock transferStock);

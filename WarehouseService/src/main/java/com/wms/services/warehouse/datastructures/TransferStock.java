@@ -131,8 +131,8 @@ public class TransferStock {
         return State;
     }
 
-    public void setOldState(int oldState) {
-        this.State = oldState;
+    public void setState(int State) {
+        this.State = State;
     }
 
     private  int State=-1;
@@ -148,4 +148,10 @@ public class TransferStock {
     private int newState=-1;
 
     private final int STATE_DEFAULT_DEPENDENT=-1;
+
+    public static final int WAITING_FOR_INSPECTION =0;
+
+    public static final int UNQUALIFIED=1;
+
+    public static final int QUALIFIED=2;
 }

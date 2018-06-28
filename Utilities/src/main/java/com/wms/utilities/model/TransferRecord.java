@@ -22,10 +22,13 @@ public class TransferRecord {
     private BigDecimal targetStorageLocationNewAmount;
     private String targetStorageLocationUnit;
     private BigDecimal targetStorageLocationAmount;
+    private BigDecimal transferAmount;
+    private String transferUnit;
+    private BigDecimal transferUnitAmount;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -184,6 +187,36 @@ public class TransferRecord {
         this.targetStorageLocationAmount = targetStorageLocationAmount;
     }
 
+    @Basic
+    @Column(name = "TransferAmount")
+    public BigDecimal getTransferAmount() {
+        return transferAmount;
+    }
+
+    public void setTransferAmount(BigDecimal transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+    @Basic
+    @Column(name = "TransferUnit")
+    public String getTransferUnit() {
+        return transferUnit;
+    }
+
+    public void setTransferUnit(String transferUnit) {
+        this.transferUnit = transferUnit;
+    }
+
+    @Basic
+    @Column(name = "TransferUnitAmount")
+    public BigDecimal getTransferUnitAmount() {
+        return transferUnitAmount;
+    }
+
+    public void setTransferUnitAmount(BigDecimal transferUnitAmount) {
+        this.transferUnitAmount = transferUnitAmount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -219,6 +252,11 @@ public class TransferRecord {
             return false;
         if (targetStorageLocationAmount != null ? !targetStorageLocationAmount.equals(that.targetStorageLocationAmount) : that.targetStorageLocationAmount != null)
             return false;
+        if (transferAmount != null ? !transferAmount.equals(that.transferAmount) : that.transferAmount != null)
+            return false;
+        if (transferUnit != null ? !transferUnit.equals(that.transferUnit) : that.transferUnit != null) return false;
+        if (transferUnitAmount != null ? !transferUnitAmount.equals(that.transferUnitAmount) : that.transferUnitAmount != null)
+            return false;
 
         return true;
     }
@@ -241,6 +279,9 @@ public class TransferRecord {
         result = 31 * result + (targetStorageLocationNewAmount != null ? targetStorageLocationNewAmount.hashCode() : 0);
         result = 31 * result + (targetStorageLocationUnit != null ? targetStorageLocationUnit.hashCode() : 0);
         result = 31 * result + (targetStorageLocationAmount != null ? targetStorageLocationAmount.hashCode() : 0);
+        result = 31 * result + (transferAmount != null ? transferAmount.hashCode() : 0);
+        result = 31 * result + (transferUnit != null ? transferUnit.hashCode() : 0);
+        result = 31 * result + (transferUnitAmount != null ? transferUnitAmount.hashCode() : 0);
         return result;
     }
 }
