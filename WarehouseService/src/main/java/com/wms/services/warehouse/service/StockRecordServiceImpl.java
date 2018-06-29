@@ -676,6 +676,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 transferRecord.setTargetStorageLocationOriginalAmount(new BigDecimal(0));
                 transferRecord.setTargetStorageLocationId(sourceStorageLocationId);
                 transferRecord.setTargetStorageLocationNewAmount(amount);
+                transferRecord.setTargetStorageLocationAmount(unitAmount);
                 transferRecord.setTransferUnit(unit);
                 transferRecord.setTransferUnitAmount(unitAmount);
                 transferRecord.setTransferAmount(amount);
