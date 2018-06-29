@@ -185,7 +185,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setTargetStorageLocationNewAmount(stockRecord.getAmount());
                 transferRecord.setTransferUnit(stockRecords[i].getUnit());
                 transferRecord.setTransferUnitAmount(stockRecords[i].getUnitAmount());
-                transferRecord.setTransferAmount(stockRecord.getAmount().subtract(stockRecords1[0].getAmount()));
+                transferRecord.setTransferAmount(stockRecord.getAmount().subtract(stockRecords1[0].getAmount()).abs());
                 transferRecord.setTargetStorageLocationAmount(stockRecord.getUnitAmount());
                 transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
@@ -426,7 +426,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     transferRecord.setTargetStorageLocationUnit(sourceStorageLocationUnit);
                     transferRecord.setTransferUnit(unit);
                     transferRecord.setTransferUnitAmount(unitAmount);
-                    transferRecord.setTransferAmount(amount);
+                    transferRecord.setTransferAmount(amount.abs());
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
                 }
             }
@@ -783,7 +783,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     transferRecord.setSourceStorageLocationNewAmount(stockRecord.getAmount());
                     transferRecord.setTransferUnit(unit);
                     transferRecord.setTransferUnitAmount(unitAmount);
-                    transferRecord.setTransferAmount(stockRecord.getAmount().subtract(stockRecordSource[i].getAmount()));
+                    transferRecord.setTransferAmount(stockRecord.getAmount().subtract(stockRecordSource[i].getAmount()).abs());
                     //transferRecord.setSourceStockRecordId(stockRecordSource[i].getId());
                     transferRecord.setSupplyId(supplyId);
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
@@ -814,7 +814,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     transferRecord.setSourceStorageLocationNewAmount(stockRecord1.getAmount());
                     transferRecord.setTransferUnit(unit);
                     transferRecord.setTransferUnitAmount(unitAmount);
-                    transferRecord.setTransferAmount(stockRecord1.getAmount().subtract(stockRecordSource[i].getAmount()));
+                    transferRecord.setTransferAmount(stockRecord1.getAmount().subtract(stockRecordSource[i].getAmount()).abs());
                     //transferRecord.setSourceStockRecordId(stockRecordSource[i].getId());
                     transferRecord.setSupplyId(supplyId);
                     transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
