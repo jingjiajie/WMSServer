@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             }
             //修改实收数量，单位或单位数量，或收货库区，更新库存
             if (deltaRealAmount.compareTo(BigDecimal.ZERO) != 0
-                    || oriItem.getUnit().compareTo(warehouseEntryItem.getUnit()) != 0
+                    || !oriItem.getUnit().equals(warehouseEntryItem.getUnit())
                     || oriItem.getUnitAmount().compareTo(warehouseEntryItem.getUnitAmount()) != 0
                     || oriItem.getStorageLocationId() != warehouseEntryItem.getStorageLocationId()) {
                 //如果已经送检，禁止修改入库数量
@@ -163,7 +164,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
         Stream.of(warehouseEntryItems).forEach(
                 (warehouseEntryItem) -> {
                     new Validator("订单数量").min(0).validate(warehouseEntryItem.getExpectedAmount());
-                    new Validator("实收数量").min(0).max(warehouseEntryItem.getExpectedAmount()).validate(warehouseEntryItem.getRealAmount());
+                    new Validator("实收数量").min(0).validate(warehouseEntryItem.getRealAmount());
                     new Validator("单位数量").min(0).validate(warehouseEntryItem.getUnitAmount());
                     new Validator("已分配送检数量").min(0).max(warehouseEntryItem.getRealAmount()).validate(warehouseEntryItem.getInspectionAmount());
                     new Validator("拒收数量").min(0).max(warehouseEntryItem.getExpectedAmount()).validate(warehouseEntryItem.getRefuseAmount());
@@ -284,6 +285,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(不良品移库)");
+            transferStock.setState(1);
             this.stockRecordService.RealTransformStock(accountBook, transferStock);
 
             warehouseEntryItem.setState(WarehouseEntryItemService.UNQUALIFIED);
