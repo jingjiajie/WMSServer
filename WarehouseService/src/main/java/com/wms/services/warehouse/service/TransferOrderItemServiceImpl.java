@@ -149,7 +149,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 throw new WMSServiceException("无法修改移库单条目的实际移动数量，如要操作请新建移库单!");
             }
             // TODO 如果计划移库数量发生变化,还是需要改进
-            if (!transferOrderItem.getScheduledAmount().equals(oriItemViews[0].getScheduledAmount()))//如果计划移库数量发生变化
+            if (transferOrderItem.getScheduledAmount().compareTo(oriItemViews[0].getScheduledAmount())!=0)//如果计划移库数量发生变化
             {
                 if (transferOrderItem.getScheduledAmount().subtract(oriItemViews[0].getRealAmount()).compareTo(new BigDecimal(0))<0)//如果新修改时计划数量小于当前实际已经移动的数量
                 {
@@ -157,7 +157,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 }
                 //如果没有实际数量输入，并且源单位/单位数量发生改变
                 if (transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))==0
-                        &&(!transferOrderItem.getSourceUnit().equals(oriItemViews[0].getSourceUnit())||!transferOrderItem.getSourceUnitAmount().equals(oriItemViews[0].getSourceUnitAmount())))
+                        &&(!transferOrderItem.getSourceUnit().equals(oriItemViews[0].getSourceUnit())||transferOrderItem.getSourceUnitAmount().compareTo(oriItemViews[0].getSourceUnitAmount())!=0))
                 {
                     //更新库存可用数量
                     TransferStock transferStock = new TransferStock();
@@ -188,7 +188,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             {
                 //如果没有实际数量输入，并且源单位/单位数量发生改变
                 if (transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))==0
-                        &&(!transferOrderItem.getSourceUnit().equals(oriItemViews[0].getSourceUnit())||!transferOrderItem.getSourceUnitAmount().equals(oriItemViews[0].getSourceUnitAmount())))
+                        &&(!transferOrderItem.getSourceUnit().equals(oriItemViews[0].getSourceUnit())||transferOrderItem.getSourceUnitAmount().compareTo(oriItemViews[0].getSourceUnitAmount())!=0))
                 {
                     //更新库存可用数量
                     TransferStock transferStock = new TransferStock();
@@ -211,7 +211,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
 
             //如果没有实际移库数量输入，直接跳过.有实际移库数量输入且数量变化才往下执行
-            if(transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))>0&&!transferOrderItem.getRealAmount().equals(oriItemViews[0].getRealAmount()))
+            if(transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))>0&&transferOrderItem.getRealAmount().compareTo(oriItemViews[0].getRealAmount())!=0)
             {
                 //todo 是移库前先把当前一步实际数量加回去可用数量
                 TransferStock fixTransferStock = new TransferStock();
@@ -222,7 +222,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 fixTransferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
                 this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
 
-                if (!transferOrderItem.getUnit().equals(oriItemViews[0].getUnit())||!transferOrderItem.getUnitAmount().equals(oriItemViews[0].getUnitAmount()))//如果传进来update的单位和原来条目单位不一致
+                if (!transferOrderItem.getUnit().equals(oriItemViews[0].getUnit())||transferOrderItem.getUnitAmount().compareTo(oriItemViews[0].getUnitAmount())!=0)//如果传进来update的单位和原来条目单位不一致
                 {
                     if (oriItemViews[0].getRealAmount().compareTo(new BigDecimal(0))!=0) //如果原来已经有移动的货物
                     {
