@@ -90,7 +90,12 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                 throw new WMSServiceException(String.format("移库单正在作业，无法删除(%s)", oriView.getId()));
             }
         }
-        this.transferOrderDAO.remove(accountBook,ids);
+
+        try {
+            this.transferOrderDAO.remove(accountBook,ids);
+        } catch (Throwable ex) {
+            throw new WMSServiceException("删除出库单失败，如果出库单已经被引用，需要先删除引用该出库单的内容，才能删除该出库单");
+        }
     }
 
     @Override
@@ -104,7 +109,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         TransferOrder[] transferOrders = ReflectHelper.createAndCopyFields(transferOrderViews,TransferOrder.class);
 
         if(transferFinishArgs.isAllFinish()){ //整单完成
-            TransferOrderItemView[] transferOrderItemViews = this.transferOrderItemService.find(accountBook,new Condition().addCondition("transferOrderId",new Integer[]{transferFinishArgs.getTransferOrderId()}));
+            TransferOrderItemView[] transferOrderItemViews = this.transferOrderItemService.find(accountBook,new Condition().addCondition("transferOrderId",new Integer[]{transferFinishArgs.getTransferOrderId()}).addCondition("state",TransferOrderItemService.STATE_ALL_FINISH, ConditionItem.Relation.NOT_EQUAL));
             TransferOrderItem[] transferOrderItems = ReflectHelper.createAndCopyFields(transferOrderItemViews,TransferOrderItem.class);
 
 
@@ -118,6 +123,8 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                 transferOrderItem.setRealAmount(transferOrderItem.getScheduledAmount());
             });
             //整单完成所有状态变更为移库完成 2
+            //更新移库单状态,应该是只有一个单子
+
 
             Stream.of(transferOrderItems).forEach(transferOrderItem -> transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH));
 
@@ -142,7 +149,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             TransferFinishItem[] transferFinishItems = transferFinishArgs.getTransferFinishItems();
             Stream.of(transferFinishItems).forEach(transferFinishItem -> {
                 //检查有没有移库单条目
-                this.idChecker.check(TransferOrderItemService.class, accountBook, transferFinishArgs.getTransferOrderId(), "移库单条目");
+                //this.idChecker.check(TransferOrderItemService.class, accountBook, transferFinishArgs.getTransferOrderId(), "移库单条目");
 
 
                 TransferOrderItemView transferOrderItemView = this.transferOrderItemService.find(accountBook, new Condition().addCondition("id",new Integer[]{ transferFinishItem.getTransferOrderItemId()}))[0];
@@ -185,7 +192,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         }
     }
 
-    public void transferSome(String accountBook, List<Integer> ids) {
+    public void transferSome(String accountBook, List<Integer> ids,int personId) {
         if (ids.size() == 0) {
             throw new WMSServiceException("请选择至少一个移库单条目！");
         }
@@ -199,6 +206,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         //todo 更新移库单状态
         //this.update(accountBook, transferOrder);
         TransferFinishArgs transferFinishArgs=new TransferFinishArgs();
+        transferFinishArgs.setPersonId(personId);
         transferFinishArgs.setAllFinish(false);
         transferFinishArgs.setTransferOrderId(transferOrderItemViews[0].getTransferOrderId());
 
@@ -224,13 +232,13 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             new Validator("创建时间").notnull().validate(transferOrder.getCreateTime());
             new Validator("打印次数").min(0).validate(transferOrder.getPrintTimes());
 
-            idChecker.check(WarehouseService.class,accountBook,transferOrder.getWarehouseId(),"仓库");
-                    //.check(PersonService.class,accountBook,transferOrder.getCreatePersonId(),"创建人员");
-            //TODO
-            // if (transferOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-            //        new Condition().addCondition("id", transferOrder.getLastUpdatePersonId())).length == 0) {
-            //    throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)", transferOrder.getLastUpdatePersonId()));
-            //}
+            idChecker.check(WarehouseService.class,accountBook,transferOrder.getWarehouseId(),"仓库")
+                    .check(PersonService.class,accountBook,transferOrder.getCreatePersonId(),"创建人员");
+
+            if (transferOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+                    new Condition().addCondition("id", transferOrder.getLastUpdatePersonId())).length == 0) {
+                throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)", transferOrder.getLastUpdatePersonId()));
+            }
         }));
 
     }
