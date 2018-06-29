@@ -115,7 +115,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             if (oriItemViews.length == 0) {
                 throw new WMSServiceException(String.format("移库单条目不存在，修改失败(%d)", transferOrderItem.getId()));
             }
-            if(transferOrderItem.getState()==TransferOrderItemService.STATE_ALL_FINISH){
+            if(oriItemViews[0].getState()==TransferOrderItemService.STATE_ALL_FINISH){
                 throw new WMSServiceException("移库单条目已经完成作业，无法再修改条目!");
             }
             int transferOrderId = transferOrderItem.getTransferOrderId();
