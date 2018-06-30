@@ -251,6 +251,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(正品移库)");
+            transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.QUALIFIED);
             this.stockRecordService.RealTransformStock(accountBook, transferStock);
 
@@ -291,7 +292,8 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(不良品移库)");
-            transferStock.setState(1);
+            transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
+            transferStock.setNewState(TransferStock.UNQUALIFIED);
             this.stockRecordService.RealTransformStock(accountBook, transferStock);
 
             warehouseEntryItem.setState(WarehouseEntryItemService.UNQUALIFIED);
