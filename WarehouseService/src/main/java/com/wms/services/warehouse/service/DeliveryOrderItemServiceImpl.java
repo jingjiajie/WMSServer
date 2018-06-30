@@ -184,7 +184,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 throw new WMSServiceException(String.format("出库单条目不存在，删除失败(%d)", ids[i]));
             }
             DeliveryOrderItemView oriItemView=oriItemViews[0];
-            if (oriItemView.getState()==0&&oriItemView.getRealAmount().compareTo(BigDecimal.ZERO)==0)
+            if (oriItemView.getState()==0)
             {
                 //删除了未经过操作的单，更新库存可用数量
                 TransferStock transferStock = new TransferStock();
@@ -195,9 +195,28 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setUnitAmount(oriItemView.getUnitAmount());
                 this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
 
-            }else
-            {
-                throw new WMSServiceException(String.format("出库单正在作业，无法删除(%s)", oriItemView.getId()));
+            }else{
+
+                TransferStock transferStock=new TransferStock();
+                transferStock.setAmount(oriItemView.getRealAmount());//TODO 待定
+                transferStock.setSourceStorageLocationId(oriItemView.getSourceStorageLocationId());
+                transferStock.setRelatedOrderNo(oriItemView.getDeliveryOrderNo());
+                transferStock.setSupplyId(oriItemView.getSupplyId());
+                transferStock.setUnit(oriItemView.getUnit());
+                transferStock.setUnitAmount(oriItemView.getUnitAmount());
+                transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                transferStock.setState(2);
+                this.stockRecordService.addAmount(accountBook, transferStock);
+
+
+                TransferStock fixTransferStock = new TransferStock();
+                fixTransferStock.setModifyAvailableAmount(oriItemView.getScheduledAmount().subtract(oriItemView.getRealAmount()));//实际要移动的数量加回到可用数量
+                fixTransferStock.setSourceStorageLocationId(oriItemView.getSourceStorageLocationId());//修改源库位
+                fixTransferStock.setSupplyId(oriItemView.getSupplyId());
+                fixTransferStock.setUnit(oriItemView.getUnit());
+                fixTransferStock.setUnitAmount(oriItemView.getUnitAmount());
+                this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
+
 
             }
         }
