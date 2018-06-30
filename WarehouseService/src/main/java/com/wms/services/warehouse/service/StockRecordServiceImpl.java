@@ -340,7 +340,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setState(oldState);
         StockRecord[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
         //StockRecordView[]   stockRecordSource2=this.find(accountBook,new Condition().addCondition("id",new Integer[]{512}));
-        StockRecord[]   stockRecordSource3=stockRecordDAO.findTable(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordSource1[0].getId()}));
+        //StockRecord[]   stockRecordSource3=stockRecordDAO.findTable(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordSource1[0].getId()}));
         if(stockRecordSource1.length==0)
         {
             //throw new WMSServiceException("没查到符合要求的源库存记录，请检查相关信息！");
