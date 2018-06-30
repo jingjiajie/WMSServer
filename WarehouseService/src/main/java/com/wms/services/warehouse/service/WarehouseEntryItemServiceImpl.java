@@ -251,6 +251,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(正品移库)");
+            transferStock.setNewState(TransferStock.QUALIFIED);
             this.stockRecordService.RealTransformStock(accountBook, transferStock);
 
             warehouseEntryItem.setState(WarehouseEntryItemService.QUALIFIED);
