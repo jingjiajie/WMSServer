@@ -262,9 +262,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
         if (transferOrderItems.length==0){
             if(transferType==1){
-            throw new WMSServiceException("当前备货安全库存充足，无需备货");
+            throw new WMSServiceException("当前备货库存充足或备货源库位上库存不足，未能自动生成备货，请检查备货库存设置和库存记录");
             }else if(transferType==0){
-                throw new WMSServiceException("当前上架安全库存充足，无需商家");
+                throw new WMSServiceException("当前上架库存充足或备货源库位上库存不足，未能自动生成上架，请检查上架库存设置和库存记录");
             }
         }
 
