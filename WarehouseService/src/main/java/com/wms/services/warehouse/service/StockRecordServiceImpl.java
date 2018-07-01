@@ -53,7 +53,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         for(int i=0;i<stockRecords.length;i++) {
             new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
             new Validator("单位").notnull().notEmpty().validate(stockRecords[i].getUnit());
-            new Validator("单位数量").notnull().notEmpty().min(0).validate(stockRecords[i].getUnitAmount());
+            new Validator("单位数量").notnull().notEmpty().greaterThan(0).validate(stockRecords[i].getUnitAmount());
             new Validator("存货日期").notnull().validate(stockRecords[i].getInventoryDate());
         }
 
@@ -101,7 +101,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         for(int i=0;i<stockRecords.length;i++) {
             new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
             new Validator("单位").notnull().notEmpty().validate(stockRecords[i].getUnit());
-            new Validator("单位数量").notnull().notEmpty().min(0).validate(stockRecords[i].getUnitAmount());
+            new Validator("单位数量").notnull().notEmpty().greaterThan(0).validate(stockRecords[i].getUnitAmount());
         }
         for(int i=0;i<stockRecords.length;i++) {
             for (int j = i+1; j < stockRecords.length; j++)
@@ -1774,19 +1774,23 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             sql.append(" s2.time<=\" ");
             sql.append(stockRecordFindByTimes[i].getEndTime());
             sql.append(" \" ");
+            sql.append("and");
+            sql.append("s2.state=");
+            sql.append(stockRecordFindByTimes[i].getState());
             if(i!=stockRecordFindByTimes.length-1){
                 sql.append(" or ");
             }
         }
+
         Query query=null;
             String sql1="SELECT s4.* ,sum(s4.amount) as Sum from \n" +
                     "(SELECT s1.* FROM StockRecordView AS s1 \n" +
                     "INNER JOIN\n" +
-                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.storagelocationid,s2.supplyid  FROM StockRecordView As s2\n" +
+                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.storagelocationid,s2.supplyid,s2.state  FROM StockRecordView As s2\n" +
                     "where " +sql+
                     "GROUP BY s2.SupplyID,s2.BatchNo,s2.unit,s2.UnitAmount,s2.StorageLocationID) AS s3 \n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time\n" +
-                    "and s1.SupplyID=s3.supplyid and s1.StorageLocationID=s3.StorageLocationID   AND s1.BatchNo=s3.BatchNo) AS s4\n" +
+                    "and s1.SupplyID=s3.supplyid and s1.StorageLocationID=s3.StorageLocationID   AND s1.BatchNo=s3.BatchNo and s1.state=s3.state) AS s4\n" +
                     "GROUp BY s4.supplyid,s4.unit,s4.storagelocationid";
         session.flush();
         query=session.createNativeQuery(sql1).addEntity(StockRecordViewAndSum.class);
