@@ -53,7 +53,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         for(int i=0;i<stockRecords.length;i++) {
             new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
             new Validator("单位").notnull().notEmpty().validate(stockRecords[i].getUnit());
-            new Validator("单位数量").notnull().notEmpty().min(0).validate(stockRecords[i].getUnitAmount());
+            new Validator("单位数量").notnull().notEmpty().greaterThan(0).validate(stockRecords[i].getUnitAmount());
             new Validator("存货日期").notnull().validate(stockRecords[i].getInventoryDate());
         }
 
@@ -101,7 +101,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         for(int i=0;i<stockRecords.length;i++) {
             new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
             new Validator("单位").notnull().notEmpty().validate(stockRecords[i].getUnit());
-            new Validator("单位数量").notnull().notEmpty().min(0).validate(stockRecords[i].getUnitAmount());
+            new Validator("单位数量").notnull().notEmpty().greaterThan(0).validate(stockRecords[i].getUnitAmount());
         }
         for(int i=0;i<stockRecords.length;i++) {
             for (int j = i+1; j < stockRecords.length; j++)

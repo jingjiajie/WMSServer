@@ -203,8 +203,11 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
                 stockTakingOrderItem.setRealAmount((BigDecimal) objects[25]);}
             else if(comment.equals("合格品数量")) {
                 stockTakingOrderItem.setSupplyId((int) objects[3]);
-                stockTakingOrderItem.setAmount((BigDecimal) objects[objects.length-1]);
-                stockTakingOrderItem.setRealAmount((BigDecimal) objects[objects.length-1]);
+                if(objects[26]==null){
+                stockTakingOrderItem.setAmount((BigDecimal) objects[25]);
+                stockTakingOrderItem.setRealAmount((BigDecimal) objects[25]);}
+                else{stockTakingOrderItem.setAmount((BigDecimal) objects[26]);
+                    stockTakingOrderItem.setRealAmount((BigDecimal) objects[26]);}
             }
             stockTakingOrderItemList.add(stockTakingOrderItem);
         }
