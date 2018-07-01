@@ -91,8 +91,9 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         });
         //添加到数据库中
         int[] ids = this.deliveryOrderItemDAO.add(accountBook, deliveryOrderItems);
+        this.updateDeliveryOrder(accountBook,deliveryOrderItems[0].getDeliveryOrderId() ,deliveryOrderItems[0].getPersonId());
         return ids;//仅返回iDs
-        //return this.deliveryOrderItemDAO.add(accountBook,deliveryOrderItems);
+
     }
 
     @Override
@@ -114,19 +115,91 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             if(foundOriItems.length == 0) throw new WMSServiceException(String.format("出库单条目不存在，请重新提交！",deliveryOrderItem.getId()));//排除异常
             DeliveryOrderItemView oriItemView = foundOriItems[0];
 
-            //无法中途修改出库库位
-            if (deliveryOrderItem.getSourceStorageLocationId()!=oriItemView.getSourceStorageLocationId())
+            //TODO 中途修改出库库位/单位/单位数量
+            if(deliveryOrderItem.getSourceStorageLocationId()!=oriItemView.getSourceStorageLocationId()
+                    ||deliveryOrderItem.getUnitAmount().compareTo(oriItemView.getUnitAmount())!=0
+                    ||!deliveryOrderItem.getUnit().equals(oriItemView.getUnit()))
             {
-                throw new WMSServiceException("无法修改出库单条目的出库库位:(%s)，如要操作请新建出库单"+oriItemView.getSourceStorageLocationName());
+                if (oriItemView.getState()==0)
+                {
+                    //删除了未经过操作的单，更新库存可用数量
+                    TransferStock transferStock = new TransferStock();
+                    transferStock.setModifyAvailableAmount(oriItemView.getScheduledAmount());//计划数量
+                    transferStock.setSourceStorageLocationId(oriItemView.getSourceStorageLocationId());//修改源库位可用数量
+                    transferStock.setSupplyId(oriItemView.getSupplyId());
+                    transferStock.setUnitAmount(oriItemView.getUnitAmount());
+                    transferStock.setUnit(oriItemView.getUnit());
+                    this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
+
+                }else{
+
+                    TransferStock transferStock=new TransferStock();
+                    transferStock.setAmount(oriItemView.getRealAmount());//TODO 待定
+                    transferStock.setSourceStorageLocationId(oriItemView.getSourceStorageLocationId());
+                    transferStock.setRelatedOrderNo(oriItemView.getDeliveryOrderNo());
+                    transferStock.setSupplyId(oriItemView.getSupplyId());
+                    transferStock.setUnit(oriItemView.getUnit());
+                    transferStock.setUnitAmount(oriItemView.getUnitAmount());
+                    transferStock.setState(2);
+                    transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+
+                    this.stockRecordService.addAmount(accountBook, transferStock);
+
+
+                    TransferStock thefixTransferStock = new TransferStock();
+                    thefixTransferStock.setModifyAvailableAmount(oriItemView.getScheduledAmount().subtract(oriItemView.getRealAmount()));//实际要回到可用数量
+                    thefixTransferStock.setSourceStorageLocationId(oriItemView.getSourceStorageLocationId());//修改源库位
+                    thefixTransferStock.setSupplyId(oriItemView.getSupplyId());
+                    thefixTransferStock.setUnit(oriItemView.getUnit());
+                    thefixTransferStock.setUnitAmount(oriItemView.getUnitAmount());
+                    this.stockRecordService.modifyAvailableAmount(accountBook, thefixTransferStock);
+
+
+                }
+
+
+                if (deliveryOrderItem.getRealAmount().compareTo(new BigDecimal(0))==0) {
+
+                    //没有实际数输入就只改变可用数量
+                    TransferStock transferStock = new TransferStock();
+                    transferStock.setModifyAvailableAmount(new BigDecimal(0).subtract(deliveryOrderItem.getScheduledAmount()));
+                    transferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
+                    //transferStock.setRelatedOrderNo(deliveryOrderView.getNo());
+                    transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
+                    transferStock.setUnit(deliveryOrderItem.getUnit());
+                    transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);//仅修改可用数量
+                    deliveryOrderItem.setState(DeliveryOrderService.STATE_IN_LOADING);
+                }
+                else{
+                    //先移动
+                    TransferStock transferStock = new TransferStock();
+                    transferStock.setAmount(new BigDecimal(0).subtract(deliveryOrderItem.getRealAmount()));
+                    transferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
+                    transferStock.setRelatedOrderNo(deliveryOrderView.getNo());
+                    transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
+                    transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    transferStock.setUnit(deliveryOrderItem.getUnit());
+                    transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                    this.stockRecordService.addAmount(accountBook, transferStock);//直接改数
+
+                    //再改可用数量
+                    TransferStock rdTransferStock = new TransferStock();
+                    rdTransferStock.setModifyAvailableAmount(deliveryOrderItem.getScheduledAmount().subtract(deliveryOrderItem.getRealAmount()));
+                    rdTransferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
+                    rdTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
+                    rdTransferStock.setUnit(deliveryOrderItem.getUnit());
+                    rdTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    this.stockRecordService.modifyAvailableAmount(accountBook, rdTransferStock);//直接改可用数量
+                    deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
+                }
             }
-            if (deliveryOrderItem.getRealAmount().compareTo(oriItemView.getRealAmount())<0)
-            {
-                throw new WMSServiceException("无法修改出库单条目的实际移动数量，如要操作请新建移库单");
-            }
+            else{
+
 
             if (deliveryOrderItem.getScheduledAmount().compareTo(oriItemView.getScheduledAmount())!=0)//如果计划移库数量发生变化
             {
-                if (deliveryOrderItem.getScheduledAmount().subtract(oriItemView.getRealAmount()).compareTo(new BigDecimal(0))<00)//如果新修改时计划数量小于当前实际已经移动的数量
+                if (deliveryOrderItem.getScheduledAmount().subtract(oriItemView.getRealAmount()).compareTo(new BigDecimal(0))<0)//如果新修改时计划数量小于当前实际已经移动的数量
                 {
                     throw new WMSServiceException(String.format("出库单条目计划数量不能小于实际数量！出库单号：(%s)",deliveryOrderView.getNo()));
                 }
@@ -170,8 +243,10 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             if (deliveryOrderItem.getScheduledAmount().equals(deliveryOrderItem.getRealAmount())){
                 deliveryOrderItem.setState(DeliveryOrderService.STATE_ALL_LOADING);
             }
+            }
         });
         this.deliveryOrderItemDAO.update(accountBook,deliveryOrderItems);
+        this.updateDeliveryOrder(accountBook,deliveryOrderItems[0].getDeliveryOrderId() ,deliveryOrderItems[0].getPersonId());
     }
 
     @Override
@@ -375,5 +450,32 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
 
     }
 
+    public void updateDeliveryOrder( String accountBook,int deliveryOrderId ,int lastUpdatePersonId){
+        //TODO idChecker.check(PersonService.class,accountBook,lastUpdatePersonId," 人员");
+        DeliveryOrderView[] deliveryOrderViews= deliveryOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{deliveryOrderId}));
+        DeliveryOrder[] deliveryOrders = ReflectHelper.createAndCopyFields(deliveryOrderViews,DeliveryOrder.class);
+        if(deliveryOrderViews.length==0){
+            throw new WMSServiceException("没有找到要更新的出库单！");
+        }
+        DeliveryOrder deliveryOrder=deliveryOrders[0];
+        deliveryOrder.setLastUpdatePersonId(lastUpdatePersonId);
+        deliveryOrder.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+
+        //更新移库单状态,应该是只有一个单子
+        boolean judgeState =true;
+        DeliveryOrderItem[] allItems = this.deliveryOrderItemDAO.findTable(accountBook,new Condition().addCondition("deliveryOrderId",deliveryOrder.getId(), ConditionItem.Relation.IN));
+        for (int i=0;i<allItems.length;i++){
+            if (allItems[i].getState()!=DeliveryOrderService.STATE_ALL_LOADING){
+                judgeState=false;
+            }
+        }
+        if (judgeState){
+            deliveryOrder.setState(DeliveryOrderService.STATE_ALL_LOADING);
+        }else{
+            deliveryOrder.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
+        }
+
+        deliveryOrderService.update(accountBook,new DeliveryOrder[]{deliveryOrder});
+    }
 
 }

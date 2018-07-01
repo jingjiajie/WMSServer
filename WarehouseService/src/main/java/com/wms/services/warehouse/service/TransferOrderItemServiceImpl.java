@@ -122,13 +122,13 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)", transferOrderId));
             }
             TransferOrderView transferOrderView = foundTransferOrders[0];
-            
+
 
             //TODO 如果传进来update的源库位目标库位什么都都都不一样
             if(transferOrderItem.getSourceStorageLocationId()!=oriItemViews[0].getSourceStorageLocationId()
                     ||transferOrderItem.getTargetStorageLocationId()!=oriItemViews[0].getTargetStorageLocationId()
                     ||transferOrderItem.getSourceUnitAmount().compareTo(oriItemViews[0].getSourceUnitAmount())!=0
-                    ||!transferOrderItem.getSourceUnit().equals(oriItemViews[0].getSourceStorageLocationId()))
+                    ||!transferOrderItem.getSourceUnit().equals(oriItemViews[0].getSourceUnit()))
             {
 
                 //TODO 把之前的货物在库存里移动回去
