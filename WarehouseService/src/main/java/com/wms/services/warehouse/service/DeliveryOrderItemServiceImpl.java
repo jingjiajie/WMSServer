@@ -124,11 +124,11 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 throw new WMSServiceException("无法修改出库单条目的实际移动数量，如要操作请新建移库单");
             }
 
-            if (!deliveryOrderItem.getScheduledAmount().equals(oriItemView.getScheduledAmount()))//如果计划移库数量发生变化
+            if (deliveryOrderItem.getScheduledAmount().compareTo(oriItemView.getScheduledAmount())!=0)//如果计划移库数量发生变化
             {
-                if (deliveryOrderItem.getScheduledAmount().subtract(oriItemView.getRealAmount()).compareTo(new BigDecimal(0))<=0)//如果新修改时计划数量小于当前实际已经移动的数量
+                if (deliveryOrderItem.getScheduledAmount().subtract(oriItemView.getRealAmount()).compareTo(new BigDecimal(0))<00)//如果新修改时计划数量小于当前实际已经移动的数量
                 {
-                    throw new WMSServiceException(String.format("无法修改出库单条目计划数量单号：(%s)，装车作业基本完成，如需操作请新建移库单作业",deliveryOrderView.getNo()));
+                    throw new WMSServiceException(String.format("出库单条目计划数量不能小于实际数量！出库单号：(%s)",deliveryOrderView.getNo()));
                 }
                 //否则修改计划移库数量并同步到库存记录可用数量
                 TransferStock fixTransferStock = new TransferStock();
@@ -238,7 +238,8 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 (deliveryOrderItem)->{
                     new Validator("计划装车数量（个）").min(0).validate(deliveryOrderItem.getScheduledAmount());
                     new Validator("实际装车数量（个）").min(0).max(deliveryOrderItem.getScheduledAmount().intValue()).validate(deliveryOrderItem.getRealAmount());
-                    new Validator("单位数量").min(0).validate(deliveryOrderItem.getUnitAmount());
+                    new Validator("单位数量").greaterThan(0).validate(deliveryOrderItem.getUnitAmount());
+                    new Validator("单位").notnull().validate(deliveryOrderItem.getUnit());
                     new Validator("状态").min(0).max(5).validate(deliveryOrderItem.getState());
                 }
         );

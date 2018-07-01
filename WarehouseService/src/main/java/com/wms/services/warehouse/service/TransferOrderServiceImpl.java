@@ -127,8 +127,8 @@ public class TransferOrderServiceImpl implements TransferOrderService{
 
 
             Stream.of(transferOrderItems).forEach(transferOrderItem -> transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH));
-
-            this.transferOrderItemService.update(accountBook, transferOrderItems);
+            if(transferOrderItems.length>0){
+            this.transferOrderItemService.update(accountBook, transferOrderItems);}
             //更新移库单状态
             Stream.of(transferOrders).forEach(transferOrder -> {
                 if (transferOrder.getState() ==TransferOrderItemService.STATE_ALL_FINISH) {
