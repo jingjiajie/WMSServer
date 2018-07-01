@@ -56,6 +56,8 @@ public class StockRecordServiceImpl implements StockRecordService {
             new Validator("单位数量").notnull().notEmpty().min(0).validate(stockRecords[i].getUnitAmount());
             new Validator("存货日期").notnull().validate(stockRecords[i].getInventoryDate());
         }
+
+
         //外键检测
         Stream.of(stockRecords).forEach(
                 (stockRecord)->{
@@ -80,6 +82,16 @@ public class StockRecordServiceImpl implements StockRecordService {
             stockRecords[i].setTime(new Timestamp(System.currentTimeMillis()));
             stockRecords[i].setBatchNo(this.batchTransfer(stockRecords[i].getInventoryDate()));
         }
+        for(int i=0;i<stockRecords.length;i++) {
+            for (int j = i+1; j < stockRecords.length; j++)
+                if (stockRecords[i].getUnitAmount().compareTo(stockRecords[j].getUnitAmount()) == 0 && stockRecords[i].getSupplyId() == stockRecords[j].getSupplyId() && stockRecords[i].getState() == stockRecords[j].getState() & stockRecords[i].getStorageLocationId() == stockRecords[j].getStorageLocationId() && stockRecords[i].getUnit().compareTo(stockRecords[j].getUnit()) == 0&&stockRecords[i].getBatchNo().equals(stockRecords[j].getBatchNo())) {
+                    SupplyView[] supplyViews=this.supplyService.find(accountBook,new Condition().addCondition("id",stockRecords[i].getSupplyId()));
+                    if(supplyViews.length==0){
+                        throw new WMSServiceException("查询的供货不存在！");
+                    }
+                    throw new WMSServiceException("列表中有相同物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecords[i].getUnit()+"”单位数量：“"+stockRecords[i].getUnitAmount()+"”批号：“"+stockRecords[i].getBatchNo()+"”检测状态：“"+this.stateTransfer(stockRecords[i].getState())+"“）尝试向同一库位添加，请合并相同条目的数量和可用数量后添加！" );
+                }
+        }
         return stockRecordDAO.add(accountBook,stockRecords);
     }
 
@@ -90,6 +102,16 @@ public class StockRecordServiceImpl implements StockRecordService {
             new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
             new Validator("单位").notnull().notEmpty().validate(stockRecords[i].getUnit());
             new Validator("单位数量").notnull().notEmpty().min(0).validate(stockRecords[i].getUnitAmount());
+        }
+        for(int i=0;i<stockRecords.length;i++) {
+            for (int j = i+1; j < stockRecords.length; j++)
+                if (stockRecords[i].getUnitAmount().compareTo(stockRecords[j].getUnitAmount()) == 0 && stockRecords[i].getSupplyId() == stockRecords[j].getSupplyId() && stockRecords[i].getState() == stockRecords[j].getState() & stockRecords[i].getStorageLocationId() == stockRecords[j].getStorageLocationId() && stockRecords[i].getUnit().compareTo(stockRecords[j].getUnit()) == 0) {
+                    SupplyView[] supplyViews=this.supplyService.find(accountBook,new Condition().addCondition("id",stockRecords[i].getSupplyId()));
+                    if(supplyViews.length==0){
+                        throw new WMSServiceException("查询的供货不存在！");
+                    }
+                throw new WMSServiceException("列表中有相同的物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecords[i].getUnit()+"”单位数量：“"+stockRecords[i].getUnitAmount()+"”检测状态：“"+this.stateTransfer(stockRecords[i].getState())+"“）尝试向同一库位添加，请合并相同条目的数量和可用数量后添加！" );
+            }
         }
         //外键检测
         Stream.of(stockRecords).forEach(
