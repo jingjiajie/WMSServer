@@ -91,7 +91,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         });
         //添加到数据库中
         int[] ids = this.deliveryOrderItemDAO.add(accountBook, deliveryOrderItems);
-        this.updateDeliveryOrder(accountBook,deliveryOrderItems[0].getDeliveryOrderId() ,deliveryOrderItems[0].getPersonId());
+        this.updateDeliveryOrder(accountBook,deliveryOrderItems[0].getDeliveryOrderId() ,-1);
         return ids;//仅返回iDs
 
     }
@@ -246,11 +246,12 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             }
         });
         this.deliveryOrderItemDAO.update(accountBook,deliveryOrderItems);
-        this.updateDeliveryOrder(accountBook,deliveryOrderItems[0].getDeliveryOrderId() ,deliveryOrderItems[0].getPersonId());
+        this.updateDeliveryOrder(accountBook,deliveryOrderItems[0].getDeliveryOrderId() ,-1);
     }
 
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
+        int curdeliveryOrderId=-1;
         for (int i=0;i<ids.length;i++) {
             //idChecker.check(this.getClass(), accountBook, id, "删除的移库单条目");
 
@@ -259,6 +260,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 throw new WMSServiceException(String.format("出库单条目不存在，删除失败(%d)", ids[i]));
             }
             DeliveryOrderItemView oriItemView=oriItemViews[0];
+            curdeliveryOrderId=oriItemView.getDeliveryOrderId();
             if (oriItemView.getState()==0)
             {
                 //删除了未经过操作的单，更新库存可用数量
@@ -300,6 +302,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         } catch (Throwable ex) {
             throw new WMSServiceException("删除失败，如果条目已经被引用，需要先删除引用项目");
         }
+        this.updateDeliveryOrder(accountBook,curdeliveryOrderId ,-1);
     }
 
     @Override
@@ -458,22 +461,33 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             throw new WMSServiceException("没有找到要更新的出库单！");
         }
         DeliveryOrder deliveryOrder=deliveryOrders[0];
+        if (lastUpdatePersonId!=-1) {
         deliveryOrder.setLastUpdatePersonId(lastUpdatePersonId);
+        }
+
         deliveryOrder.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
 
         //更新移库单状态,应该是只有一个单子
-        boolean judgeState =true;
-        DeliveryOrderItem[] allItems = this.deliveryOrderItemDAO.findTable(accountBook,new Condition().addCondition("deliveryOrderId",deliveryOrder.getId(), ConditionItem.Relation.IN));
-        for (int i=0;i<allItems.length;i++){
-            if (allItems[i].getState()!=DeliveryOrderService.STATE_ALL_LOADING){
-                judgeState=false;
-            }
-        }
-        if (judgeState){
+        DeliveryOrderItem[] allItems = this.deliveryOrderItemDAO.findTable(accountBook,new Condition()
+                .addCondition("deliveryOrderId",deliveryOrder.getId(), ConditionItem.Relation.IN));
+
+        DeliveryOrderItem[] allLoadingItems = this.deliveryOrderItemDAO.findTable(accountBook,new Condition()
+                .addCondition("deliveryOrderId",deliveryOrder.getId(), ConditionItem.Relation.IN)
+                .addCondition("state",DeliveryOrderService.STATE_ALL_LOADING, ConditionItem.Relation.IN));
+
+        DeliveryOrderItem[] zeroItems = this.deliveryOrderItemDAO.findTable(accountBook,new Condition()
+                .addCondition("deliveryOrderId",deliveryOrder.getId(), ConditionItem.Relation.IN)
+                .addCondition("state",DeliveryOrderService.STATE_IN_LOADING, ConditionItem.Relation.IN));
+
+        if (allItems.length>0&&allLoadingItems.length==allItems.length){
             deliveryOrder.setState(DeliveryOrderService.STATE_ALL_LOADING);
-        }else{
+        }else if (allItems.length==0||zeroItems.length==allItems.length){
+            deliveryOrder.setState(DeliveryOrderService.STATE_IN_LOADING);
+        }
+        else{
             deliveryOrder.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
         }
+
 
         deliveryOrderService.update(accountBook,new DeliveryOrder[]{deliveryOrder});
     }
