@@ -19,6 +19,8 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -69,38 +71,41 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
 
     @Override
     public void update(String accountBook, WarehouseEntryItem[] warehouseEntryItems, boolean allowUpdateInspectionAmount) throws WMSServiceException {
-        WarehouseEntryView warehouseEntryView = this.getWarehouseEntryView(accountBook, warehouseEntryItems);
+        //WarehouseEntryView warehouseEntryView = this.getWarehouseEntryView(accountBook, warehouseEntryItems);
         this.validateEntities(accountBook, warehouseEntryItems);
+        int[] ids = Stream.of(warehouseEntryItems).mapToInt(WarehouseEntryItem::getId).toArray();
+        WarehouseEntryItemView[] oriItemViews =  this.find(accountBook,new Condition().addCondition("id",ReflectHelper.intArrayToIntegerArray(ids),ConditionItem.Relation.IN));
+
         Stream.of(warehouseEntryItems).forEach(warehouseEntryItem -> {
-            WarehouseEntryItem foundOriItem = this.warehouseEntryItemDAO.get(accountBook, warehouseEntryItem.getId());
-            if (foundOriItem == null)
+            WarehouseEntryItemView oriItemView = Stream.of(oriItemViews).filter(item->item.getId()==warehouseEntryItem.getId()).findFirst().orElse(null);
+            if (oriItemView == null) {
                 throw new WMSServiceException(String.format("入库单条目不存在，请重新提交！", warehouseEntryItem.getId()));
-            WarehouseEntryItem oriItem = foundOriItem;
-            BigDecimal deltaRealAmount = warehouseEntryItem.getRealAmount().subtract(oriItem.getRealAmount());
+            }
+            BigDecimal deltaRealAmount = warehouseEntryItem.getRealAmount().subtract(oriItemView.getRealAmount());
             //不用管拒收数量 BigDecimal deltaRefuseAmount = warehouseEntryItem.getRefuseAmount().subtract(oriItemView.getRefuseAmount());
             //送检数量不能改
-            BigDecimal deltaInspectionAmount = warehouseEntryItem.getInspectionAmount().subtract(oriItem.getInspectionAmount());
+            BigDecimal deltaInspectionAmount = warehouseEntryItem.getInspectionAmount().subtract(oriItemView.getInspectionAmount());
             if (!allowUpdateInspectionAmount && deltaInspectionAmount.compareTo(BigDecimal.ZERO) != 0) {
                 throw new WMSServiceException("不允许修改入库单条目送检数量！");
             }
             //修改实收数量，单位或单位数量，或收货库区，更新库存
             if (deltaRealAmount.compareTo(BigDecimal.ZERO) != 0
-                    || !oriItem.getUnit().equals(warehouseEntryItem.getUnit())
-                    || oriItem.getUnitAmount().compareTo(warehouseEntryItem.getUnitAmount()) != 0
-                    || oriItem.getStorageLocationId() != warehouseEntryItem.getStorageLocationId()) {
+                    || !oriItemView.getUnit().equals(warehouseEntryItem.getUnit())
+                    || oriItemView.getUnitAmount().compareTo(warehouseEntryItem.getUnitAmount()) != 0
+                    || oriItemView.getStorageLocationId() != warehouseEntryItem.getStorageLocationId()) {
                 //如果已经送检，禁止修改入库数量
                 if (warehouseEntryItem.getState() != WarehouseEntryItemService.WAIT_FOR_PUT_IN_STORAGE) {
                     throw new WMSServiceException(String.format("不允许修改已送检/入库的入库单条目(%d)", warehouseEntryItem.getId()));
                 }
                 //冲抵原库存
                 TransferStock transferStockAgainst = new TransferStock();
-                transferStockAgainst.setAmount(oriItem.getRealAmount().negate());
-                transferStockAgainst.setUnit(oriItem.getUnit());
-                transferStockAgainst.setUnitAmount(oriItem.getUnitAmount());
-                transferStockAgainst.setInventoryDate(oriItem.getInventoryDate());
-                transferStockAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
-                transferStockAgainst.setSourceStorageLocationId(oriItem.getStorageLocationId());
-                transferStockAgainst.setSupplyId(oriItem.getSupplyId());
+                transferStockAgainst.setAmount(oriItemView.getRealAmount().negate());
+                transferStockAgainst.setUnit(oriItemView.getUnit());
+                transferStockAgainst.setUnitAmount(oriItemView.getUnitAmount());
+                transferStockAgainst.setInventoryDate(oriItemView.getInventoryDate());
+                transferStockAgainst.setRelatedOrderNo(oriItemView.getWarehouseEntryNo());
+                transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
+                transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
                 this.stockRecordService.addAmount(accountBook, transferStockAgainst);
 
                 //增加新库存
@@ -109,7 +114,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                 transferStockNew.setUnit(warehouseEntryItem.getUnit());
                 transferStockNew.setUnitAmount(warehouseEntryItem.getUnitAmount());
                 transferStockNew.setInventoryDate(warehouseEntryItem.getInventoryDate());
-                transferStockNew.setRelatedOrderNo(warehouseEntryView.getNo());
+                transferStockNew.setRelatedOrderNo(oriItemView.getWarehouseEntryNo());
                 transferStockNew.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId());
                 transferStockNew.setSupplyId(warehouseEntryItem.getSupplyId());
                 this.stockRecordService.addAmount(accountBook, transferStockNew);
@@ -246,6 +251,8 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(正品移库)");
+            transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
+            transferStock.setNewState(TransferStock.QUALIFIED);
             this.stockRecordService.RealTransformStock(accountBook, transferStock);
 
             warehouseEntryItem.setState(WarehouseEntryItemService.QUALIFIED);
@@ -285,7 +292,8 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(不良品移库)");
-            transferStock.setState(1);
+            transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
+            transferStock.setNewState(TransferStock.UNQUALIFIED);
             this.stockRecordService.RealTransformStock(accountBook, transferStock);
 
             warehouseEntryItem.setState(WarehouseEntryItemService.UNQUALIFIED);

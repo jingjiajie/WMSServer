@@ -14,7 +14,7 @@ public interface TransferOrderController
     //void update(String accountBook,TransferOrder transferOrders[]);
     //TransferOrderView[] find(String accountBook, String condStr);
     void transferFinish(String accountBook, TransferFinishArgs transferFinishArgs);
-    void transferSome(String accountBook, List<Integer> ids);
+    void transferSome(String accountBook, List<Integer> ids,int personId);
     //long findCount(String accountBook,String condStr);
     List<TransferOrderAndItems> getPreviewData(String accountBook, String strIDs);
 }

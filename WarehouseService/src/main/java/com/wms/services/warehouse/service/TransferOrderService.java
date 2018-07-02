@@ -17,7 +17,7 @@ public interface TransferOrderService
 
 
     void transferFinish(String accountBook, TransferFinishArgs transferFinishArgs) throws WMSServiceException;
-    void transferSome(String accountBook, List<Integer> ids) throws WMSServiceException;
+    void transferSome(String accountBook, List<Integer> ids,int personId) throws WMSServiceException;
     void transfer(String accountBook, TransferArgs transferArgs) throws WMSServiceException;
     List<TransferOrderAndItems> getPreviewData(String accountBook, List<Integer> transferOrderIDs) throws WMSServiceException;
 }

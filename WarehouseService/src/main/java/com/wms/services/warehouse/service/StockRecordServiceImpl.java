@@ -53,9 +53,11 @@ public class StockRecordServiceImpl implements StockRecordService {
         for(int i=0;i<stockRecords.length;i++) {
             new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
             new Validator("单位").notnull().notEmpty().validate(stockRecords[i].getUnit());
-            new Validator("单位数量").notnull().notEmpty().min(0).validate(stockRecords[i].getUnitAmount());
+            new Validator("单位数量").notnull().notEmpty().greaterThan(0).validate(stockRecords[i].getUnitAmount());
             new Validator("存货日期").notnull().validate(stockRecords[i].getInventoryDate());
         }
+
+
         //外键检测
         Stream.of(stockRecords).forEach(
                 (stockRecord)->{
@@ -80,6 +82,16 @@ public class StockRecordServiceImpl implements StockRecordService {
             stockRecords[i].setTime(new Timestamp(System.currentTimeMillis()));
             stockRecords[i].setBatchNo(this.batchTransfer(stockRecords[i].getInventoryDate()));
         }
+        for(int i=0;i<stockRecords.length;i++) {
+            for (int j = i+1; j < stockRecords.length; j++)
+                if (stockRecords[i].getUnitAmount().compareTo(stockRecords[j].getUnitAmount()) == 0 && stockRecords[i].getSupplyId() == stockRecords[j].getSupplyId() && stockRecords[i].getState() == stockRecords[j].getState() & stockRecords[i].getStorageLocationId() == stockRecords[j].getStorageLocationId() && stockRecords[i].getUnit().compareTo(stockRecords[j].getUnit()) == 0&&stockRecords[i].getBatchNo().equals(stockRecords[j].getBatchNo())) {
+                    SupplyView[] supplyViews=this.supplyService.find(accountBook,new Condition().addCondition("id",stockRecords[i].getSupplyId()));
+                    if(supplyViews.length==0){
+                        throw new WMSServiceException("查询的供货不存在！");
+                    }
+                    throw new WMSServiceException("列表中有相同物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecords[i].getUnit()+"”单位数量：“"+stockRecords[i].getUnitAmount()+"”批号：“"+stockRecords[i].getBatchNo()+"”检测状态：“"+this.stateTransfer(stockRecords[i].getState())+"“）尝试向同一库位添加，请合并相同条目的数量和可用数量后添加！" );
+                }
+        }
         return stockRecordDAO.add(accountBook,stockRecords);
     }
 
@@ -89,7 +101,17 @@ public class StockRecordServiceImpl implements StockRecordService {
         for(int i=0;i<stockRecords.length;i++) {
             new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
             new Validator("单位").notnull().notEmpty().validate(stockRecords[i].getUnit());
-            new Validator("单位数量").notnull().notEmpty().min(0).validate(stockRecords[i].getUnitAmount());
+            new Validator("单位数量").notnull().notEmpty().greaterThan(0).validate(stockRecords[i].getUnitAmount());
+        }
+        for(int i=0;i<stockRecords.length;i++) {
+            for (int j = i+1; j < stockRecords.length; j++)
+                if (stockRecords[i].getUnitAmount().compareTo(stockRecords[j].getUnitAmount()) == 0 && stockRecords[i].getSupplyId() == stockRecords[j].getSupplyId() && stockRecords[i].getState() == stockRecords[j].getState() & stockRecords[i].getStorageLocationId() == stockRecords[j].getStorageLocationId() && stockRecords[i].getUnit().compareTo(stockRecords[j].getUnit()) == 0) {
+                    SupplyView[] supplyViews=this.supplyService.find(accountBook,new Condition().addCondition("id",stockRecords[i].getSupplyId()));
+                    if(supplyViews.length==0){
+                        throw new WMSServiceException("查询的供货不存在！");
+                    }
+                throw new WMSServiceException("列表中有相同的物料“"+supplyViews[0].getMaterialName()+"”(单位：“"+stockRecords[i].getUnit()+"”单位数量：“"+stockRecords[i].getUnitAmount()+"”检测状态：“"+this.stateTransfer(stockRecords[i].getState())+"“）尝试向同一库位添加，请合并相同条目的数量和可用数量后添加！" );
+            }
         }
         //外键检测
         Stream.of(stockRecords).forEach(
@@ -340,7 +362,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         stockRecordFind.setState(oldState);
         StockRecord[]   stockRecordSource1=this.find(accountBook,stockRecordFind);
         //StockRecordView[]   stockRecordSource2=this.find(accountBook,new Condition().addCondition("id",new Integer[]{512}));
-        StockRecord[]   stockRecordSource3=stockRecordDAO.findTable(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordSource1[0].getId()}));
+        //StockRecord[]   stockRecordSource3=stockRecordDAO.findTable(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordSource1[0].getId()}));
         if(stockRecordSource1.length==0)
         {
             //throw new WMSServiceException("没查到符合要求的源库存记录，请检查相关信息！");
@@ -1752,19 +1774,23 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             sql.append(" s2.time<=\" ");
             sql.append(stockRecordFindByTimes[i].getEndTime());
             sql.append(" \" ");
+            sql.append("and");
+            sql.append("s2.state=");
+            sql.append(stockRecordFindByTimes[i].getState());
             if(i!=stockRecordFindByTimes.length-1){
                 sql.append(" or ");
             }
         }
+
         Query query=null;
             String sql1="SELECT s4.* ,sum(s4.amount) as Sum from \n" +
                     "(SELECT s1.* FROM StockRecordView AS s1 \n" +
                     "INNER JOIN\n" +
-                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.storagelocationid,s2.supplyid  FROM StockRecordView As s2\n" +
+                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.storagelocationid,s2.supplyid,s2.state  FROM StockRecordView As s2\n" +
                     "where " +sql+
                     "GROUP BY s2.SupplyID,s2.BatchNo,s2.unit,s2.UnitAmount,s2.StorageLocationID) AS s3 \n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time\n" +
-                    "and s1.SupplyID=s3.supplyid and s1.StorageLocationID=s3.StorageLocationID   AND s1.BatchNo=s3.BatchNo) AS s4\n" +
+                    "and s1.SupplyID=s3.supplyid and s1.StorageLocationID=s3.StorageLocationID   AND s1.BatchNo=s3.BatchNo and s1.state=s3.state) AS s4\n" +
                     "GROUp BY s4.supplyid,s4.unit,s4.storagelocationid";
         session.flush();
         query=session.createNativeQuery(sql1).addEntity(StockRecordViewAndSum.class);
