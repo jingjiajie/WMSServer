@@ -319,8 +319,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     @Override
-    public void RealTransformStock(String accountBook, TransferStock transferStock)
+    public void RealTransformStock(String accountBook, TransferStock transferStock1)
     {
+        TransferStock transferStock=this.transferStockConverse(transferStock1);
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
@@ -924,8 +925,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         return    new Integer[] {storageAreaViews[0].getWarehouseId()};
     }
 
-    public void RealTransferStockUnitFlexible(String accountBook,TransferStock transferStock)
+    public void RealTransferStockUnitFlexible(String accountBook,TransferStock transferStock1)
     {
+        TransferStock transferStock=this.transferStockConverse(transferStock1);
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
@@ -1480,7 +1482,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.state,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID  FROM StockRecordView As s2 \n" +
                     "where s2.WarehouseID=:warehouseId and s2.SupplyID IN "+ids+" AND s2.TIME<:endTime   \n" +
                     "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID,s2.state) as s3\n" +
-                    "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo) \n" +
+                    "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo and s1.state=s3.state) \n" +
                     "as s_all GROUP BY s_all.Unit,s_all.UnitAmount,s_all.StorageLocationID";
         String sqlCheckNewSuffix="\n ) as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId and item.unitamount=q.unitamount and item.unit=q.unit and item.supplyId=q.supplyid and item.storagelocationid=q.storagelocationid and item.comment=\"详细数目\")=0";
         query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
@@ -1561,8 +1563,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID,s2.state  FROM StockRecordView As s2  where s2.WarehouseID=:warehouseId and  s2.TIME <:end1  and s2.SupplyID IN " +ids+
-                "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID) as s3\n" +
-                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo ) \n" +
+                "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationIDs2.state) as s3\n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo ans s1.state=s3.state ) \n" +
                 "as s_all \n" +
                 "GROUP BY s_all.supplyId";
         String sqlCheckNewSuffix="\n ) as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId and item.amount=q.sumamount  and item.supplyId=q.supplyid and item.comment=\"仓库总数\")=0";
@@ -1591,8 +1593,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 "INNER JOIN\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID,s2.state  FROM StockRecordView As s2 \n" +
                 "where s2.WarehouseID=:warehouseId AND s2.TIME<:endTime   "+
-                "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID,s2.SupplyID) as s3\n" +
-                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo) \n" +
+                "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID,s2.SupplyID,s2.state) as s3\n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo and s1.state=s3.state) \n" +
                 "as s_all \n" +
                 "GROUP BY s_all.supplyid";
         String sqlCheckNewSuffix="\n ) as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId and item.amount=q.sumAmount   and item.supplyId=q.supplyid  and item.comment=\"仓库总数\")=0";
@@ -1621,8 +1623,8 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 "INNER JOIN\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID,s2.state  FROM StockRecordView As s2 \n" +
                 "where s2.WarehouseID=:warehouseId AND s2.TIME<:endTime  "+
-                "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID,s2.SupplyID) as s3\n" +
-                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo ) \n" +
+                "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID,s2.SupplyID,s2.state) as s3\n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo and s1.state=s3.state) \n" +
                 "as s_all \n" +
                 "GROUP BY s_all.Unit,s_all.UnitAmount,s_all.StorageLocationID,s_all.supplyid";
         String sqlCheckNewSuffix="\n ) as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId  and item.unitamount=q.unitamount and item.unit=q.unit and item.supplyId=q.supplyid and item.storagelocationid=q.storagelocationid and item.comment=\"详细数目\")=0";
@@ -1834,5 +1836,36 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             case 2:return "合格";
             default:return "未知状态";
         }
+    }
+
+    private TransferStock transferStockConverse(TransferStock transferStock) {
+        BigDecimal amount = transferStock.getAmount();
+        TransferStock transferStock1 = new TransferStock();
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            transferStock1.setState(transferStock.getNewState());
+            transferStock1.setNewState(transferStock.getState());
+            transferStock1.setSourceStorageLocationId(transferStock.getNewStorageLocationId());
+            transferStock1.setNewStorageLocationId(transferStock.getSourceStorageLocationId());
+            transferStock1.setUnitAmount(transferStock.getNewUnitAmount());
+            if (transferStock.getNewUnit() != null && transferStock.getNewUnitAmount() != null) {
+                transferStock1.setUnit(transferStock.getNewUnit());
+                transferStock1.setUnitAmount(transferStock.getNewUnitAmount());
+                transferStock1.setNewUnit(transferStock.getUnit());
+                transferStock1.setNewUnitAmount(transferStock.getUnitAmount());
+            }
+            else{
+                transferStock1.setUnit(transferStock.getUnit());
+                transferStock1.setUnitAmount(transferStock.getUnitAmount());
+                transferStock1.setNewUnit(transferStock.getNewUnit());
+                transferStock1.setNewUnitAmount(transferStock.getNewUnitAmount());
+            }
+            transferStock1.setAmount(transferStock.getAmount().negate());
+            transferStock1.setSupplyId(transferStock.getSupplyId());
+            transferStock1.setRelatedOrderNo(transferStock.getRelatedOrderNo());
+            transferStock1.setInventoryDate(transferStock.getInventoryDate());
+            transferStock1.setBatchNo(transferStock.getBatchNo());
+            transferStock1.setModifyAvailableAmount(transferStock.getModifyAvailableAmount());
+        }
+        return transferStock1;
     }
 }
