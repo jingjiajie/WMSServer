@@ -407,26 +407,31 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
                     new Condition().addCondition("storageLocationId", new Integer[]{itemViews[i].getDefaultDeliveryStorageLocationId()}).addCondition("supplyId", new Integer[]{itemViews[i].getSupplyId()}));
 
-            if (stockRecordViews[0].getAmount().compareTo(itemViews[i].getDefaultDeliveryAmount()) == -1){
-                throw new WMSServiceException(String.format("当前出库库位(%s)库存不足，无法出库", stockRecordViews[0].getStorageLocationName()));
-            }
+            if (stockRecordViews.length!=0) {
+                if (stockRecordViews[0].getAmount().compareTo(itemViews[i].getDefaultDeliveryAmount()) == -1){
+                    throw new WMSServiceException(String.format("当前出库库位(%s)库存不足，无法出库", stockRecordViews[0].getStorageLocationName()));
+                }
 
-            DeliveryOrderItem deliveryOrderItem = new DeliveryOrderItem();
-            deliveryOrderItem.setSourceStorageLocationId(itemViews[i].getDefaultDeliveryStorageLocationId());
-            deliveryOrderItem.setUnit(itemViews[i].getDefaultDeliveryUnit());
-            deliveryOrderItem.setUnitAmount(itemViews[i].getDefaultDeliveryUnitAmount());
-            deliveryOrderItem.setSupplyId(itemViews[i].getSupplyId());
-            deliveryOrderItem.setScheduledAmount(itemViews[i].getDefaultDeliveryAmount());
-            deliveryOrderItem.setPersonId(deliveryByPakage.getPersonId());
-            deliveryOrderItem.setDeliveryOrderId(curDeliveryOrderId);
-            deliveryOrderItem.setRealAmount(BigDecimal.ZERO);
-            deliveryOrderItem.setComment("套餐发货项");
-            deliveryOrderItemList.add(deliveryOrderItem);
+                DeliveryOrderItem deliveryOrderItem = new DeliveryOrderItem();
+                deliveryOrderItem.setSourceStorageLocationId(itemViews[i].getDefaultDeliveryStorageLocationId());
+                deliveryOrderItem.setUnit(itemViews[i].getDefaultDeliveryUnit());
+                deliveryOrderItem.setUnitAmount(itemViews[i].getDefaultDeliveryUnitAmount());
+                deliveryOrderItem.setSupplyId(itemViews[i].getSupplyId());
+                deliveryOrderItem.setScheduledAmount(itemViews[i].getDefaultDeliveryAmount());
+                deliveryOrderItem.setPersonId(deliveryByPakage.getPersonId());
+                deliveryOrderItem.setDeliveryOrderId(curDeliveryOrderId);
+                deliveryOrderItem.setRealAmount(BigDecimal.ZERO);
+                deliveryOrderItem.setComment("套餐发货项");
+                deliveryOrderItemList.add(deliveryOrderItem);
+            }
 
         }
         DeliveryOrderItem[] deliveryOrderItems=null;
         deliveryOrderItems = (DeliveryOrderItem[]) Array.newInstance(DeliveryOrderItem.class,deliveryOrderItemList.size());
         deliveryOrderItemList.toArray(deliveryOrderItems);
+        if (deliveryOrderItems.length==0) {
+            throw new WMSServiceException(String.format("当前发货套餐无可正常发货项，套餐名称（%S），无法创建出库单，请检查发货套餐设置再试！", curPakageViews[0].getName()));
+        }
         this.deliveryOrderItemService.add(accountBook,deliveryOrderItems);
 
     }

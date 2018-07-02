@@ -129,21 +129,21 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             Stream.of(transferOrderItems).forEach(transferOrderItem -> transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH));
             if(transferOrderItems.length>0){
             this.transferOrderItemService.update(accountBook, transferOrderItems);}
-            //更新移库单状态
-            Stream.of(transferOrders).forEach(transferOrder -> {
-                if (transferOrder.getState() ==TransferOrderItemService.STATE_ALL_FINISH) {
-                    throw new WMSServiceException(String.format("当前移库单（%s）已经完成移库，无法重复作业", transferOrder.getNo()));
-                }
-                if (transferOrder.getState() ==TransferOrderItemService.STATE_IN_TRANSFER) {
-                    transferOrder.setState(TransferOrderItemService.STATE_ALL_FINISH);
-                }
-                if (transferOrder.getState() ==TransferOrderItemService.STATE_PARTIAL_FINNISH) {
-                    transferOrder.setState(TransferOrderItemService.STATE_ALL_FINISH);
-                }
-                transferOrder.setLastUpdatePersonId(transferFinishArgs.getPersonId());
-
-            });
-            this.update(accountBook,transferOrders);
+//            //更新移库单状态
+//            Stream.of(transferOrders).forEach(transferOrder -> {
+//                if (transferOrder.getState() ==TransferOrderItemService.STATE_ALL_FINISH) {
+//                    throw new WMSServiceException(String.format("当前移库单（%s）已经完成移库，无法重复作业", transferOrder.getNo()));
+//                }
+//                if (transferOrder.getState() ==TransferOrderItemService.STATE_IN_TRANSFER) {
+//                    transferOrder.setState(TransferOrderItemService.STATE_ALL_FINISH);
+//                }
+//                if (transferOrder.getState() ==TransferOrderItemService.STATE_PARTIAL_FINNISH) {
+//                    transferOrder.setState(TransferOrderItemService.STATE_ALL_FINISH);
+//                }
+//                transferOrder.setLastUpdatePersonId(transferFinishArgs.getPersonId());
+//
+//            });
+//            this.update(accountBook,transferOrders);
         }
         else { //部分完成
             TransferFinishItem[] transferFinishItems = transferFinishArgs.getTransferFinishItems();
@@ -168,26 +168,26 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             });
 
 
-            //更新移库单状态,应该是只有一个单子
-            Stream.of(transferOrders).forEach(transferOrder -> {
-                boolean judgeState =true;
-                TransferOrderItem[] allItems = this.transferOrderItemDAO.findTable(accountBook,new Condition().addCondition("transferOrderId",transferOrder.getId(), ConditionItem.Relation.IN));
-                for (int i=0;i<allItems.length;i++){
-                    if (allItems[i].getState()==TransferOrderItemService.STATE_ALL_FINISH){
-
-                    }
-                    else {
-                        judgeState=false;
-                    }
-                }
-                if (judgeState){
-                    transferOrder.setState(TransferOrderItemService.STATE_ALL_FINISH);
-                }else{
-                    transferOrder.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
-                }
-                transferOrder.setLastUpdatePersonId(transferFinishArgs.getPersonId());
-
-            });
+//            更新移库单状态,应该是只有一个单子
+//            Stream.of(transferOrders).forEach(transferOrder -> {
+//                boolean judgeState =true;
+//                TransferOrderItem[] allItems = this.transferOrderItemDAO.findTable(accountBook,new Condition().addCondition("transferOrderId",transferOrder.getId(), ConditionItem.Relation.IN));
+//                for (int i=0;i<allItems.length;i++){
+//                    if (allItems[i].getState()==TransferOrderItemService.STATE_ALL_FINISH){
+//
+//                    }
+//                    else {
+//                        judgeState=false;
+//                    }
+//                }
+//                if (judgeState){
+//                    transferOrder.setState(TransferOrderItemService.STATE_ALL_FINISH);
+//                }else{
+//                    transferOrder.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
+//                }
+//                transferOrder.setLastUpdatePersonId(transferFinishArgs.getPersonId());
+//
+//            });
             this.update(accountBook, transferOrders);
         }
     }
@@ -196,13 +196,9 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         if (ids.size() == 0) {
             throw new WMSServiceException("请选择至少一个移库单条目！");
         }
-        TransferOrderItemView[] transferOrderItemViews = this.transferOrderItemService.find(accountBook, new Condition().addCondition("id", ids.toArray()));
+        TransferOrderItemView[] transferOrderItemViews = this.transferOrderItemService.find(accountBook, new Condition().addCondition("id", ids.toArray(), ConditionItem.Relation.IN));
         if (transferOrderItemViews.length == 0) return;
-        Stream.of(transferOrderItemViews).forEach(transferOrderItemView -> {
-            if (transferOrderItemView.getState() ==TransferOrderItemService.STATE_ALL_FINISH) {
-                throw new WMSServiceException("入库单条目已经完成移库，请勿重复操作！");
-            }
-        });
+
         //todo 更新移库单状态
         //this.update(accountBook, transferOrder);
         TransferFinishArgs transferFinishArgs=new TransferFinishArgs();
@@ -212,14 +208,21 @@ public class TransferOrderServiceImpl implements TransferOrderService{
 
         List<TransferFinishItem> transferFinishItemsList=new ArrayList();
         for(int i=0;i<transferOrderItemViews.length;i++){
-            TransferFinishItem transferFinishItem=new TransferFinishItem();
-            transferFinishItem.setTransferOrderItemId(transferOrderItemViews[i].getId());
-            transferFinishItem.setPersonId(transferOrderItemViews[i].getPersonId());
-            transferFinishItemsList.add(transferFinishItem);
+            if (transferOrderItemViews[i].getState() !=TransferOrderItemService.STATE_ALL_FINISH) {
+                TransferFinishItem transferFinishItem = new TransferFinishItem();
+                transferFinishItem.setTransferOrderItemId(transferOrderItemViews[i].getId());
+                transferFinishItem.setPersonId(transferOrderItemViews[i].getPersonId());
+                transferFinishItemsList.add(transferFinishItem);
+            }
         }
         TransferFinishItem[] transferFinishItems=null;
         transferFinishItems = (TransferFinishItem[]) Array.newInstance(TransferFinishItem.class,transferFinishItemsList.size());
         transferFinishItemsList.toArray(transferFinishItems);
+
+        if (transferFinishItems.length==0) {
+                throw new WMSServiceException("入库单条目均已经完成移库，请勿重复操作！");
+        }
+
 
         transferFinishArgs.setTransferFinishItems(transferFinishItems);
 
