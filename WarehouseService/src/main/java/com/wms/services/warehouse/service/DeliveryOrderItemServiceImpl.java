@@ -76,6 +76,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setUnit(deliveryOrderItem.getUnit());
                 transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
                 transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                transferStock.setState(2);
                 this.stockRecordService.addAmount(accountBook, transferStock);//直接改数
 
                 //再改可用数量
@@ -181,6 +182,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
                     transferStock.setUnit(deliveryOrderItem.getUnit());
                     transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                    transferStock.setState(2);
                     this.stockRecordService.addAmount(accountBook, transferStock);//直接改数
 
                     //再改可用数量
