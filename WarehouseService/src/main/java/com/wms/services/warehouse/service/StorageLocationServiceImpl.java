@@ -151,24 +151,25 @@ public class StorageLocationServiceImpl implements StorageLocationService{
 
         }*/
         for(int i=0;i<storageLocations.length;i++){
-            Condition cond = new Condition();
-            cond.addCondition("name",new String[]{storageLocations[i].getName()});
-            StorageLocationView[] storageLocationViews=storageLocationDAO.find(accountBook,cond);
             StorageAreaView[] storageAreaViews1=storageAreaService.find(accountBook,new Condition().addCondition("id",storageLocations[i].getStorageAreaId()));
             int warehouseId=storageAreaViews1[0].getWarehouseId();
+            Condition cond = new Condition();
+            cond.addCondition("name",new String[]{storageLocations[i].getName()}).addCondition("warehouseId",warehouseId);
+            cond.addCondition("id",storageLocations[i].getId(), ConditionItem.Relation.NOT_EQUAL);
+            StorageLocationView[] storageLocationViews=storageLocationDAO.find(accountBook,cond);
+            if(storageLocationViews.length!=0){throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());}
+            /*
             for(int j=0;j<storageLocationViews.length;j++){
                 if(storageLocationViews[j].getWarehouseId()==warehouseId)
                 {throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());}
-            }
+            }*/
             Condition cond1 = new Condition();
-            cond.addCondition("name",new String[]{storageLocations[i].getName()});
+            cond1.addCondition("no",new String[]{storageLocations[i].getNo()}).addCondition("warehouseId",warehouseId);
+            cond1.addCondition("id",storageLocations[i].getId(), ConditionItem.Relation.NOT_EQUAL);
             StorageLocationView[] storageLocationViews1=storageLocationDAO.find(accountBook,cond);
-            StorageAreaView[] storageAreaViews2=storageAreaService.find(accountBook,new Condition().addCondition("id",storageLocations[i].getStorageAreaId()));
-            int warehouseId1=storageAreaViews2[0].getWarehouseId();
-            for(int j=0;j<storageLocationViews1.length;j++){
-                if(storageLocationViews[j].getWarehouseId()==warehouseId1)
+            if(storageLocationViews1.length!=0)
                 {throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());}
-            }
+
         }
             storageLocationDAO.update(accountBook, storageLocations);
     }
