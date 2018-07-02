@@ -152,6 +152,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             stockRecordFind.setUnitAmount(stockRecords[i].getUnitAmount());
             stockRecordFind.setInventoryDate(stockRecords[i].getInventoryDate());
             stockRecordFind.setReturnMode("batch");
+            stockRecordFind.setState(stockRecords[i].getState());
             StockRecord[]   stockRecords1=this.find(accountBook,stockRecordFind);
             if(stockRecords1.length==0) {
                 StockRecord stockRecord = new StockRecord();
@@ -166,6 +167,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(stockRecords[i].getAmount());
                 stockRecord.setAvailableAmount(stockRecords[i].getAvailableAmount());
+                stockRecord.setState(stockRecords[i].getState());
                 addId=stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -196,6 +198,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(stockRecords1[0].getAmount().add(stockRecords[i].getAmount()));
                 stockRecord.setAvailableAmount(stockRecords1[0].getAvailableAmount().add(stockRecords[i].getAvailableAmount()));
+                stockRecord.setState(stockRecords[i].getState());
                 addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
