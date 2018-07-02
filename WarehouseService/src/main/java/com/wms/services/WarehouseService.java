@@ -50,7 +50,7 @@ transferStock.setSupplyId(36);
 transferStock.setSourceStorageLocationId(33);
 transferStock.setNewStorageLocationId(23180);
 transferStock.setUnit("个");
-transferStock.setAmount(new BigDecimal(2));
+transferStock.setAmount(new BigDecimal(-100));
 transferStock.setUnitAmount(new BigDecimal(10));
 transferStock.setRelatedOrderNo("adasdadasdasdasdasdsada");
 stockRecordService.RealTransformStock("WMS_Template",transferStock);

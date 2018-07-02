@@ -319,8 +319,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     @Override
-    public void RealTransformStock(String accountBook, TransferStock transferStock)
+    public void RealTransformStock(String accountBook, TransferStock transferStock1)
     {
+        TransferStock transferStock=this.transferStockConverse(transferStock1);
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
@@ -924,8 +925,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         return    new Integer[] {storageAreaViews[0].getWarehouseId()};
     }
 
-    public void RealTransferStockUnitFlexible(String accountBook,TransferStock transferStock)
+    public void RealTransferStockUnitFlexible(String accountBook,TransferStock transferStock1)
     {
+        TransferStock transferStock=this.transferStockConverse(transferStock1);
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
@@ -1834,5 +1836,36 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             case 2:return "合格";
             default:return "未知状态";
         }
+    }
+
+    private TransferStock transferStockConverse(TransferStock transferStock) {
+        BigDecimal amount = transferStock.getAmount();
+        TransferStock transferStock1 = new TransferStock();
+        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+            transferStock1.setState(transferStock.getNewState());
+            transferStock1.setNewState(transferStock.getState());
+            transferStock1.setSourceStorageLocationId(transferStock.getNewStorageLocationId());
+            transferStock1.setNewStorageLocationId(transferStock.getSourceStorageLocationId());
+            transferStock1.setUnitAmount(transferStock.getNewUnitAmount());
+            if (transferStock.getNewUnit() != null && transferStock.getNewUnitAmount() != null) {
+                transferStock1.setUnit(transferStock.getNewUnit());
+                transferStock1.setUnitAmount(transferStock.getNewUnitAmount());
+                transferStock1.setNewUnit(transferStock.getUnit());
+                transferStock1.setNewUnitAmount(transferStock.getUnitAmount());
+            }
+            else{
+                transferStock1.setUnit(transferStock.getUnit());
+                transferStock1.setUnitAmount(transferStock.getUnitAmount());
+                transferStock1.setNewUnit(transferStock.getNewUnit());
+                transferStock1.setNewUnitAmount(transferStock.getNewUnitAmount());
+            }
+            transferStock1.setAmount(transferStock.getAmount().negate());
+            transferStock1.setSupplyId(transferStock.getSupplyId());
+            transferStock1.setRelatedOrderNo(transferStock.getRelatedOrderNo());
+            transferStock1.setInventoryDate(transferStock.getInventoryDate());
+            transferStock1.setBatchNo(transferStock.getBatchNo());
+            transferStock1.setModifyAvailableAmount(transferStock.getModifyAvailableAmount());
+        }
+        return transferStock1;
     }
 }
