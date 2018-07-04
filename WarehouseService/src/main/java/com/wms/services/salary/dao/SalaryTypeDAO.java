@@ -1,7 +1,7 @@
 package com.wms.services.salary.dao;
 
 import com.wms.utilities.dao.BaseDAO;
-
-public interface SalaryTypeDAO extends BaseDAO {
-
+import com.wms.utilities.model.SalaryType;
+import com.wms.utilities.model.SalaryTypeView;
+public interface SalaryTypeDAO extends BaseDAO<SalaryType,SalaryTypeView> {
 }

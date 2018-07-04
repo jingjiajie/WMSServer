@@ -63,6 +63,22 @@
       <mapping class="com.wms.utilities.model.StockRecordViewNewest"/>
       <mapping class="com.wms.utilities.model.TransferOrderEntity"/>
       <mapping class="com.wms.utilities.model.TransferOrderViewEntity"/>
+      <mapping class="com.wms.utilities.model.AccountPeriod"/>
+      <mapping class="com.wms.utilities.model.AccountRecord"/>
+      <mapping class="com.wms.utilities.model.PayNote"/>
+      <mapping class="com.wms.utilities.model.PayNoteItem"/>
+      <mapping class="com.wms.utilities.model.PayNoteTax"/>
+      <mapping class="com.wms.utilities.model.PersonSalary"/>
+      <mapping class="com.wms.utilities.model.SalaryItem"/>
+      <mapping class="com.wms.utilities.model.SalaryPeriod"/>
+      <mapping class="com.wms.utilities.model.SalaryType"/>
+      <mapping class="com.wms.utilities.model.PayNoteItemView"/>
+      <mapping class="com.wms.utilities.model.PayNoteTaxView"/>
+      <mapping class="com.wms.utilities.model.PayNoteView"/>
+      <mapping class="com.wms.utilities.model.PersonSalaryView"/>
+      <mapping class="com.wms.utilities.model.SalaryItemView"/>
+      <mapping class="com.wms.utilities.model.SalaryPeriodView"/>
+      <mapping class="com.wms.utilities.model.SalaryTypeView"/>
 
 
       <!-- DB schema will be updated if needed -->

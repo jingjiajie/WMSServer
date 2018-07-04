@@ -96,7 +96,7 @@ public class WarehouseServiceImpl implements WarehouseService{
         try {
             warehouseDAO.remove(accountBook, ids);
         } catch (Exception e) {
-            throw new WMSServiceException("删除供仓库失败，如果仓库已经被引用，需要先删除引用的内容，才能删除该供应商");
+            throw new WMSServiceException("删除供仓库失败，如果仓库已经被引用，需要先删除引用的内容，才能删除该仓库！");
         }
     }
 
