@@ -10,7 +10,7 @@ import com.wms.utilities.model.StockRecordViewNewest;
 public interface StockRecordDAO
         extends BaseDAO<StockRecord,StockRecordView>{
     StockRecordViewNewest[] findNewest(String accountBook, Condition condition);
-
+    long findCountNew(String database,Condition cond) throws WMSDAOException;
 }
 
 
