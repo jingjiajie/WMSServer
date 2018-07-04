@@ -110,7 +110,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         });
 
         int[] ids =this.transferOrderItemDAO.add(accountBook, transferOrderItems);
-        this.updateTransferOrder(accountBook, transferOrderItems[0].getTransferOrderId(), -1);
+        this.updateTransferOrder(accountBook, transferOrderItems[0].getTransferOrderId(), transferOrderItems[0].getPersonId());
         return ids;
     }
 
