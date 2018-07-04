@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 @Transactional
 @Service
-public class SalaryItemServeicrImpl  implements SalaryItemService{
+public class SalaryItemServiceImpl implements SalaryItemService{
     @Autowired
     SalaryItemDAO salaryItemDAO;
     @Autowired
