@@ -1,5 +1,6 @@
 package com.wms.services.salary.Service;
 
+import com.wms.services.WarehouseService;
 import com.wms.services.salary.dao.SalaryPeriodDAO;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -20,6 +21,10 @@ import java.util.stream.Stream;
 public class SalaryPeriodServiceImpl implements SalaryPeriodService {
     @Autowired
     SalaryPeriodDAO salaryPeriodDAO;
+    @Autowired
+    com.wms.services.warehouse.service.WarehouseService warehouseService;
+
+
 
     public int[] add(String accountBook, SalaryPeriod[] salaryPeriods) throws WMSServiceException
     {
@@ -43,8 +48,16 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
                 throw new WMSServiceException("期间名："+salaryPeriod.getName()+"已经存在!");
             }
         });
-        return salaryPeriodDAO.add(accountBook,salaryPeriods);
 
+        //外键检测
+        Stream.of(salaryPeriods).forEach(
+                (salaryPeriod)->{
+                    if(this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ salaryPeriod.getWarehouseId()})).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",salaryPeriod.getWarehouseId()));
+                    }}
+        );
+        return salaryPeriodDAO.add(accountBook,salaryPeriods);
     }
 
     @Transactional
@@ -76,6 +89,14 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
                 throw new WMSServiceException("期间名称重复："+salaryPeriods[i].getName());
             }
         }
+        //外键检测
+        Stream.of(salaryPeriods).forEach(
+                (salaryPeriod)->{
+                    if(this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ salaryPeriod.getWarehouseId()})).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",salaryPeriod.getWarehouseId()));
+                    }}
+        );
         salaryPeriodDAO.update(accountBook, salaryPeriods);
     }
 
