@@ -3,6 +3,7 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 
 @Entity
@@ -21,6 +22,7 @@ public class PayNoteItemView {
 
     @Basic
     @Column(name = "ID")
+    @Id
     public int getId() {
         return id;
     }

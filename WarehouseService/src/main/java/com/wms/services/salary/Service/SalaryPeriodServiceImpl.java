@@ -44,6 +44,7 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
         Stream.of(salaryPeriods).forEach((salaryPeriod)->{
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{salaryPeriod.getName()});
+            cond.addCondition("warehouseId",salaryPeriod.getWarehouseId());
             if(salaryPeriodDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("期间名："+salaryPeriod.getName()+"已经存在!");
             }
@@ -85,6 +86,7 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{salaryPeriods[i].getName()});
             cond.addCondition("id",new Integer[]{salaryPeriods[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            cond.addCondition("warehouseId",salaryPeriods[i].getWarehouseId());
             if(salaryPeriodDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("期间名称重复："+salaryPeriods[i].getName());
             }

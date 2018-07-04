@@ -43,6 +43,7 @@ public class SalaryItemServeicrImpl  implements SalaryItemService{
         Stream.of(salaryItems).forEach((salaryPeriod)->{
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{salaryPeriod.getName()});
+            cond.addCondition("warehouseId",salaryPeriod.getWarehouseId());
             if(salaryItemDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("薪金项目名称："+salaryPeriod.getName()+"已经存在!");
             }
@@ -77,7 +78,8 @@ public class SalaryItemServeicrImpl  implements SalaryItemService{
         Stream.of(salaryItems).forEach(
                 (salaryItem)->{
                     if(this.salaryItemDAO.find(accountBook,
-                            new Condition().addCondition("id",salaryItem.getId())).length == 0){
+                            new Condition().addCondition("id",salaryItem.getId())).length == 0)
+                    {
                         throw new WMSServiceException(String.format("要修改的项目不存在请确认后修改(%d)",salaryItem.getId()));
                     }
                 }
@@ -85,6 +87,7 @@ public class SalaryItemServeicrImpl  implements SalaryItemService{
         for(int i=0;i<salaryItems.length;i++){
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{salaryItems[i].getName()});
+            cond.addCondition("warehouseId",salaryItems[i].getWarehouseId());
             cond.addCondition("id",new Integer[]{salaryItems[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(salaryItemDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("项目名称重复："+salaryItems[i].getName());

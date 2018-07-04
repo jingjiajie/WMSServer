@@ -3,6 +3,7 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
 public class SalaryPeriodView {
@@ -12,6 +13,7 @@ public class SalaryPeriodView {
     private String warehouseName;
 
     @Basic
+    @Id
     @Column(name = "ID")
     public int getId() {
         return id;

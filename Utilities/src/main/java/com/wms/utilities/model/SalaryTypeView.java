@@ -3,6 +3,7 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
 public class SalaryTypeView {
@@ -13,6 +14,7 @@ public class SalaryTypeView {
 
     @Basic
     @Column(name = "ID")
+    @Id
     public int getId() {
         return id;
     }

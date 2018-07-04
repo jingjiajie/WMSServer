@@ -3,6 +3,7 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
 public class PayNoteTaxView {
@@ -15,6 +16,7 @@ public class PayNoteTaxView {
 
     @Basic
     @Column(name = "ID")
+    @Id
     public int getId() {
         return id;
     }
