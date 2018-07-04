@@ -19,7 +19,10 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import com.wms.utilities.ReflectHelper;
 
@@ -192,8 +195,6 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 }
             });
             this.transferOrderItemService.add(accountBook, transferOrderItems);
-            //TODO 尝试更新移库单时间
-            //transferOrderItemService.updateTransferOrder(accountBook,newTransferOrderID ,transferArgs.getTransferItems()[0].getTransferOrder().getCreatePersonId());
         });
     }
 
@@ -210,52 +211,65 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         TransferArgs transferArgs=new TransferArgs();
         TransferItem transferItem=new TransferItem();
 
-        TransferOrder transferOrder=new TransferOrder();
-        transferOrder.setType(transferType);
-        transferOrder.setWarehouseId(TransferAuto.getWarehouseId());
-        transferOrder.setDescription("自动生成移库");
-        transferOrder.setCreatePersonId(TransferAuto.getPersonId());
-
 
         //新建列表存放条目
         List<TransferOrderItem> transferOrderItemsList=new ArrayList();
-        for(int i=0;i<safetyStockViews.length;i++){
-            StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
-                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}));
-            StockRecordView[] stockRecordViews1 = stockRecordService.find(accountBook,
-                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}));
 
-            StockRecordViewNewest[] stockRecordViews3 = stockRecordService.findNewest(accountBook,
-                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}));
-            StockRecordViewNewest[] stockRecordViews4 = stockRecordService.findNewest(accountBook,
-                    new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getSourceUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getSourceUnit()}));
+        //TODO 按供货商分组
+        Map<String, List<SafetyStockView>> groupBySupplierIdMap =
+                Stream.of(safetyStockViews).collect(Collectors.groupingBy(SafetyStockView::getSupplierName));
 
-            BigDecimal sourceAmount= new BigDecimal(0);
-            for(int j=0;j<stockRecordViews3.length;j++) {
-                sourceAmount=sourceAmount.add(stockRecordViews3[j].getAvailableAmount());
-            }
+        Iterator<Map.Entry<String,List<SafetyStockView>>> entries = groupBySupplierIdMap.entrySet().iterator();
+        //将每组最新的加到一个列表中
+        while (entries.hasNext()) {
+            Map.Entry<String, List<SafetyStockView>> entry = entries.next();
+            String supplierName=entry.getKey();
 
+            TransferOrder transferOrder=new TransferOrder();
+            transferOrder.setType(transferType);
+            transferOrder.setWarehouseId(TransferAuto.getWarehouseId());
+            transferOrder.setDescription(supplierName);
+            transferOrder.setCreatePersonId(TransferAuto.getPersonId());
+            int newTransferOrderID = this.transferOrderService.add(accountBook, new TransferOrder[]{transferOrder})[0];
 
+            List<SafetyStockView> safetyStockViews1=entry.getValue();
 
-            //if (stockRecordViews1[0].getAmount().compareTo(safetyStockViews[i].getAmount()) == -1){
-                //throw new WMSServiceException(String.format("当前备货源库位(%s)库存不足，无法备货", safetyStockViews[i].getSourceStorageLocationName()));
-            //}
+            for(int i=0;i<safetyStockViews1.size();i++){
+                StockRecordViewNewest[] stockRecordViews3 = stockRecordService.findNewest(accountBook,
+                        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}));
+                StockRecordViewNewest[] stockRecordViews4 = stockRecordService.findNewest(accountBook,
+                        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getSourceUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getSourceUnit()}));
 
-            if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) == -1) {
-                TransferOrderItem transferOrderItem = new TransferOrderItem();
-                transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
-                transferOrderItem.setUnit(safetyStockViews[i].getUnit());
-                transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
-                transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
-                transferOrderItem.setSourceUnit(safetyStockViews[i].getSourceUnit());
-                transferOrderItem.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
-                transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
-                //预设计划数量
-                transferOrderItem.setScheduledAmount(safetyStockViews[i].getAmount().subtract(sourceAmount));
-                transferOrderItem.setPersonId(TransferAuto.getPersonId());
-                transferOrderItemsList.add(transferOrderItem);
+                BigDecimal sourceAmount= new BigDecimal(0);
+                for(int j=0;j<stockRecordViews3.length;j++) {
+                    sourceAmount=sourceAmount.add(stockRecordViews3[j].getAvailableAmount());
+                }
+
+                if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) == -1) {
+                    TransferOrderItem transferOrderItem = new TransferOrderItem();
+                    transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
+                    transferOrderItem.setUnit(safetyStockViews[i].getUnit());
+                    transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
+                    transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
+                    transferOrderItem.setSourceUnit(safetyStockViews[i].getSourceUnit());
+                    transferOrderItem.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
+                    transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
+                    //预设计划数量
+                    transferOrderItem.setScheduledAmount(safetyStockViews[i].getAmount().subtract(sourceAmount));
+                    transferOrderItem.setPersonId(TransferAuto.getPersonId());
+
+                    transferOrderItem.setRealAmount(new BigDecimal(0));
+                    transferOrderItem.setComment("成功一键移库");
+                    transferOrderItem.setOperateTime(new Timestamp(System.currentTimeMillis()));
+                    transferOrderItem.setTransferOrderId(newTransferOrderID);
+                    transferOrderItem.setState(0);
+
+                    transferOrderItemsList.add(transferOrderItem);
+                }
             }
         }
+
+
         TransferOrderItem[] transferOrderItems=null;
         transferOrderItems = (TransferOrderItem[]) Array.newInstance(TransferOrderItem.class,transferOrderItemsList.size());
         transferOrderItemsList.toArray(transferOrderItems);
@@ -267,16 +281,15 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 throw new WMSServiceException("当前上架库存充足或备货源库位上库存不足，未能自动生成上架，请检查上架库存设置和库存记录");
             }
         }
-
-        transferItem.setTransferOrder(transferOrder);
-        transferItem.setTransferOrderItems(transferOrderItems);
-
-        transferArgs.setTransferItems(new TransferItem[]{transferItem});
-        transferArgs.setAutoCommit(true);
-        //boolean a = true;
-        //transferOrderItemService.autoTrans(a);
-        this.transferPakage(accountBook, transferArgs);
-
+        this.transferOrderItemService.add(accountBook, transferOrderItems);
+//        transferItem.setTransferOrder(transferOrder);
+//        transferItem.setTransferOrderItems(transferOrderItems);
+//
+//        transferArgs.setTransferItems(new TransferItem[]{transferItem});
+//        transferArgs.setAutoCommit(true);
+//        //boolean a = true;
+//        //transferOrderItemService.autoTrans(a);
+//        this.transferPakage(accountBook, transferArgs);
 
     }
 
