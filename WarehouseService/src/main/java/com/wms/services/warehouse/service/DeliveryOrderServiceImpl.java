@@ -131,6 +131,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         Stream.of(deliveryOrders).forEach(
                 (deliveryOrder) -> {
                     new Validator("状态").min(0).max(5).validate(deliveryOrder.getState());
+                    new Validator("司机").notEmpty().validate(deliveryOrder.getDriverName());
+                    new Validator("车牌号").notEmpty().validate(deliveryOrder.getLiscensePlateNumber());
                 }
         );
 

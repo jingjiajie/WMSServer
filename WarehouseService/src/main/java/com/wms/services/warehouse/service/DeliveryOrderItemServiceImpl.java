@@ -81,7 +81,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
 
                 //再改可用数量
                 TransferStock rdTransferStock = new TransferStock();
-                rdTransferStock.setModifyAvailableAmount(deliveryOrderItem.getScheduledAmount().subtract(deliveryOrderItem.getRealAmount()));
+                rdTransferStock.setModifyAvailableAmount(deliveryOrderItem.getRealAmount().subtract(deliveryOrderItem.getScheduledAmount()));
                 rdTransferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
                 rdTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                 rdTransferStock.setUnit(deliveryOrderItem.getUnit());
