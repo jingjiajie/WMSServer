@@ -72,6 +72,10 @@
                 <value>com.wms.utilities.model.WarehouseView</value>
                 <value>com.wms.utilities.model.StockRecordViewAndSum</value>
                 <value>com.wms.utilities.model.CommonData</value>
+                <value>com.wms.utilities.model.SalaryTypeView</value>
+                <value>com.wms.utilities.model.SalaryType</value>
+                <value>com.wms.utilities.model.SalaryPeriodView</value>
+                <value>com.wms.utilities.model.SalaryPeriod</value>
             </list>
         </property>
     </bean>
