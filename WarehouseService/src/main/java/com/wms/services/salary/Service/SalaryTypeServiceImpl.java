@@ -25,19 +25,16 @@ public class SalaryTypeServiceImpl implements SalaryTypeService {
 
     public int[] add(String accountBook, SalaryType[] salaryTypes) throws WMSServiceException
     {
-
         for(int i=0;i<salaryTypes.length;i++) {
             Validator validator = new Validator("薪金类型名");
             validator.notnull().notEmpty().validate(salaryTypes[i].getName());
         }
-
         for(int i=0;i<salaryTypes.length;i++){
             for(int j=i+1;j<salaryTypes.length;j++){
                 String name=salaryTypes[i].getName();
                 if(name.equals(salaryTypes[j].getName())){throw new WMSServiceException("薪金类型名称"+name+"在添加的列表中重复!");}
             }
         }
-
         //重复
         Stream.of(salaryTypes).forEach((salaryType)->{
             Condition cond = new Condition();
