@@ -8,9 +8,6 @@ import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.PayNoteTax;
 import com.wms.utilities.model.PayNoteTaxView;
-import com.wms.utilities.model.SalaryItem;
-import com.wms.utilities.model.SalaryItemView;
-import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +16,7 @@ import java.util.stream.Stream;
 
 @Transactional
 @Service
-public class PayNoteTaxServiceImpl {
+public class PayNoteTaxServiceImpl implements PayNoteTaxService {
     @Autowired
     PayNoteTaxDAO payNoteTaxDAO;
     @Autowired

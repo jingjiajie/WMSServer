@@ -76,6 +76,8 @@
                 <value>com.wms.utilities.model.SalaryType</value>
                 <value>com.wms.utilities.model.SalaryPeriodView</value>
                 <value>com.wms.utilities.model.SalaryPeriod</value>
+                <value>com.wms.utilities.model.PayNoteTaxView</value>
+                <value>com.wms.utilities.model.PayNoteTax</value>
             </list>
         </property>
     </bean>

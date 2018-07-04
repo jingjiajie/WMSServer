@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class PayNoteTaxControllerImpl implements PayNoteTaxController {
     @Autowired
     PayNoteTaxService payNoteTaxService;
+
     @RequestMapping(value="/",method = RequestMethod.POST)
     public int[] add(@PathVariable("accountBook") String accountBook,
                      @RequestBody PayNoteTax[] payNoteTaxes){
