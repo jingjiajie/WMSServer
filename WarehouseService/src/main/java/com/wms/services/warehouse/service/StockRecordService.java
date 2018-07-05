@@ -17,7 +17,7 @@ public interface StockRecordService
 
     void addAmount(String accountBook, TransferStock transferStock);
 
-    void addAmountToOldestBatchNo(String accountBook,TransferStock transferStock );
+    void addAmountToNewestBatchNo(String accountBook,TransferStock transferStock );
 
     void returnSupply(String accountBook, StockRecord[] stockRecords);
 

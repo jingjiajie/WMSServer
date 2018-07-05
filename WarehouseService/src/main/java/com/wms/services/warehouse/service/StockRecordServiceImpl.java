@@ -850,7 +850,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
 
-    public void addAmountToOldestBatchNo(String accountBook,TransferStock transferStock )
+    public void addAmountToNewestBatchNo(String accountBook,TransferStock transferStock )
     {
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
@@ -891,7 +891,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         {
             for(int j=i+1;j<stockRecordSource.length;j++)
             {
-                if(stockRecordSource[i].getInventoryDate().compareTo(stockRecordSource[j].getInventoryDate())<=0)
+                if(stockRecordSource[i].getInventoryDate().compareTo(stockRecordSource[j].getInventoryDate())>=0)
                 {
                     StockRecord temp=stockRecordSource[i];
                     stockRecordSource[i]=stockRecordSource[j];
@@ -932,19 +932,18 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             }
             //找到已存在的记录，则可以合并
             else {
-                for(int i=0;i<stockRecordSource.length;i++){
                 StockRecord stockRecord = new StockRecord();
                 stockRecord.setUnit(unit);
                 stockRecord.setUnitAmount(unitAmount);
                 stockRecord.setRelatedOrderNo(transferStock.getRelatedOrderNo());
                 stockRecord.setWarehouseId(warehouseId[0]);
-                stockRecord.setBatchNo(stockRecordSource[i].getBatchNo());
-                stockRecord.setInventoryDate(stockRecordSource[i].getInventoryDate());
+                stockRecord.setBatchNo(stockRecordSource[0].getBatchNo());
+                stockRecord.setInventoryDate(stockRecordSource[0].getInventoryDate());
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
-                stockRecord.setAmount(stockRecordSource[i].getAmount().add(amount));
-                stockRecord.setAvailableAmount(stockRecordSource[i].getAvailableAmount().add(amount));
+                stockRecord.setAmount(stockRecordSource[0].getAmount().add(amount));
+                stockRecord.setAvailableAmount(stockRecordSource[0].getAvailableAmount().add(amount));
                 stockRecord.setState(state);
                 stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
@@ -958,7 +957,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 transferRecord.setTransferUnit(unit);
                 transferRecord.setTransferUnitAmount(unitAmount);
                 transferRecord.setTransferAmount(amount.abs());
-                transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});}
+                transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
             }
         }
     }
