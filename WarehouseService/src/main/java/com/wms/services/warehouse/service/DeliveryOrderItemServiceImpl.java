@@ -116,9 +116,13 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             if(foundOriItems.length == 0) throw new WMSServiceException(String.format("出库单条目不存在，请重新提交！",deliveryOrderItem.getId()));//排除异常
             DeliveryOrderItemView oriItemView = foundOriItems[0];
 
+            if (deliveryOrderItem.getScheduledAmount().subtract(oriItemView.getRealAmount()).compareTo(new BigDecimal(0))<0)//如果新修改时计划数量小于当前实际已经移动的数量
+            {
+                throw new WMSServiceException(String.format("出库单条目计划数量不能小于实际数量！出库单号：(%s)",deliveryOrderView.getNo()));
+            }
             //TODO 中途修改出库库位/单位/单位数量
-            if(deliveryOrderItem.getSourceStorageLocationId()!=oriItemView.getSourceStorageLocationId()
-                    ||deliveryOrderItem.getUnitAmount().compareTo(oriItemView.getUnitAmount())!=0
+            if(!deliveryOrderItem.getSourceStorageLocationId().equals(oriItemView.getSourceStorageLocationId())
+                   ||deliveryOrderItem.getUnitAmount().compareTo(oriItemView.getUnitAmount())!=0
                     ||!deliveryOrderItem.getUnit().equals(oriItemView.getUnit()))
             {
                 if (oriItemView.getState()==0)
@@ -199,52 +203,49 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             else{
 
 
-            if (deliveryOrderItem.getScheduledAmount().compareTo(oriItemView.getScheduledAmount())!=0)//如果计划移库数量发生变化
-            {
-                if (deliveryOrderItem.getScheduledAmount().subtract(oriItemView.getRealAmount()).compareTo(new BigDecimal(0))<0)//如果新修改时计划数量小于当前实际已经移动的数量
-                {
-                    throw new WMSServiceException(String.format("出库单条目计划数量不能小于实际数量！出库单号：(%s)",deliveryOrderView.getNo()));
+
+                BigDecimal deltaRealAmount = deliveryOrderItem.getRealAmount().subtract(oriItemView.getRealAmount());
+                //修改实收数量，更新库存
+                //TODO 如果输入有实际数量变化
+                if(deltaRealAmount.compareTo(BigDecimal.ZERO)!=0){
+
+                    //todo 是移库前先把当前一步实际数量加回去可用数量
+                    TransferStock fixTransferStock = new TransferStock();
+                    fixTransferStock.setModifyAvailableAmount(deltaRealAmount);//实际要移动的数量加回到可用数量
+                    fixTransferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());//修改源库位
+                    fixTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
+                    fixTransferStock.setUnit(deliveryOrderItem.getUnit());
+                    fixTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
+
+                    TransferStock transferStock=new TransferStock();
+                    transferStock.setAmount(new BigDecimal(0).subtract(deltaRealAmount));//TODO 待定
+                    transferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
+                    transferStock.setRelatedOrderNo(deliveryOrderView.getNo());
+                    transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
+                    transferStock.setUnit(deliveryOrderItem.getUnit());
+                    transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                    transferStock.setState(2);
+                    this.stockRecordService.addAmount(accountBook, transferStock);
                 }
-                //否则修改计划移库数量并同步到库存记录可用数量
-                TransferStock fixTransferStock = new TransferStock();
-                fixTransferStock.setModifyAvailableAmount(oriItemView.getScheduledAmount().subtract(deliveryOrderItem.getScheduledAmount()));//计算要修改的计划移库数量
-                fixTransferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());//修改源库位
-                fixTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
-                fixTransferStock.setUnit(deliveryOrderItem.getUnit());
-                fixTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
-                this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
-            }
+                deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
+                if (deliveryOrderItem.getScheduledAmount().equals(deliveryOrderItem.getRealAmount())){
+                    deliveryOrderItem.setState(DeliveryOrderService.STATE_ALL_LOADING);
+                }
 
 
-            BigDecimal deltaRealAmount = deliveryOrderItem.getRealAmount().subtract(oriItemView.getRealAmount());
-            //修改实收数量，更新库存
-            //TODO 如果输入有实际数量变化
-            if(deltaRealAmount.compareTo(BigDecimal.ZERO)!=0){
-
-                //todo 是移库前先把当前一步实际数量加回去可用数量
-                TransferStock fixTransferStock = new TransferStock();
-                fixTransferStock.setModifyAvailableAmount(deltaRealAmount);//实际要移动的数量加回到可用数量
-                fixTransferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());//修改源库位
-                fixTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
-                fixTransferStock.setUnit(deliveryOrderItem.getUnit());
-                fixTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
-                this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
-
-                TransferStock transferStock=new TransferStock();
-                transferStock.setAmount(new BigDecimal(0).subtract(deltaRealAmount));//TODO 待定
-                transferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
-                transferStock.setRelatedOrderNo(deliveryOrderView.getNo());
-                transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
-                transferStock.setUnit(deliveryOrderItem.getUnit());
-                transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
-                transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
-                transferStock.setState(2);
-                this.stockRecordService.addAmount(accountBook, transferStock);
-            }
-            deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
-            if (deliveryOrderItem.getScheduledAmount().equals(deliveryOrderItem.getRealAmount())){
-                deliveryOrderItem.setState(DeliveryOrderService.STATE_ALL_LOADING);
-            }
+                if (deliveryOrderItem.getScheduledAmount().compareTo(oriItemView.getScheduledAmount())!=0)//如果计划移库数量发生变化
+                {
+                    //否则修改计划移库数量并同步到库存记录可用数量
+                    TransferStock fixTransferStock = new TransferStock();
+                    fixTransferStock.setModifyAvailableAmount(oriItemView.getScheduledAmount().subtract(deliveryOrderItem.getScheduledAmount()));//计算要修改的计划移库数量
+                    fixTransferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());//修改源库位
+                    fixTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
+                    fixTransferStock.setUnit(deliveryOrderItem.getUnit());
+                    fixTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
+                }
             }
         });
         this.deliveryOrderItemDAO.update(accountBook,deliveryOrderItems);
@@ -316,7 +317,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         //数据验证
         Stream.of(deliveryOrderItems).forEach(
                 (deliveryOrderItem)->{
-                    new Validator("计划装车数量（个）").min(0).validate(deliveryOrderItem.getScheduledAmount());
+                    new Validator("计划装车数量（个）").greaterThan(0).validate(deliveryOrderItem.getScheduledAmount());
                     new Validator("实际装车数量（个）").min(0).max(deliveryOrderItem.getScheduledAmount().intValue()).validate(deliveryOrderItem.getRealAmount());
                     new Validator("单位数量").greaterThan(0).validate(deliveryOrderItem.getUnitAmount());
                     new Validator("单位").notnull().validate(deliveryOrderItem.getUnit());

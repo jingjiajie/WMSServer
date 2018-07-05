@@ -288,26 +288,6 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 if (transferOrderItem.getScheduledAmount().compareTo(oriItemViews[0].getScheduledAmount()) != 0)//如果计划移库数量发生变化
                 {
 
-                    //如果没有实际数量输入，并且源单位/单位数量发生改变
-                    if (transferOrderItem.getRealAmount().compareTo(new BigDecimal(0)) == 0
-                            && (!transferOrderItem.getSourceUnit().equals(oriItemViews[0].getSourceUnit()) || transferOrderItem.getSourceUnitAmount().compareTo(oriItemViews[0].getSourceUnitAmount()) != 0)) {
-                        //更新库存可用数量
-                        TransferStock transferStock = new TransferStock();
-                        transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
-                        transferStock.setModifyAvailableAmount(oriItemViews[0].getScheduledAmount());//计划数量
-                        transferStock.setSupplyId(transferOrderItem.getSupplyId());
-                        transferStock.setUnit(oriItemViews[0].getSourceUnit());
-                        transferStock.setUnitAmount(oriItemViews[0].getSourceUnitAmount());
-                        this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
-
-                        TransferStock rdTransferStock = new TransferStock();
-                        rdTransferStock.setModifyAvailableAmount(new BigDecimal(0).subtract(transferOrderItem.getScheduledAmount()));
-                        rdTransferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());
-                        rdTransferStock.setSupplyId(transferOrderItem.getSupplyId());
-                        rdTransferStock.setUnit(transferOrderItem.getSourceUnit());
-                        rdTransferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
-                        this.stockRecordService.modifyAvailableAmount(accountBook, rdTransferStock);//直接改可用数量
-                    }
                     //否则修改计划移库数量并同步到库存记录可用数量
                     TransferStock fixTransferStock = new TransferStock();
                     fixTransferStock.setModifyAvailableAmount(oriItemViews[0].getScheduledAmount().subtract(transferOrderItem.getScheduledAmount()));//计算要修改的计划移库数量
@@ -316,27 +296,6 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                     fixTransferStock.setUnit(transferOrderItem.getSourceUnit());
                     fixTransferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
                     this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
-                } else {
-                    //如果没有实际数量输入，并且源单位/单位数量发生改变
-                    if (transferOrderItem.getRealAmount().compareTo(new BigDecimal(0)) == 0
-                            && (!transferOrderItem.getSourceUnit().equals(oriItemViews[0].getSourceUnit()) || transferOrderItem.getSourceUnitAmount().compareTo(oriItemViews[0].getSourceUnitAmount()) != 0)) {
-                        //更新库存可用数量
-                        TransferStock transferStock = new TransferStock();
-                        transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
-                        transferStock.setModifyAvailableAmount(transferOrderItem.getScheduledAmount());//计划数量
-                        transferStock.setSupplyId(transferOrderItem.getSupplyId());
-                        transferStock.setUnit(oriItemViews[0].getSourceUnit());
-                        transferStock.setUnitAmount(oriItemViews[0].getSourceUnitAmount());
-                        this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
-
-                        TransferStock rdTransferStock = new TransferStock();
-                        rdTransferStock.setModifyAvailableAmount(new BigDecimal(0).subtract(transferOrderItem.getScheduledAmount()));
-                        rdTransferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());
-                        rdTransferStock.setSupplyId(transferOrderItem.getSupplyId());
-                        rdTransferStock.setUnit(transferOrderItem.getSourceUnit());
-                        rdTransferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
-                        this.stockRecordService.modifyAvailableAmount(accountBook, rdTransferStock);//直接改可用数量
-                    }
                 }
             }
             //TODO 最后状态变更
