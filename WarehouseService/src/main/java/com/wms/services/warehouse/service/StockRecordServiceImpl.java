@@ -938,13 +938,13 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setUnitAmount(unitAmount);
                 stockRecord.setRelatedOrderNo(transferStock.getRelatedOrderNo());
                 stockRecord.setWarehouseId(warehouseId[0]);
-                stockRecord.setBatchNo(batchNo);
-                stockRecord.setInventoryDate(transferStock.getInventoryDate());
+                stockRecord.setBatchNo(stockRecordSource[i].getBatchNo());
+                stockRecord.setInventoryDate(stockRecordSource[i].getInventoryDate());
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
                 stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                 stockRecord.setAmount(stockRecordSource[i].getAmount().add(amount));
-                stockRecord.setAvailableAmount(stockRecordSource[i].getAmount().add(amount));
+                stockRecord.setAvailableAmount(stockRecordSource[i].getAvailableAmount().add(amount));
                 stockRecord.setState(state);
                 stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
