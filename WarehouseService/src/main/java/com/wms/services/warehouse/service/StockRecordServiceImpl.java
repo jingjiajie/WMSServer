@@ -1987,7 +1987,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             transferStock1.setInventoryDate(transferStock.getInventoryDate());
             transferStock1.setBatchNo(transferStock.getBatchNo());
             transferStock1.setModifyAvailableAmount(transferStock.getModifyAvailableAmount());
+            return transferStock1;
         }
-        return transferStock1;
+        return transferStock;
+
     }
 }
