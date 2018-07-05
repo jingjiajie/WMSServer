@@ -1254,6 +1254,9 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     public void modifyAvailableAmount(String accountBook,TransferStock transferStock){
+        if(transferStock.getModifyAvailableAmount().compareTo(BigDecimal.ZERO)==0){
+            return;
+        }
         //只改变可用数量
         new Validator("可用数量变化值").notnull().validate(transferStock.getModifyAvailableAmount());
         BigDecimal modifyAvailableAmoun=transferStock.getModifyAvailableAmount();
@@ -1295,7 +1298,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         }
 
         //先判断是增加还是减少
-        if(modifyAvailableAmoun.compareTo(BigDecimal.ZERO)>=0){
+        if(modifyAvailableAmoun.compareTo(BigDecimal.ZERO)>0){
             BigDecimal amountAddAvailable = BigDecimal.ZERO;
             int iNeed = -1;
             for (int i = stockRecordSource1.length - 1; i >= 0; i--) {

@@ -1,5 +1,6 @@
 package com.wms.services.salary.Service;
 
+import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.salary.dao.PayNoteDAO;
 import com.wms.services.warehouse.service.WarehouseService;
@@ -23,6 +24,8 @@ public class PayNoteServiceImpl implements PayNoteService{
     WarehouseService warehouseService;
     @Autowired
     PersonService personService;
+    @Autowired
+    AccountTitleService accountTitleService;
 
     public int[] add(String accountBook, PayNote[] payNotes) throws WMSServiceException
     {
@@ -53,7 +56,16 @@ public class PayNoteServiceImpl implements PayNoteService{
                     if(this.warehouseService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{ payNote.getWarehouseId()})).length == 0){
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",payNote.getWarehouseId()));
-                    }}
+                    }
+                    if(this.accountTitleService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePaidId()})).length == 0){
+                        throw new WMSServiceException(String.format("实付款科目不存在，请重新提交！(%d)",payNote.getWarehouseId()));
+                    }
+                    if(this.accountTitleService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePayableId()})).length == 0){
+                        throw new WMSServiceException(String.format("应付款科目不存在，请重新提交！(%d)",payNote.getWarehouseId()));
+                    }
+                }
         );
         return payNoteDAO.add(accountBook,payNotes);
     }
@@ -81,6 +93,23 @@ public class PayNoteServiceImpl implements PayNoteService{
                         throw new WMSServiceException("薪资发放单单号：" + payNote.getNo() + "已经存在!");
                     }
                 });
+
+        Stream.of(payNotes).forEach(
+                (payNote)->{
+                    if(this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getWarehouseId()})).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",payNote.getWarehouseId()));
+                    }
+                    if(this.accountTitleService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePaidId()})).length == 0){
+                        throw new WMSServiceException(String.format("实付款科目不存在，请重新提交！(%d)",payNote.getWarehouseId()));
+                    }
+                    if(this.accountTitleService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePayableId()})).length == 0){
+                        throw new WMSServiceException(String.format("应付款科目不存在，请重新提交！(%d)",payNote.getWarehouseId()));
+                    }
+                }
+        );
         payNoteDAO.update(accountBook,payNotes);
 
     }

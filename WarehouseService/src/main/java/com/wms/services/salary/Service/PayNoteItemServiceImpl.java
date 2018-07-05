@@ -28,27 +28,13 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
 
     public int[] add(String accountBook, PayNoteItem[] payNoteItems) throws WMSServiceException
     {
-/*
-        for(int i=0;i<payNoteItems.length;i++) {
-            Validator validator = new Validator("薪金发放单名称");
-            validator.notnull().notEmpty().validate(payNoteItems[i].getName());
-        }
-
+        //新建的条目状态应该为0
         for(int i=0;i<payNoteItems.length;i++){
             for(int j=i+1;j<payNoteItems.length;j++){
-                String name=salaryItems[i].getName();
-                if(name.equals(salaryItems[j].getName())){throw new WMSServiceException("薪金项目名称"+name+"在添加的列表中重复!");}
+            payNoteItems[i].setState(0);
             }
         }
-        //重复
-        Stream.of(payNoteItems).forEach((salaryPeriod)->{
-            Condition cond = new Condition();
-            cond.addCondition("name",new String[]{salaryPeriod.getName()});
-            cond.addCondition("warehouseId",salaryPeriod.getWarehouseId());
-            if(salaryItemDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("薪金项目名称："+salaryPeriod.getName()+"已经存在!");
-            }
-        });*/
+
         //外键检测
         Stream.of(payNoteItems).forEach(
                 (payNoteItem)->{
