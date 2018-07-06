@@ -299,18 +299,19 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 }
             }
             //TODO 最后状态变更
-            if (transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))==0){
-                transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
-            }
-            else if (transferOrderItem.getScheduledAmount().compareTo(transferOrderItem.getRealAmount())==0){
+
+            if (transferOrderItem.getScheduledAmount().compareTo(transferOrderItem.getRealAmount())==0){
                 transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+            }
+            else if (transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))==0){
+                transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
             }else
             {transferOrderItem.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);}
         }));
 
 
         this.transferOrderItemDAO.update(accountBook, transferOrderItems);
-        this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,-1);
+        this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
     }
 
 
@@ -326,7 +327,10 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             }
             TransferOrderItemView oriItemView=oriItemViews[0];
             curTransferOrderId=oriItemView.getTransferOrderId();
-            if (oriItemView.getState()!=0)
+            if (oriItemView.getState()==0
+//                    oriItemView.getScheduledAmount().compareTo(new BigDecimal(0))!=0&&
+//                    oriItemView.getRealAmount().compareTo(new BigDecimal(0))==0
+                    )
             {
                 //删除了未经过操作的移库单，更新库存可用数量
                 TransferStock transferStock = new TransferStock();
@@ -377,7 +381,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         Stream.of(transferOrderItems).forEach((transferOrderItem -> {
             //数据验证
             new Validator("状态").min(0).max(2).validate(transferOrderItem.getState());
-            new Validator("计划移位数量").min(0).validate(transferOrderItem.getScheduledAmount());
+            new Validator("计划移位数量").greaterThan(0).validate(transferOrderItem.getScheduledAmount());
             new Validator("单位").notnull().validate(transferOrderItem.getUnit());
             new Validator("单位数量").greaterThan(0).validate(transferOrderItem.getUnitAmount());
             new Validator("源单位").notnull().validate(transferOrderItem.getSourceUnit());

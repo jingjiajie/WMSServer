@@ -146,9 +146,8 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setUnit(oriItemView.getUnit());
                     transferStock.setUnitAmount(oriItemView.getUnitAmount());
                     transferStock.setState(2);
-                    transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
 
-                    this.stockRecordService.addAmount(accountBook, transferStock);
+                    this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);
 
 
                     TransferStock thefixTransferStock = new TransferStock();
@@ -225,9 +224,13 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                     transferStock.setUnit(deliveryOrderItem.getUnit());
                     transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
-                    transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+
                     transferStock.setState(2);
-                    this.stockRecordService.addAmount(accountBook, transferStock);
+                    if (deltaRealAmount.compareTo(BigDecimal.ZERO)>0){
+                        transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                    this.stockRecordService.addAmount(accountBook, transferStock);}
+                    else if(deltaRealAmount.compareTo(BigDecimal.ZERO)<0)
+                    {this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);}
                 }
                 deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
                 if (deliveryOrderItem.getScheduledAmount().equals(deliveryOrderItem.getRealAmount())){
@@ -286,7 +289,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setUnitAmount(oriItemView.getUnitAmount());
                 transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
                 transferStock.setState(2);
-                this.stockRecordService.addAmount(accountBook, transferStock);
+                this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);
 
 
                 TransferStock fixTransferStock = new TransferStock();
