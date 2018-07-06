@@ -855,7 +855,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
-        new Validator("数量").notnull().validate(transferStock.getAmount());
+        new Validator("数量").notnull().min(0).validate(transferStock.getAmount());
         int sourceStorageLocationId=transferStock.getSourceStorageLocationId();
         int supplyId=transferStock.getSupplyId();
         String batchNo="";
@@ -882,10 +882,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
         //根据以上条件应该为所有批次
         StockRecord[] stockRecordSource= this.find(accountBook,stockRecordFind);
-        int addId[]={};
-        StorageLocationView[] storageLocationViews= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
-        SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
-
         //首先找到最久的库存记录
         for(int i=0;i<stockRecordSource.length;i++)
         {
@@ -916,7 +912,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setAmount(amount);
                 stockRecord.setAvailableAmount(amount);
                 stockRecord.setState(state);
-                addId=stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
+                stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
                 transferRecord.setTargetStorageLocationUnit(unit);
