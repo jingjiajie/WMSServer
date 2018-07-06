@@ -218,20 +218,21 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         List<TransferOrderItem> transferOrderItemsList=new ArrayList();
 
         //TODO 按供货商分组
-        Map<String, List<SafetyStockView>> groupBySupplierIdMap =
-                Stream.of(safetyStockViews).collect(Collectors.groupingBy(SafetyStockView::getSupplierName));
+        Map<Integer, List<SafetyStockView>> groupBySupplierIdMap =
+                Stream.of(safetyStockViews).collect(Collectors.groupingBy(SafetyStockView::getSupplierId));
 
-        Iterator<Map.Entry<String,List<SafetyStockView>>> entries = groupBySupplierIdMap.entrySet().iterator();
+        Iterator<Map.Entry<Integer,List<SafetyStockView>>> entries = groupBySupplierIdMap.entrySet().iterator();
         //将每组最新的加到一个列表中
         while (entries.hasNext()) {
-            Map.Entry<String, List<SafetyStockView>> entry = entries.next();
-            String supplierName=entry.getKey();
+            Map.Entry<Integer, List<SafetyStockView>> entry = entries.next();
+            Integer supplierId=entry.getKey();
 
             TransferOrder transferOrder=new TransferOrder();
             transferOrder.setType(transferType);
             transferOrder.setWarehouseId(TransferAuto.getWarehouseId());
-            transferOrder.setDescription(supplierName);
+            transferOrder.setDescription("自动移库");
             transferOrder.setCreatePersonId(TransferAuto.getPersonId());
+            transferOrder.setSupplierId(supplierId);
             int newTransferOrderID = this.transferOrderService.add(accountBook, new TransferOrder[]{transferOrder})[0];
 
             List<SafetyStockView> safetyStockViews1=entry.getValue();

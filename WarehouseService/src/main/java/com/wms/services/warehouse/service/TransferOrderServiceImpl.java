@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wms.utilities.model.TransferOrder;
 import com.wms.utilities.model.TransferOrderView;
 
+
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -236,7 +237,8 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             new Validator("打印次数").min(0).validate(transferOrder.getPrintTimes());
 
             idChecker.check(WarehouseService.class,accountBook,transferOrder.getWarehouseId(),"仓库")
-                    .check(PersonService.class,accountBook,transferOrder.getCreatePersonId(),"创建人员");
+                    .check(PersonService.class,accountBook,transferOrder.getCreatePersonId(),"创建人员")
+                    .check(SupplierServices.class,accountBook,transferOrder.getSupplierId(),"创建人员");
 
             if (transferOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
                     new Condition().addCondition("id", transferOrder.getLastUpdatePersonId())).length == 0) {

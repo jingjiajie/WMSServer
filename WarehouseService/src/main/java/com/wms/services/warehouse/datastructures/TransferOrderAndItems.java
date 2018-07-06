@@ -1,8 +1,7 @@
 package com.wms.services.warehouse.datastructures;
 
-import com.wms.utilities.model.TransferOrderItemView;
 import com.wms.utilities.model.TransferOrderView;
-
+import com.wms.utilities.model.*;
 import java.util.List;
 
 public class TransferOrderAndItems {

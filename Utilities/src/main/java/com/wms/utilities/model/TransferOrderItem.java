@@ -23,8 +23,8 @@ public class TransferOrderItem {
     private BigDecimal sourceUnitAmount;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }

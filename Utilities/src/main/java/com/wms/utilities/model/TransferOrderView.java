@@ -23,6 +23,9 @@ public class TransferOrderView {
     private String createPersonName;
     private String lastUpdatePersonName;
     private int type;
+    private Integer supplierId;
+    private String supplierNo;
+    private String supplierName;
 
     @Basic
     @Id
@@ -212,5 +215,35 @@ public class TransferOrderView {
         result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
         result = 31 * result + type;
         return result;
+    }
+
+    @Basic
+    @Column(name = "SupplierID")
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    @Basic
+    @Column(name = "SupplierNo")
+    public String getSupplierNo() {
+        return supplierNo;
+    }
+
+    public void setSupplierNo(String supplierNo) {
+        this.supplierNo = supplierNo;
+    }
+
+    @Basic
+    @Column(name = "SupplierName")
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
     }
 }

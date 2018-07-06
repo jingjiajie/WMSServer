@@ -17,6 +17,7 @@ public class TransferOrder {
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
     private int type;
+    private Integer supplierId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -167,5 +168,15 @@ public class TransferOrder {
         result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
         result = 31 * result + type;
         return result;
+    }
+
+    @Basic
+    @Column(name = "SupplierID")
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
     }
 }
