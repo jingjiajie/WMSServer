@@ -1,8 +1,12 @@
 package com.wms.services.salary.Service;
 
 import com.wms.services.ledger.service.PersonService;
+import com.wms.services.ledger.service.TaxService;
 import com.wms.services.salary.dao.PayNoteItemDAO;
+import com.wms.services.salary.datestructures.CalculateTax;
+import com.wms.services.salary.datestructures.PayNoteItemState;
 import com.wms.services.warehouse.service.WarehouseService;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -12,6 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Transactional
@@ -25,6 +33,8 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
     PersonService personService;
     @Autowired
     PayNoteService payNoteService;
+    @Autowired
+    TaxService taxService;
 
     public int[] add(String accountBook, PayNoteItem[] payNoteItems) throws WMSServiceException
     {
@@ -94,5 +104,32 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         return this.payNoteItemDAO.findCount(database,cond);
     }
 
-
+    public void calculateTax(String accountBook, CalculateTax calculateTax){
+        int payNoteId=calculateTax.getPayNoteId();
+        int[] payNoteItemId=calculateTax.getPayNoteItemId();
+        PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
+        int taxId=calculateTax.getTaxId();
+        BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemId.length];
+        PayNoteItemView[] payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("id",payNoteItemId, ConditionItem.Relation.IN));
+        if(payNoteItemViews.length!=payNoteItemId.length){throw new WMSServiceException("查询薪资发放单条目出错,某些条目已经不存在！");}
+        for(int i=0;i<payNoteItemViews.length;i++){
+            payNoteItemId[i]=payNoteItemViews[i].getId();
+            preTaxAmounts[i]=payNoteItemViews[i].getPreTaxAmount();
+            if(payNoteItemViews[i].getState()!=PayNoteItemState.WAITING_FOR_CACULATE){throw new WMSServiceException("操作的薪金发放单条目已经计算税费");}
+        }
+        //TODO 计算税费
+        BigDecimal[] taxAmount=null;
+        List<PayNoteItem> payNoteItemList=new ArrayList<>();
+        for(int i=0;i<payNoteItemViews.length;i++){
+            PayNoteItem payNoteItem = ReflectHelper.createAndCopyFields(payNoteItemViews[i],PayNoteItem.class);
+            payNoteItem.setTaxAmount(taxAmount[i]);
+            payNoteItem.setAfterTaxAmount(payNoteItem.getPreTaxAmount().subtract(taxAmount[i]));
+            payNoteItem.setState(PayNoteItemState.CACULATED_WAITING_COMFIRMN);
+            payNoteItemList.add(payNoteItem);
+        }
+        PayNoteItem[] payNoteItems=null;
+        payNoteItems=(PayNoteItem[]) Array.newInstance(PayNoteItem.class,payNoteItemList.size());
+        payNoteItemList.toArray(payNoteItems);
+        payNoteItemDAO.update(accountBook,payNoteItems);
+    }
 }
