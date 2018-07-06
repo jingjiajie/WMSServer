@@ -1,4 +1,4 @@
-package com.wms.services.salary.Service;
+package com.wms.services.salary.service;
 
 import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.ledger.service.PersonService;

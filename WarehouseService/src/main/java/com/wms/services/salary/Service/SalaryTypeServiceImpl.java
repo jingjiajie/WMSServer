@@ -1,4 +1,4 @@
-package com.wms.services.salary.Service;
+package com.wms.services.salary.service;
 
 import com.wms.services.salary.dao.SalaryTypeDAO;
 import com.wms.utilities.datastructures.Condition;
@@ -12,7 +12,6 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.wms.services.salary.Service.SalaryTypeService;
 
 import java.util.stream.Stream;
 

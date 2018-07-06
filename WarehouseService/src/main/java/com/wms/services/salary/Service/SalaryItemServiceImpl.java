@@ -1,4 +1,4 @@
-package com.wms.services.salary.Service;
+package com.wms.services.salary.service;
 
 import com.wms.services.salary.dao.SalaryItemDAO;
 import com.wms.services.warehouse.service.WarehouseService;
