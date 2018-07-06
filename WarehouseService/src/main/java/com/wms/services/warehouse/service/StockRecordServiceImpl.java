@@ -369,7 +369,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         //StockRecord[]   stockRecordSource3=stockRecordDAO.findTable(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordSource1[0].getId()}));
         if(stockRecordSource1.length==0)
         {
-            //throw new WMSServiceException("没查到符合要求的源库存记录，请检查相关信息！");
+
             StorageLocationView[] storageLocationViews1= storageLocationService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews1=supplyService.find(accountBook,new Condition().addCondition("id",new Integer[]{stockRecordFind.getSupplyId()}));
             throw new WMSServiceException("物料“"+supplyViews1[0].getMaterialName()+"”(单位：“"+stockRecordFind.getUnit()+"”单位数量：“"+stockRecordFind.getUnitAmount()+"”检测状态：“"+this.stateTransfer(oldState)+"”）在库位:“"+storageLocationViews1[0].getName()+"”上可用数量不足。需要库存数量："+transferStock.getAmount()+"，现有库存：0");
