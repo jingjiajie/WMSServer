@@ -236,7 +236,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             int newTransferOrderID = this.transferOrderService.add(accountBook, new TransferOrder[]{transferOrder})[0];
 
             List<SafetyStockView> safetyStockViews1=entry.getValue();
-
+            
             for(int i=0;i<safetyStockViews1.size();i++){
                 StockRecordViewNewest[] stockRecordViews3 = stockRecordService.findNewest(accountBook,
                         new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}));
@@ -248,7 +248,12 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     sourceAmount=sourceAmount.add(stockRecordViews3[j].getAvailableAmount());
                 }
 
-                if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) == -1) {
+                BigDecimal sourceAmount1= new BigDecimal(0);
+                for(int l=0;l<stockRecordViews4.length;l++) {
+                    sourceAmount1=sourceAmount1.add(stockRecordViews4[l].getAvailableAmount());
+                }
+
+                if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) <=0&& sourceAmount1.compareTo(safetyStockViews[i].getAmount())>=0) {
                     TransferOrderItem transferOrderItem = new TransferOrderItem();
                     transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
                     transferOrderItem.setUnit(safetyStockViews[i].getUnit());
@@ -268,7 +273,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     transferOrderItem.setState(0);
 
                     transferOrderItemsList.add(transferOrderItem);
+
                 }
+
             }
         }
 
