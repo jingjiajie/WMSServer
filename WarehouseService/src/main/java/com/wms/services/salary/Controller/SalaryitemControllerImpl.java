@@ -1,8 +1,8 @@
-package com.wms.services.salary.Controller;
+package com.wms.services.salary.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.services.salary.Service.SalaryItemService;
+import com.wms.services.salary.service.SalaryItemService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.SalaryItem;
 import com.wms.utilities.model.SalaryItemView;

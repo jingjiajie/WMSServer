@@ -1,8 +1,8 @@
-package com.wms.services.salary.Controller;
+package com.wms.services.salary.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.services.salary.Service.PayNoteService;
+import com.wms.services.salary.service.PayNoteService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.PayNote;
 import com.wms.utilities.model.PayNoteView;

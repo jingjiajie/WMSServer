@@ -1,4 +1,4 @@
-package com.wms.services.salary.Controller;
+package com.wms.services.salary.controller;
 
 import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.model.PayNote;
