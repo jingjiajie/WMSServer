@@ -3,6 +3,7 @@ package com.wms.services.salary.service;
 import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.ledger.service.TaxService;
+import com.wms.services.salary.controller.PersonSalaryController;
 import com.wms.services.salary.dao.PayNoteItemDAO;
 import com.wms.services.salary.datestructures.CalculateTax;
 import com.wms.services.salary.datestructures.PayNoteItemState;
@@ -16,10 +17,12 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.criteria.CriteriaBuilder;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Transactional
@@ -37,6 +40,8 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
     TaxService taxService;
     @Autowired
     AccountTitleService accountTitleService;
+    @Autowired
+    PersonSalaryService personSalaryService;
 
     public int[] add(String accountBook, PayNoteItem[] payNoteItems) throws WMSServiceException
     {
@@ -46,7 +51,6 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             payNoteItems[i].setState(0);
             }
         }
-
         //外键检测
         Stream.of(payNoteItems).forEach(
                 (payNoteItem)->{
@@ -61,6 +65,28 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
                     }
                 }
         );
+        if(payNoteItems.length==0){
+            return(new int[]{});}
+        PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteItems[0].getPayNoteId()));
+        if(payNoteViews.length==0){throw new WMSServiceException("查找付款单出错，可能付款单已经不存在！"
+        );}
+        //将人员薪资的总数找出来填到税前应付
+        int  periodId=payNoteViews[0].getSalaryPeriodId();
+        List<Integer> personIds=new ArrayList<>();
+        for(int i=0;i<payNoteItems.length;i++){
+            personIds.add(payNoteItems[i].getPersonId());
+        }
+        Map<Integer, BigDecimal> personAndAmount=this.getPersonAmount(accountBook,personIds,periodId);
+        Iterator<Map.Entry<Integer,BigDecimal>> entries = personAndAmount.entrySet().iterator();
+        while (entries.hasNext()){
+            Map.Entry<Integer, BigDecimal> entry = entries.next();
+            for(int i=0;i<payNoteItems.length;i++){
+             if(payNoteItems[i].getPersonId()==entry.getKey())   {
+                 payNoteItems[i].setPreTaxAmount(entry.getValue());
+                 break;
+             }
+            }
+        }
         return payNoteItemDAO.add(accountBook,payNoteItems);
     }
 
@@ -190,5 +216,27 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         payNoteItems=(PayNoteItem[]) Array.newInstance(PayNoteItem.class,payNoteItemList.size());
         payNoteItemList.toArray(payNoteItems);
         payNoteItemDAO.update(accountBook,payNoteItems);
+    }
+
+    private Map<Integer, BigDecimal> getPersonAmount(String accountBook, List<Integer> personIds, int periodId){
+      PersonSalaryView[] personSalaryViews= this.personSalaryService.find(accountBook,new Condition().addCondition("personId",personIds, ConditionItem.Relation.IN).addCondition("salaryPeriodId",personIds.toArray()));
+        Map<Integer, List<PersonSalaryView>> groupByPersonIdMap =
+                Stream.of(personSalaryViews).collect(Collectors.groupingBy(PersonSalaryView::getPersonId));
+        Map<Integer,BigDecimal> personAndAmount=new HashMap<>();
+        Iterator<Map.Entry<Integer,List<PersonSalaryView>>> entries = groupByPersonIdMap.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<Integer, List<PersonSalaryView>> entry = entries.next();
+            List<PersonSalaryView> personSalaryViews1=entry.getValue();
+            PersonSalaryView[] personSalaryView=null;
+            personSalaryView=(PersonSalaryView[]) Array.newInstance(PersonSalaryView.class,personSalaryViews1.size());
+            personSalaryViews1.toArray(personSalaryView);
+            Integer personId=entry.getKey();
+            BigDecimal amount=new BigDecimal(0);
+            for(int i=0;i<personSalaryView.length;i++){
+                amount=amount.add(personSalaryView[i].getAmount());
+            }
+            personAndAmount.put(periodId,amount);
+        }
+        return personAndAmount;
     }
 }

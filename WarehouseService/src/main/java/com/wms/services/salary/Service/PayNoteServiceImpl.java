@@ -190,17 +190,4 @@ public class PayNoteServiceImpl implements PayNoteService{
        //同步到总账
    }
 
-    public void addByPerson(String accountBook,int personId){
-       //TODO 得到期间id
-       int periodId;
-
-
-
-
-
-
-
-    }
-
-
 }
