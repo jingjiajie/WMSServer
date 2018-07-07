@@ -1,4 +1,9 @@
 package com.wms.services.ledger.service;
 
-public interface AccountPeriodService {
+import com.wms.utilities.service.BaseService;
+import com.wms.utilities.model.AccountPeriod;
+import com.wms.utilities.model.AccountPeriodView;
+
+
+public interface AccountPeriodService extends BaseService<AccountPeriod,AccountPeriodView> {
 }
