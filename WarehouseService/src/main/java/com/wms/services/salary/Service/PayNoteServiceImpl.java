@@ -1,8 +1,11 @@
 package com.wms.services.salary.service;
 
+import com.wms.services.ledger.service.AccountRecordService;
 import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.salary.dao.PayNoteDAO;
+import com.wms.services.salary.datestructures.CalculateTax;
+import com.wms.services.salary.datestructures.PayNoteItemState;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 @Service
@@ -26,6 +30,10 @@ public class PayNoteServiceImpl implements PayNoteService{
     PersonService personService;
     @Autowired
     AccountTitleService accountTitleService;
+    @Autowired
+    PayNoteItemService payNoteItemService;
+    @Autowired
+    AccountRecordService accountRecordService;
 
     public int[] add(String accountBook, PayNote[] payNotes) throws WMSServiceException
     {
@@ -58,12 +66,16 @@ public class PayNoteServiceImpl implements PayNoteService{
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",payNote.getWarehouseId()));
                     }
                     if(this.accountTitleService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePaidId()})).length == 0){
-                        throw new WMSServiceException(String.format("实付款科目不存在，请重新提交！(%d)",payNote.getWarehouseId()));
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitleExpenseId()})).length == 0){
+                        throw new WMSServiceException(String.format("薪资费用科目不存在，请重新提交！(%d)",payNote.getAccountTitleExpenseId()));
                     }
                     if(this.accountTitleService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePayableId()})).length == 0){
-                        throw new WMSServiceException(String.format("应付款科目不存在，请重新提交！(%d)",payNote.getWarehouseId()));
+                        throw new WMSServiceException(String.format("应付款科目不存在，请重新提交！(%d)",payNote.getAccountTitlePayableId()));
+                    }
+                    if(this.accountTitleService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePropertyId()})).length == 0){
+                        throw new WMSServiceException(String.format(" 资产科目不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
                     }
                 }
         );
@@ -101,12 +113,16 @@ public class PayNoteServiceImpl implements PayNoteService{
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",payNote.getWarehouseId()));
                     }
                     if(this.accountTitleService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePaidId()})).length == 0){
-                        throw new WMSServiceException(String.format("实付款科目不存在，请重新提交！(%d)",payNote.getWarehouseId()));
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitleExpenseId()})).length == 0){
+                        throw new WMSServiceException(String.format("薪资费用科目不存在，请重新提交！(%d)",payNote.getAccountTitleExpenseId()));
                     }
                     if(this.accountTitleService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePayableId()})).length == 0){
-                        throw new WMSServiceException(String.format("应付款科目不存在，请重新提交！(%d)",payNote.getWarehouseId()));
+                        throw new WMSServiceException(String.format("应付款科目不存在，请重新提交！(%d)",payNote.getAccountTitlePayableId()));
+                    }
+                    if(this.accountTitleService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePropertyId()})).length == 0){
+                        throw new WMSServiceException(String.format(" 资产科目不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
                     }
                 }
         );
@@ -136,4 +152,41 @@ public class PayNoteServiceImpl implements PayNoteService{
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.payNoteDAO.findCount(database,cond);
     }
+
+   public void confirmToAccountTitle(String accountBook, int payNoteId ){
+       PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
+       if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
+       PayNoteItemView[] payNoteItemViews=payNoteItemService.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
+       //判断条目是否全部计算同时计算总金额
+       BigDecimal totalAmount=new BigDecimal(0);
+       for(int i=0;i<payNoteItemViews.length;i++){
+           if(payNoteItemViews[i].getState()!= PayNoteItemState.COMFIRMED){throw new WMSServiceException("操作的薪金发放单中条目未全部确认，无法同步到总账！");
+           }
+           totalAmount=totalAmount.add(payNoteItemViews[i].getAfterTaxAmount());
+       }
+       //应付薪资
+       int accountTitlePayableID=payNoteViews[0].getAccountTitlePayableId();
+       //管理费用
+       int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
+       //TODO 将总金额增加到 总账
+   }
+
+   public void realPay(String accountBook,int payNoteId)
+   {
+       PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
+       if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
+       PayNoteItemView[] payNoteItemViews=payNoteItemService.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
+       //判断条目是否全部计算同时计算总金额
+       BigDecimal totalPaidAmount=new BigDecimal(0);
+       for(int i=0;i<payNoteItemViews.length;i++){
+           if(payNoteItemViews[i].getState()!= PayNoteItemState.PAYED){throw new WMSServiceException("操作的薪金发放单中条目未全部确认，无法同步到总账！");
+           }
+           totalPaidAmount=totalPaidAmount.add(payNoteItemViews[i].getPaidAmount());
+       }
+       //应付薪资
+       int accountTitlePayableID=payNoteViews[0].getAccountTitlePayableId();
+       //银行资产
+       int accountTitlePropertyID=payNoteViews[0].getAccountTitlePropertyId();
+       //同步到总账
+   }
 }
