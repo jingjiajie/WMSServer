@@ -9,5 +9,4 @@ public interface PayNoteItemService extends BaseService<PayNoteItem,PayNoteItemV
     void calculateTax(String accountBook, CalculateTax calculateTax);
     void confirmItems(String accountBook,CalculateTax calculateTax);
     void realPay(String accountBook,CalculateTax calculateTax);
-    //void addByPerson(String accountBook,int personId);
 }
