@@ -1,6 +1,9 @@
 package com.wms.utilities.model;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.sql.Timestamp;
 
 @Entity
@@ -10,13 +13,13 @@ public class PayNote {
     private int salaryPeriodId;
     private String no;
     private Integer accountTitlePayableId;
-    private Integer accountTitlePaidId;
+    private Integer accountTitlePropertyId;
     private String description;
     private int createPersonId;
     private Timestamp createTime;
+    private Integer accountTitleExpenseId;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     public int getId() {
         return id;
@@ -67,13 +70,13 @@ public class PayNote {
     }
 
     @Basic
-    @Column(name = "AccountTitlePaidID")
-    public Integer getAccountTitlePaidId() {
-        return accountTitlePaidId;
+    @Column(name = "AccountTitlePropertyID")
+    public Integer getAccountTitlePropertyId() {
+        return accountTitlePropertyId;
     }
 
-    public void setAccountTitlePaidId(Integer accountTitlePaidId) {
-        this.accountTitlePaidId = accountTitlePaidId;
+    public void setAccountTitlePropertyId(Integer accountTitlePropertyId) {
+        this.accountTitlePropertyId = accountTitlePropertyId;
     }
 
     @Basic
@@ -106,12 +109,22 @@ public class PayNote {
         this.createTime = createTime;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "AccountTitleExpenseID")
+    public Integer getAccountTitleExpenseId() {
+        return accountTitleExpenseId;
+    }
 
-        PayNote payNote = (PayNote) o;
+    public void setAccountTitleExpenseId(Integer accountTitleExpenseId) {
+        this.accountTitleExpenseId = accountTitleExpenseId;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        PayNote payNote = (PayNote) object;
 
         if (id != payNote.id) return false;
         if (warehouseId != payNote.warehouseId) return false;
@@ -120,10 +133,12 @@ public class PayNote {
         if (no != null ? !no.equals(payNote.no) : payNote.no != null) return false;
         if (accountTitlePayableId != null ? !accountTitlePayableId.equals(payNote.accountTitlePayableId) : payNote.accountTitlePayableId != null)
             return false;
-        if (accountTitlePaidId != null ? !accountTitlePaidId.equals(payNote.accountTitlePaidId) : payNote.accountTitlePaidId != null)
+        if (accountTitlePropertyId != null ? !accountTitlePropertyId.equals(payNote.accountTitlePropertyId) : payNote.accountTitlePropertyId != null)
             return false;
         if (description != null ? !description.equals(payNote.description) : payNote.description != null) return false;
         if (createTime != null ? !createTime.equals(payNote.createTime) : payNote.createTime != null) return false;
+        if (accountTitleExpenseId != null ? !accountTitleExpenseId.equals(payNote.accountTitleExpenseId) : payNote.accountTitleExpenseId != null)
+            return false;
 
         return true;
     }
@@ -135,10 +150,11 @@ public class PayNote {
         result = 31 * result + salaryPeriodId;
         result = 31 * result + (no != null ? no.hashCode() : 0);
         result = 31 * result + (accountTitlePayableId != null ? accountTitlePayableId.hashCode() : 0);
-        result = 31 * result + (accountTitlePaidId != null ? accountTitlePaidId.hashCode() : 0);
+        result = 31 * result + (accountTitlePropertyId != null ? accountTitlePropertyId.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + createPersonId;
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
+        result = 31 * result + (accountTitleExpenseId != null ? accountTitleExpenseId.hashCode() : 0);
         return result;
     }
 }

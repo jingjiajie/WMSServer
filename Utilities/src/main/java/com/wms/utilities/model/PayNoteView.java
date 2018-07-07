@@ -3,7 +3,6 @@ package com.wms.utilities.model;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.sql.Timestamp;
 
 @Entity
@@ -13,19 +12,21 @@ public class PayNoteView {
     private int salaryPeriodId;
     private String no;
     private Integer accountTitlePayableId;
-    private Integer accountTitlePaidId;
+    private Integer accountTitlePropertyId;
     private String description;
     private int createPersonId;
     private Timestamp createTime;
+    private Integer accountTitleExpenseId;
     private String createPersonName;
+    private String warehouseName;
+    private String accountTitleExpenseName;
+    private String accountTitleExpenseNo;
     private String accountTitlePayableName;
     private String accountTitlePayableNo;
-    private String accountTitlePaidName;
-    private String accountTitlePaidNo;
-    private String warehouseName;
+    private String accountTitlePropertyName;
+    private String accountTitlePropertyNo;
 
     @Basic
-    @Id
     @Column(name = "ID")
     public int getId() {
         return id;
@@ -76,13 +77,13 @@ public class PayNoteView {
     }
 
     @Basic
-    @Column(name = "AccountTitlePaidID")
-    public Integer getAccountTitlePaidId() {
-        return accountTitlePaidId;
+    @Column(name = "AccountTitlePropertyID")
+    public Integer getAccountTitlePropertyId() {
+        return accountTitlePropertyId;
     }
 
-    public void setAccountTitlePaidId(Integer accountTitlePaidId) {
-        this.accountTitlePaidId = accountTitlePaidId;
+    public void setAccountTitlePropertyId(Integer accountTitlePropertyId) {
+        this.accountTitlePropertyId = accountTitlePropertyId;
     }
 
     @Basic
@@ -116,6 +117,16 @@ public class PayNoteView {
     }
 
     @Basic
+    @Column(name = "AccountTitleExpenseID")
+    public Integer getAccountTitleExpenseId() {
+        return accountTitleExpenseId;
+    }
+
+    public void setAccountTitleExpenseId(Integer accountTitleExpenseId) {
+        this.accountTitleExpenseId = accountTitleExpenseId;
+    }
+
+    @Basic
     @Column(name = "CreatePersonName")
     public String getCreatePersonName() {
         return createPersonName;
@@ -123,6 +134,36 @@ public class PayNoteView {
 
     public void setCreatePersonName(String createPersonName) {
         this.createPersonName = createPersonName;
+    }
+
+    @Basic
+    @Column(name = "WarehouseName")
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
+    }
+
+    @Basic
+    @Column(name = "AccountTitleExpenseName")
+    public String getAccountTitleExpenseName() {
+        return accountTitleExpenseName;
+    }
+
+    public void setAccountTitleExpenseName(String accountTitleExpenseName) {
+        this.accountTitleExpenseName = accountTitleExpenseName;
+    }
+
+    @Basic
+    @Column(name = "AccountTitleExpenseNo")
+    public String getAccountTitleExpenseNo() {
+        return accountTitleExpenseNo;
+    }
+
+    public void setAccountTitleExpenseNo(String accountTitleExpenseNo) {
+        this.accountTitleExpenseNo = accountTitleExpenseNo;
     }
 
     @Basic
@@ -146,41 +187,31 @@ public class PayNoteView {
     }
 
     @Basic
-    @Column(name = "AccountTitlePaidName")
-    public String getAccountTitlePaidName() {
-        return accountTitlePaidName;
+    @Column(name = "AccountTitlePropertyName")
+    public String getAccountTitlePropertyName() {
+        return accountTitlePropertyName;
     }
 
-    public void setAccountTitlePaidName(String accountTitlePaidName) {
-        this.accountTitlePaidName = accountTitlePaidName;
-    }
-
-    @Basic
-    @Column(name = "AccountTitlePaidNo")
-    public String getAccountTitlePaidNo() {
-        return accountTitlePaidNo;
-    }
-
-    public void setAccountTitlePaidNo(String accountTitlePaidNo) {
-        this.accountTitlePaidNo = accountTitlePaidNo;
+    public void setAccountTitlePropertyName(String accountTitlePropertyName) {
+        this.accountTitlePropertyName = accountTitlePropertyName;
     }
 
     @Basic
-    @Column(name = "WarehouseName")
-    public String getWarehouseName() {
-        return warehouseName;
+    @Column(name = "AccountTitlePropertyNo")
+    public String getAccountTitlePropertyNo() {
+        return accountTitlePropertyNo;
     }
 
-    public void setWarehouseName(String warehouseName) {
-        this.warehouseName = warehouseName;
+    public void setAccountTitlePropertyNo(String accountTitlePropertyNo) {
+        this.accountTitlePropertyNo = accountTitlePropertyNo;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        PayNoteView that = (PayNoteView) o;
+        PayNoteView that = (PayNoteView) object;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
@@ -189,21 +220,27 @@ public class PayNoteView {
         if (no != null ? !no.equals(that.no) : that.no != null) return false;
         if (accountTitlePayableId != null ? !accountTitlePayableId.equals(that.accountTitlePayableId) : that.accountTitlePayableId != null)
             return false;
-        if (accountTitlePaidId != null ? !accountTitlePaidId.equals(that.accountTitlePaidId) : that.accountTitlePaidId != null)
+        if (accountTitlePropertyId != null ? !accountTitlePropertyId.equals(that.accountTitlePropertyId) : that.accountTitlePropertyId != null)
             return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) return false;
+        if (accountTitleExpenseId != null ? !accountTitleExpenseId.equals(that.accountTitleExpenseId) : that.accountTitleExpenseId != null)
+            return false;
         if (createPersonName != null ? !createPersonName.equals(that.createPersonName) : that.createPersonName != null)
+            return false;
+        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
+            return false;
+        if (accountTitleExpenseName != null ? !accountTitleExpenseName.equals(that.accountTitleExpenseName) : that.accountTitleExpenseName != null)
+            return false;
+        if (accountTitleExpenseNo != null ? !accountTitleExpenseNo.equals(that.accountTitleExpenseNo) : that.accountTitleExpenseNo != null)
             return false;
         if (accountTitlePayableName != null ? !accountTitlePayableName.equals(that.accountTitlePayableName) : that.accountTitlePayableName != null)
             return false;
         if (accountTitlePayableNo != null ? !accountTitlePayableNo.equals(that.accountTitlePayableNo) : that.accountTitlePayableNo != null)
             return false;
-        if (accountTitlePaidName != null ? !accountTitlePaidName.equals(that.accountTitlePaidName) : that.accountTitlePaidName != null)
+        if (accountTitlePropertyName != null ? !accountTitlePropertyName.equals(that.accountTitlePropertyName) : that.accountTitlePropertyName != null)
             return false;
-        if (accountTitlePaidNo != null ? !accountTitlePaidNo.equals(that.accountTitlePaidNo) : that.accountTitlePaidNo != null)
-            return false;
-        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
+        if (accountTitlePropertyNo != null ? !accountTitlePropertyNo.equals(that.accountTitlePropertyNo) : that.accountTitlePropertyNo != null)
             return false;
 
         return true;
@@ -216,16 +253,19 @@ public class PayNoteView {
         result = 31 * result + salaryPeriodId;
         result = 31 * result + (no != null ? no.hashCode() : 0);
         result = 31 * result + (accountTitlePayableId != null ? accountTitlePayableId.hashCode() : 0);
-        result = 31 * result + (accountTitlePaidId != null ? accountTitlePaidId.hashCode() : 0);
+        result = 31 * result + (accountTitlePropertyId != null ? accountTitlePropertyId.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + createPersonId;
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
+        result = 31 * result + (accountTitleExpenseId != null ? accountTitleExpenseId.hashCode() : 0);
         result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
+        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
+        result = 31 * result + (accountTitleExpenseName != null ? accountTitleExpenseName.hashCode() : 0);
+        result = 31 * result + (accountTitleExpenseNo != null ? accountTitleExpenseNo.hashCode() : 0);
         result = 31 * result + (accountTitlePayableName != null ? accountTitlePayableName.hashCode() : 0);
         result = 31 * result + (accountTitlePayableNo != null ? accountTitlePayableNo.hashCode() : 0);
-        result = 31 * result + (accountTitlePaidName != null ? accountTitlePaidName.hashCode() : 0);
-        result = 31 * result + (accountTitlePaidNo != null ? accountTitlePaidNo.hashCode() : 0);
-        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
+        result = 31 * result + (accountTitlePropertyName != null ? accountTitlePropertyName.hashCode() : 0);
+        result = 31 * result + (accountTitlePropertyNo != null ? accountTitlePropertyNo.hashCode() : 0);
         return result;
     }
 }

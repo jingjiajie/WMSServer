@@ -139,25 +139,51 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         int payNoteId=calculateTax.getPayNoteId();
         int[] payNoteItemId=calculateTax.getPayNoteItemId();
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
-        PayNoteItemView[] payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("id",payNoteItemId, ConditionItem.Relation.IN));
-        if(payNoteItemViews.length!=payNoteItemId.length){throw new WMSServiceException("查询薪资发放单条目出错,某些条目已经不存在！");}
-        //得到科目id
-
-        //判断是否能再确认同时计算总金额
-        BigDecimal totalAmount=new BigDecimal(0);
+        PayNoteItemView[] payNoteItemViews=null;
+        if(payNoteViews.length!=0){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
+        //如果没提供条目id就按整单确认
+        if(payNoteItemId.length!=0){
+        payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("id",payNoteItemId, ConditionItem.Relation.IN));}
+        else{ payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));}
+        //判断是否能确认
         for(int i=0;i<payNoteItemViews.length;i++){
             if(payNoteItemViews[i].getState()!=PayNoteItemState.CACULATED_WAITING_COMFIRMN){throw new WMSServiceException("操作的薪金发放单中条目未全部计算税费，无法确认！");
             }
-            totalAmount=totalAmount.add(payNoteItemViews[i].getAfterTaxAmount());
         }
-        //记录到应付薪资科目和管理费科目
-
-        //TODO 实付金额是什么意思
-        //更新状态
+        //更新状态为确认
         List<PayNoteItem> payNoteItemList=new ArrayList<>();
         for(int i=0;i<payNoteItemViews.length;i++){
             PayNoteItem payNoteItem = ReflectHelper.createAndCopyFields(payNoteItemViews[i],PayNoteItem.class);
             payNoteItem.setState(PayNoteItemState.COMFIRMED);
+            payNoteItemList.add(payNoteItem);
+        }
+        PayNoteItem[] payNoteItems=null;
+        payNoteItems=(PayNoteItem[]) Array.newInstance(PayNoteItem.class,payNoteItemList.size());
+        payNoteItemList.toArray(payNoteItems);
+        payNoteItemDAO.update(accountBook,payNoteItems);
+    }
+
+    public void realPay(String accountBook,CalculateTax calculateTax)
+    {
+        int payNoteId=calculateTax.getPayNoteId();
+        int[] payNoteItemId=calculateTax.getPayNoteItemId();
+        PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
+        PayNoteItemView[] payNoteItemViews=null;
+        if(payNoteViews.length!=0){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
+        //如果没提供条目id就按整单确认
+        if(payNoteItemId.length!=0){
+            payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("id",payNoteItemId, ConditionItem.Relation.IN));}
+        else{ payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));}
+        //判断是否能付款
+        for(int i=0;i<payNoteItemViews.length;i++){
+            if(payNoteItemViews[i].getState()!=PayNoteItemState.COMFIRMED){throw new WMSServiceException("操作的薪金发放单中条目未全部确认，无法付款！");
+            }
+        }
+        List<PayNoteItem> payNoteItemList=new ArrayList<>();
+        for(int i=0;i<payNoteItemViews.length;i++){
+            PayNoteItem payNoteItem = ReflectHelper.createAndCopyFields(payNoteItemViews[i],PayNoteItem.class);
+            payNoteItem.setPaidAmount(payNoteItem.getAfterTaxAmount());
+            payNoteItem.setState(PayNoteItemState.PAYED);
             payNoteItemList.add(payNoteItem);
         }
         PayNoteItem[] payNoteItems=null;
