@@ -18,7 +18,6 @@ public class PayNoteControllerImpl implements PayNoteController {
     @Autowired
     PayNoteService payNoteService;
 
-
     @RequestMapping(value="/",method = RequestMethod.POST)
     public int[] add(@PathVariable("accountBook") String accountBook,
                      @RequestBody PayNote[] payNotes){
@@ -55,5 +54,21 @@ public class PayNoteControllerImpl implements PayNoteController {
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.payNoteService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/confirm_to_account_title/{payNoteId}",method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public void confirmToAccountTitle(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("payNoteId") int payNoteId){
+         this.payNoteService.confirmToAccountTitle(accountBook,payNoteId);
+    }
+
+    @Override
+    @RequestMapping(value="/real_pay_to_account_title/{payNoteId}",method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public void realPayToAccountTitle(@PathVariable("accountBook") String accountBook,
+                                      @PathVariable("payNoteId") int payNoteId){
+        this.payNoteService.realPayToAccountTitle(accountBook,payNoteId);
     }
 }

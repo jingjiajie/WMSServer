@@ -2,6 +2,7 @@ package com.wms.services.salary.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.salary.datestructures.CalculateTax;
 import com.wms.services.salary.service.PayNoteItemService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.PayNoteItem;
@@ -55,4 +56,29 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
                           @PathVariable("condStr") String condStr){
         return this.payNoteItemService.findCount(accountBook, Condition.fromJson(condStr));
     }
+
+    @Override
+    @RequestMapping(value="/calculate_tax",method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public void calculateTax(@PathVariable("accountBook") String accountBook,
+                             @RequestBody CalculateTax calculateTax){
+         this.payNoteItemService.calculateTax(accountBook,calculateTax);
+    }
+
+    @Override
+    @RequestMapping(value="/confirm_items",method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public void confirmItems(@PathVariable("accountBook") String accountBook,
+                             @RequestBody CalculateTax calculateTax){
+        this.payNoteItemService.confirmItems(accountBook,calculateTax);
+    }
+
+    @Override
+    @RequestMapping(value="/real_pay",method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public void realPay(@PathVariable("accountBook") String accountBook,
+                             @RequestBody CalculateTax calculateTax){
+        this.payNoteItemService.realPay(accountBook,calculateTax);
+    }
+
 }

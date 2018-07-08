@@ -171,7 +171,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        //TODO 将总金额增加到 总账
    }
 
-   public void realPay(String accountBook,int payNoteId)
+   public void realPayToAccountTitle(String accountBook,int payNoteId)
    {
        PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
