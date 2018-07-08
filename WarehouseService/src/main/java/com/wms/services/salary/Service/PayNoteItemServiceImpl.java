@@ -212,7 +212,8 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             if(payNoteItems[i].getState()==PayNoteItemState.WAITING_FOR_CACULATE||payNoteItems[i].getState()==PayNoteItemState.CACULATED_WAITING_COMFIRMN)
             personIds.add(payNoteItems[i].getPersonId());
         }
-        PersonSalaryView[] personSalaryViews= this.personSalaryService.find(accountBook,new Condition().addCondition("personId",personIds, ConditionItem.Relation.IN).addCondition("salaryPeriodId",personIds.toArray()));
+
+        PersonSalaryView[] personSalaryViews= this.personSalaryService.find(accountBook,new Condition().addCondition("personId",personIds.toArray(), ConditionItem.Relation.IN).addCondition("salaryPeriodId",periodId));
         if(personSalaryViews.length==0){return payNoteItems;}
 
         Map<Integer, List<PersonSalaryView>> groupByPersonIdMap =
