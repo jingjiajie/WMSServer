@@ -69,7 +69,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         //生成/检测单号
         Stream.of(deliveryOrders).forEach((deliveryOrder) -> {
             //如果单号留空则自动生成
-            if (deliveryOrder.getNo() == null) {
+            if (deliveryOrder.getNo() == null||deliveryOrder.getNo().isEmpty()) {
                 deliveryOrder.setNo(this.orderNoGenerator.generateNextNo(accountBook, DeliveryOrderServiceImpl.NO_PREFIX));
             } else { //否则检查单号是否重复
                 Condition cond = new Condition();
