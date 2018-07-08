@@ -318,6 +318,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
         int curTransferOrderId=-1;
+        int curPersonId=-1;
         for (int id : ids) {
             //todo idChecker.check(this.getClass(), accountBook, id, "删除的移库单条目");
 
@@ -327,6 +328,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             }
             TransferOrderItemView oriItemView=oriItemViews[0];
             curTransferOrderId=oriItemView.getTransferOrderId();
+            curPersonId=oriItemView.getPersonId();
             if (oriItemView.getState()==0
 //                    oriItemView.getScheduledAmount().compareTo(new BigDecimal(0))!=0&&
 //                    oriItemView.getRealAmount().compareTo(new BigDecimal(0))==0
@@ -369,7 +371,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
         }
         this.transferOrderItemDAO.remove(accountBook, ids);
-        this.updateTransferOrder(accountBook,curTransferOrderId ,-1);
+        this.updateTransferOrder(accountBook,curTransferOrderId ,curPersonId);
     }
 
     @Override
