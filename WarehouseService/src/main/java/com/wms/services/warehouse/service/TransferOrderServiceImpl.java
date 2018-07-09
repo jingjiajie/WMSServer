@@ -58,6 +58,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             }
             obj.setState(TransferOrderItemService.STATE_IN_TRANSFER);//新建移库单记为状态0
             obj.setPrintTimes(new BigDecimal(0));
+            obj.setCreateTime(new Timestamp(System.currentTimeMillis()));
             obj.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
             obj.setLastUpdatePersonId(obj.getCreatePersonId());
         });

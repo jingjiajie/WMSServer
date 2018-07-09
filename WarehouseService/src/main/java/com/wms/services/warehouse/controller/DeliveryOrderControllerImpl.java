@@ -8,6 +8,8 @@ import com.wms.services.warehouse.service.DeliveryOrderService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.DeliveryOrder;
 import com.wms.utilities.model.DeliveryOrderView;
+import com.wms.utilities.model.TransferOrderItem;
+import com.wms.utilities.model.TransferOrderItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -66,9 +68,9 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     @Override
     @RequestMapping(value = "/transfer_auto",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void transferAuto(@PathVariable("accountBook") String accountBook,
-                               @RequestBody TransferAuto transferAuto){
-        this.deliveryOrderService.transferAuto(accountBook,transferAuto);
+    public List<TransferOrderItemView> transferAuto(@PathVariable("accountBook") String accountBook,
+                                                    @RequestBody TransferAuto transferAuto){
+        return this.deliveryOrderService.transferAuto(accountBook,transferAuto);
     }
 
     @Override

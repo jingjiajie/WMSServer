@@ -4,6 +4,8 @@ import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.model.DeliveryOrder;
 import com.wms.utilities.model.DeliveryOrderView;
+import com.wms.utilities.model.TransferOrderItem;
+import com.wms.utilities.model.TransferOrderItemView;
 
 import java.util.List;
 
@@ -11,7 +13,7 @@ public interface DeliveryOrderController
     extends BaseController<DeliveryOrder,DeliveryOrderView>{
 
     void transferPakage(String accountBook, TransferArgs transferArgs);
-    void transferAuto(String accountBook, TransferAuto transferAuto);
+    List<TransferOrderItemView> transferAuto(String accountBook, TransferAuto transferAuto);
 
     void deliveryByPakage(String accountBook, DeliveryByPakage deliveryByPakage);
     void deliveryFinish(String accountBook,DeliveryFinish deliveryFinish);
