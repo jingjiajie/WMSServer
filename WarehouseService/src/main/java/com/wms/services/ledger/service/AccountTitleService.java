@@ -1,12 +1,11 @@
 package com.wms.services.ledger.service;
 
 import com.wms.utilities.model.AccountTitle;
+import com.wms.utilities.model.AccountTitleView;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.service.BaseService;
 
-public interface AccountTitleService {
-    int[] add(String accountBook, AccountTitle accountTitles[]) throws WMSServiceException;
-    void update(String accountBook,AccountTitle accountTitles[]) throws WMSServiceException;
-    void remove(String accountBook, int[] ids) throws WMSServiceException;
-    AccountTitle[] find(String accountBook,Condition cond) throws WMSServiceException;
+public interface AccountTitleService extends BaseService<AccountTitle,AccountTitleView>{
+
 }

@@ -74,15 +74,6 @@ public class MaterialServiceImpl implements MaterialService {
                 throw new WMSServiceException("已存在相同系列-相同代号名称物料重复："+materials[i].getName());
             }
         }
-//        Stream.of(materials).forEach((material)->{
-//            Condition cond = new Condition();
-//            cond.addCondition("no",new String[]{material.getNo()});
-//            cond.addCondition("warehouseId",new Integer[]{material.getWarehouseId()});
-//            cond.addCondition("id",new Integer[]{material.getId()}, ConditionItem.Relation.NOT_EQUAL);
-//            if(materialDAO.find(accountBook,cond).length > 0){
-//                throw new WMSServiceException("物料代号："+material.getNo()+"已经存在!");
-//            }
-//        });
 
         materialDAO.update(accountBook, materials);
     }

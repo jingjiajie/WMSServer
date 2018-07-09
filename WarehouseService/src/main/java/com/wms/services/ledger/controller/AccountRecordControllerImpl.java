@@ -7,6 +7,7 @@ import com.wms.utilities.model.AccountRecord;
 import com.wms.utilities.model.AccountRecordView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,34 +17,39 @@ public class AccountRecordControllerImpl implements AccountRecordController {
     @Autowired
     AccountRecordService accountRecordService;
 
-    @RequestMapping(value="/",method = RequestMethod.POST)
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    @Override
     public int[] add(@PathVariable("accountBook") String accountBook,
-                     @RequestBody AccountRecord[] accountRecords ){
-        return accountRecordService.add(accountBook,accountRecords);
+                     @RequestBody AccountRecord[] accountRecords) {
+        return accountRecordService.add(accountBook, accountRecords);
     }
 
-    @RequestMapping(value = "/",method = RequestMethod.PUT)
-    @ResponseBody
+    @Override
+    @RequestMapping(value = "/", method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
     public void update(@PathVariable("accountBook") String accountBook,
                        @RequestBody AccountRecord[] accountRecords) {
-        accountRecordService.update(accountBook,accountRecords);
+        accountRecordService.update(accountBook, accountRecords);
     }
 
-    @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
-    @ResponseBody
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/{strIDs}", method = RequestMethod.DELETE)
     public void remove(@PathVariable("accountBook") String accountBook,
                        @PathVariable("strIDs") String strIDs) {
         Gson gson = new Gson();
-        int ids[] = gson.fromJson(strIDs,new TypeToken<int[]>(){}.getType());
-        accountRecordService.remove(accountBook,ids);
+        int ids[] = gson.fromJson(strIDs, new TypeToken<int[]>() {
+        }.getType());
+        accountRecordService.remove(accountBook, ids);
     }
 
-    @RequestMapping(value = "/{condStr}",method = RequestMethod.GET)
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/{strCond}", method = RequestMethod.GET)
     public AccountRecordView[] find(@PathVariable("accountBook") String accountBook,
-                                   @PathVariable("condStr") String condStr) {
-        Condition cond = Condition.fromJson(condStr);
-        AccountRecordView[] accountRecordViews =accountRecordService.find(accountBook, cond);
-        return accountRecordViews;
+                                        @PathVariable("strCond") String condStr) {
+        return accountRecordService.find(accountBook, Condition.fromJson(condStr));
     }
 
     @Override

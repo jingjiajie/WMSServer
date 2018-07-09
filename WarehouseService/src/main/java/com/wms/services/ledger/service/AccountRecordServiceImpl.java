@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.stream.Stream;
 
 @Transactional
@@ -33,6 +34,9 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     public int[] add(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException
     {
         this.validateEntities(accountBook,accountRecords);
+        Stream.of(accountRecords).forEach((accountRecord)->{
+            accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
+        });
         return accountRecordDAO.add(accountBook,accountRecords);
     }
 
