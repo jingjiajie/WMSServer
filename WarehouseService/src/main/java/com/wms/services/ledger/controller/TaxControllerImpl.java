@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.ledger.service.TaxService;
 import com.wms.utilities.model.Tax;
+import com.wms.utilities.model.TaxView;
 import com.wms.utilities.datastructures.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,34 +17,46 @@ public class TaxControllerImpl implements TaxController {
     @Autowired
     TaxService taxService;
 
-    @RequestMapping(value = "/",method = RequestMethod.POST)
-    public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook,
-                                     @RequestBody Tax[] taxes) {
-        int ids[] = taxService.add(accountBook, taxes);
-        return new ResponseEntity<int[]>(ids, HttpStatus.OK);
+    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    @Override
+    public int[] add(@PathVariable("accountBook") String accountBook,
+                     @RequestBody Tax[] taxes) {
+        return taxService.add(accountBook, taxes);
     }
 
-    @RequestMapping(value = "/{strIDs}",method = RequestMethod.DELETE)
-    @ResponseBody
+    @Override
+    @RequestMapping(value = "/", method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public void update(@PathVariable("accountBook") String accountBook,
+                       @RequestBody Tax[] taxes) {
+        taxService.update(accountBook, taxes);
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/{strIDs}", method = RequestMethod.DELETE)
     public void remove(@PathVariable("accountBook") String accountBook,
                        @PathVariable("strIDs") String strIDs) {
         Gson gson = new Gson();
-        int ids[] = gson.fromJson(strIDs,new TypeToken<int[]>(){}.getType());
-        taxService.remove(accountBook,ids);
+        int ids[] = gson.fromJson(strIDs, new TypeToken<int[]>() {
+        }.getType());
+        taxService.remove(accountBook, ids);
     }
 
-    @RequestMapping(value = "/",method = RequestMethod.PUT)
-    @ResponseBody
-    public void update(@PathVariable("accountBook") String accountBook,
-                       @RequestBody Tax[] taxes) {
-        taxService.update(accountBook,taxes);
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/{strCond}", method = RequestMethod.GET)
+    public TaxView[] find(@PathVariable("accountBook") String accountBook,
+                                    @PathVariable("strCond") String condStr) {
+        return taxService.find(accountBook, Condition.fromJson(condStr));
     }
 
-    @RequestMapping("/{condStr}")
-    public ResponseEntity<Tax[]> find(@PathVariable("accountBook") String accountBook,
-                                         @PathVariable("condStr") String condStr) {
-        Condition cond = Condition.fromJson(condStr);
-        Tax[] taxes = taxService.find(accountBook,cond);
-        return new ResponseEntity<Tax[]>(taxes, HttpStatus.OK);
+    @Override
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCount(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        return this.taxService.findCount(accountBook, Condition.fromJson(condStr));
     }
 }
