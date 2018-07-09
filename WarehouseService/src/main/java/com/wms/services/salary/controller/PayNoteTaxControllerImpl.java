@@ -55,4 +55,11 @@ public class PayNoteTaxControllerImpl implements PayNoteTaxController {
                           @PathVariable("condStr") String condStr){
         return this.payNoteTaxService.findCount(accountBook, Condition.fromJson(condStr));
     }
+
+    @RequestMapping(value = "/choose_tax",method = RequestMethod.PUT)
+    @ResponseBody
+    public void chooseTax(@PathVariable("accountBook") String accountBook,
+                       @RequestBody PayNoteTax[] payNoteTaxes) {
+        payNoteTaxService.chooseTax(accountBook,payNoteTaxes);
+    }
 }

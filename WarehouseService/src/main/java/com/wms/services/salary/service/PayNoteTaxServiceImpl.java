@@ -79,4 +79,15 @@ public class PayNoteTaxServiceImpl implements PayNoteTaxService {
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.payNoteTaxDAO.findCount(database,cond);
     }
+
+    public void chooseTax(String accountBook,PayNoteTax[] payNoteTaxes){
+      if(payNoteTaxes.length!=1){throw new WMSServiceException("选择税务出现问题！");}
+       PayNoteTaxView[] payNoteTaxViews= payNoteTaxDAO.find(accountBook,new Condition().addCondition("id",payNoteTaxes[0].getId()));
+      if(payNoteTaxViews.length==0){
+          this.add(accountBook,payNoteTaxes);
+      }
+      else {
+          this.update(accountBook,payNoteTaxes);
+      }
+    }
 }
