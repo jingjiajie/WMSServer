@@ -200,7 +200,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         });
     }
 
-    public void transferAuto(String accountBook, TransferAuto TransferAuto) {
+    public List<TransferOrderItemView> transferAuto(String accountBook, TransferAuto TransferAuto) throws WMSServiceException{
         new Validator("人员").notnull().validate(TransferAuto.getPersonId());
         new Validator("移库类型").min(0).max(2).validate(TransferAuto.getTransferType());
 
@@ -216,7 +216,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
         //新建列表存放条目
         List<TransferOrderItem> transferOrderItemsList=new ArrayList();
-
+        List<TransferOrderItemView> falseTransferOrderItemsList=new ArrayList();
         //TODO 按供货商分组
         Map<Integer, List<SafetyStockView>> groupBySupplierIdMap =
                 Stream.of(safetyStockViews).collect(Collectors.groupingBy(SafetyStockView::getSupplierId));
@@ -253,27 +253,64 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     sourceAmount1=sourceAmount1.add(stockRecordViews4[l].getAvailableAmount());
                 }
 
-                if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) <=0&& sourceAmount1.compareTo(safetyStockViews[i].getAmount())>=0) {
-                    TransferOrderItem transferOrderItem = new TransferOrderItem();
-                    transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
-                    transferOrderItem.setUnit(safetyStockViews[i].getUnit());
-                    transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
-                    transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
-                    transferOrderItem.setSourceUnit(safetyStockViews[i].getSourceUnit());
-                    transferOrderItem.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
-                    transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
-                    //预设计划数量
-                    transferOrderItem.setScheduledAmount(safetyStockViews[i].getAmount().subtract(sourceAmount));
-                    transferOrderItem.setPersonId(TransferAuto.getPersonId());
+                TransferOrderItem transferOrderItem = new TransferOrderItem();
+                TransferOrderItemView transferOrderItemView = new TransferOrderItemView();
+                transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
+                transferOrderItem.setUnit(safetyStockViews[i].getUnit());
+                transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
+                transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
+                transferOrderItem.setSourceUnit(safetyStockViews[i].getSourceUnit());
+                transferOrderItem.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
+                transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
+                //预设计划数量
+                transferOrderItem.setScheduledAmount(safetyStockViews[i].getAmount().subtract(sourceAmount));
+                transferOrderItem.setPersonId(TransferAuto.getPersonId());
+                transferOrderItem.setRealAmount(new BigDecimal(0));
+                transferOrderItem.setOperateTime(new Timestamp(System.currentTimeMillis()));
+                transferOrderItem.setTransferOrderId(newTransferOrderID);
+                transferOrderItem.setState(0);
 
-                    transferOrderItem.setRealAmount(new BigDecimal(0));
+                if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) <=0&& sourceAmount1.compareTo(safetyStockViews[i].getAmount())>=0) {
                     transferOrderItem.setComment("成功一键移库");
-                    transferOrderItem.setOperateTime(new Timestamp(System.currentTimeMillis()));
-                    transferOrderItem.setTransferOrderId(newTransferOrderID);
-                    transferOrderItem.setState(0);
 
                     transferOrderItemsList.add(transferOrderItem);
 
+                }else if (stockRecordViews4.length==0){
+                    transferOrderItemView.setComment("源库位库存条目不存在！");
+
+                    transferOrderItemView.setSourceStorageLocationName(safetyStockViews[i].getSourceStorageLocationName());
+                    transferOrderItemView.setSourceUnit(safetyStockViews[i].getSourceUnit());
+                    transferOrderItemView.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
+                    transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
+                    transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
+                    transferOrderItemView.setState(0);
+
+
+                    falseTransferOrderItemsList.add(transferOrderItemView);
+                }else if (sourceAmount.compareTo(safetyStockViews[i].getAmount()) >0){
+                    transferOrderItemView.setTargetStorageLocationName(safetyStockViews[i].getTargetStorageLocationName());
+                    transferOrderItemView.setUnit(safetyStockViews[i].getUnit());
+                    transferOrderItemView.setUnitAmount(safetyStockViews[i].getUnitAmount());
+                    transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
+                    transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
+                    transferOrderItemView.setState(1);
+                    transferOrderItem.setComment("库存充足！");
+
+                    falseTransferOrderItemsList.add(transferOrderItemView);
+                }else if (sourceAmount1.compareTo(safetyStockViews[i].getAmount())<0){
+
+                    transferOrderItemView.setSourceStorageLocationName(safetyStockViews[i].getSourceStorageLocationName());
+                    transferOrderItemView.setSourceUnit(safetyStockViews[i].getSourceUnit());
+                    transferOrderItemView.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
+                    transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
+
+                    transferOrderItemView.setScheduledAmount(safetyStockViews[i].getAmount());
+                    transferOrderItemView.setRealAmount(sourceAmount1);
+
+                    transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
+                    transferOrderItemView.setState(2);
+                    transferOrderItem.setComment(safetyStockViews[i].getAmount().subtract(sourceAmount1).toString());
+                    falseTransferOrderItemsList.add(transferOrderItemView);
                 }
 
             }
@@ -291,7 +328,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 throw new WMSServiceException("当前上架库存充足或备货源库位上库存不足，未能自动生成上架，请检查上架库存设置和库存记录");
             }
         }
-        this.transferOrderItemService.add(accountBook, transferOrderItems);
+        if (transferOrderItems.length!=0) {
+            this.transferOrderItemService.add(accountBook, transferOrderItems);
+        }
 //        transferItem.setTransferOrder(transferOrder);
 //        transferItem.setTransferOrderItems(transferOrderItems);
 //
@@ -300,7 +339,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 //        //boolean a = true;
 //        //transferOrderItemService.autoTrans(a);
 //        this.transferPakage(accountBook, transferArgs);
-
+        return falseTransferOrderItemsList;
     }
 
     @Override
