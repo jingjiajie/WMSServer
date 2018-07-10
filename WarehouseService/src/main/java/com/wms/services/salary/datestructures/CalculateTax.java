@@ -24,13 +24,13 @@ public class CalculateTax {
 
     private int payNoteId;
 
-    public int getTaxId() {
+    public int[] getTaxId() {
         return taxId;
     }
 
-    public void setTaxId(int taxId) {
+    public void setTaxId(int[] taxId) {
         this.taxId = taxId;
     }
 
-    int taxId;
+    private int[] taxId;
 }
