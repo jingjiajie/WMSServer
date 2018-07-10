@@ -170,6 +170,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         payNoteItemDAO.update(accountBook,payNoteItems);
     }
 
+//可以当做所有条目完成付款
     public void realPay(String accountBook,CalculateTax calculateTax)
     {
         int payNoteId=calculateTax.getPayNoteId();

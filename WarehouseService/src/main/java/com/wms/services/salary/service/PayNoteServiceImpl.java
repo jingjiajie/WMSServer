@@ -171,6 +171,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        //TODO 将总金额增加到 总账
    }
 
+   //同时将状态变为下一个状态
    public void realPayToAccountTitle(String accountBook,int payNoteId)
    {
        PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
