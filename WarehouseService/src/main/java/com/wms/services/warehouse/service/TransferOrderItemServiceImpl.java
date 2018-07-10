@@ -106,11 +106,12 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                     transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
                 }
             }
+            this.updateTransferOrder(accountBook, transferOrderItem.getTransferOrderId(), transferOrderItem.getPersonId());
 
         });
 
         int[] ids =this.transferOrderItemDAO.add(accountBook, transferOrderItems);
-        this.updateTransferOrder(accountBook, transferOrderItems[0].getTransferOrderId(), transferOrderItems[0].getPersonId());
+        //this.updateTransferOrder(accountBook, transferOrderItems[0].getTransferOrderId(), transferOrderItems[0].getPersonId());
         return ids;
     }
 
