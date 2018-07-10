@@ -37,6 +37,22 @@ public class PayNoteTaxServiceImpl implements PayNoteTaxService {
                         throw new WMSServiceException(String.format("税务不存在，请重新提交！(%d)",payNoteTax.getTaxId()));
                     }}
         );
+        for(int i=0;i<payNoteTaxes.length;i++){
+            for(int j=i+1;j<payNoteTaxes.length;j++){
+                int payNoteId=payNoteTaxes[i].getPayNoteId();
+                int taxId=payNoteTaxes[i].getTaxId();
+                if(payNoteId==payNoteTaxes[j].getPayNoteId()&&taxId==payNoteTaxes[j].getTaxId()){throw new WMSServiceException("相同的税务在列表中重复！");}
+            }
+        }
+        //重复
+        Stream.of(payNoteTaxes).forEach((payNoteTax)->{
+            Condition cond = new Condition();
+            cond.addCondition("taxId",payNoteTax.getPayNoteId());
+            cond.addCondition("payNoteId",payNoteTax.getPayNoteId());
+            if(payNoteTaxDAO.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("同一税务只能添加一次！");
+            }
+        });
         return payNoteTaxDAO.add(accountBook,payNoteTaxes);
     }
 
@@ -55,6 +71,23 @@ public class PayNoteTaxServiceImpl implements PayNoteTaxService {
                         throw new WMSServiceException(String.format("税务不存在，请重新提交！(%d)",payNoteTax.getTaxId()));
                     }}
         );
+        for(int i=0;i<payNoteTaxes.length;i++){
+            for(int j=i+1;j<payNoteTaxes.length;j++){
+                int payNoteId=payNoteTaxes[i].getPayNoteId();
+                int taxId=payNoteTaxes[i].getTaxId();
+                if(payNoteId==payNoteTaxes[j].getPayNoteId()&&taxId==payNoteTaxes[j].getTaxId()){throw new WMSServiceException("相同的税务在列表中重复！");}
+            }
+        }
+        //重复
+        Stream.of(payNoteTaxes).forEach((payNoteTax)->{
+            Condition cond = new Condition();
+            cond.addCondition("taxId",payNoteTax.getPayNoteId());
+            cond.addCondition("payNoteId",payNoteTax.getPayNoteId());
+            cond.addCondition("id",payNoteTax.getId(), ConditionItem.Relation.NOT_EQUAL);
+            if(payNoteTaxDAO.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("同一税务只能添加一次！");
+            }
+        });
         payNoteTaxDAO.update(accountBook, payNoteTaxes);
     }
 

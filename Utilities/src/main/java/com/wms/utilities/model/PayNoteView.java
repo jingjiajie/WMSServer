@@ -26,6 +26,7 @@ public class PayNoteView {
     private String accountTitlePayableNo;
     private String accountTitlePropertyName;
     private String accountTitlePropertyNo;
+    private String salaryPeriodName;
 
     @Basic
     @Id
@@ -208,6 +209,16 @@ public class PayNoteView {
         this.accountTitlePropertyNo = accountTitlePropertyNo;
     }
 
+    @Basic
+    @Column(name = "SalaryPeriodName")
+    public String getSalaryPeriodName() {
+        return salaryPeriodName;
+    }
+
+    public void setSalaryPeriodName(String salaryPeriodName) {
+        this.salaryPeriodName = salaryPeriodName;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -244,6 +255,8 @@ public class PayNoteView {
             return false;
         if (accountTitlePropertyNo != null ? !accountTitlePropertyNo.equals(that.accountTitlePropertyNo) : that.accountTitlePropertyNo != null)
             return false;
+        if (salaryPeriodName != null ? !salaryPeriodName.equals(that.salaryPeriodName) : that.salaryPeriodName != null)
+            return false;
 
         return true;
     }
@@ -268,6 +281,8 @@ public class PayNoteView {
         result = 31 * result + (accountTitlePayableNo != null ? accountTitlePayableNo.hashCode() : 0);
         result = 31 * result + (accountTitlePropertyName != null ? accountTitlePropertyName.hashCode() : 0);
         result = 31 * result + (accountTitlePropertyNo != null ? accountTitlePropertyNo.hashCode() : 0);
+        result = 31 * result + (salaryPeriodName != null ? salaryPeriodName.hashCode() : 0);
+
         return result;
     }
 }

@@ -117,7 +117,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         int payNoteId=calculateTax.getPayNoteId();
         int[] payNoteItemId=calculateTax.getPayNoteItemId();
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
-        int taxId=calculateTax.getTaxId();
+        int[] taxId=calculateTax.getTaxId();
         BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemId.length];
         PayNoteItemView[] payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("id",payNoteItemId, ConditionItem.Relation.IN));
         if(payNoteItemViews.length!=payNoteItemId.length){throw new WMSServiceException("查询薪资发放单条目出错,某些条目已经不存在！");}
@@ -232,7 +232,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             }
             for(int i=0;i<payNoteItems.length;i++){
                 if(payNoteItems[i].getPersonId()==entry.getKey())   {
-                    payNoteItems[i].setPreTaxAmount(amount);
+                    payNoteItems[i].setPreTaxAmount(amount);if(payNoteItems[i].getState()==PayNoteItemState.CACULATED_WAITING_COMFIRMN)
                     payNoteItems[i].setAfterTaxAmount(amount.subtract(payNoteItems[i].getTaxAmount()));
                     break;
                 }
