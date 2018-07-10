@@ -86,6 +86,8 @@
                 <value>com.wms.utilities.model.PersonSalaryView</value>
                 <value>com.wms.utilities.model.PayNoteTax</value>
                 <value>com.wms.utilities.model.PayNoteTaxView</value>
+                <value>com.wms.utilities.model.PayNote</value>
+                <value>com.wms.utilities.model.PayNoteView</value>
             </list>
         </property>
     </bean>

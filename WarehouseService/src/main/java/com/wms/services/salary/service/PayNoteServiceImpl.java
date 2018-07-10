@@ -52,7 +52,7 @@ public class PayNoteServiceImpl implements PayNoteService{
         //重复
         Stream.of(payNotes).forEach((payNote)->{
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{payNote.getNo()});
+            cond.addCondition("no",new String[]{payNote.getNo()});
             cond.addCondition("warehouseId",payNote.getWarehouseId());
             if(payNoteDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("薪资发放单单号："+payNote.getNo()+"已经存在!");
@@ -98,7 +98,7 @@ public class PayNoteServiceImpl implements PayNoteService{
         //重复
         Stream.of(payNotes).forEach((payNote)-> {
                     Condition cond = new Condition();
-                    cond.addCondition("name", new String[]{payNote.getNo()});
+                    cond.addCondition("no", new String[]{payNote.getNo()});
                     cond.addCondition("warehouseId", payNote.getWarehouseId());
                     cond.addCondition("id", new Integer[]{payNote.getId()}, ConditionItem.Relation.NOT_EQUAL);
                     if (payNoteDAO.find(accountBook, cond).length > 0) {
