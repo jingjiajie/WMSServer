@@ -208,8 +208,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         //区分安全库存类型
         int transferType=TransferAuto.getTransferType();
 
-        SafetyStockView[] safetyStockViews=safetyStockService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{TransferAuto.getWarehouseId()}).addCondition("type",new Integer[]{transferType}));
-        if(safetyStockViews.length==0){throw new WMSServiceException("当前仓库无任何安全库存记录，无法自动添加移库作业单单条目！");}
+        SafetyStockView[] AllSafetyStockViews=safetyStockService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{TransferAuto.getWarehouseId()}).addCondition("type",new Integer[]{transferType}));
+        if(AllSafetyStockViews.length==0){throw new WMSServiceException("当前仓库无任何安全库存记录，无法自动添加移库作业单单条目！");}
         TransferArgs transferArgs=new TransferArgs();
         TransferItem transferItem=new TransferItem();
 
@@ -219,7 +219,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         List<TransferOrderItemView> falseTransferOrderItemsList=new ArrayList();
         //TODO 按供货商分组
         Map<Integer, List<SafetyStockView>> groupBySupplierIdMap =
-                Stream.of(safetyStockViews).collect(Collectors.groupingBy(SafetyStockView::getSupplierId));
+                Stream.of(AllSafetyStockViews).collect(Collectors.groupingBy(SafetyStockView::getSupplierId));
 
         Iterator<Map.Entry<Integer,List<SafetyStockView>>> entries = groupBySupplierIdMap.entrySet().iterator();
         //将每组最新的加到一个列表中
@@ -235,9 +235,13 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             transferOrder.setSupplierId(supplierId);
             int newTransferOrderID = this.transferOrderService.add(accountBook, new TransferOrder[]{transferOrder})[0];
 
-            List<SafetyStockView> safetyStockViews1=entry.getValue();
+            List<SafetyStockView> safetyStockViewsList=entry.getValue();
+
+            SafetyStockView[] safetyStockViews=null;
+            safetyStockViews = (SafetyStockView[]) Array.newInstance(SafetyStockView.class,safetyStockViewsList.size());
+            safetyStockViewsList.toArray(safetyStockViews);
             
-            for(int i=0;i<safetyStockViews1.size();i++){
+            for(int i=0;i<safetyStockViews.length;i++){
                 StockRecordViewNewest[] stockRecordViews3 = stockRecordService.findNewest(accountBook,
                         new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}));
                 StockRecordViewNewest[] stockRecordViews4 = stockRecordService.findNewest(accountBook,
@@ -270,7 +274,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 transferOrderItem.setTransferOrderId(newTransferOrderID);
                 transferOrderItem.setState(0);
 
-                if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) <=0&& sourceAmount1.compareTo(safetyStockViews[i].getAmount())>=0) {
+                if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) <0&& sourceAmount1.compareTo(safetyStockViews[i].getAmount())>=0) {
                     transferOrderItem.setComment("成功一键移库");
 
                     transferOrderItemsList.add(transferOrderItem);
@@ -287,7 +291,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
 
                     falseTransferOrderItemsList.add(transferOrderItemView);
-                }else if (sourceAmount.compareTo(safetyStockViews[i].getAmount()) >0){
+                }else if (sourceAmount.compareTo(safetyStockViews[i].getAmount()) >=0){
                     transferOrderItemView.setTargetStorageLocationName(safetyStockViews[i].getTargetStorageLocationName());
                     transferOrderItemView.setUnit(safetyStockViews[i].getUnit());
                     transferOrderItemView.setUnitAmount(safetyStockViews[i].getUnitAmount());
