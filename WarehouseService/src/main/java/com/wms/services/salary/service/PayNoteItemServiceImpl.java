@@ -7,6 +7,7 @@ import com.wms.services.salary.controller.PersonSalaryController;
 import com.wms.services.salary.dao.PayNoteItemDAO;
 import com.wms.services.salary.datestructures.CalculateTax;
 import com.wms.services.salary.datestructures.PayNoteItemState;
+import com.wms.services.salary.datestructures.PayNoteState;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
@@ -48,7 +49,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         //新建的条目状态应该为0
         for(int i=0;i<payNoteItems.length;i++){
             for(int j=i+1;j<payNoteItems.length;j++){
-            payNoteItems[i].setState(0);
+            payNoteItems[i].setState(PayNoteItemState.WAITING_FOR_CALCULATE);
             }
         }
         //外键检测
@@ -124,7 +125,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         for(int i=0;i<payNoteItemViews.length;i++){
             payNoteItemId[i]=payNoteItemViews[i].getId();
             preTaxAmounts[i]=payNoteItemViews[i].getPreTaxAmount();
-            if(payNoteItemViews[i].getState()!=PayNoteItemState.WAITING_FOR_CACULATE){throw new WMSServiceException("操作的薪金发放单条目已经计算税费");}
+            if(payNoteItemViews[i].getState()!=PayNoteItemState.WAITING_FOR_CALCULATE){throw new WMSServiceException("操作的薪金发放单条目已经计算税费");}
         }
         //TODO 计算税费
         BigDecimal[] taxAmount=null;
@@ -133,7 +134,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             PayNoteItem payNoteItem = ReflectHelper.createAndCopyFields(payNoteItemViews[i],PayNoteItem.class);
             payNoteItem.setTaxAmount(taxAmount[i]);
             payNoteItem.setAfterTaxAmount(payNoteItem.getPreTaxAmount().subtract(taxAmount[i]));
-            payNoteItem.setState(PayNoteItemState.CACULATED_WAITING_COMFIRMN);
+            payNoteItem.setState(PayNoteItemState.CALCULATED);
             payNoteItemList.add(payNoteItem);
         }
         PayNoteItem[] payNoteItems=null;
@@ -141,7 +142,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         payNoteItemList.toArray(payNoteItems);
         payNoteItemDAO.update(accountBook,payNoteItems);
     }
-
+/*
     public void confirmItems(String accountBook,CalculateTax calculateTax){
         int payNoteId=calculateTax.getPayNoteId();
         int[] payNoteItemId=calculateTax.getPayNoteItemId();
@@ -169,7 +170,8 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         payNoteItemList.toArray(payNoteItems);
         payNoteItemDAO.update(accountBook,payNoteItems);
     }
-
+*/
+/*
 //可以当做所有条目完成付款
     public void realPay(String accountBook,CalculateTax calculateTax)
     {
@@ -199,18 +201,19 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         payNoteItemList.toArray(payNoteItems);
         payNoteItemDAO.update(accountBook,payNoteItems);
     }
-
+*/
     private PayNoteItem[] getPersonAmount(String accountBook,PayNoteItem[] payNoteItems){
         if(payNoteItems.length==0){
             return payNoteItems;}
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteItems[0].getPayNoteId()));
         if(payNoteViews.length==0){throw new WMSServiceException("查找付款单出错，可能付款单已经不存在！"
         );}
+        //如果整单还没确认可以更改工资
+        if(payNoteViews[0].getState()!= PayNoteState.WAITING_FOR_CONFIRM){return payNoteItems;}
         //将人员薪资的总数找出来填到税前应付
         int  periodId=payNoteViews[0].getSalaryPeriodId();
         List<Integer> personIds=new ArrayList<>();
         for(int i=0;i<payNoteItems.length;i++){
-            if(payNoteItems[i].getState()==PayNoteItemState.WAITING_FOR_CACULATE||payNoteItems[i].getState()==PayNoteItemState.CACULATED_WAITING_COMFIRMN)
             personIds.add(payNoteItems[i].getPersonId());
         }
 
@@ -232,7 +235,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             }
             for(int i=0;i<payNoteItems.length;i++){
                 if(payNoteItems[i].getPersonId()==entry.getKey())   {
-                    payNoteItems[i].setPreTaxAmount(amount);if(payNoteItems[i].getState()==PayNoteItemState.CACULATED_WAITING_COMFIRMN)
+                    payNoteItems[i].setPreTaxAmount(amount);
                     payNoteItems[i].setAfterTaxAmount(amount.subtract(payNoteItems[i].getTaxAmount()));
                     break;
                 }

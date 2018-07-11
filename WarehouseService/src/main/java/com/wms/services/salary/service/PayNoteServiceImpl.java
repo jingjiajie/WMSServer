@@ -6,7 +6,9 @@ import com.wms.services.ledger.service.PersonService;
 import com.wms.services.salary.dao.PayNoteDAO;
 import com.wms.services.salary.datestructures.CalculateTax;
 import com.wms.services.salary.datestructures.PayNoteItemState;
+import com.wms.services.salary.datestructures.PayNoteState;
 import com.wms.services.warehouse.service.WarehouseService;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -156,11 +158,12 @@ public class PayNoteServiceImpl implements PayNoteService{
    public void confirmToAccountTitle(String accountBook, int payNoteId ){
        PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
+       if(payNoteViews[0].getState()!= PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("此单不为未确认状态，无法执行确认操作！");}
        PayNoteItemView[] payNoteItemViews=payNoteItemService.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
        //判断条目是否全部计算同时计算总金额
        BigDecimal totalAmount=new BigDecimal(0);
        for(int i=0;i<payNoteItemViews.length;i++){
-           if(payNoteItemViews[i].getState()!= PayNoteItemState.COMFIRMED){throw new WMSServiceException("操作的薪金发放单中条目未全部确认，无法同步到总账！");
+           if(payNoteItemViews[i].getState()!= PayNoteItemState.CALCULATED){throw new WMSServiceException("操作的薪金发放单中条目未全部计算，无法同步到总账！");
            }
            totalAmount=totalAmount.add(payNoteItemViews[i].getAfterTaxAmount());
        }
@@ -169,6 +172,12 @@ public class PayNoteServiceImpl implements PayNoteService{
        //管理费用
        int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
        //TODO 将总金额增加到 总账
+
+       //将整单变为已确认待付款状态
+       PayNote payNote=new PayNote();
+       payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
+       payNote.setState(PayNoteState.WAITING_FOR_PAY);
+       payNoteDAO.update(accountBook,new PayNote[]{payNote});
    }
 
    //同时将状态变为下一个状态
@@ -176,11 +185,12 @@ public class PayNoteServiceImpl implements PayNoteService{
    {
        PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
+       if(payNoteViews[0].getState()!= PayNoteState.WAITING_FOR_PAY){throw new WMSServiceException("此单不为等待支付状态，无法执行确认操作！");}
        PayNoteItemView[] payNoteItemViews=payNoteItemService.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
        //判断条目是否全部计算同时计算总金额
        BigDecimal totalPaidAmount=new BigDecimal(0);
        for(int i=0;i<payNoteItemViews.length;i++){
-           if(payNoteItemViews[i].getState()!= PayNoteItemState.PAYED){throw new WMSServiceException("操作的薪金发放单中条目未全部确认，无法同步到总账！");
+           if(payNoteItemViews[i].getState()!= PayNoteItemState.CALCULATED){throw new WMSServiceException("操作的薪金发放单中条目未全部计算！");
            }
            totalPaidAmount=totalPaidAmount.add(payNoteItemViews[i].getPaidAmount());
        }
@@ -189,6 +199,11 @@ public class PayNoteServiceImpl implements PayNoteService{
        //银行资产
        int accountTitlePropertyID=payNoteViews[0].getAccountTitlePropertyId();
        //同步到总账
-   }
 
+       //将整单变为已付款
+       PayNote payNote=new PayNote();
+       payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
+       payNote.setState(PayNoteState.PAYED);
+       payNoteDAO.update(accountBook,new PayNote[]{payNote});
+   }
 }

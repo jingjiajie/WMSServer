@@ -15,6 +15,7 @@ public class PayNote {
     private int createPersonId;
     private Timestamp createTime;
     private Integer accountTitleExpenseId;
+    private int state;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -117,6 +118,16 @@ public class PayNote {
         this.accountTitleExpenseId = accountTitleExpenseId;
     }
 
+    @Basic
+    @Column(name = "State")
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -137,6 +148,7 @@ public class PayNote {
         if (createTime != null ? !createTime.equals(payNote.createTime) : payNote.createTime != null) return false;
         if (accountTitleExpenseId != null ? !accountTitleExpenseId.equals(payNote.accountTitleExpenseId) : payNote.accountTitleExpenseId != null)
             return false;
+        if (state != payNote.state) return false;
 
         return true;
     }
@@ -153,6 +165,7 @@ public class PayNote {
         result = 31 * result + createPersonId;
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         result = 31 * result + (accountTitleExpenseId != null ? accountTitleExpenseId.hashCode() : 0);
+        result = 31 * result + state;
         return result;
     }
 }
