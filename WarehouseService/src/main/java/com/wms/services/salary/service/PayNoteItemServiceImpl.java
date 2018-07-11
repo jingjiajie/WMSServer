@@ -5,10 +5,7 @@ import com.wms.services.ledger.service.PersonService;
 import com.wms.services.ledger.service.TaxService;
 import com.wms.services.salary.controller.PersonSalaryController;
 import com.wms.services.salary.dao.PayNoteItemDAO;
-import com.wms.services.salary.datestructures.CalculateTax;
-import com.wms.services.salary.datestructures.PayNoteItemPay;
-import com.wms.services.salary.datestructures.PayNoteItemState;
-import com.wms.services.salary.datestructures.PayNoteState;
+import com.wms.services.salary.datestructures.*;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
@@ -44,6 +41,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
     AccountTitleService accountTitleService;
     @Autowired
     PersonSalaryService personSalaryService;
+
 
     public int[] add(String accountBook, PayNoteItem[] payNoteItems) throws WMSServiceException
     {
@@ -228,6 +226,32 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,int state)
             payNoteItems[i].setState(PayNoteItemState.PAYED);
         }
         payNoteItemDAO.update(accountBook,payNoteItems);
+    }
+
+    public void addAllItem(String accountBook,addAllItem addAllItem){
+    int warehouseId=addAllItem.getWarehouseId();
+    int periodId=addAllItem.getPayNoteId();
+    List<PayNoteItem> payNoteItemList=new ArrayList<>();
+   PersonSalaryView[] personSalaryViews=personSalaryService.find(accountBook,new Condition().addCondition("periodId",periodId).addCondition("warehouseId",warehouseId));
+        Map<Integer, List<PersonSalaryView>> groupByPersonIdMap =
+                Stream.of(personSalaryViews).collect(Collectors.groupingBy(PersonSalaryView::getPersonId));
+        for (Map.Entry<Integer, List<PersonSalaryView>> entry : groupByPersonIdMap.entrySet()){
+            PersonSalaryView[] personSalaryViewsEachGroup=new PersonSalaryView[entry.getValue().size()];
+            entry.getValue().toArray(personSalaryViewsEachGroup);
+            BigDecimal preTaxAmount=new BigDecimal(0);
+            for(int i=0;i<personSalaryViewsEachGroup.length;i++){
+                preTaxAmount=preTaxAmount.add(personSalaryViewsEachGroup[i].getAmount());
+            }
+            PayNoteItem payNoteItem=new PayNoteItem();
+            payNoteItem.setPersonId(entry.getKey());
+            payNoteItem.setPreTaxAmount(preTaxAmount);
+            payNoteItem.setPayNoteId(periodId);
+            payNoteItemList.add(payNoteItem);
+        }
+        PayNoteItem[] payNoteItems=new PayNoteItem[payNoteItemList.size()];
+        payNoteItemList.toArray(payNoteItems);
+        //TODO
+        payNoteItemDAO.add(accountBook,payNoteItems);
     }
 
 
