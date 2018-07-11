@@ -3,6 +3,7 @@ package com.wms.services.salary.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.salary.datestructures.CalculateTax;
+import com.wms.services.salary.datestructures.PayNoteItemPay;
 import com.wms.services.salary.service.PayNoteItemService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.PayNoteItem;
@@ -64,21 +65,20 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
                              @RequestBody CalculateTax calculateTax){
          this.payNoteItemService.calculateTax(accountBook,calculateTax);
     }
-/*
+
     @Override
-    @RequestMapping(value="/confirm_items",method = RequestMethod.PUT)
+    @RequestMapping(value="/real_pay_all",method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
-    public void confirmItems(@PathVariable("accountBook") String accountBook,
-                             @RequestBody CalculateTax calculateTax){
-        this.payNoteItemService.confirmItems(accountBook,calculateTax);
+    public void realPayAll(@PathVariable("accountBook") String accountBook,
+                             @RequestBody PayNoteItemPay payNoteItemPay){
+        this.payNoteItemService.realPayAll(accountBook,payNoteItemPay);
     }
 
     @Override
-    @RequestMapping(value="/real_pay",method = RequestMethod.PUT)
+    @RequestMapping(value="/real_pay_part_items",method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
-    public void realPay(@PathVariable("accountBook") String accountBook,
-                             @RequestBody CalculateTax calculateTax){
-        this.payNoteItemService.realPay(accountBook,calculateTax);
+    public void realPayPartItems(@PathVariable("accountBook") String accountBook,
+                             @RequestBody PayNoteItemView[] payNoteItemViews){
+        this.payNoteItemService.realPayPartItems(accountBook,payNoteItemViews);
     }
-*/
 }

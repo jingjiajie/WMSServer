@@ -156,7 +156,7 @@ public class PayNoteServiceImpl implements PayNoteService{
         return this.payNoteDAO.findCount(database,cond);
     }
 
-//确认支付到总账
+   //确认支付到总账
    public void confirmToAccountTitle(String accountBook, int payNoteId ){
        PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
