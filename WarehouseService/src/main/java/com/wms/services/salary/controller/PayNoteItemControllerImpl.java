@@ -64,7 +64,7 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
                              @RequestBody CalculateTax calculateTax){
          this.payNoteItemService.calculateTax(accountBook,calculateTax);
     }
-
+/*
     @Override
     @RequestMapping(value="/confirm_items",method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
@@ -80,5 +80,5 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
                              @RequestBody CalculateTax calculateTax){
         this.payNoteItemService.realPay(accountBook,calculateTax);
     }
-
+*/
 }

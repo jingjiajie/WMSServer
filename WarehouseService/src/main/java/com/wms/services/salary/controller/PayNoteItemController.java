@@ -7,6 +7,6 @@ import com.wms.utilities.model.PayNoteItemView;
 
 public interface PayNoteItemController extends BaseController<PayNoteItem,PayNoteItemView> {
     void calculateTax(String accountBook, CalculateTax calculateTax);
-    void confirmItems(String accountBook,CalculateTax calculateTax);
-    void realPay(String accountBook,CalculateTax calculateTax);
+   // void confirmItems(String accountBook,CalculateTax calculateTax);
+    //void realPay(String accountBook,CalculateTax calculateTax);
 }
