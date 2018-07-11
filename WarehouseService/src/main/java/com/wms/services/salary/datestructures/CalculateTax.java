@@ -11,7 +11,6 @@ public class CalculateTax {
         return payNoteId;
     }
 
-
     public void setPayNoteItemId(int[] payNoteItemId) {
         this.payNoteItemId = payNoteItemId;
     }
@@ -33,4 +32,5 @@ public class CalculateTax {
     }
 
     private int[] taxId;
+
 }
