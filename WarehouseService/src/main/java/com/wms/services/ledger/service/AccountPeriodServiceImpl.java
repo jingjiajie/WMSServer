@@ -2,16 +2,27 @@ package com.wms.services.ledger.service;
 
 import com.wms.services.ledger.dao.AccountPeriodDAO;
 import com.wms.services.warehouse.service.WarehouseService;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.datastructures.OrderItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.AccountPeriod;
 import com.wms.utilities.model.AccountPeriodView;
+import com.wms.utilities.model.AccountRecord;
+import com.wms.utilities.model.AccountRecordView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Calendar;
 
+import javax.persistence.OrderBy;
+import java.sql.Timestamp;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Transactional
@@ -21,6 +32,8 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
     AccountPeriodDAO accountPeriodDAO;
     @Autowired
     WarehouseService warehouseService;
+    @Autowired
+    AccountRecordService accountRecordService;
 
     public int[] add(String accountBook, AccountPeriod[] accountPeriods) throws WMSServiceException
     {
@@ -98,6 +111,39 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             }
         }));
 
+    }
 
+    private void carry_over(String accountBook,AccountRecord accountRecord) throws WMSServiceException{
+        //取得需要的三个关键词
+        int curWarehouseId=accountRecord.getWarehouseId();
+        int curPersonId=accountRecord.getPersonId();
+        //TODO 结转功能 为了保持会计工作的连续性，一定要把本会计年度末的余额转到下个会计年度
+
+        //获得当前仓库，最新的没截止的期间,将其截止并启用新的期间
+        AccountPeriodView accountPeriodView=this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("ended",AccountPeriodService.ended_false).addOrder("time", OrderItem.Order.DESC))[0];
+        AccountPeriod oldAccountPeriod = ReflectHelper.createAndCopyFields(accountPeriodView,AccountPeriod.class);
+        oldAccountPeriod.setEndTime(new Timestamp(System.currentTimeMillis()));
+        oldAccountPeriod.setEnded(AccountPeriodService.ended_ture);
+        this.update(accountBook,new AccountPeriod[] {oldAccountPeriod});
+
+        AccountPeriod newAccountPeriod=new AccountPeriod();
+        newAccountPeriod.setStartTime(new Timestamp(System.currentTimeMillis()));
+        newAccountPeriod.setLastAccountPeriodId(oldAccountPeriod.getId());
+        newAccountPeriod.setEnded(AccountPeriodService.ended_false);
+        newAccountPeriod.setName(new Timestamp(System.currentTimeMillis()).toString());
+        newAccountPeriod.setWarehouseId(curWarehouseId);
+        this.add(accountBook,new AccountPeriod[] {newAccountPeriod});
+
+        AccountRecordView[] accountRecordViews= accountRecordService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("accountPeriodId",new Integer[]{oldAccountPeriod.getId()}));
+        Map<Integer, List<AccountRecordView>> groupBySupplierIdMap =
+                Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountTitleId));
+
+        Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupBySupplierIdMap.entrySet().iterator();
+        //将每组最新的加到一个列表中
+        while (entries.hasNext()) {
+            Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
+            Integer accountPeriodId = entry.getKey();
+            List<AccountRecordView> accountRecordViewsList=entry.getValue();
+        }
     }
 }

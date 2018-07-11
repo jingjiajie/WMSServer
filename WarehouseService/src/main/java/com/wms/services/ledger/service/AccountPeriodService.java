@@ -6,4 +6,6 @@ import com.wms.utilities.model.AccountPeriodView;
 
 
 public interface AccountPeriodService extends BaseService<AccountPeriod,AccountPeriodView> {
+    int ended_ture=1;
+    int ended_false=0;
 }
