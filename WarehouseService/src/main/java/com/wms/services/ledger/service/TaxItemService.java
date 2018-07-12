@@ -9,4 +9,6 @@ import com.wms.utilities.service.BaseService;
 import java.util.Map;
 
 public interface TaxItemService extends BaseService<TaxItem,TaxItemView> {
+    int Type_QUOTA=0;
+    int Type_PROPORTION=1;
 }
