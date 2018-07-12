@@ -4,9 +4,8 @@ import com.wms.services.ledger.service.AccountRecordService;
 import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.salary.dao.PayNoteDAO;
-import com.wms.services.salary.datestructures.CalculateTax;
-import com.wms.services.salary.datestructures.PayNoteItemState;
-import com.wms.services.salary.datestructures.PayNoteState;
+import com.wms.services.salary.datestructures.*;
+import com.wms.services.warehouse.datastructures.StockTakingOrderAndItems;
 import com.wms.services.warehouse.service.StockTakingOrderServiceImpl;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.OrderNoGenerator;
@@ -21,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -217,4 +218,25 @@ public class PayNoteServiceImpl implements PayNoteService{
        payNote.setState(PayNoteState.CONFIRM_REAL_PAY);
        payNoteDAO.update(accountBook,new PayNote[]{payNote});
    }
+
+    @Override
+    public List<PayNoteAndItems> getPreviewData(String accountBook, List<Integer> payNoteIds) throws WMSServiceException{
+        PayNoteView[] payNoteViews = this.payNoteDAO.find(accountBook,new Condition().addCondition("id", payNoteIds.toArray(), ConditionItem.Relation.IN));
+        PayNoteItemView[] itemViews = this.payNoteItemService.find(accountBook,new Condition().addCondition("payNoteId", payNoteIds.toArray(), ConditionItem.Relation.IN));
+        List<PayNoteAndItems> result = new ArrayList<>();
+        for(PayNoteView payNoteView : payNoteViews){
+            PayNoteAndItems payNoteAndItems= new PayNoteAndItems();
+            payNoteAndItems.setPayNoteView(payNoteView);
+            payNoteAndItems.setPayNoteItemViews(new ArrayList<>());
+            result.add(payNoteAndItems);
+            for(PayNoteItemView itemView : itemViews){
+                if(itemView.getPayNoteId() == payNoteView.getId()){
+                    payNoteAndItems.getPayNoteItemViews().add(itemView);
+                }
+            }
+        }
+        return result;
+    }
+
+
 }

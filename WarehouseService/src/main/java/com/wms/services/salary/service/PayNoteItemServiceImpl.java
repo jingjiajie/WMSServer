@@ -232,7 +232,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,int state)
     int warehouseId=addAllItem.getWarehouseId();
     int periodId=addAllItem.getPayNoteId();
     List<PayNoteItem> payNoteItemList=new ArrayList<>();
-   PersonSalaryView[] personSalaryViews=personSalaryService.find(accountBook,new Condition().addCondition("periodId",periodId).addCondition("warehouseId",warehouseId));
+        PersonSalaryView[] personSalaryViews=personSalaryService.find(accountBook,new Condition().addCondition("periodId",periodId).addCondition("warehouseId",warehouseId));
         Map<Integer, List<PersonSalaryView>> groupByPersonIdMap =
                 Stream.of(personSalaryViews).collect(Collectors.groupingBy(PersonSalaryView::getPersonId));
         for (Map.Entry<Integer, List<PersonSalaryView>> entry : groupByPersonIdMap.entrySet()){
