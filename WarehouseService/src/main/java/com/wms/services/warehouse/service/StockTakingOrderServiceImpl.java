@@ -69,6 +69,7 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
             } else { //否则检查单号是否重复
                 Condition cond = new Condition();
                 cond.addCondition("no", new String[]{stockTakingOrder.getNo()});
+                cond.addCondition("warehouseId",stockTakingOrder.getWarehouseId());
                 if (stockTakingOrderDAO.find(accountBook, cond).length > 0) {
                     throw new WMSServiceException("盘点单单号重复：" + stockTakingOrder.getNo());
                 }
@@ -88,6 +89,8 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
         for(int i=0;i<stockTakingOrders.length;i++){
             Condition cond = new Condition();
             cond.addCondition("no",new String[]{stockTakingOrders[i].getNo()}).addCondition("id",new Integer[]{stockTakingOrders[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            cond.addCondition("warehouseId",stockTakingOrders[i].getWarehouseId());
+            cond.addCondition("id",stockTakingOrders[i].getId(), ConditionItem.Relation.NOT_EQUAL);
             if(stockTakingOrderDAO.find(accountBook,cond).length > 0) {
                 throw new WMSServiceException("盘点单代号重复：" + stockTakingOrders[i].getNo());
             }

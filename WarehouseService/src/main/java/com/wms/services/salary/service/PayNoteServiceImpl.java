@@ -7,7 +7,9 @@ import com.wms.services.salary.dao.PayNoteDAO;
 import com.wms.services.salary.datestructures.CalculateTax;
 import com.wms.services.salary.datestructures.PayNoteItemState;
 import com.wms.services.salary.datestructures.PayNoteState;
+import com.wms.services.warehouse.service.StockTakingOrderServiceImpl;
 import com.wms.services.warehouse.service.WarehouseService;
+import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -36,6 +38,10 @@ public class PayNoteServiceImpl implements PayNoteService{
     PayNoteItemService payNoteItemService;
     @Autowired
     AccountRecordService accountRecordService;
+    @Autowired
+    OrderNoGenerator orderNoGenerator;
+
+    private static final String NO_PREFIX = "X";
 
     public int[] add(String accountBook, PayNote[] payNotes) throws WMSServiceException
     {
@@ -54,12 +60,15 @@ public class PayNoteServiceImpl implements PayNoteService{
         }
         //重复
         Stream.of(payNotes).forEach((payNote)->{
+            if (payNote.getNo() == null) {
+                payNote.setNo(this.orderNoGenerator.generateNextNo(accountBook, PayNoteServiceImpl.NO_PREFIX));}
+                else {
             Condition cond = new Condition();
             cond.addCondition("no",new String[]{payNote.getNo()});
             cond.addCondition("warehouseId",payNote.getWarehouseId());
             if(payNoteDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("薪资发放单单号："+payNote.getNo()+"已经存在!");
-            }
+            }}
         });
         //外键检测
         Stream.of(payNotes).forEach(

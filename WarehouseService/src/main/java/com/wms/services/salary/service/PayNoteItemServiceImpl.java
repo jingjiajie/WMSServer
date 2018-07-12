@@ -246,6 +246,8 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,int state)
             payNoteItem.setPersonId(entry.getKey());
             payNoteItem.setPreTaxAmount(preTaxAmount);
             payNoteItem.setPayNoteId(periodId);
+            payNoteItem.setState(PayNoteItemState.WAITING_FOR_CALCULATE_PAY);
+            payNoteItem.setComment("自动生成薪资单条目");
             payNoteItemList.add(payNoteItem);
         }
         PayNoteItem[] payNoteItems=new PayNoteItem[payNoteItemList.size()];
