@@ -48,8 +48,6 @@ public class PayNoteServiceImpl implements PayNoteService{
     {
 
         for(int i=0;i<payNotes.length;i++) {
-            Validator validator = new Validator("薪资发放单单号");
-            validator.notnull().notEmpty().validate(payNotes[i].getNo());
             payNotes[i].setState(PayNoteState.WAITING_FOR_CONFIRM);
         }
 
