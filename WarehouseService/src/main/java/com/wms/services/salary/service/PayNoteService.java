@@ -1,6 +1,5 @@
 package com.wms.services.salary.service;
 
-import com.wms.services.salary.datestructures.CalculateTax;
 import com.wms.services.salary.datestructures.PayNoteAndItems;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.PayNote;

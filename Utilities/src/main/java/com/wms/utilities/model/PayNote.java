@@ -16,10 +16,11 @@ public class PayNote {
     private Timestamp createTime;
     private Integer accountTitleExpenseId;
     private int state;
+    private Integer taxId;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -128,17 +129,28 @@ public class PayNote {
         this.state = state;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "TaxID")
+    public Integer getTaxId() {
+        return taxId;
+    }
 
-        PayNote payNote = (PayNote) object;
+    public void setTaxId(Integer taxId) {
+        this.taxId = taxId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PayNote payNote = (PayNote) o;
 
         if (id != payNote.id) return false;
         if (warehouseId != payNote.warehouseId) return false;
         if (salaryPeriodId != payNote.salaryPeriodId) return false;
         if (createPersonId != payNote.createPersonId) return false;
+        if (state != payNote.state) return false;
         if (no != null ? !no.equals(payNote.no) : payNote.no != null) return false;
         if (accountTitlePayableId != null ? !accountTitlePayableId.equals(payNote.accountTitlePayableId) : payNote.accountTitlePayableId != null)
             return false;
@@ -148,7 +160,7 @@ public class PayNote {
         if (createTime != null ? !createTime.equals(payNote.createTime) : payNote.createTime != null) return false;
         if (accountTitleExpenseId != null ? !accountTitleExpenseId.equals(payNote.accountTitleExpenseId) : payNote.accountTitleExpenseId != null)
             return false;
-        if (state != payNote.state) return false;
+        if (taxId != null ? !taxId.equals(payNote.taxId) : payNote.taxId != null) return false;
 
         return true;
     }
@@ -166,6 +178,7 @@ public class PayNote {
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         result = 31 * result + (accountTitleExpenseId != null ? accountTitleExpenseId.hashCode() : 0);
         result = 31 * result + state;
+        result = 31 * result + (taxId != null ? taxId.hashCode() : 0);
         return result;
     }
 }

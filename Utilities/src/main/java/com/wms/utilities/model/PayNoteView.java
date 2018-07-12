@@ -28,10 +28,13 @@ public class PayNoteView {
     private String accountTitlePropertyNo;
     private String salaryPeriodName;
     private int state;
+    private Integer taxId;
+    private String taxName;
+    private String taxNo;
 
     @Basic
-    @Id
     @Column(name = "ID")
+    @Id
     public int getId() {
         return id;
     }
@@ -230,17 +233,48 @@ public class PayNoteView {
         this.state = state;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "TaxID")
+    public Integer getTaxId() {
+        return taxId;
+    }
 
-        PayNoteView that = (PayNoteView) object;
+    public void setTaxId(Integer taxId) {
+        this.taxId = taxId;
+    }
+
+    @Basic
+    @Column(name = "TaxName")
+    public String getTaxName() {
+        return taxName;
+    }
+
+    public void setTaxName(String taxName) {
+        this.taxName = taxName;
+    }
+
+    @Basic
+    @Column(name = "TaxNo")
+    public String getTaxNo() {
+        return taxNo;
+    }
+
+    public void setTaxNo(String taxNo) {
+        this.taxNo = taxNo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PayNoteView that = (PayNoteView) o;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
         if (salaryPeriodId != that.salaryPeriodId) return false;
         if (createPersonId != that.createPersonId) return false;
+        if (state != that.state) return false;
         if (no != null ? !no.equals(that.no) : that.no != null) return false;
         if (accountTitlePayableId != null ? !accountTitlePayableId.equals(that.accountTitlePayableId) : that.accountTitlePayableId != null)
             return false;
@@ -268,7 +302,9 @@ public class PayNoteView {
             return false;
         if (salaryPeriodName != null ? !salaryPeriodName.equals(that.salaryPeriodName) : that.salaryPeriodName != null)
             return false;
-        if (state != that.state) return false;
+        if (taxId != null ? !taxId.equals(that.taxId) : that.taxId != null) return false;
+        if (taxName != null ? !taxName.equals(that.taxName) : that.taxName != null) return false;
+        if (taxNo != null ? !taxNo.equals(that.taxNo) : that.taxNo != null) return false;
 
         return true;
     }
@@ -295,7 +331,9 @@ public class PayNoteView {
         result = 31 * result + (accountTitlePropertyNo != null ? accountTitlePropertyNo.hashCode() : 0);
         result = 31 * result + (salaryPeriodName != null ? salaryPeriodName.hashCode() : 0);
         result = 31 * result + state;
-
+        result = 31 * result + (taxId != null ? taxId.hashCode() : 0);
+        result = 31 * result + (taxName != null ? taxName.hashCode() : 0);
+        result = 31 * result + (taxNo != null ? taxNo.hashCode() : 0);
         return result;
     }
 }
