@@ -70,58 +70,67 @@ public class TaxItemServiceImpl implements TaxItemService {
 
     private void validateEntities(String accountBook,TaxItem[] taxItems) throws WMSServiceException{
         Stream.of(taxItems).forEach((taxItem -> {
-            new Validator("税务名称").min(0).max(1).validate(taxItem.getType());
+            new Validator("税务类型").min(0).max(1).validate(taxItem.getType());
+            new Validator("起始金额").notEmpty().min(0).max(taxItem.getEndAmount()).validate(taxItem.getStartAmount());
+            new Validator("截止金额").notEmpty().greaterThan(0).validate(taxItem.getEndAmount());
+            if (taxItem.getType()==TaxItemService.Type_QUOTA){
+                new Validator("定额金额").min(0).max(taxItem.getEndAmount().subtract(taxItem.getStartAmount())).validate(taxItem.getTaxAmount());
+            }
+            if (taxItem.getType()==TaxItemService.Type_PROPORTION){
+                new Validator("金额比例").min(0).max(1).validate(taxItem.getTaxRate());
+            }
+
             this.idChecker.check(TaxService.class, accountBook, taxItem.getTaxId(), "税务");
         }));
 
-        for (int i = 0;i < taxItems.length;i ++) {
-
-
-            BigDecimal taxitemStartamount = taxItems[i].getStartAmount();
-            String strtaxitemStartamount = taxitemStartamount.toString();
-            String strleftStartamount = strtaxitemStartamount.split(".")[0];
-            String strrightStartamount = strtaxitemStartamount.split(".")[1];
-            if (strleftStartamount.length() > 18) {
-                throw new WMSServiceException("整数部分不能超过18位!");
-            }
-            if (strrightStartamount.length() > 3) {
-                throw new WMSServiceException("小数部分不能超过3位!");
-            }
-
-            BigDecimal taxitemEndamount = taxItems[i].getEndAmount();
-            String strtaxitemEndamount = taxitemEndamount.toString();
-            String strleftEndamount = strtaxitemEndamount.split(".")[0];
-            String strrightEndamount = strtaxitemEndamount.split(".")[1];
-            if (strleftEndamount.length() > 18) {
-                throw new WMSServiceException("整数部分不能超过18位!");
-            }
-            if (strrightEndamount.length() > 3) {
-                throw new WMSServiceException("小数部分不能超过3位!");
-            }
-
-            BigDecimal taxitemTaxamount = taxItems[i].getTaxAmount();
-            String strtaxitemTaxamount = taxitemTaxamount.toString();
-            String strleftTaxamount = strtaxitemTaxamount.split(".")[0];
-            String strrightTaxamount = strtaxitemTaxamount.split(".")[1];
-            if (strleftTaxamount.length() > 18) {
-                throw new WMSServiceException("整数部分不能超过18位!");
-            }
-            if (strrightTaxamount.length() > 3) {
-                throw new WMSServiceException("小数部分不能超过3位!");
-            }
-
-            BigDecimal taxitemTaxrate = taxItems[i].getTaxRate();
-            String strtaxitemTaxrate = taxitemTaxrate.toString();
-            String strleftTaxrate = strtaxitemTaxrate.split(".")[0];
-            String strrightTaxrate = strtaxitemTaxrate.split(".")[1];
-            if (strleftTaxrate.length() > 18) {
-                throw new WMSServiceException("整数部分不能超过18位!");
-            }
-            if (strrightTaxrate.length() > 3) {
-                throw new WMSServiceException("小数部分不能超过3位!");
-            }
-
-        }
+//        for (int i = 0;i < taxItems.length;i ++) {
+//
+//
+//            BigDecimal taxitemStartamount = taxItems[i].getStartAmount();
+//            String strtaxitemStartamount = taxitemStartamount.toString();
+//            String strleftStartamount = strtaxitemStartamount.split(".")[0];
+//            String strrightStartamount = strtaxitemStartamount.split(".")[1];
+//            if (strleftStartamount.length() > 18) {
+//                throw new WMSServiceException("整数部分不能超过18位!");
+//            }
+//            if (strrightStartamount.length() > 3) {
+//                throw new WMSServiceException("小数部分不能超过3位!");
+//            }
+//
+//            BigDecimal taxitemEndamount = taxItems[i].getEndAmount();
+//            String strtaxitemEndamount = taxitemEndamount.toString();
+//            String strleftEndamount = strtaxitemEndamount.split(".")[0];
+//            String strrightEndamount = strtaxitemEndamount.split(".")[1];
+//            if (strleftEndamount.length() > 18) {
+//                throw new WMSServiceException("整数部分不能超过18位!");
+//            }
+//            if (strrightEndamount.length() > 3) {
+//                throw new WMSServiceException("小数部分不能超过3位!");
+//            }
+//
+//            BigDecimal taxitemTaxamount = taxItems[i].getTaxAmount();
+//            String strtaxitemTaxamount = taxitemTaxamount.toString();
+//            String strleftTaxamount = strtaxitemTaxamount.split(".")[0];
+//            String strrightTaxamount = strtaxitemTaxamount.split(".")[1];
+//            if (strleftTaxamount.length() > 18) {
+//                throw new WMSServiceException("整数部分不能超过18位!");
+//            }
+//            if (strrightTaxamount.length() > 3) {
+//                throw new WMSServiceException("小数部分不能超过3位!");
+//            }
+//
+//            BigDecimal taxitemTaxrate = taxItems[i].getTaxRate();
+//            String strtaxitemTaxrate = taxitemTaxrate.toString();
+//            String strleftTaxrate = strtaxitemTaxrate.split(".")[0];
+//            String strrightTaxrate = strtaxitemTaxrate.split(".")[1];
+//            if (strleftTaxrate.length() > 18) {
+//                throw new WMSServiceException("整数部分不能超过18位!");
+//            }
+//            if (strrightTaxrate.length() > 3) {
+//                throw new WMSServiceException("小数部分不能超过3位!");
+//            }
+//
+//        }
 
     }
 }

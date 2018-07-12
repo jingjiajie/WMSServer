@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/{accountBook}/taxitem")
+@RequestMapping("/{accountBook}/tax_item")
 public class TaxItemControllerImpl implements TaxItemController {
     @Autowired
     TaxItemService taxItemService;
