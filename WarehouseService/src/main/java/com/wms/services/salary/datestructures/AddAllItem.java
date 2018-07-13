@@ -1,6 +1,6 @@
 package com.wms.services.salary.datestructures;
 
-public class addAllItem {
+public class AddAllItem {
     public int getWarehouseId() {
         return warehouseId;
     }
