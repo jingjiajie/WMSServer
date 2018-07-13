@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/{accountBook}/pay_note_item")
 public class PayNoteItemControllerImpl implements PayNoteItemController {
@@ -77,8 +79,8 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
     @RequestMapping(value="/real_pay_part_items",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void realPayPartItems(@PathVariable("accountBook") String accountBook,
-                             @RequestBody PayNoteItemView[] payNoteItemViews){
-        this.payNoteItemService.realPayPartItems(accountBook,payNoteItemViews);
+                                 @RequestBody List<Integer> ids){
+        this.payNoteItemService.realPayPartItems(accountBook,ids);
     }
 
     @Override

@@ -7,9 +7,11 @@ import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.model.PayNoteItem;
 import com.wms.utilities.model.PayNoteItemView;
 
+import java.util.List;
+
 public interface PayNoteItemController extends BaseController<PayNoteItem,PayNoteItemView> {
     void calculateTax(String accountBook, CalculateTax calculateTax);
     void realPayAll(String accountBook,PayNoteItemPay payNoteItemPay);
-    void realPayPartItems(String accountBook,PayNoteItemView[] payNoteItemViews);
+    void realPayPartItems(String accountBook,List<Integer> ids);
     void addAllItems( String accountBook,AddAllItem AddAllItem);
 }
