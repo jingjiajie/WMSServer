@@ -228,14 +228,14 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,int state)
     int warehouseId=addAllItem.getWarehouseId();
     int payNoteId=addAllItem.getPayNoteId();
     PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
-    /*
+
     PayNoteItemView[] payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
     List<Integer> ids=new ArrayList<>();
-    for(int i=0;i<payNoteItemViews.length;i++){ids.add(payNoteItemViews[i].getId());}
+    for(int i=0;i<payNoteItemViews.length;i++){ids.add(payNoteItemViews[i].getPersonId());}
         int[] idsArray=new int[ids.size()];
+        /*
         for(int i=0;i<ids.size();i++){idsArray[i]=ids.get(i);}
-    this.payNoteItemDAO.remove(accountBook,idsArray);
-    */
+ */
     if(payNoteViews.length!=1){throw new WMSServiceException("查询薪金发放单出错！");}
     int periodId=payNoteViews[0].getSalaryPeriodId();
     List<PayNoteItem> payNoteItemList=new ArrayList<>();
@@ -243,6 +243,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,int state)
         Map<Integer, List<PersonSalaryView>> groupByPersonIdMap =
                 Stream.of(personSalaryViews).collect(Collectors.groupingBy(PersonSalaryView::getPersonId));
         for (Map.Entry<Integer, List<PersonSalaryView>> entry : groupByPersonIdMap.entrySet()){
+            if(ids.contains(entry.getKey())){continue;}
             PersonSalaryView[] personSalaryViewsEachGroup=new PersonSalaryView[entry.getValue().size()];
             entry.getValue().toArray(personSalaryViewsEachGroup);
             BigDecimal preTaxAmount=new BigDecimal(0);
