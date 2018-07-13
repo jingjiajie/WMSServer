@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.salary.datestructures.CalculateTax;
 import com.wms.services.salary.datestructures.PayNoteItemPay;
+import com.wms.services.salary.datestructures.addAllItem;
 import com.wms.services.salary.service.PayNoteItemService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.PayNoteItem;
@@ -59,7 +60,7 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
     }
 
     @Override
-    @RequestMapping(value="/calculate_tax",method = RequestMethod.PUT)
+    @RequestMapping(value="/calculate_tax",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void calculateTax(@PathVariable("accountBook") String accountBook,
                              @RequestBody CalculateTax calculateTax){
@@ -67,7 +68,7 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
     }
 
     @Override
-    @RequestMapping(value="/real_pay_all",method = RequestMethod.PUT)
+    @RequestMapping(value="/real_pay_all",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void realPayAll(@PathVariable("accountBook") String accountBook,
                              @RequestBody PayNoteItemPay payNoteItemPay){
@@ -75,10 +76,18 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
     }
 
     @Override
-    @RequestMapping(value="/real_pay_part_items",method = RequestMethod.PUT)
+    @RequestMapping(value="/real_pay_part_items",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void realPayPartItems(@PathVariable("accountBook") String accountBook,
                              @RequestBody PayNoteItemView[] payNoteItemViews){
         this.payNoteItemService.realPayPartItems(accountBook,payNoteItemViews);
+    }
+
+    @Override
+    @RequestMapping(value="/add_all_item",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void addAllItems(@PathVariable("accountBook") String accountBook,
+                            @RequestBody addAllItem addAllItem){
+        this.payNoteItemService.addAllItem(accountBook,addAllItem);
     }
 }

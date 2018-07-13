@@ -1,9 +1,11 @@
 package com.wms.services.salary.datestructures;
 
+import antlr.collections.List;
+
 import java.math.BigDecimal;
 
 public class CalculateTax {
-    public int[] getPayNoteItemId() {
+    public java.util.List<Integer> getPayNoteItemId() {
         return payNoteItemId;
     }
 
@@ -11,7 +13,7 @@ public class CalculateTax {
         return payNoteId;
     }
 
-    public void setPayNoteItemId(int[] payNoteItemId) {
+    public void setPayNoteItemId(java.util.List<Integer> payNoteItemId) {
         this.payNoteItemId = payNoteItemId;
     }
 
@@ -19,18 +21,18 @@ public class CalculateTax {
         this.payNoteId = payNoteId;
     }
 
-    private int[] payNoteItemId;
+    private java.util.List<Integer> payNoteItemId;
 
     private int payNoteId;
 
-    public int[] getTaxId() {
+    public int getTaxId() {
         return taxId;
     }
 
-    public void setTaxId(int[] taxId) {
+    public void setTaxId(int taxId) {
         this.taxId = taxId;
     }
 
-    private int[] taxId;
+    private int taxId;
 
 }
