@@ -281,7 +281,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
                 }else if (stockRecordViews4.length==0){
                     transferOrderItemView.setComment("源库位库存条目不存在！");
-                    
+
                     transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
                     transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
 

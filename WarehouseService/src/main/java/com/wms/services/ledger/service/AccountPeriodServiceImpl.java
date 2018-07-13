@@ -15,13 +15,12 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Calendar;
+
+import java.lang.reflect.Array;
+import java.util.*;
 
 import javax.persistence.OrderBy;
 import java.sql.Timestamp;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -132,7 +131,9 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
         newAccountPeriod.setEnded(AccountPeriodService.ended_false);
         newAccountPeriod.setName(new Timestamp(System.currentTimeMillis()).toString());
         newAccountPeriod.setWarehouseId(curWarehouseId);
-        this.add(accountBook,new AccountPeriod[] {newAccountPeriod});
+        int newAccountPeriodID=this.add(accountBook,new AccountPeriod[] {newAccountPeriod})[0];
+
+        List<AccountRecord> accountRecordList=new ArrayList();
 
         AccountRecordView[] accountRecordViews= accountRecordService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("accountPeriodId",new Integer[]{oldAccountPeriod.getId()}));
         Map<Integer, List<AccountRecordView>> groupBySupplierIdMap =
@@ -145,7 +146,34 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             Integer accountPeriodId = entry.getKey();
             List<AccountRecordView> accountRecordViewsList=entry.getValue();
 
+            AccountRecordView[] curAccountRecordViews=null;
+            curAccountRecordViews = (AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
+            accountRecordViewsList.toArray(curAccountRecordViews);
 
+            AccountRecordView newestAccountRecordView=new AccountRecordView();
+            for (int i=0;i<curAccountRecordViews.length;i++){
+                for (int j=0;j<curAccountRecordViews.length;j++){
+                    if (curAccountRecordViews[i].getTime().after(curAccountRecordViews[j].getTime())){
+                        newestAccountRecordView=curAccountRecordViews[i];
+                    }else{
+                        newestAccountRecordView=curAccountRecordViews[j];
+                    }
+                }
+            }
+            AccountRecord theAccountRecord=new AccountRecord();
+            theAccountRecord.setWarehouseId(curWarehouseId);
+            theAccountRecord.setAccountTitleId(accountPeriodId);
+            theAccountRecord.setAccountPeriodId(newAccountPeriodID);
+            theAccountRecord.setTime(new Timestamp(System.currentTimeMillis()));
+            theAccountRecord.setPersonId(curPersonId);
+            theAccountRecord.setBalance(newestAccountRecordView.getBalance());
+            theAccountRecord.setComment("财务转结");
+            accountRecordList.add(theAccountRecord);
         }
+        AccountRecord[] curAccountRecords=null;
+        curAccountRecords = (AccountRecord[]) Array.newInstance(AccountRecord.class,accountRecordList.size());
+        accountRecordList.toArray(curAccountRecords);
+        
+        this.accountRecordService.add(accountBook,curAccountRecords);
     }
 }
