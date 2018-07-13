@@ -99,7 +99,7 @@ public class TaxServiceImpl implements TaxService {
                 }
             }
 
-        };
+        }
         return taxAmount;
     }
 }

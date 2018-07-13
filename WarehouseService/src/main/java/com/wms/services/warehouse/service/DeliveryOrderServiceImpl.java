@@ -281,6 +281,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
                 }else if (stockRecordViews4.length==0){
                     transferOrderItemView.setComment("源库位库存条目不存在！");
+                    
+                    transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
+                    transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
 
                     transferOrderItemView.setSourceStorageLocationName(safetyStockViews[i].getSourceStorageLocationName());
                     transferOrderItemView.setSourceUnit(safetyStockViews[i].getSourceUnit());
@@ -292,6 +295,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
                     falseTransferOrderItemsList.add(transferOrderItemView);
                 }else if (sourceAmount.compareTo(safetyStockViews[i].getAmount()) >=0){
+                    transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
+                    transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
+
                     transferOrderItemView.setTargetStorageLocationName(safetyStockViews[i].getTargetStorageLocationName());
                     transferOrderItemView.setUnit(safetyStockViews[i].getUnit());
                     transferOrderItemView.setUnitAmount(safetyStockViews[i].getUnitAmount());
@@ -302,6 +308,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
                     falseTransferOrderItemsList.add(transferOrderItemView);
                 }else if (sourceAmount1.compareTo(safetyStockViews[i].getAmount())<0){
+                    transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
+                    transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
 
                     transferOrderItemView.setSourceStorageLocationName(safetyStockViews[i].getSourceStorageLocationName());
                     transferOrderItemView.setSourceUnit(safetyStockViews[i].getSourceUnit());
