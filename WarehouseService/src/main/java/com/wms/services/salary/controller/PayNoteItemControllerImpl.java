@@ -4,13 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.salary.datestructures.CalculateTax;
 import com.wms.services.salary.datestructures.PayNoteItemPay;
-import com.wms.services.salary.datestructures.addAllItem;
+import com.wms.services.salary.datestructures.AddAllItem;
 import com.wms.services.salary.service.PayNoteItemService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.PayNoteItem;
 import com.wms.utilities.model.PayNoteItemView;
-import com.wms.utilities.model.SalaryItem;
-import com.wms.utilities.model.SalaryItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -87,7 +85,7 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
     @RequestMapping(value="/add_all_item",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void addAllItems(@PathVariable("accountBook") String accountBook,
-                            @RequestBody addAllItem addAllItem){
-        this.payNoteItemService.addAllItem(accountBook,addAllItem);
+                            @RequestBody AddAllItem AddAllItem){
+        this.payNoteItemService.addAllItem(accountBook, AddAllItem);
     }
 }

@@ -3,7 +3,6 @@ package com.wms.services.salary.service;
 import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.ledger.service.TaxService;
-import com.wms.services.salary.controller.PersonSalaryController;
 import com.wms.services.salary.dao.PayNoteItemDAO;
 import com.wms.services.salary.datestructures.*;
 import com.wms.services.warehouse.service.WarehouseService;
@@ -12,12 +11,10 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
-import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.*;
@@ -224,9 +221,9 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,int state)
         payNoteItemDAO.update(accountBook,payNoteItems);
     }
 
-    public void addAllItem(String accountBook,addAllItem addAllItem){
-    int warehouseId=addAllItem.getWarehouseId();
-    int payNoteId=addAllItem.getPayNoteId();
+    public void addAllItem(String accountBook,AddAllItem AddAllItem){
+    int warehouseId= AddAllItem.getWarehouseId();
+    int payNoteId= AddAllItem.getPayNoteId();
     PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
 
     PayNoteItemView[] payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
