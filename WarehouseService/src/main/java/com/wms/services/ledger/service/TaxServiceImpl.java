@@ -5,18 +5,24 @@ import com.wms.utilities.model.Tax;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.TaxItemView;
 import com.wms.utilities.model.TaxView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.wms.services.ledger.datestructures.*;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.stream.Stream;
 
 @Service
 public class TaxServiceImpl implements TaxService {
     @Autowired
     TaxDAO taxDAO;
+    @Autowired
+    TaxItemService taxItemService;
 
     @Transactional
     public int[] add(String accountBook, Tax[] taxes) throws WMSServiceException{
@@ -67,5 +73,33 @@ public class TaxServiceImpl implements TaxService {
             new Validator("税务代码").notEmpty().validate(tax.getNo());
         }));
 
+    }
+
+    @Transactional
+    public BigDecimal taxCalculation(String accountBook, TaxCalculation taxCalculation) throws WMSServiceException{
+        BigDecimal taxAmount=new BigDecimal(0);
+        BigDecimal curAmount=taxCalculation.getMoneyAmount();
+        int taxId=taxCalculation.getTaxId();
+        TaxItemView[] taxItemViews=taxItemService.find(accountBook,new Condition().addCondition("taxId",new  Integer[]{taxId}));
+        for(int i=0;i<taxItemViews.length;i++){
+            if (curAmount.compareTo(taxItemViews[i].getStartAmount())>0&&curAmount.compareTo(taxItemViews[i].getEndAmount())<=0){
+                if (taxItemViews[i].getType()==TaxItemService.Type_PROPORTION) {
+                    taxAmount = taxAmount.add((curAmount.subtract(taxItemViews[i].getStartAmount())).multiply(taxItemViews[i].getTaxRate()));
+                }
+                if (taxItemViews[i].getType()==TaxItemService.Type_QUOTA) {
+                    taxAmount = taxAmount.add(taxItemViews[i].getTaxAmount());
+                }
+            }
+            if (curAmount.compareTo(taxItemViews[i].getStartAmount())>0&&curAmount.compareTo(taxItemViews[i].getEndAmount())>0){
+                if (taxItemViews[i].getType()==TaxItemService.Type_PROPORTION) {
+                    taxAmount = taxAmount.add((taxItemViews[i].getEndAmount().subtract(taxItemViews[i].getStartAmount())).multiply(taxItemViews[i].getTaxRate()));
+                }
+                if (taxItemViews[i].getType()==TaxItemService.Type_QUOTA) {
+                    taxAmount = taxAmount.add(taxItemViews[i].getTaxAmount());
+                }
+            }
+
+        };
+        return taxAmount;
     }
 }

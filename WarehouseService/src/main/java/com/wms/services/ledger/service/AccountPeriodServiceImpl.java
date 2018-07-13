@@ -144,6 +144,8 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
             Integer accountPeriodId = entry.getKey();
             List<AccountRecordView> accountRecordViewsList=entry.getValue();
+
+
         }
     }
 }
