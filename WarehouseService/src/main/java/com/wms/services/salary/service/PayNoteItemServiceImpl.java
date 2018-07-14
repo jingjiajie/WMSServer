@@ -1,5 +1,6 @@
 package com.wms.services.salary.service;
 
+import com.wms.services.ledger.datestructures.TaxCalculation;
 import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.ledger.service.TaxService;
@@ -38,6 +39,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
     AccountTitleService accountTitleService;
     @Autowired
     PersonSalaryService personSalaryService;
+
 
 
     public int[] add(String accountBook, PayNoteItem[] payNoteItems) throws WMSServiceException
@@ -134,13 +136,13 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         state.add(PayNoteState.WAITING_FOR_CONFIRM);
         payNoteItems= this.getStateItem(payNoteItemViews, state);
         //TODO 计算税费
-        for(int i=0;i<payNoteItemViews.length;i++){
-            //payNoteItemId.get(i)=payNoteItemViews[i].getId();
-            preTaxAmounts[i]=payNoteItemViews[i].getPreTaxAmount();
-        }
+        TaxCalculation taxCalculation=new TaxCalculation();
         for(int i=0;i<payNoteItems.length;i++){
-            payNoteItems[i].setTaxAmount(new BigDecimal(10));
-            payNoteItems[i].setAfterTaxAmount(payNoteItems[i].getPreTaxAmount().subtract(new BigDecimal(10)));
+            taxCalculation.setMoneyAmount(payNoteItems[i].getPreTaxAmount());
+            taxCalculation.setTaxId(taxId);
+            BigDecimal tax=taxService.taxCalculation(accountBook,taxCalculation);
+            payNoteItems[i].setTaxAmount(tax);
+            payNoteItems[i].setAfterTaxAmount(payNoteItems[i].getPreTaxAmount().subtract(tax));
             payNoteItems[i].setState(PayNoteItemState.CALCULATED_PAY);
         }
         payNoteItemDAO.update(accountBook,payNoteItems);
@@ -198,7 +200,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
         if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
-        if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
+        if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("请先将本薪资发放单确认应该同步到总账");}
         BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
         List<Integer> state=new ArrayList<>();
         state.add(PayNoteItemState.CALCULATED_PAY);
