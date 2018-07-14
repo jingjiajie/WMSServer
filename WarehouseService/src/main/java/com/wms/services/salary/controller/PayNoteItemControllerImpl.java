@@ -79,8 +79,8 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
     @RequestMapping(value="/real_pay_part_items",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void realPayPartItems(@PathVariable("accountBook") String accountBook,
-                                 @RequestBody List<Integer> ids){
-        this.payNoteItemService.realPayPartItems(accountBook,ids);
+                                 @RequestBody PayNoteItemView[] payNoteItemViews){
+        this.payNoteItemService.realPayPartItems(accountBook,payNoteItemViews);
     }
 
     @Override

@@ -13,6 +13,6 @@ import java.util.List;
 public interface PayNoteItemService extends BaseService<PayNoteItem,PayNoteItemView> {
     void calculateTax(String accountBook, CalculateTax calculateTax);
     void realPayAll(String accountBook, PayNoteItemPay payNoteItemPay);
-    void realPayPartItems(String accountBook, List<Integer> payNoteItemId);
+    void realPayPartItems(String accountBook, PayNoteItemView[] payNoteItemViews);
     void addAllItem(String accountBook,AddAllItem AddAllItem);
 }

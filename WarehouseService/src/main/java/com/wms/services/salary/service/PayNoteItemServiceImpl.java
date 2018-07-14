@@ -84,7 +84,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
                     }
                 }
         );
-        this.getPersonAmount(accountBook,payNoteItems);
+        //this.getPersonAmount(accountBook,payNoteItems);
         payNoteItemDAO.update(accountBook,payNoteItems);
     }
 
@@ -129,7 +129,10 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
         }
         BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
-        payNoteItems= this.getStateItem(payNoteItemViews,PayNoteItemState.WAITING_FOR_CALCULATE_PAY);
+        List<Integer> state=new ArrayList<>();
+        state.add(PayNoteItemState.CALCULATED_PAY);
+        state.add(PayNoteState.WAITING_FOR_CONFIRM);
+        payNoteItems= this.getStateItem(payNoteItemViews, state);
         //TODO 计算税费
         for(int i=0;i<payNoteItemViews.length;i++){
             //payNoteItemId.get(i)=payNoteItemViews[i].getId();
@@ -173,10 +176,10 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
 */
 
 //将符合状态的条目提取出来
-private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,int state){
+private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integer> state){
     List<PayNoteItem> payNoteItemList=new ArrayList<>();
     for(int i=0;i<payNoteItemViews.length;i++){
-        if(payNoteItemViews[i].getState()==state){
+        if(state.contains(payNoteItemViews[i].getState())){
             PayNoteItem payNoteItem= ReflectHelper.createAndCopyFields(payNoteItemViews[i],PayNoteItem.class);
             payNoteItemList.add(payNoteItem);
         }
@@ -195,8 +198,11 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,int state)
         payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
         if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
-        if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
-        PayNoteItem[] payNoteItems= this.getStateItem(payNoteItemViews,PayNoteItemState.CALCULATED_PAY);
+        //if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
+        BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
+        List<Integer> state=new ArrayList<>();
+        state.add(PayNoteItemState.CALCULATED_PAY);
+        PayNoteItem[] payNoteItems= this.getStateItem(payNoteItemViews,state);
         //因为是全部完成，所以金额直接相等
         for(int i=0;i<payNoteItems.length;i++){
             payNoteItems[i].setPaidAmount(payNoteItems[i].getAfterTaxAmount());
@@ -206,16 +212,17 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,int state)
     }
 
     //按条目应付 同时将条目状态变为已付款
-    public void realPayPartItems(String accountBook, List<Integer> payNoteitemId)
+    public void realPayPartItems(String accountBook, PayNoteItemView[] payNoteItemViews)
     {
-        PayNoteItemView[] payNoteItemViews=this.payNoteItemDAO.find(accountBook,new Condition().addCondition("id",payNoteitemId.toArray(), ConditionItem.Relation.IN));
-        if(payNoteItemViews.length==0){return;}
         int payNoteId=payNoteItemViews[0].getPayNoteId();
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
         if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
-        if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
-        PayNoteItem[] payNoteItems= this.getStateItem(payNoteItemViews,PayNoteItemState.CALCULATED_PAY);
-        for(int i=0;i<payNoteItemViews.length;i++){
+        //if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
+        BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
+        List<Integer> state=new ArrayList<>();
+        state.add(PayNoteItemState.CALCULATED_PAY);
+        PayNoteItem[] payNoteItems= this.getStateItem(payNoteItemViews,state);
+        for(int i=0;i<payNoteItems.length;i++){
             payNoteItems[i].setState(PayNoteItemState.PAYED);
         }
         payNoteItemDAO.update(accountBook,payNoteItems);
