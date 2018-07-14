@@ -198,7 +198,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
         if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
-        //if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
+        if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
         BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
         List<Integer> state=new ArrayList<>();
         state.add(PayNoteItemState.CALCULATED_PAY);
@@ -217,7 +217,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         int payNoteId=payNoteItemViews[0].getPayNoteId();
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
         if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
-        //if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
+        if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
         BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
         List<Integer> state=new ArrayList<>();
         state.add(PayNoteItemState.CALCULATED_PAY);

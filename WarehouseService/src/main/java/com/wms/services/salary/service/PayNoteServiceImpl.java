@@ -184,8 +184,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        //TODO 将总金额增加到 总账
 
        //将整单变为已确认待付款状态
-       PayNote payNote=new PayNote();
-       payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
+       PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
        payNote.setState(PayNoteState.CONFIRM_PAY);
        payNoteDAO.update(accountBook,new PayNote[]{payNote});
    }
@@ -211,8 +210,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        //同步到总账
 
        //将整单变为已付款
-       PayNote payNote=new PayNote();
-       payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
+       PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
        payNote.setState(PayNoteState.CONFIRM_REAL_PAY);
        payNoteDAO.update(accountBook,new PayNote[]{payNote});
    }
