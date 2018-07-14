@@ -9,7 +9,7 @@ import com.wms.utilities.service.BaseService;
 import java.util.List;
 
 public interface PayNoteService extends BaseService<PayNote,PayNoteView> {
-    void confirmToAccountTitle(String accountBook, int payNoteId );
-    void realPayToAccountTitle(String accountBook,int payNoteId);
+    void confirmToAccountTitle(String accountBook, int payNoteId,int personId );
+    void realPayToAccountTitle(String accountBook,int payNoteId,int personId);
     List<PayNoteAndItems> getPreviewData(String accountBook, List<Integer> payNoteIds) throws WMSServiceException;
 }

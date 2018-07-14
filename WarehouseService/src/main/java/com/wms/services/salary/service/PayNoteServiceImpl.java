@@ -165,7 +165,7 @@ public class PayNoteServiceImpl implements PayNoteService{
     }
 
    //确认支付到总账
-   public void confirmToAccountTitle(String accountBook, int payNoteId ){
+   public void confirmToAccountTitle(String accountBook, int payNoteId ,int personId){
        PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
        if(payNoteViews[0].getState()!= PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("此单不为未确认状态，无法执行确认操作！");}
@@ -179,9 +179,15 @@ public class PayNoteServiceImpl implements PayNoteService{
        }
        //应付薪资
        int accountTitlePayableID=payNoteViews[0].getAccountTitlePayableId();
+       AccountRecord accountRecord=new AccountRecord();
+       accountRecord.setAccountTitleId(accountTitlePayableID);
+       accountRecord.setPersonId(personId);
+       accountRecord.setCreditAmount(totalAmount);
+       accountRecord.setWarehouseId(payNoteViews[0].getWarehouseId());
        //管理费用
        int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
        //TODO 将总金额增加到 总账
+
 
        //将整单变为已确认待付款状态
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
@@ -190,7 +196,7 @@ public class PayNoteServiceImpl implements PayNoteService{
    }
 
    //实际支付同步到总账 同时将状态变为下一个状态
-   public void realPayToAccountTitle(String accountBook,int payNoteId)
+   public void realPayToAccountTitle(String accountBook,int payNoteId,int personId)
    {
        PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}

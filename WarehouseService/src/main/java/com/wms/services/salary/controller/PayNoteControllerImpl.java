@@ -55,18 +55,20 @@ public class PayNoteControllerImpl implements PayNoteController {
     }
 
     @Override
-    @RequestMapping(value="/confirm_to_account_title/{payNoteId}",method = RequestMethod.POST)
+    @RequestMapping(value="/confirm_to_account_title/{payNoteId}/{personId}",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void confirmToAccountTitle(@PathVariable("accountBook") String accountBook,
-                          @PathVariable("payNoteId") int payNoteId){
-         this.payNoteService.confirmToAccountTitle(accountBook,payNoteId);
+                                      @PathVariable("payNoteId") int payNoteId,
+                                      @PathVariable("personId") int personId       ){
+         this.payNoteService.confirmToAccountTitle(accountBook,payNoteId,personId);
     }
 
     @Override
-    @RequestMapping(value="/real_pay_to_account_title/{payNoteId}",method = RequestMethod.POST)
+    @RequestMapping(value="/real_pay_to_account_title/{payNoteId}/{personId}",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void realPayToAccountTitle(@PathVariable("accountBook") String accountBook,
-                                      @PathVariable("payNoteId") int payNoteId){
-        this.payNoteService.realPayToAccountTitle(accountBook,payNoteId);
+                                      @PathVariable("payNoteId") int payNoteId,
+                                      @PathVariable("personId") int personId){
+        this.payNoteService.realPayToAccountTitle(accountBook,payNoteId,personId);
     }
 }

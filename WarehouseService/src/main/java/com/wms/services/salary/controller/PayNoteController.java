@@ -6,6 +6,6 @@ import com.wms.utilities.model.PayNoteView;
 
 public interface PayNoteController extends
         BaseController<PayNote,PayNoteView>{
-    void confirmToAccountTitle(String accountBook, int payNoteId );
-    void realPayToAccountTitle(String accountBook,int payNoteId);
+    void confirmToAccountTitle(String accountBook, int payNoteId,int personId);
+    void realPayToAccountTitle(String accountBook,int payNoteId,int personId);
 }
