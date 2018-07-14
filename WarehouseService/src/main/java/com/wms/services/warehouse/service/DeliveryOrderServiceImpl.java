@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
+import com.wms.services.ledger.service.TaxItemService;
 import com.wms.services.warehouse.dao.DeliveryOrderDAO;
 import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.IDChecker;
@@ -243,9 +244,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             
             for(int i=0;i<safetyStockViews.length;i++){
                 StockRecordViewNewest[] stockRecordViews3 = stockRecordService.findNewest(accountBook,
-                        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}));
+                        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}).addCondition("state", new Integer[]{TransferOrderItemService.STATE_ALL_FINISH}));
                 StockRecordViewNewest[] stockRecordViews4 = stockRecordService.findNewest(accountBook,
-                        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getSourceUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getSourceUnit()}));
+                        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getSourceUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getSourceUnit()}).addCondition("state", new Integer[]{TransferOrderItemService.STATE_ALL_FINISH}));
 
                 BigDecimal sourceAmount= new BigDecimal(0);
                 for(int j=0;j<stockRecordViews3.length;j++) {

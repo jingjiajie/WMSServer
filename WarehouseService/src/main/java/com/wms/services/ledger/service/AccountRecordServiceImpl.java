@@ -1,6 +1,9 @@
 package com.wms.services.ledger.service;
 
 import com.wms.services.ledger.dao.AccountRecordDAO;
+import com.wms.services.ledger.datestructures.TransferAccount;
+import com.wms.services.warehouse.datastructures.StockRecordFind;
+import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.services.warehouse.service.StorageLocationService;
 import com.wms.services.warehouse.service.SupplyService;
 import com.wms.services.warehouse.service.TransferOrderService;
@@ -8,15 +11,21 @@ import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.datastructures.OrderItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.AccountRecord;
-import com.wms.utilities.model.AccountRecordView;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Transactional
@@ -30,6 +39,10 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     IDChecker idChecker;
     @Autowired
     AccountPeriodService accountPeriodService;
+    @Autowired
+    AccountTitleService accountTitleService;
+    @Autowired
+    AccountRecordService accountRecordService;
 
     public int[] add(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException
     {
@@ -83,6 +96,97 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             this.idChecker.check(PersonService.class, accountBook, accountRecord.getPersonId(), "记录人");
         }));
 
+
+    }
+
+    public void RealTransformAccount(String accountBook, TransferAccount transferAccount)throws WMSServiceException
+    {
+
+        AccountTitleView[] OutAccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",transferAccount.getOutaccountTitleId()));
+        AccountTitleView OutAccountTitleView=OutAccountTitleViews[0];
+        AccountTitleView[] InAccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",transferAccount.getInaccountTitleId()));
+        AccountTitleView InAccountTitleView=InAccountTitleViews[0];
+
+        AccountRecord accountRecord=new AccountRecord();
+        accountRecord.setAccountTitleId(OutAccountTitleView.getId());
+        accountRecord.setAccountPeriodId(transferAccount.getAccountPeriodId());
+        accountRecord.setPersonId(transferAccount.getPersonId());
+        accountRecord.setComment(transferAccount.getComment());
+        accountRecord.setWarehouseId(transferAccount.getWarehouseId());
+        accountRecord.setSummary(transferAccount.getSummary());
+        accountRecord.setVoucherInfo(transferAccount.getVoucherInfo());
+
+        AccountRecord accountRecord1=new AccountRecord();
+        accountRecord1.setAccountTitleId(InAccountTitleView.getId());
+        accountRecord1.setAccountPeriodId(transferAccount.getAccountPeriodId());
+        accountRecord1.setPersonId(transferAccount.getPersonId());
+        accountRecord1.setComment(transferAccount.getComment());
+        accountRecord1.setWarehouseId(transferAccount.getWarehouseId());
+        accountRecord1.setSummary(transferAccount.getSummary());
+        accountRecord1.setVoucherInfo(transferAccount.getVoucherInfo());
+
+        AccountRecordView[] accountRecordViews= accountRecordService.find(accountBook,new Condition()
+                .addCondition("warehouseId",new Integer[]{transferAccount.getWarehouseId()})
+                .addCondition("accountPeriodId",new Integer[]{transferAccount.getAccountPeriodId()})
+                .addCondition("accountTitleId",new Integer[]{OutAccountTitleView.getId()}));
+
+        AccountRecordView newestAccountRecordView=new AccountRecordView();
+        for (int i=0;i<accountRecordViews.length;i++){
+            for (int j=0;j<accountRecordViews.length;j++){
+                if (accountRecordViews[i].getTime().after(accountRecordViews[j].getTime())){
+                    newestAccountRecordView=accountRecordViews[i];
+                }else{
+                    newestAccountRecordView=accountRecordViews[j];
+                }
+            }
+        }
+
+        AccountRecordView[] inaccountRecordViews= accountRecordService.find(accountBook,new Condition()
+                .addCondition("warehouseId",new Integer[]{transferAccount.getWarehouseId()})
+                .addCondition("accountPeriodId",new Integer[]{transferAccount.getAccountPeriodId()})
+                .addCondition("accountTitleId",new Integer[]{InAccountTitleView.getId()}));
+
+        AccountRecordView newestAccountRecordView1=new AccountRecordView();
+        for (int i=0;i<inaccountRecordViews.length;i++){
+            for (int j=0;j<inaccountRecordViews.length;j++){
+                if (inaccountRecordViews[i].getTime().after(inaccountRecordViews[j].getTime())){
+                    newestAccountRecordView1=inaccountRecordViews[i];
+                }else{
+                    newestAccountRecordView1=inaccountRecordViews[j];
+                }
+            }
+        }
+
+        if (OutAccountTitleView.getDirection()==InAccountTitleView.getDirection()){
+            if (OutAccountTitleView.getDirection()==AccountTitleService.Debit){
+                //todo 找出最新一条的余额扣掉
+                accountRecord.setCreditAmount(transferAccount.getChangeAmount());
+                accountRecord.setBalance(newestAccountRecordView.getBalance().subtract(transferAccount.getChangeAmount()));
+                accountRecord1.setDebitAmount(transferAccount.getChangeAmount());
+                accountRecord1.setBalance(newestAccountRecordView1.getBalance().add(transferAccount.getChangeAmount()));
+            }else{
+                accountRecord.setDebitAmount(transferAccount.getChangeAmount());
+                accountRecord.setBalance(newestAccountRecordView.getBalance().subtract(transferAccount.getChangeAmount()));
+                accountRecord1.setCreditAmount(transferAccount.getChangeAmount());
+                accountRecord1.setBalance(newestAccountRecordView1.getBalance().add(transferAccount.getChangeAmount()));
+            }
+        }
+
+        if (OutAccountTitleView.getDirection()!=InAccountTitleView.getDirection()){
+            if (OutAccountTitleView.getDirection()==AccountTitleService.Debit){
+                //todo 找出最新一条的余额扣掉
+                accountRecord.setCreditAmount(transferAccount.getChangeAmount());
+                accountRecord.setBalance(newestAccountRecordView.getBalance().subtract(transferAccount.getChangeAmount()));
+                accountRecord1.setDebitAmount(transferAccount.getChangeAmount());
+                accountRecord1.setBalance(newestAccountRecordView1.getBalance().subtract(transferAccount.getChangeAmount()));
+            }else{
+                accountRecord.setDebitAmount(transferAccount.getChangeAmount());
+                accountRecord.setBalance(newestAccountRecordView.getBalance().subtract(transferAccount.getChangeAmount()));
+                accountRecord1.setCreditAmount(transferAccount.getChangeAmount());
+                accountRecord1.setBalance(newestAccountRecordView1.getBalance().subtract(transferAccount.getChangeAmount()));
+            }
+        }
+        this.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
 
     }
 }
