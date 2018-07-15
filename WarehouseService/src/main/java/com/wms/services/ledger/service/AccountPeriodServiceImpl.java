@@ -173,7 +173,7 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
         AccountRecord[] curAccountRecords=null;
         curAccountRecords = (AccountRecord[]) Array.newInstance(AccountRecord.class,accountRecordList.size());
         accountRecordList.toArray(curAccountRecords);
-        
+
         this.accountRecordService.add(accountBook,curAccountRecords);
     }
 }

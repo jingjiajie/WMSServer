@@ -290,6 +290,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     transferOrderItemView.setSourceUnit(safetyStockViews[i].getSourceUnit());
                     transferOrderItemView.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
                     transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
+                    transferOrderItemView.setMaterialNo(safetyStockViews[i].getMaterialNo());
                     transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
                     transferOrderItemView.setState(0);
 
@@ -303,6 +304,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     transferOrderItemView.setUnit(safetyStockViews[i].getUnit());
                     transferOrderItemView.setUnitAmount(safetyStockViews[i].getUnitAmount());
                     transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
+                    transferOrderItemView.setMaterialNo(safetyStockViews[i].getMaterialNo());
                     transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
                     transferOrderItemView.setState(1);
                     transferOrderItem.setComment("库存充足！");
@@ -316,6 +318,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     transferOrderItemView.setSourceUnit(safetyStockViews[i].getSourceUnit());
                     transferOrderItemView.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
                     transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
+                    transferOrderItemView.setMaterialNo(safetyStockViews[i].getMaterialNo());
 
                     transferOrderItemView.setScheduledAmount(safetyStockViews[i].getAmount());
                     transferOrderItemView.setRealAmount(sourceAmount1);
