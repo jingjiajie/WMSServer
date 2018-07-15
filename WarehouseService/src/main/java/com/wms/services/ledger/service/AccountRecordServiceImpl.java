@@ -41,9 +41,11 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     AccountPeriodService accountPeriodService;
     @Autowired
     AccountTitleService accountTitleService;
+
+    /*
     @Autowired
     AccountRecordService accountRecordService;
-
+*/
     public int[] add(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException
     {
         this.validateEntities(accountBook,accountRecords);
@@ -124,8 +126,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         accountRecord1.setWarehouseId(transferAccount.getWarehouseId());
         accountRecord1.setSummary(transferAccount.getSummary());
         accountRecord1.setVoucherInfo(transferAccount.getVoucherInfo());
-
-        AccountRecordView[] accountRecordViews= accountRecordService.find(accountBook,new Condition()
+//之前用了service 我改成了DAO 用service 无法注入
+        AccountRecordView[] accountRecordViews= accountRecordDAO.find(accountBook,new Condition()
                 .addCondition("warehouseId",new Integer[]{transferAccount.getWarehouseId()})
                 .addCondition("accountPeriodId",new Integer[]{transferAccount.getAccountPeriodId()})
                 .addCondition("accountTitleId",new Integer[]{OutAccountTitleView.getId()}));
@@ -141,7 +143,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             }
         }
 
-        AccountRecordView[] inaccountRecordViews= accountRecordService.find(accountBook,new Condition()
+//之前用了service 我改成了DAO 用service 无法注入
+        AccountRecordView[] inaccountRecordViews= accountRecordDAO.find(accountBook,new Condition()
                 .addCondition("warehouseId",new Integer[]{transferAccount.getWarehouseId()})
                 .addCondition("accountPeriodId",new Integer[]{transferAccount.getAccountPeriodId()})
                 .addCondition("accountTitleId",new Integer[]{InAccountTitleView.getId()}));

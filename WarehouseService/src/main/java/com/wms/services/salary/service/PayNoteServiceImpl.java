@@ -186,8 +186,12 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setWarehouseId(payNoteViews[0].getWarehouseId());
        //管理费用
        int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
+       AccountRecord accountRecord1=new AccountRecord();
+       accountRecord.setAccountTitleId(accountTitlePayableID);
+       accountRecord.setPersonId(personId);
+       accountRecord.setDebitAmount(totalAmount);
+       accountRecord.setWarehouseId(payNoteViews[0].getWarehouseId());
        //TODO 将总金额增加到 总账
-
 
        //将整单变为已确认待付款状态
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
