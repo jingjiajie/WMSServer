@@ -192,4 +192,52 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         this.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
 
     }
+
+    public void AddAccountRecord(String accountBook, AccountRecord[] accountRecords)throws WMSServiceException
+    {
+        BigDecimal allDebitAmount=new BigDecimal(0);
+        BigDecimal allCreditAmount=new BigDecimal(0);
+        for (int k=0;k<accountRecords.length;k++){
+
+            AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getAccountTitleId()));
+            AccountTitleView accountTitleView=AccountTitleViews[0];
+
+            BigDecimal curBalance=new BigDecimal(0);
+
+            AccountRecordView[] accountRecordViews= accountRecordDAO.find(accountBook,new Condition()
+                    .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
+                    .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
+                    .addCondition("accountTitleId",new Integer[]{accountRecords[k].getAccountTitleId()}));
+
+            if (accountRecordViews.length>0){
+                AccountRecordView newestAccountRecordView=new AccountRecordView();
+                for (int i=0;i<accountRecordViews.length;i++){
+                    for (int j=0;j<accountRecordViews.length;j++){
+                        if (accountRecordViews[i].getTime().after(accountRecordViews[j].getTime())){
+                            newestAccountRecordView=accountRecordViews[i];
+                        }else{
+                            newestAccountRecordView=accountRecordViews[j];
+                        }
+                    }
+                }
+                curBalance=newestAccountRecordView.getBalance();
+            }
+
+            //如果科目类型是借方
+            if (accountTitleView.getDirection()==AccountTitleService.Debit){
+                accountRecords[k].setBalance(curBalance.subtract(accountRecords[k].getCreditAmount()).add(accountRecords[k].getDebitAmount()));
+
+            }else{
+                accountRecords[k].setBalance(curBalance.subtract(accountRecords[k].getCreditAmount()).add(accountRecords[k].getDebitAmount()));
+            }
+
+            allDebitAmount=allDebitAmount.add(accountRecords[k].getDebitAmount());
+            allCreditAmount=allCreditAmount.add(accountRecords[k].getCreditAmount());
+        }
+
+        if (allDebitAmount.compareTo(allCreditAmount)!=0){
+            throw new WMSServiceException(String.format("提交账目记录信息借贷不平，请重新检查后提交！凭证号：(%s)", accountRecords[0].getVoucherInfo()));
+        }
+        this.add(accountBook,accountRecords);
+    }
 }
