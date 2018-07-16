@@ -15,4 +15,5 @@ public interface PayNoteItemService extends BaseService<PayNoteItem,PayNoteItemV
     void realPayAll(String accountBook, PayNoteItemPay payNoteItemPay);
     void realPayPartItems(String accountBook, PayNoteItemView[] payNoteItemViews);
     void addAllItem(String accountBook,AddAllItem AddAllItem);
+    boolean judgeAllFinish(String accountBook,int state,int payNoteId);
 }

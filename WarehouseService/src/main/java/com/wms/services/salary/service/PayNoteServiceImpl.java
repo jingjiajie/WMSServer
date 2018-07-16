@@ -173,7 +173,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        //判断条目是否全部计算同时计算总金额
        BigDecimal totalAmount=new BigDecimal(0);
        for(int i=0;i<payNoteItemViews.length;i++){
-           if(payNoteItemViews[i].getState()!= PayNoteItemState.CALCULATED_PAY){throw new WMSServiceException("操作的薪金发放单中条目未全部计算，无法同步到总账！");
+           if(payNoteItemViews[i].getState()!= PayNoteItemState.CALCULATED_PAY){throw new WMSServiceException("操作的薪金发放单中条目未全部计算应付，无法同步到总账！");
            }
            totalAmount=totalAmount.add(payNoteItemViews[i].getAfterTaxAmount());
        }
@@ -209,7 +209,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        //判断条目是否全部计算同时计算总金额
        BigDecimal totalPaidAmount=new BigDecimal(0);
        for(int i=0;i<payNoteItemViews.length;i++){
-           if(payNoteItemViews[i].getState()!= PayNoteItemState.PAYED){throw new WMSServiceException("操作的薪金发放单中条目未全部计算！");
+           if(payNoteItemViews[i].getState()!= PayNoteItemState.PAYED){throw new WMSServiceException("操作的薪金发放单中条目未全部付款，无法同步到总账！");
            }
            totalPaidAmount=totalPaidAmount.add(payNoteItemViews[i].getPaidAmount());
        }

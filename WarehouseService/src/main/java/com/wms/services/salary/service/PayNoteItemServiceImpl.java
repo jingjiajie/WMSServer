@@ -119,7 +119,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         java.util.List<Integer> payNoteItemId=calculateTax.getPayNoteItemId();
         PayNoteItem[] payNoteItems=null;
         PayNoteItemView[] payNoteItemViews=null;
-        PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
+        //PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
         int taxId=calculateTax.getTaxId();
         if(payNoteItemId!=null)
         {
@@ -146,6 +146,17 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             payNoteItems[i].setState(PayNoteItemState.CALCULATED_PAY);
         }
         payNoteItemDAO.update(accountBook,payNoteItems);
+    }
+
+    public boolean judgeAllFinish(String accountBook,int state,int payNoteId){
+      PayNoteItem[]  payNoteItems=payNoteItemDAO.findTable(accountBook,new Condition().addCondition("payNoteId",payNoteId));
+        if(payNoteItems.length==0){throw new WMSServiceException("判断：查询薪资发放单条目出错！");}
+      for(int i=0;i<payNoteItems.length;i++){
+          if(payNoteItems[i].getState()!=state){
+              return false;
+          }
+      }
+      return true;
     }
 /*
     public void confirmItems(String accountBook,CalculateTax calculateTax){

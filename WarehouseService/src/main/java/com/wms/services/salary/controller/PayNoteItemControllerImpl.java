@@ -90,4 +90,13 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
                             @RequestBody AddAllItem AddAllItem){
         this.payNoteItemService.addAllItem(accountBook, AddAllItem);
     }
+
+    @Override
+    @RequestMapping(value="/judge_all_finish/{payNoteId}/{state}",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public boolean judgeAllFinish(@PathVariable("accountBook") String accountBook,
+                            @PathVariable("payNoteId") int payNoteId,
+                            @PathVariable("state") int state){
+       return this.payNoteItemService.judgeAllFinish(accountBook, state,payNoteId);
+    }
 }
