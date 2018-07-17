@@ -165,7 +165,10 @@ public class PayNoteServiceImpl implements PayNoteService{
     }
 
    //确认支付到总账
-   public void confirmToAccountTitle(String accountBook, int payNoteId ,int personId){
+   public void confirmToAccountTitle(String accountBook, AccountSynchronize accountSynchronize){
+        int payNoteId=accountSynchronize.getPayNoteId();
+        int personId=accountSynchronize.getPersonId();
+        int warehouseId=accountSynchronize.getWarehouseId();
        PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
        if(payNoteViews[0].getState()!= PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("此单不为未确认状态，无法执行确认操作！");}
@@ -190,7 +193,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setAccountTitleId(accountTitlePayableID);
        accountRecord.setPersonId(personId);
        accountRecord.setDebitAmount(totalAmount);
-       accountRecord.setWarehouseId(payNoteViews[0].getWarehouseId());
+       accountRecord.setWarehouseId(warehouseId);
        //TODO 将总金额增加到 总账
 
        //将整单变为已确认待付款状态
@@ -200,8 +203,11 @@ public class PayNoteServiceImpl implements PayNoteService{
    }
 
    //实际支付同步到总账 同时将状态变为下一个状态
-   public void realPayToAccountTitle(String accountBook,int payNoteId,int personId)
+   public void realPayToAccountTitle(String accountBook,AccountSynchronize accountSynchronize)
    {
+       int payNoteId=accountSynchronize.getPayNoteId();
+       int personId=accountSynchronize.getPersonId();
+       int warehouseId=accountSynchronize.getWarehouseId();
        PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
        if(payNoteViews[0].getState()!= PayNoteState.CONFIRM_PAY){throw new WMSServiceException("此单不为等待支付状态，无法执行确认操作！");}

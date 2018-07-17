@@ -2,6 +2,7 @@ package com.wms.services.salary.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.salary.datestructures.AccountSynchronize;
 import com.wms.services.salary.service.PayNoteService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.PayNote;
@@ -55,20 +56,18 @@ public class PayNoteControllerImpl implements PayNoteController {
     }
 
     @Override
-    @RequestMapping(value="/confirm_to_account_title/{payNoteId}/{personId}",method = RequestMethod.POST)
+    @RequestMapping(value="/confirm_to_account_title",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void confirmToAccountTitle(@PathVariable("accountBook") String accountBook,
-                                      @PathVariable("payNoteId") int payNoteId,
-                                      @PathVariable("personId") int personId       ){
-         this.payNoteService.confirmToAccountTitle(accountBook,payNoteId,personId);
+                                      @RequestBody AccountSynchronize accountSynchronize ){
+         this.payNoteService.confirmToAccountTitle(accountBook, accountSynchronize);
     }
 
     @Override
-    @RequestMapping(value="/real_pay_to_account_title/{payNoteId}/{personId}",method = RequestMethod.POST)
+    @RequestMapping(value="/real_pay_to_account_title",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void realPayToAccountTitle(@PathVariable("accountBook") String accountBook,
-                                      @PathVariable("payNoteId") int payNoteId,
-                                      @PathVariable("personId") int personId){
-        this.payNoteService.realPayToAccountTitle(accountBook,payNoteId,personId);
+                                      @RequestBody AccountSynchronize accountSynchronize){
+        this.payNoteService.realPayToAccountTitle(accountBook,accountSynchronize);
     }
 }
