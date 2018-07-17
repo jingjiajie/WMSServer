@@ -1,6 +1,7 @@
 package com.wms.services.ledger.service;
 
 import com.wms.services.ledger.dao.AccountPeriodDAO;
+import com.wms.services.ledger.datestructures.CarryOver;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
@@ -112,10 +113,10 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
 
     }
 
-    private void carry_over(String accountBook,AccountRecord accountRecord) throws WMSServiceException{
+    private void carry_over(String accountBook,CarryOver carryOver) throws WMSServiceException{
         //取得需要的三个关键词
-        int curWarehouseId=accountRecord.getWarehouseId();
-        int curPersonId=accountRecord.getPersonId();
+        int curWarehouseId=carryOver.getWarehouseId();
+        int curPersonId=carryOver.getPersonId();
         //TODO 结转功能 为了保持会计工作的连续性，一定要把本会计年度末的余额转到下个会计年度
 
         //获得当前仓库，最新的没截止的期间,将其截止并启用新的期间
@@ -175,5 +176,7 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
         accountRecordList.toArray(curAccountRecords);
 
         this.accountRecordService.add(accountBook,curAccountRecords);
+
+
     }
 }
