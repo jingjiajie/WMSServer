@@ -56,7 +56,7 @@ public class PayNoteControllerImpl implements PayNoteController {
     }
 
     @Override
-    @RequestMapping(value="/confirm_to_account_title/",method = RequestMethod.POST)
+    @RequestMapping(value="/confirm_to_account_title",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void confirmToAccountTitle(@PathVariable("accountBook") String accountBook,
                                       @RequestBody AccountSynchronize accountSynchronize ){
@@ -64,7 +64,7 @@ public class PayNoteControllerImpl implements PayNoteController {
     }
 
     @Override
-    @RequestMapping(value="/real_pay_to_account_title/",method = RequestMethod.POST)
+    @RequestMapping(value="/real_pay_to_account_title",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void realPayToAccountTitle(@PathVariable("accountBook") String accountBook,
                                       @RequestBody AccountSynchronize accountSynchronize){

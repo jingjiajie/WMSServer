@@ -135,7 +135,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         state.add(PayNoteItemState.CALCULATED_PAY);
         state.add(PayNoteState.WAITING_FOR_CONFIRM);
         payNoteItems= this.getStateItem(payNoteItemViews, state);
-        //TODO 计算税费
+        //计算税费
         TaxCalculation taxCalculation=new TaxCalculation();
         for(int i=0;i<payNoteItems.length;i++){
             taxCalculation.setMoneyAmount(payNoteItems[i].getPreTaxAmount());
