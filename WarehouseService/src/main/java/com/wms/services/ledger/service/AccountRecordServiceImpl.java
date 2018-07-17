@@ -9,6 +9,7 @@ import com.wms.services.warehouse.service.SupplyService;
 import com.wms.services.warehouse.service.TransferOrderService;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.IDChecker;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.datastructures.OrderItem;
@@ -18,10 +19,11 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -201,6 +203,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
             AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getAccountTitleId()));
             AccountTitleView accountTitleView=AccountTitleViews[0];
+            AccountTitle[] accountTitles = ReflectHelper.createAndCopyFields(AccountTitleViews,AccountTitle.class);
 
             BigDecimal curBalance=new BigDecimal(0);
 
@@ -208,6 +211,9 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
                     .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
                     .addCondition("accountTitleId",new Integer[]{accountRecords[k].getAccountTitleId()}));
+
+            //TODO 返回上级科目的列表
+            List<FindLinkAccountTitle> findLinkAccountTitleList=this.FindLinkAccountTitle(accountBook,accountTitles);
 
             if (accountRecordViews.length>0){
                 AccountRecordView newestAccountRecordView=new AccountRecordView();
@@ -235,9 +241,58 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             allCreditAmount=allCreditAmount.add(accountRecords[k].getCreditAmount());
         }
 
+        //总借贷平衡
         if (allDebitAmount.compareTo(allCreditAmount)!=0){
             throw new WMSServiceException(String.format("提交账目记录信息借贷不平，请重新检查后提交！凭证号：(%s)", accountRecords[0].getVoucherInfo()));
         }
         this.add(accountBook,accountRecords);
     }
+
+    public List<FindLinkAccountTitle>  FindLinkAccountTitle(String accountBook, AccountTitle[] accountTitles)throws WMSServiceException
+    {
+        List<FindLinkAccountTitle> result = new ArrayList<>();
+        for (int i=0;i<accountTitles.length;i++){
+
+            FindLinkAccountTitle findLinkAccountTitle = new FindLinkAccountTitle();
+            findLinkAccountTitle.setCurAccountTitleNo(accountTitles[i].getNo());
+            findLinkAccountTitle.setAccountTitleViews(new ArrayList<>());
+            result.add(findLinkAccountTitle);
+
+
+            String accountTitleNo=accountTitles[i].getNo();
+            //获取分级数
+            String[] no_cut = accountTitleNo.split("\\.");
+            int lever=no_cut.length;
+
+            //当切割分段数大于1，表示至少又一个上级科目
+            if (lever>1) {
+                //得到分段数-1个上级科目编号
+                String[] AllaccountTitleNo=new String[lever-1];
+                int[] position = new int[lever - 1];
+                position[0] = accountTitleNo.indexOf(".");
+                if (lever > 2) {
+                    for (int j = 1; j < lever - 1; j++) {
+                        position[j] = accountTitleNo.indexOf('.', position[j - 1] + 1);
+                    }
+                }
+                for (int k = 0; k < lever - 1; k++) {
+                    AllaccountTitleNo[k] = accountTitleNo.substring(0, position[k]);
+                }
+
+                AccountTitleView[] accountTitleViews=new AccountTitleView[lever-1];
+                for (int j=0;j<accountTitleViews.length;j++) {
+                    AccountTitleView[] curAccountTitleView = this.accountTitleService.find(accountBook, new Condition().addCondition("no", AllaccountTitleNo[j]));
+                    if (curAccountTitleView.length==0){
+                        throw new WMSServiceException(String.format("上级科目编码不存在，请重新检查后提交！凭证号：(%s)", AllaccountTitleNo[j]));
+                    }
+                    accountTitleViews[j]=curAccountTitleView[0];
+                }
+                for (int j=0;j<lever-1;j++) {
+                    findLinkAccountTitle.getAccountTitleViews().add(accountTitleViews[j]);
+                }
+            }
+        }
+        return result;
+    }
 }
+

@@ -1,6 +1,7 @@
 package com.wms.services.ledger.service;
 
 import com.wms.services.ledger.dao.AccountTitleDAO;
+import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.model.AccountTitle;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 @Transactional
@@ -20,6 +22,8 @@ import java.util.stream.Stream;
 public class AccountTitleServiceImpl implements AccountTitleService {
     @Autowired
     AccountTitleDAO accountTitleDAO;
+    @Autowired
+    AccountRecordService accountRecordService;
 
     @Transactional
     public int[] add(String accountBook, AccountTitle[] accountTitles) throws WMSServiceException {
@@ -29,7 +33,10 @@ public class AccountTitleServiceImpl implements AccountTitleService {
                 throw new WMSServiceException("科目编码：" + accountTitle.getNo() +"在库存中已经存在!");
             }
         });
-        return accountTitleDAO.add(accountBook, accountTitles);
+        int[]ids= accountTitleDAO.add(accountBook, accountTitles);
+        List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindLinkAccountTitle(accountBook,accountTitles);
+        return ids;
+
     }
 
     @Transactional
@@ -41,6 +48,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
                 throw new WMSServiceException("科目编码：" + accountTitle.getNo() +"在库存中已经存在!");
             }
         });
+        List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindLinkAccountTitle(accountBook,accountTitles);
         try {
             accountTitleDAO.update(accountBook, accountTitles);
         } catch (DatabaseNotFoundException ex) {
