@@ -8,4 +8,5 @@ import com.wms.utilities.service.BaseService;
 
 public interface AccountRecordService extends BaseService<AccountRecord,AccountRecordView> {
     public void RealTransformAccount(String accountBook, TransferAccount transferAccount)throws WMSServiceException;
+    public void AddAccountRecord(String accountBook, AccountRecord[] accountRecords)throws WMSServiceException;
 }
