@@ -9,6 +9,7 @@ import com.wms.services.warehouse.service.SupplyService;
 import com.wms.services.warehouse.service.TransferOrderService;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.IDChecker;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.datastructures.OrderItem;
@@ -202,6 +203,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
             AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getAccountTitleId()));
             AccountTitleView accountTitleView=AccountTitleViews[0];
+            AccountTitle[] accountTitles = ReflectHelper.createAndCopyFields(AccountTitleViews,AccountTitle.class);
 
             BigDecimal curBalance=new BigDecimal(0);
 
@@ -209,6 +211,9 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
                     .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
                     .addCondition("accountTitleId",new Integer[]{accountRecords[k].getAccountTitleId()}));
+
+            //TODO 返回上级科目的列表
+            List<FindLinkAccountTitle> findLinkAccountTitleList=this.FindLinkAccountTitle(accountBook,accountTitles);
 
             if (accountRecordViews.length>0){
                 AccountRecordView newestAccountRecordView=new AccountRecordView();
