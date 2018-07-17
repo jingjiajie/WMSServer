@@ -113,7 +113,7 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
 
     }
 
-    private void carry_over(String accountBook,CarryOver carryOver) throws WMSServiceException{
+    private void carryOver(String accountBook,CarryOver carryOver) throws WMSServiceException{
         //取得需要的三个关键词
         int curWarehouseId=carryOver.getWarehouseId();
         int curPersonId=carryOver.getPersonId();
