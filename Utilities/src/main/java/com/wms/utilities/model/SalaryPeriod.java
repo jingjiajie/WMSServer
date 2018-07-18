@@ -1,12 +1,14 @@
 package com.wms.utilities.model;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 @Entity
 public class SalaryPeriod {
     private int id;
     private Integer warehouseId;
     private String name;
+    private Timestamp createTime;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +41,16 @@ public class SalaryPeriod {
         this.name = name;
     }
 
+    @Basic
+    @Column(name = "CreateTime")
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,6 +61,7 @@ public class SalaryPeriod {
         if (id != that.id) return false;
         if (warehouseId != null ? !warehouseId.equals(that.warehouseId) : that.warehouseId != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) return false;
 
         return true;
     }
@@ -58,6 +71,7 @@ public class SalaryPeriod {
         int result = id;
         result = 31 * result + (warehouseId != null ? warehouseId.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         return result;
     }
 }
