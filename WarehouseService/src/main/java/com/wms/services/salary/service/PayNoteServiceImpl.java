@@ -196,7 +196,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord1.setDebitAmount(totalAmount);
        accountRecord1.setWarehouseId(warehouseId);
        //TODO 将总金额增加到 总账
-
+       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
        //将整单变为已确认待付款状态
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
        payNote.setState(PayNoteState.CONFIRM_PAY);
@@ -222,10 +222,22 @@ public class PayNoteServiceImpl implements PayNoteService{
        }
        //应付薪资
        int accountTitlePayableID=payNoteViews[0].getAccountTitlePayableId();
+       AccountRecord accountRecord=new AccountRecord();
+       accountRecord.setAccountTitleId(accountTitlePayableID);
+       accountRecord.setPersonId(personId);
+       accountRecord.setDebitAmount(totalPaidAmount);
+       accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
+       accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
        //银行资产
        int accountTitlePropertyID=payNoteViews[0].getAccountTitlePropertyId();
        //同步到总账
-
+       AccountRecord accountRecord1=new AccountRecord();
+       accountRecord1.setAccountTitleId(accountTitlePayableID);
+       accountRecord1.setPersonId(personId);
+       accountRecord1.setCreditAmount(totalPaidAmount);
+       accountRecord1.setWarehouseId(accountSynchronize.getWarehouseId());
+       accountRecord1.setVoucherInfo(accountSynchronize.getVoucherInfo());
+       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
        //将整单变为已付款
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
        payNote.setState(PayNoteState.CONFIRM_REAL_PAY);
