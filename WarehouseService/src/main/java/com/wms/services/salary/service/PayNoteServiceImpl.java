@@ -186,14 +186,15 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setAccountTitleId(accountTitlePayableID);
        accountRecord.setPersonId(personId);
        accountRecord.setCreditAmount(totalAmount);
-       accountRecord.setWarehouseId(payNoteViews[0].getWarehouseId());
+       accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
+       accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
        //管理费用
        int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
        AccountRecord accountRecord1=new AccountRecord();
-       accountRecord.setAccountTitleId(accountTitlePayableID);
-       accountRecord.setPersonId(personId);
-       accountRecord.setDebitAmount(totalAmount);
-       accountRecord.setWarehouseId(warehouseId);
+       accountRecord1.setAccountTitleId(accountTitleExpenseID);
+       accountRecord1.setPersonId(personId);
+       accountRecord1.setDebitAmount(totalAmount);
+       accountRecord1.setWarehouseId(warehouseId);
        //TODO 将总金额增加到 总账
 
        //将整单变为已确认待付款状态
