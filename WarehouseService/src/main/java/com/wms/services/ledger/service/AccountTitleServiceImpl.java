@@ -34,7 +34,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
             }
         });
         int[]ids= accountTitleDAO.add(accountBook, accountTitles);
-        List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindLinkAccountTitle(accountBook,accountTitles);
+        List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
         return ids;
 
     }
@@ -48,7 +48,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
                 throw new WMSServiceException("科目编码：" + accountTitle.getNo() +"在库存中已经存在!");
             }
         });
-        List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindLinkAccountTitle(accountBook,accountTitles);
+        List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
         try {
             accountTitleDAO.update(accountBook, accountTitles);
         } catch (DatabaseNotFoundException ex) {

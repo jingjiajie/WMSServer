@@ -213,7 +213,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     .addCondition("accountTitleId",new Integer[]{accountRecords[k].getAccountTitleId()}));
 
             //TODO 返回上级科目的列表
-            List<FindLinkAccountTitle> findLinkAccountTitleList=this.FindLinkAccountTitle(accountBook,accountTitles);
+            List<FindLinkAccountTitle> findLinkAccountTitleList=this.FindParentAccountTitle(accountBook,accountTitles);
 
             if (accountRecordViews.length>0){
                 AccountRecordView newestAccountRecordView=new AccountRecordView();
@@ -248,7 +248,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         this.add(accountBook,accountRecords);
     }
 
-    public List<FindLinkAccountTitle>  FindLinkAccountTitle(String accountBook, AccountTitle[] accountTitles)throws WMSServiceException
+    public List<FindLinkAccountTitle>  FindParentAccountTitle(String accountBook, AccountTitle[] accountTitles)throws WMSServiceException
     {
         List<FindLinkAccountTitle> result = new ArrayList<>();
         for (int i=0;i<accountTitles.length;i++){
