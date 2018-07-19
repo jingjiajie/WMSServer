@@ -1,6 +1,7 @@
 package com.wms.services.ledger.service;
 
 import com.wms.services.ledger.dao.AccountRecordDAO;
+import com.wms.services.ledger.dao.AccountTitleDAO;
 import com.wms.services.ledger.datestructures.TransferAccount;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.TransferStock;
@@ -43,7 +44,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     AccountPeriodService accountPeriodService;
     @Autowired
     AccountTitleService accountTitleService;
-
+@Autowired
+    AccountTitleDAO accountTitleDAO;
     /*
     @Autowired
     AccountRecordService accountRecordService;
@@ -250,46 +252,57 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
     public List<FindLinkAccountTitle>  FindParentAccountTitle(String accountBook, AccountTitle[] accountTitles)throws WMSServiceException
     {
+        AccountTitle[] allAccountTitles=this.accountTitleDAO.findTable(accountBook,new Condition().addCondition("enabled",AccountTitleService.ENABLED_ON));
         List<FindLinkAccountTitle> result = new ArrayList<>();
         for (int i=0;i<accountTitles.length;i++){
+
+            int curType=accountTitles[i].getType();
+            String curAccountTitleName=accountTitles[i].getName();
 
             FindLinkAccountTitle findLinkAccountTitle = new FindLinkAccountTitle();
             findLinkAccountTitle.setCurAccountTitleNo(accountTitles[i].getNo());
             findLinkAccountTitle.setAccountTitleViews(new ArrayList<>());
             result.add(findLinkAccountTitle);
 
-
+            List<String> parentAccountTitleNoList=new ArrayList<>();
             String accountTitleNo=accountTitles[i].getNo();
-            //获取分级数
-            String[] no_cut = accountTitleNo.split("\\.");
-            int lever=no_cut.length;
-
-            //当切割分段数大于1，表示至少又一个上级科目
-            if (lever>1) {
-                //得到分段数-1个上级科目编号
-                String[] AllaccountTitleNo=new String[lever-1];
-                int[] position = new int[lever - 1];
-                position[0] = accountTitleNo.indexOf(".");
-                if (lever > 2) {
-                    for (int j = 1; j < lever - 1; j++) {
-                        position[j] = accountTitleNo.indexOf('.', position[j - 1] + 1);
+            Stream.of(allAccountTitles).forEach((accountTitle)->{
+                if (accountTitleNo.startsWith(accountTitle.getNo())&&!accountTitleNo.equals(accountTitle.getNo())){
+                    parentAccountTitleNoList.add(accountTitle.getNo());
+                    if (curType!=accountTitle.getType())
+                    {
+                        throw new WMSServiceException(String.format("科目与上级科目类型不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
                     }
                 }
-                for (int k = 0; k < lever - 1; k++) {
-                    AllaccountTitleNo[k] = accountTitleNo.substring(0, position[k]);
-                }
+            });
+            String[] parentAccountTitleNos=new String[parentAccountTitleNoList.size()];
+            parentAccountTitleNoList.toArray(parentAccountTitleNos);
+//            //获取分级数
+//            String[] no_cut = accountTitleNo.split("\\.");
+//            int lever=no_cut.length;
+//
+//            //当切割分段数大于1，表示至少又一个上级科目
+//            if (lever>1) {
+//                //得到分段数-1个上级科目编号
+//                String[] AllaccountTitleNo=new String[lever-1];
+//                int[] position = new int[lever - 1];
+//                position[0] = accountTitleNo.indexOf(".");
+//                if (lever > 2) {
+//                    for (int j = 1; j < lever - 1; j++) {
+//                        position[j] = accountTitleNo.indexOf('.', position[j - 1] + 1);
+//                    }
+//                }
+//                for (int k = 0; k < lever - 1; k++) {
+//                    AllaccountTitleNo[k] = accountTitleNo.substring(0, position[k]);
+//                }
 
-                AccountTitleView[] accountTitleViews=new AccountTitleView[lever-1];
-                for (int j=0;j<accountTitleViews.length;j++) {
-                    AccountTitleView[] curAccountTitleView = this.accountTitleService.find(accountBook, new Condition().addCondition("no", AllaccountTitleNo[j]));
-                    if (curAccountTitleView.length==0){
-                        throw new WMSServiceException(String.format("上级科目编码不存在，请重新检查后提交！凭证号：(%s)", AllaccountTitleNo[j]));
-                    }
-                    accountTitleViews[j]=curAccountTitleView[0];
+            AccountTitleView[] accountTitleViews=new AccountTitleView[parentAccountTitleNos.length];
+            for (int j=0;j<parentAccountTitleNos.length;j++) {
+                AccountTitleView[] curAccountTitleView = this.accountTitleService.find(accountBook, new Condition().addCondition("no", parentAccountTitleNos[j]));
+                if (curAccountTitleView.length==0){
+                    throw new WMSServiceException(String.format("上级科目不存在，请重新检查后提交！子科目编码：(%s)", parentAccountTitleNos[j]));
                 }
-                for (int j=0;j<lever-1;j++) {
-                    findLinkAccountTitle.getAccountTitleViews().add(accountTitleViews[j]);
-                }
+                findLinkAccountTitle.getAccountTitleViews().add(curAccountTitleView[0]);
             }
         }
         return result;
