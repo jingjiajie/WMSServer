@@ -102,7 +102,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             cond.addCondition("personId",personSalary.getPersonId());
             cond.addCondition("salaryItemId",personSalary.getSalaryItemId());
             cond.addCondition("salaryPeriodId",personSalary.getSalaryPeriodId());
-            cond.addCondition("id",personSalary.getId());
+            cond.addCondition("id",personSalary.getId(), ConditionItem.Relation.NOT_EQUAL);
             if(personSalaryDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("相同人员、期间、仓库、项目的条目已经存在！");
             }
