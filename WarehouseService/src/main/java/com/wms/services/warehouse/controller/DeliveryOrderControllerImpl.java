@@ -6,10 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.datastructures.*;
 import com.wms.services.warehouse.service.DeliveryOrderService;
 import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.model.DeliveryOrder;
-import com.wms.utilities.model.DeliveryOrderView;
-import com.wms.utilities.model.TransferOrderItem;
-import com.wms.utilities.model.TransferOrderItemView;
+import com.wms.utilities.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -110,8 +107,8 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     @Override
     @RequestMapping(value = "/delivery_by_package",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void deliveryByPakage(@PathVariable("accountBook") String accountBook,
-                             @RequestBody DeliveryByPakage deliveryByPakage){
-        this.deliveryOrderService.deliveryByPakage(accountBook,deliveryByPakage);
+    public List<DeliveryOrderItemView> deliveryByPakage(@PathVariable("accountBook") String accountBook,
+                                                        @RequestBody DeliveryByPakage deliveryByPakage){
+        return this.deliveryOrderService.deliveryByPakage(accountBook,deliveryByPakage);
     }
 }
