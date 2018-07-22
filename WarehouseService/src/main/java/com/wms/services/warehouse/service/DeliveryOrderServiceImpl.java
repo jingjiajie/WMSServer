@@ -241,7 +241,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             SafetyStockView[] safetyStockViews=null;
             safetyStockViews = (SafetyStockView[]) Array.newInstance(SafetyStockView.class,safetyStockViewsList.size());
             safetyStockViewsList.toArray(safetyStockViews);
-            
+            boolean succeedOrder=false;
             for(int i=0;i<safetyStockViews.length;i++){
                 StockRecordViewNewest[] stockRecordViews3 = stockRecordService.findNewest(accountBook,
                         new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}).addCondition("state", new Integer[]{TransferOrderItemService.STATE_ALL_FINISH}));
@@ -277,7 +277,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
                 if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) <0&& sourceAmount1.compareTo(safetyStockViews[i].getAmount())>=0) {
                     transferOrderItem.setComment("成功一键移库");
-
+                    succeedOrder=true;
                     transferOrderItemsList.add(transferOrderItem);
 
                 }else if (stockRecordViews4.length==0){
@@ -329,6 +329,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     falseTransferOrderItemsList.add(transferOrderItemView);
                 }
 
+            }
+            if (!succeedOrder){
+                this.transferOrderService.remove(accountBook,new int[]{newTransferOrderID});
             }
         }
 
