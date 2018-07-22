@@ -524,6 +524,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             else{
                 DeliveryOrderItemView falseDeliveryOrderItemView = new DeliveryOrderItemView();
                 falseDeliveryOrderItemView.setSourceStorageLocationId(itemViews[i].getDefaultDeliveryStorageLocationId());
+                falseDeliveryOrderItemView.setSourceStorageLocationName(itemViews[i].getDefaultDeliveryStorageLocationName());
                 falseDeliveryOrderItemView.setUnit(itemViews[i].getDefaultDeliveryUnit());
                 falseDeliveryOrderItemView.setUnitAmount(itemViews[i].getDefaultDeliveryUnitAmount());
                 falseDeliveryOrderItemView.setSupplyId(itemViews[i].getSupplyId());
