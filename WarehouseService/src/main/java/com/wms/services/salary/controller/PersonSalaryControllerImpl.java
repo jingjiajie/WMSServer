@@ -57,10 +57,15 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
         return this.personSalaryService.findCount(accountBook, Condition.fromJson(condStr));
     }
 
-    @RequestMapping(value = "/add_person_salary_by_salary_type",method = RequestMethod.PUT)
+    @RequestMapping(value = "/add_person_salary_by_salary_type",method = RequestMethod.POST)
     @ResponseBody
        public void addPersonSalary(@PathVariable("accountBook") String accountBook,
                @RequestBody AddPersonSalary addPersonSalaries) {
            personSalaryService.addPersonSalaryBySalaryType(accountBook,addPersonSalaries);
    }
+
+    @RequestMapping(value = "/remove_no",method = RequestMethod.DELETE)
+    public void removeNo() {
+        return;
+    }
 }
