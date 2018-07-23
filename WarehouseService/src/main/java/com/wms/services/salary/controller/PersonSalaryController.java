@@ -8,4 +8,5 @@ import com.wms.utilities.model.PersonSalaryView;
 
 public interface PersonSalaryController extends BaseController<PersonSalary,PersonSalaryView> {
     void addPersonSalary(String accountBook, AddPersonSalary addPersonSalary);
+    void removeNo();
 }
