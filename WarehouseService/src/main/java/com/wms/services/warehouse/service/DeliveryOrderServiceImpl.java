@@ -241,12 +241,20 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             SafetyStockView[] safetyStockViews=null;
             safetyStockViews = (SafetyStockView[]) Array.newInstance(SafetyStockView.class,safetyStockViewsList.size());
             safetyStockViewsList.toArray(safetyStockViews);
-            
+            boolean succeedOrder=false;
             for(int i=0;i<safetyStockViews.length;i++){
                 StockRecordViewNewest[] stockRecordViews3 = stockRecordService.findNewest(accountBook,
-                        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getUnit()}).addCondition("state", new Integer[]{TransferOrderItemService.STATE_ALL_FINISH}));
+                        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getTargetStorageLocationId()})
+                                .addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()})
+                                .addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getUnitAmount()})
+                                .addCondition("unit", new String[]{safetyStockViews[i].getUnit()})
+                                .addCondition("state", new Integer[]{TransferOrderItemService.STATE_ALL_FINISH}));
                 StockRecordViewNewest[] stockRecordViews4 = stockRecordService.findNewest(accountBook,
-                        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()}).addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()}).addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getSourceUnitAmount()}).addCondition("unit", new String[]{safetyStockViews[i].getSourceUnit()}).addCondition("state", new Integer[]{TransferOrderItemService.STATE_ALL_FINISH}));
+                        new Condition().addCondition("storageLocationId", new Integer[]{safetyStockViews[i].getSourceStorageLocationId()})
+                                .addCondition("supplyId", new Integer[]{safetyStockViews[i].getSupplyId()})
+                                .addCondition("unitAmount", new BigDecimal[]{safetyStockViews[i].getSourceUnitAmount()})
+                                .addCondition("unit", new String[]{safetyStockViews[i].getSourceUnit()})
+                                .addCondition("state", new Integer[]{TransferOrderItemService.STATE_ALL_FINISH}));
 
                 BigDecimal sourceAmount= new BigDecimal(0);
                 for(int j=0;j<stockRecordViews3.length;j++) {
@@ -277,7 +285,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
                 if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) <0&& sourceAmount1.compareTo(safetyStockViews[i].getAmount())>=0) {
                     transferOrderItem.setComment("成功一键移库");
-
+                    succeedOrder=true;
                     transferOrderItemsList.add(transferOrderItem);
 
                 }else if (stockRecordViews4.length==0){
@@ -329,6 +337,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     falseTransferOrderItemsList.add(transferOrderItemView);
                 }
 
+            }
+            if (!succeedOrder){
+                this.transferOrderService.remove(accountBook,new int[]{newTransferOrderID});
             }
         }
 
@@ -457,7 +468,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     }
 
     @Override
-    public void deliveryByPakage(String accountBook,DeliveryByPakage deliveryByPakage) throws WMSServiceException{
+    public List<DeliveryOrderItemView> deliveryByPakage(String accountBook,DeliveryByPakage deliveryByPakage) throws WMSServiceException{
 
         //TODO 传的是发货套餐ID
         Integer curId=deliveryByPakage.getPackageId();
@@ -479,28 +490,55 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         }
 
         List<DeliveryOrderItem> deliveryOrderItemList=new ArrayList();
+        List<DeliveryOrderItemView> falseDeliveryOrderItemList=new ArrayList();
         for(int i=0;i<itemViews.length;i++){
             //寻找供货
             //SupplyView[] supplyViews=supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{itemViews[i].getSupplyId()}));
-            StockRecordView[] stockRecordViews = stockRecordService.find(accountBook,
-                    new Condition().addCondition("storageLocationId", new Integer[]{itemViews[i].getDefaultDeliveryStorageLocationId()}).addCondition("supplyId", new Integer[]{itemViews[i].getSupplyId()}));
+            StockRecordViewNewest[] stockRecordViews = stockRecordService.findNewest(accountBook,
+                    new Condition().addCondition("storageLocationId", new Integer[]{itemViews[i].getDefaultDeliveryStorageLocationId()})
+                            .addCondition("supplyId", new Integer[]{itemViews[i].getSupplyId()})
+                            .addCondition("unitAmount", new BigDecimal[]{itemViews[i].getDefaultDeliveryUnitAmount()})
+                            .addCondition("unit", new String[]{itemViews[i].getDefaultDeliveryUnit()}));
+
+            BigDecimal sourceAmount= new BigDecimal(0);
+            for(int j=0;j<stockRecordViews.length;j++) {
+                sourceAmount=sourceAmount.add(stockRecordViews[j].getAvailableAmount());
+            }
 
             if (stockRecordViews.length!=0) {
-                if (stockRecordViews[0].getAmount().compareTo(itemViews[i].getDefaultDeliveryAmount()) == -1){
-                    throw new WMSServiceException(String.format("当前出库库位(%s)库存不足，无法出库", stockRecordViews[0].getStorageLocationName()));
-                }
+                if (sourceAmount.compareTo(itemViews[i].getDefaultDeliveryAmount()) >=0){
 
-                DeliveryOrderItem deliveryOrderItem = new DeliveryOrderItem();
-                deliveryOrderItem.setSourceStorageLocationId(itemViews[i].getDefaultDeliveryStorageLocationId());
-                deliveryOrderItem.setUnit(itemViews[i].getDefaultDeliveryUnit());
-                deliveryOrderItem.setUnitAmount(itemViews[i].getDefaultDeliveryUnitAmount());
-                deliveryOrderItem.setSupplyId(itemViews[i].getSupplyId());
-                deliveryOrderItem.setScheduledAmount(itemViews[i].getDefaultDeliveryAmount());
-                deliveryOrderItem.setPersonId(deliveryByPakage.getPersonId());
-                deliveryOrderItem.setDeliveryOrderId(curDeliveryOrderId);
-                deliveryOrderItem.setRealAmount(BigDecimal.ZERO);
-                deliveryOrderItem.setComment("套餐发货项");
-                deliveryOrderItemList.add(deliveryOrderItem);
+                    DeliveryOrderItem deliveryOrderItem = new DeliveryOrderItem();
+                    deliveryOrderItem.setSourceStorageLocationId(itemViews[i].getDefaultDeliveryStorageLocationId());
+                    deliveryOrderItem.setUnit(itemViews[i].getDefaultDeliveryUnit());
+                    deliveryOrderItem.setUnitAmount(itemViews[i].getDefaultDeliveryUnitAmount());
+                    deliveryOrderItem.setSupplyId(itemViews[i].getSupplyId());
+                    deliveryOrderItem.setScheduledAmount(itemViews[i].getDefaultDeliveryAmount());
+                    deliveryOrderItem.setPersonId(deliveryByPakage.getPersonId());
+                    deliveryOrderItem.setDeliveryOrderId(curDeliveryOrderId);
+                    deliveryOrderItem.setRealAmount(BigDecimal.ZERO);
+                    deliveryOrderItem.setComment("套餐发货项");
+                    deliveryOrderItemList.add(deliveryOrderItem);
+                }
+            }
+            else{
+                DeliveryOrderItemView falseDeliveryOrderItemView = new DeliveryOrderItemView();
+                falseDeliveryOrderItemView.setSourceStorageLocationId(itemViews[i].getDefaultDeliveryStorageLocationId());
+                falseDeliveryOrderItemView.setSourceStorageLocationName(itemViews[i].getDefaultDeliveryStorageLocationName());
+                falseDeliveryOrderItemView.setUnit(itemViews[i].getDefaultDeliveryUnit());
+                falseDeliveryOrderItemView.setUnitAmount(itemViews[i].getDefaultDeliveryUnitAmount());
+                falseDeliveryOrderItemView.setSupplyId(itemViews[i].getSupplyId());
+
+                falseDeliveryOrderItemView.setSupplierName(itemViews[i].getSupplierName());
+                falseDeliveryOrderItemView.setSupplierNo(itemViews[i].getSupplierNo());
+                falseDeliveryOrderItemView.setMaterialName(itemViews[i].getMaterialName());
+                falseDeliveryOrderItemView.setMaterialNo(itemViews[i].getMaterialNo());
+                falseDeliveryOrderItemView.setMaterialProductLine(itemViews[i].getMaterialProductLine());
+
+                falseDeliveryOrderItemView.setScheduledAmount(itemViews[i].getDefaultDeliveryAmount());
+                falseDeliveryOrderItemView.setRealAmount(sourceAmount);
+                falseDeliveryOrderItemView.setComment("失败发货项");
+                falseDeliveryOrderItemList.add(falseDeliveryOrderItemView);
             }
 
         }
@@ -511,7 +549,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             throw new WMSServiceException(String.format("当前发货套餐无可正常发货项，套餐名称（%S），无法创建出库单，请检查发货套餐设置再试！", curPakageViews[0].getName()));
         }
         this.deliveryOrderItemService.add(accountBook,deliveryOrderItems);
-
+        return falseDeliveryOrderItemList;
     }
 
     @Override
