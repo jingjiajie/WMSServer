@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.*;
 
 import javax.persistence.OrderBy;
@@ -120,7 +121,7 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
         //TODO 结转功能 为了保持会计工作的连续性，一定要把本会计年度末的余额转到下个会计年度
 
         //获得当前仓库，最新的没截止的期间,将其截止并启用新的期间
-        AccountPeriodView accountPeriodView=this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("ended",AccountPeriodService.ended_false).addOrder("time", OrderItem.Order.DESC))[0];
+        AccountPeriodView accountPeriodView=this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("ended",AccountPeriodService.ended_false).addOrder("startTime", OrderItem.Order.DESC))[0];
         AccountPeriod oldAccountPeriod = ReflectHelper.createAndCopyFields(accountPeriodView,AccountPeriod.class);
         oldAccountPeriod.setEndTime(new Timestamp(System.currentTimeMillis()));
         oldAccountPeriod.setEnded(AccountPeriodService.ended_ture);
@@ -169,6 +170,9 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             theAccountRecord.setPersonId(curPersonId);
             theAccountRecord.setBalance(newestAccountRecordView.getBalance());
             theAccountRecord.setComment("财务转结");
+            theAccountRecord.setCreditAmount(new BigDecimal(0));
+            theAccountRecord.setDebitAmount(new BigDecimal(0));
+            theAccountRecord.setVoucherInfo("财务转结");
             accountRecordList.add(theAccountRecord);
         }
         AccountRecord[] curAccountRecords=null;
