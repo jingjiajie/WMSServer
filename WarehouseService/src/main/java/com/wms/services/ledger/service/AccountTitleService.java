@@ -18,6 +18,7 @@ public interface AccountTitleService extends BaseService<AccountTitle,AccountTit
     int TYPE_DEBT =1;
     int TYPE_JOINT=2;
     int TYPE_EQUITY=3;
-    int TYPE_Profit_and_loss=4;
+    int TYPE_COST=4;
+    int TYPE_Profit_and_loss=5;
 
 }

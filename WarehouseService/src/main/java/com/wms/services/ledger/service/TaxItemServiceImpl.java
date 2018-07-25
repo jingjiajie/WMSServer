@@ -143,8 +143,9 @@ public class TaxItemServiceImpl implements TaxItemService {
     private void validateEntities1(String accountBook,TaxItem[] taxItems) throws WMSServiceException {
         List<TaxItem> taxItemList= Arrays.asList(taxItems);
         taxItemList.stream().sorted(Comparator.comparing(TaxItem::getStartAmount)).reduce((last, cur) -> {
-            if (last.getEndAmount().compareTo(cur.getStartAmount())<0)
-            throw new WMSServiceException("税务金额计算区间不能重叠！");
+            if (last.getEndAmount().compareTo(cur.getStartAmount())>0){
+                throw new WMSServiceException("税务金额计算区间不能重叠！");
+            }
             return cur;
         });
     }
