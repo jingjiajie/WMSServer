@@ -29,6 +29,8 @@ public class SalaryItemServiceImpl implements SalaryItemService{
         for(int i=0;i<salaryItems.length;i++) {
             Validator validator = new Validator("薪金项目名称");
             validator.notnull().notEmpty().validate(salaryItems[i].getName());
+            Validator validator1 = new Validator("默认金额");
+            validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
         }
 
         for(int i=0;i<salaryItems.length;i++){
@@ -66,6 +68,8 @@ public class SalaryItemServiceImpl implements SalaryItemService{
             for(int i=0;i<salaryItems.length;i++) {
                 Validator validator = new Validator("薪金项目名称");
                 validator.notnull().notEmpty().validate(salaryItems[i].getName());
+                Validator validator1 = new Validator("默认金额");
+                validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
             }
             for(int i=0;i<salaryItems.length;i++){
                 for(int j=i+1;j<salaryItems.length;j++){
