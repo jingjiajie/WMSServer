@@ -505,8 +505,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 sourceAmount=sourceAmount.add(stockRecordViews[j].getAvailableAmount());
             }
 
-            if (stockRecordViews.length!=0) {
-                if (sourceAmount.compareTo(itemViews[i].getDefaultDeliveryAmount()) >=0){
+            if (stockRecordViews.length!=0&&sourceAmount.compareTo(itemViews[i].getDefaultDeliveryAmount()) >=0) {
+
 
                     DeliveryOrderItem deliveryOrderItem = new DeliveryOrderItem();
                     deliveryOrderItem.setSourceStorageLocationId(itemViews[i].getDefaultDeliveryStorageLocationId());
@@ -519,7 +519,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     deliveryOrderItem.setRealAmount(BigDecimal.ZERO);
                     deliveryOrderItem.setComment("套餐发货项");
                     deliveryOrderItemList.add(deliveryOrderItem);
-                }
+
             }
             else{
                 DeliveryOrderItemView falseDeliveryOrderItemView = new DeliveryOrderItemView();
