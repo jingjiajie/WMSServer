@@ -70,7 +70,13 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
 
             List<FindLinkAccountTitle> findSonAccountTitleList=this.FindSonAccountTitle(accountBook,accountTitles);
-            if (findSonAccountTitleList.size()>0
+            FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
+            findSonAccountTitleList.toArray(sonAccountTitles);
+
+            List<AccountTitleView> sonAccountTitleViewsList= sonAccountTitles[0].getAccountTitleViews();
+            AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
+            sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
+            if (curSonAccountTitleViews.length>0
                     &&accountRecords[k].getCreditAmount().compareTo(new BigDecimal(0))!=0
                     &&accountRecords[k].getDebitAmount().compareTo(new BigDecimal(0))!=0){
                 throw new WMSServiceException(String.format("无法添加明细记录！当前账目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", accountTitles[0].getName()));
