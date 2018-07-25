@@ -130,6 +130,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
              {
             payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
         }
+        if(payNoteItemViews.length==0){throw new WMSServiceException("薪资发放单中无条目！");}
         BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
         List<Integer> state=new ArrayList<>();
         state.add(PayNoteItemState.CALCULATED_PAY);
@@ -209,6 +210,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         int payNoteId=payNoteItemPays.getPayNoteId();
         PayNoteItemView[] payNoteItemViews=null;
         payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
+        if(payNoteItemViews.length==0){throw new WMSServiceException("薪资发放单中无条目！");}
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
         if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
         if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("请先将本薪资发放单确认应该同步到总账");}
@@ -227,6 +229,13 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
     //按条目应付 同时将条目状态变为已付款
     public void realPayPartItems(String accountBook, PayNoteItemView[] payNoteItemViews)
     {
+        boolean dateNull=true;
+        for(int i=0;i<payNoteItemViews.length;i++){
+            if(payNoteItemViews[i].getId()!=0){
+                dateNull=false;
+                break;}
+        }
+        if(dateNull){throw new WMSServiceException("薪资发放单中无可操作条目！");}
         int payNoteId=payNoteItemViews[0].getPayNoteId();
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
         if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}

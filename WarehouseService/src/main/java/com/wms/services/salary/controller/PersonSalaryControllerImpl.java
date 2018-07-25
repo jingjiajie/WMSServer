@@ -2,6 +2,7 @@ package com.wms.services.salary.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.salary.datestructures.AddPersonSalary;
 import com.wms.services.salary.service.PersonSalaryService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.PersonSalary;
@@ -54,5 +55,17 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.personSalaryService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @RequestMapping(value = "/add_person_salary_by_salary_type",method = RequestMethod.POST)
+    @ResponseBody
+       public void addPersonSalary(@PathVariable("accountBook") String accountBook,
+               @RequestBody AddPersonSalary addPersonSalaries) {
+           personSalaryService.addPersonSalaryBySalaryType(accountBook,addPersonSalaries);
+   }
+
+    @RequestMapping(value = "/remove_no",method = RequestMethod.DELETE)
+    public void removeNo() {
+        return;
     }
 }

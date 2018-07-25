@@ -2,6 +2,7 @@ package com.wms.services.ledger.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.ledger.datestructures.CarryOver;
 import com.wms.services.ledger.service.AccountPeriodService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.AccountPeriod;
@@ -52,5 +53,13 @@ public class AccountPeriodControllerImpl implements AccountPeriodController {
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.accountPeriodService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value = "/carry_over",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void carryOver(@PathVariable("accountBook") String accountBook,
+                               @RequestBody CarryOver carryOver){
+        this.accountPeriodService.carryOver(accountBook,carryOver);
     }
 }

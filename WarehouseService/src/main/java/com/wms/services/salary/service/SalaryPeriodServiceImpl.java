@@ -1,14 +1,11 @@
 package com.wms.services.salary.service;
 
-import com.wms.services.WarehouseService;
 import com.wms.services.salary.dao.SalaryPeriodDAO;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.SalaryPeriod;
 import com.wms.utilities.model.SalaryPeriodView;
-import com.wms.utilities.model.SalaryType;
-import com.wms.utilities.model.SalaryTypeView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

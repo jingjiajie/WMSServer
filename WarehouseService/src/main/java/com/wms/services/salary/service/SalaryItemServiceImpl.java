@@ -7,8 +7,6 @@ import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.SalaryItem;
 import com.wms.utilities.model.SalaryItemView;
-import com.wms.utilities.model.SalaryPeriod;
-import com.wms.utilities.model.SalaryPeriodView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +29,8 @@ public class SalaryItemServiceImpl implements SalaryItemService{
         for(int i=0;i<salaryItems.length;i++) {
             Validator validator = new Validator("薪金项目名称");
             validator.notnull().notEmpty().validate(salaryItems[i].getName());
+            Validator validator1 = new Validator("默认金额");
+            validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
         }
 
         for(int i=0;i<salaryItems.length;i++){
@@ -68,6 +68,8 @@ public class SalaryItemServiceImpl implements SalaryItemService{
             for(int i=0;i<salaryItems.length;i++) {
                 Validator validator = new Validator("薪金项目名称");
                 validator.notnull().notEmpty().validate(salaryItems[i].getName());
+                Validator validator1 = new Validator("默认金额");
+                validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
             }
             for(int i=0;i<salaryItems.length;i++){
                 for(int j=i+1;j<salaryItems.length;j++){

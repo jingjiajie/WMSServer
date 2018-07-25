@@ -4,6 +4,7 @@ package com.wms.services.ledger.service;
 import com.wms.services.ledger.dao.TaxDAO;
 import com.wms.services.ledger.dao.TaxItemDAO;
 import com.wms.utilities.IDChecker;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.model.Tax;
 import com.wms.utilities.model.TaxItem;
 import com.wms.utilities.datastructures.Condition;
@@ -17,6 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 
 
@@ -33,11 +37,12 @@ public class TaxItemServiceImpl implements TaxItemService {
     @Transactional
     public int[] add(String accountBook, TaxItem[] taxItems) throws WMSServiceException{
         this.validateEntities(accountBook,taxItems);
-        try{
-            return taxItemDAO.add(accountBook,taxItems);
-        }catch (DatabaseNotFoundException ex){
-            throw new WMSServiceException("Accountbook "+accountBook+" not found!");
-        }
+
+
+        int[] ids= taxItemDAO.add(accountBook,taxItems);
+        TaxItem[] allTaxItems=this.taxItemDAO.findTable(accountBook,new Condition().addCondition("taxId",taxItems[0].getTaxId()));
+        this.validateEntities1(accountBook,allTaxItems);
+        return ids;
     }
 
     @Transactional
@@ -48,6 +53,8 @@ public class TaxItemServiceImpl implements TaxItemService {
         }catch (DatabaseNotFoundException ex){
             throw new WMSServiceException("Accountbook "+accountBook+" not found!");
         }
+        TaxItem[] allTaxItems=this.taxItemDAO.findTable(accountBook,new Condition().addCondition("taxId",taxItems[0].getTaxId()));
+        this.validateEntities1(accountBook,allTaxItems);
     }
 
     @Transactional
@@ -133,4 +140,14 @@ public class TaxItemServiceImpl implements TaxItemService {
 //        }
 
     }
+    private void validateEntities1(String accountBook,TaxItem[] taxItems) throws WMSServiceException {
+        List<TaxItem> taxItemList= Arrays.asList(taxItems);
+        taxItemList.stream().sorted(Comparator.comparing(TaxItem::getStartAmount)).reduce((last, cur) -> {
+            if (last.getEndAmount().compareTo(cur.getStartAmount())>0){
+                throw new WMSServiceException("税务金额计算区间不能重叠！");
+            }
+            return cur;
+        });
+    }
+
 }

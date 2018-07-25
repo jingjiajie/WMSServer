@@ -81,6 +81,8 @@
       <mapping class="com.wms.utilities.model.SalaryTypeView"/>
       <mapping class="com.wms.utilities.model.AccountPeriodView"/>
       <mapping class="com.wms.utilities.model.AccountRecordView"/>
+      <mapping class="com.wms.utilities.model.SalaryTypePerson"/>
+      <mapping class="com.wms.utilities.model.SalaryTypePersonView"/>
 
 
       <!-- DB schema will be updated if needed -->

@@ -4,6 +4,7 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.sql.Timestamp;
 
 @Entity
 public class SalaryPeriodView {
@@ -11,6 +12,7 @@ public class SalaryPeriodView {
     private Integer warehouseId;
     private String name;
     private String warehouseName;
+    private Timestamp createTime;
 
     @Basic
     @Id
@@ -53,6 +55,16 @@ public class SalaryPeriodView {
         this.warehouseName = warehouseName;
     }
 
+    @Basic
+    @Column(name = "CreateTime")
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,6 +77,7 @@ public class SalaryPeriodView {
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
             return false;
+        if (createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) return false;
 
         return true;
     }
@@ -75,6 +88,7 @@ public class SalaryPeriodView {
         result = 31 * result + (warehouseId != null ? warehouseId.hashCode() : 0);
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
+        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         return result;
     }
 }

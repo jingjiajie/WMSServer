@@ -2,19 +2,25 @@ package com.wms.services.salary.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.salary.dao.PersonSalaryDAO;
+import com.wms.services.salary.datestructures.AddPersonSalary;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.PersonSalary;
-import com.wms.utilities.model.PersonSalaryView;
-import com.wms.utilities.model.SalaryItem;
-import com.wms.utilities.model.SalaryItemView;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Transactional
@@ -30,6 +36,10 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     PersonService personService;
     @Autowired
     SalaryItemService salaryItemService;
+    @Autowired
+    SalaryTypePersonService salaryTypePersonService;
+    @Autowired
+    private SessionFactory sessionFactory;
 
     public int[] add(String accountBook, PersonSalary[] personSalaries) throws WMSServiceException
     {
@@ -102,7 +112,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             cond.addCondition("personId",personSalary.getPersonId());
             cond.addCondition("salaryItemId",personSalary.getSalaryItemId());
             cond.addCondition("salaryPeriodId",personSalary.getSalaryPeriodId());
-            cond.addCondition("id",personSalary.getId());
+            cond.addCondition("id",personSalary.getId(), ConditionItem.Relation.NOT_EQUAL);
             if(personSalaryDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("相同人员、期间、仓库、项目的条目已经存在！");
             }
@@ -155,4 +165,63 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         return this.personSalaryDAO.findCount(database,cond);
     }
 
+    public void addPersonSalaryBySalaryType(String accountBook, AddPersonSalary addPersonSalary)
+    {
+        StringBuffer stringBuffer=new StringBuffer();
+        stringBuffer.append("(");
+        for(int i=0;i<addPersonSalary.getSalaryTypeId().size();i++){ stringBuffer.append(addPersonSalary.getSalaryTypeId().toArray()[i]);
+            if(i!=addPersonSalary.getSalaryTypeId().size()-1)
+            {
+                stringBuffer.append(",");
+            }
+        }
+        stringBuffer.append(")");
+        Session session=this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query=null;
+            String sql="DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId in "+stringBuffer.toString()+") and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId in "+stringBuffer.toString()+")";
+            query=session.createNativeQuery(sql);
+            query.setParameter("salaryPeriodId",addPersonSalary.getSalaryPeriodId());
+            query.setParameter("warehouseId",addPersonSalary.getWarehouseId());
+            query.executeUpdate();
+        List<PersonSalary> personSalaryList=new ArrayList<>();
+        SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
+       SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
+        Map<Integer, List<SalaryTypePersonView>> groupByTypeIdPerson =
+                Stream.of(salaryTypePersonViews).collect(Collectors.groupingBy(SalaryTypePersonView::getSalaryTypeId));
+        Map<Integer, List<SalaryItemView>> groupByTypeIdItem =
+                Stream.of(salaryItemViews).collect(Collectors.groupingBy(SalaryItemView::getSalaryTypeId));
+        for (Map.Entry<Integer, List<SalaryItemView>> entry : groupByTypeIdItem.entrySet()){
+            for (Map.Entry<Integer, List<SalaryTypePersonView>> entry1 : groupByTypeIdPerson.entrySet()){
+                if(entry.getKey().equals(entry1.getKey())){
+                    List<SalaryTypePersonView> salaryTypePersonView=entry1.getValue();
+                    SalaryTypePersonView[] salaryTypePersonViews1=new SalaryTypePersonView[salaryTypePersonView.size()];
+                    salaryTypePersonView.toArray(salaryTypePersonViews1);
+                    List<SalaryItemView> salaryItemViews1=entry.getValue();
+                    SalaryItemView[] salaryItemViews2=new SalaryItemView[salaryItemViews1.size()];
+                    salaryItemViews1.toArray(salaryItemViews2);
+                    for(SalaryItemView salaryItem:salaryItemViews2){
+                        for(SalaryTypePersonView salaryTypePerson:salaryTypePersonViews1) {
+                            PersonSalary personSalary = new PersonSalary();
+                            personSalary.setPersonId(salaryTypePerson.getPersonId());
+                            personSalary.setAmount(salaryItem.getDefaultAmount());
+                            personSalary.setSalaryItemId(salaryItem.getId());
+                            personSalary.setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
+                            personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
+                            personSalaryList.add(personSalary);
+                        }
+                    }
+                }
+            }
+        }
+        PersonSalary[] personSalaries=new PersonSalary[personSalaryList.size()];
+    personSalaryList.toArray(personSalaries);
+    personSalaryDAO.add(accountBook,personSalaries);
+    }
 }
+
