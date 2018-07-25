@@ -6,9 +6,13 @@ import com.wms.services.salary.datestructures.AddPersonSalary;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +38,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     SalaryItemService salaryItemService;
     @Autowired
     SalaryTypePersonService salaryTypePersonService;
+    @Autowired
+    private SessionFactory sessionFactory;
 
     public int[] add(String accountBook, PersonSalary[] personSalaries) throws WMSServiceException
     {
@@ -161,6 +167,28 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
 
     public void addPersonSalaryBySalaryType(String accountBook, AddPersonSalary addPersonSalary)
     {
+        StringBuffer stringBuffer=new StringBuffer();
+        stringBuffer.append("(");
+        for(int i=0;i<addPersonSalary.getSalaryTypeId().size();i++){ stringBuffer.append(addPersonSalary.getSalaryTypeId().toArray()[i]);
+            if(i!=addPersonSalary.getSalaryTypeId().size()-1)
+            {
+                stringBuffer.append(",");
+            }
+        }
+        stringBuffer.append(")");
+        Session session=this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query=null;
+            String sql="DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId in "+stringBuffer.toString()+") and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId in "+stringBuffer.toString()+")";
+            query=session.createNativeQuery(sql);
+            query.setParameter("salaryPeriodId",addPersonSalary.getSalaryPeriodId());
+            query.setParameter("warehouseId",addPersonSalary.getWarehouseId());
+            query.list();
         List<PersonSalary> personSalaryList=new ArrayList<>();
         SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
        SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));

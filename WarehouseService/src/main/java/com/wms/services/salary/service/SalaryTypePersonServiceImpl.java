@@ -1,7 +1,11 @@
 package com.wms.services.salary.service;
 
+import com.wms.services.ledger.service.PersonService;
+import com.wms.services.ledger.service.PersonServiceImpl;
 import com.wms.services.salary.dao.SalaryTypeDAO;
 import com.wms.services.salary.dao.SalaryTypePersonDAO;
+import com.wms.services.warehouse.service.SupplyService;
+import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -21,6 +25,8 @@ import java.util.stream.Stream;
 public class SalaryTypePersonServiceImpl implements SalaryTypePersonService{
     @Autowired
     SalaryTypePersonDAO salaryTypePersonDAO;
+    @Autowired
+    IDChecker idChecker;
 
 
     public int[] add(String accountBook, SalaryTypePerson[] salaryTypePeople) throws WMSServiceException
@@ -34,6 +40,7 @@ public class SalaryTypePersonServiceImpl implements SalaryTypePersonService{
         }
         //重复
         Stream.of(salaryTypePeople).forEach((salaryTypePerson)->{
+            this.idChecker.check(PersonService.class, accountBook, salaryTypePerson.getPersonId(), "人员");
             Condition cond = new Condition();
             cond.addCondition("personId",salaryTypePerson.getPersonId());
             cond.addCondition("salaryTypeId",salaryTypePerson.getSalaryTypeId());
@@ -57,6 +64,7 @@ public class SalaryTypePersonServiceImpl implements SalaryTypePersonService{
         }
         //重复
         Stream.of(salaryTypePeople).forEach((salaryTypePerson)->{
+            this.idChecker.check(PersonService.class, accountBook, salaryTypePerson.getPersonId(), "人员");
             Condition cond = new Condition();
             cond.addCondition("personId",salaryTypePerson.getPersonId());
             cond.addCondition("salaryTypeId",salaryTypePerson.getSalaryTypeId());
