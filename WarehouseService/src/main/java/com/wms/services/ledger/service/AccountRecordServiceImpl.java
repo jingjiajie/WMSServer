@@ -103,6 +103,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
     }
 
+    @Deprecated
     public void RealTransformAccount(String accountBook, TransferAccount transferAccount)throws WMSServiceException
     {
 
@@ -192,7 +193,6 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             }
         }
         this.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
-
     }
 
     public void AddAccountRecord(String accountBook, AccountRecord[] accountRecords)throws WMSServiceException
