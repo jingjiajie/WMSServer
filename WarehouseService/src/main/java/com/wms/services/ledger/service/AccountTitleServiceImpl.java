@@ -10,6 +10,7 @@ import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.AccountTitleView;
 import com.wms.utilities.vaildator.Validator;
+import jdk.management.resource.internal.inst.FileOutputStreamRMHooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +31,26 @@ public class AccountTitleServiceImpl implements AccountTitleService {
     public int[] add(String accountBook, AccountTitle[] accountTitles) throws WMSServiceException {
         this.validateEntities(accountBook,accountTitles);
         Stream.of(accountTitles).forEach((accountTitle)->{
-            if(this.find(accountBook,new Condition().addCondition("name",new String[]{accountTitle.getNo()})).length > 0) {
+            if(this.find(accountBook,new Condition().addCondition("name",new String[]{accountTitle.getName()})).length > 0) {
+                throw new WMSServiceException("科目名称：" + accountTitle.getNo() +"在库存中已经存在!");
+            }
+            if(this.find(accountBook,new Condition().addCondition("no",new String[]{accountTitle.getNo()})).length > 0) {
                 throw new WMSServiceException("科目编码：" + accountTitle.getNo() +"在库存中已经存在!");
             }
         });
-        List<FindLinkAccountTitle> findSonAccountTitleList=this.accountRecordService.FindSonAccountTitle(accountBook,accountTitles);
-        if (findSonAccountTitleList.size()>0){
-            throw new WMSServiceException(String.format("无法添加上级科目！当前编码存在子级科目，请检查再重新录入，当前科目名称(%s)，", accountTitles[0].getName()));
 
+        for(int i=0;i<accountTitles.length;i++){
+
+            List<FindLinkAccountTitle> findSonAccountTitleList=this.accountRecordService.FindSonAccountTitle(accountBook,new AccountTitle[]{accountTitles[i]});
+            FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
+            findSonAccountTitleList.toArray(sonAccountTitles);
+
+            List<AccountTitleView> sonAccountTitleViewsList= sonAccountTitles[0].getAccountTitleViews();
+            AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
+            sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
+            if (curSonAccountTitleViews.length>0) {
+                throw new WMSServiceException(String.format("无法添加上级科目！当前编码存在子级科目，请检查再重新录入，当前科目名称(%s)，", accountTitles[0].getName()));
+            }
         }
         int[]ids= accountTitleDAO.add(accountBook, accountTitles);
         List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
@@ -49,12 +62,35 @@ public class AccountTitleServiceImpl implements AccountTitleService {
     public void update(String accountBook, AccountTitle[] accountTitles) throws WMSServiceException {
         this.validateEntities(accountBook,accountTitles);
         Stream.of(accountTitles).forEach((accountTitle)->{
-            if(this.find(accountBook,new Condition().addCondition("name",new String[]{accountTitle.getNo()})
+            if(this.find(accountBook,new Condition().addCondition("name",new String[]{accountTitle.getName()})
+                    .addCondition("id",new Integer[]{accountTitle.getId()}, ConditionItem.Relation.NOT_EQUAL)).length > 0) {
+                throw new WMSServiceException("科目名称：" + accountTitle.getNo() +"在库存中已经存在!");
+            }
+            if(this.find(accountBook,new Condition().addCondition("no",new String[]{accountTitle.getNo()})
                     .addCondition("id",new Integer[]{accountTitle.getId()}, ConditionItem.Relation.NOT_EQUAL)).length > 0) {
                 throw new WMSServiceException("科目编码：" + accountTitle.getNo() +"在库存中已经存在!");
             }
         });
-        List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
+
+        for(int i=0;i<accountTitles.length;i++){
+            AccountTitleView oldAccountTitleView=new AccountTitleView();
+            oldAccountTitleView=this.find(accountBook,new Condition().addCondition("id",new Integer[]{accountTitles[i].getId()}))[0];
+            if (!accountTitles[i].getNo().equals(oldAccountTitleView.getNo()))
+            {
+                List<FindLinkAccountTitle> findSonAccountTitleList=this.accountRecordService.FindSonAccountTitle(accountBook,new AccountTitle[]{accountTitles[i]});
+                FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
+                findSonAccountTitleList.toArray(sonAccountTitles);
+
+                List<AccountTitleView> sonAccountTitleViewsList= sonAccountTitles[0].getAccountTitleViews();
+                AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
+                sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
+                if (curSonAccountTitleViews.length>0){
+                    throw new WMSServiceException(String.format("无法添加上级科目！当前编码存在子级科目，请检查再重新录入，当前科目名称(%s)，", accountTitles[0].getName()));
+
+                }
+            }
+        }
+
         try {
             accountTitleDAO.update(accountBook, accountTitles);
         } catch (DatabaseNotFoundException ex) {
@@ -97,9 +133,14 @@ public class AccountTitleServiceImpl implements AccountTitleService {
         for(int i=0;i<accountTitles.length;i++){
             for(int j=i+1;j<accountTitles.length;j++){
                 String no=accountTitles[i].getNo();
+                String name=accountTitles[i].getName();
+                if(name.equals(accountTitles[j].getName()))
+                {
+                    throw new WMSServiceException("科目名称：" +name+"在添加的列表中重复!");
+                }
                 if(no.equals(accountTitles[j].getNo()))
                 {
-                    throw new WMSServiceException("科目编码：" +no+ "在添加的列表中重复!");
+                    throw new WMSServiceException("科目编码：" +no+"在添加的列表中重复!");
                 }
             }
         }
