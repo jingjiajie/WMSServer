@@ -188,7 +188,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             query=session.createNativeQuery(sql);
             query.setParameter("salaryPeriodId",addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId",addPersonSalary.getWarehouseId());
-            query.list();
+            query.executeUpdate();
         List<PersonSalary> personSalaryList=new ArrayList<>();
         SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
        SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
