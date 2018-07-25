@@ -78,7 +78,9 @@
                 <value>com.wms.utilities.model.SalaryPeriod</value>
                 <value>com.wms.utilities.model.PayNoteTaxView</value>
                 <value>com.wms.utilities.model.PayNoteTax</value>
+                <value>com.wms.utilities.model.AccountPeriod</value>
                 <value>com.wms.utilities.model.AccountPeriodView</value>
+                <value>com.wms.utilities.model.AccountRecord</value>
                 <value>com.wms.utilities.model.AccountRecordView</value>
                 <value>com.wms.utilities.model.SalaryItemView</value>
                 <value>com.wms.utilities.model.SalaryItem</value>

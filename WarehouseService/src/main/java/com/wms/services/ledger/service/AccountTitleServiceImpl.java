@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -33,6 +34,11 @@ public class AccountTitleServiceImpl implements AccountTitleService {
                 throw new WMSServiceException("科目编码：" + accountTitle.getNo() +"在库存中已经存在!");
             }
         });
+        List<FindLinkAccountTitle> findSonAccountTitleList=this.accountRecordService.FindSonAccountTitle(accountBook,accountTitles);
+        if (findSonAccountTitleList.size()>0){
+            throw new WMSServiceException(String.format("无法添加上级科目！当前编码存在子级科目，请检查再重新录入，当前科目名称(%s)，", accountTitles[0].getName()));
+
+        }
         int[]ids= accountTitleDAO.add(accountBook, accountTitles);
         List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
         return ids;
