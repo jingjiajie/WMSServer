@@ -63,7 +63,7 @@ public class WarehouseServiceImpl implements WarehouseService{
             AccountPeriod accountPeriod=new AccountPeriod();
             accountPeriod.setName(warehouses1[i].getName()+"仓库默认会计期间");
             accountPeriod.setStartTime(new Timestamp(System.currentTimeMillis()));
-            accountPeriod.setEnded(AccountPeriodService.ended_ture);
+            accountPeriod.setEnded(AccountPeriodService.ended_false);
             accountPeriod.setWarehouseId(warehouses1[i].getId());
             accountPeriodList.add(accountPeriod);
         }
