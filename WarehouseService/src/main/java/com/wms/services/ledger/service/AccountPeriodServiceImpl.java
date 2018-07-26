@@ -101,10 +101,10 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             new Validator("起始时间").notEmpty().validate(accountPeriod.getStartTime());
             new Validator("期间名称").notEmpty().validate(accountPeriod.getStartTime());
 
-            if(this.find(accountBook,
-                    new Condition().addCondition("id",new Integer[]{ accountPeriod.getLastAccountPeriodId()})).length == 0){
-                throw new WMSServiceException(String.format("上期期间不存在，请重新提交！(%d)",accountPeriod.getLastAccountPeriodId()));
-            }
+//            if(this.find(accountBook,
+//                    new Condition().addCondition("id",new Integer[]{ accountPeriod.getLastAccountPeriodId()})).length == 0){
+//                throw new WMSServiceException(String.format("上期期间不存在，请重新提交！(%d)",accountPeriod.getLastAccountPeriodId()));
+//            }
 
             if(this.warehouseService.find(accountBook,
                     new Condition().addCondition("id",accountPeriod.getWarehouseId())).length == 0){
