@@ -34,47 +34,6 @@ public class SupplyServiceImpl implements SupplyService {
     @Override
     public int[] add(String accountBook, Supply[] supplies) throws WMSServiceException
     {
-        for (int i=0;i<supplies.length;i++) {
-
-            Validator validator=new Validator("供应商ID");
-            validator.notnull().validate(supplies[i].getSupplierId());
-            Validator validator1=new Validator("物料ID");
-            validator1.notnull().validate(supplies[i].getMaterialId());
-
-        }
-
-        for(int i=0;i<supplies.length;i++){
-            for(int j=i+1;j<supplies.length;j++){
-                int materialId=supplies[i].getMaterialId();
-                int supplierId=supplies[i].getSupplierId();
-                if(materialId==supplies[j].getMaterialId()&&supplierId==supplies[j].getSupplierId())
-                {
-                    throw new WMSServiceException("供应商-物料关联条目在添加的列表中重复!");
-                }
-            }
-        }
-
-        //外键检测
-        Stream.of(supplies).forEach(
-                (supply)->{
-                    if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{supply.getWarehouseId()})).length == 0){
-                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supply.getWarehouseId()));
-                    }else if(this.personService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{supply.getCreatePersonId()})).length == 0){
-                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getCreatePersonId()));
-                    }else if(this.supplierServices.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{supply.getSupplierId()})).length == 0){
-                        throw new WMSServiceException(String.format("供货商不存在，请重新提交！(%d)",supply.getSupplierId()));
-                    } else if(this.materialService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{supply.getMaterialId()})).length == 0){
-                        throw new WMSServiceException(String.format("物料不存在，请重新提交！(%d)",supply.getMaterialId()));
-                    }if(supply.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{supply.getLastUpdatePersonId()})).length == 0){
-                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getLastUpdatePersonId()));
-                    }
-                }
-        );
 
         for(int i=0;i<supplies.length;i++){
             MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
@@ -101,44 +60,7 @@ public class SupplyServiceImpl implements SupplyService {
 
     @Override
     public void update(String accountBook, Supply[] supplies) throws WMSServiceException{
-        for(int i=0;i<supplies.length;i++){
-            for(int j=i+1;j<supplies.length;j++){
-                int materialId=supplies[i].getMaterialId();
-                int supplierId=supplies[i].getSupplierId();
-                if(materialId==supplies[j].getMaterialId()&&supplierId==supplies[j].getSupplierId())
-                {
-                    throw new WMSServiceException("供应商-物料关联条目在添加的列表中重复!");
-                }
-            }
-        }
 
-        for (int i=0;i<supplies.length;i++) {
-            Validator validator=new Validator("供应商ID");
-            validator.notnull().validate(supplies[i].getSupplierId());
-            Validator validator1=new Validator("物料ID");
-            validator1.notnull().validate(supplies[i].getMaterialId());
-        }
-        //外键检测
-        Stream.of(supplies).forEach(
-                (supply)->{
-                    if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{supply.getWarehouseId()})).length == 0){
-                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supply.getWarehouseId()));
-                    }else if(this.personService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{supply.getCreatePersonId()})).length == 0){
-                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getCreatePersonId()));
-                    }else if(this.supplierServices.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{supply.getSupplierId()})).length == 0){
-                        throw new WMSServiceException(String.format("供货商不存在，请重新提交！(%d)",supply.getSupplierId()));
-                    } else if(this.materialService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{supply.getMaterialId()})).length == 0){
-                        throw new WMSServiceException(String.format("物料不存在，请重新提交！(%d)",supply.getMaterialId()));
-                    }if(supply.getLastUpdatePersonId() != null && this.personService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{supply.getLastUpdatePersonId()})).length == 0){
-                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getLastUpdatePersonId()));
-                    }
-                }
-        );
 
         for(int i=0;i<supplies.length;i++){
             MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
@@ -149,9 +71,12 @@ public class SupplyServiceImpl implements SupplyService {
             cond.addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()});
             cond.addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
 
-
             if(supplyDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMaterial[0].getName());
+            }
+            SupplyView[] supplyViews= this.find(accountBook,new Condition().addCondition("barCodeNo",new String[]{supplies[i].getBarCodeNo()}));
+            if(supplyViews.length > 0){
+                throw new WMSServiceException("供应信息条码号重复！对应供应商-物料关联条目："+curSupplier[0].getName()+curMaterial[0].getName()+"条码号："+supplies[i].getBarCodeNo());
             }
         }
         for (int i=0;i<supplies.length;i++)
@@ -180,6 +105,51 @@ public class SupplyServiceImpl implements SupplyService {
     @Override
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.supplyDAO.findCount(database,cond);
+    }
+
+    private void validateEntities(String accountBook,Supply[] supplies) throws WMSServiceException{
+        Stream.of(supplies).forEach((supply -> {
+            new Validator("供货商ID").notEmpty().validate(supply.getSupplierId());
+            new Validator("物料ID").notEmpty().validate(supply.getMaterialId());
+            new Validator("条码号").notEmpty().validate(supply.getBarCodeNo());
+        }));
+
+        for(int i=0;i<supplies.length;i++){
+            for(int j=i+1;j<supplies.length;j++){
+                int materialId=supplies[i].getMaterialId();
+                int supplierId=supplies[i].getSupplierId();
+                String barCodeNo=supplies[i].getBarCodeNo();
+                if(materialId==supplies[j].getMaterialId()&&supplierId==supplies[j].getSupplierId())
+                {
+                    throw new WMSServiceException("供应商-物料关联条目在添加的列表中重复!");
+                }
+                if(barCodeNo.equals(supplies[j].getBarCodeNo()))
+                {
+                    throw new WMSServiceException("供应商-物料关联条目在添加的列表中重复!");
+                }
+            }
+        }
+        //外键检测
+        Stream.of(supplies).forEach(
+                (supply)->{
+                    if(this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{supply.getWarehouseId()})).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",supply.getWarehouseId()));
+                    }else if(this.personService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{supply.getCreatePersonId()})).length == 0){
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getCreatePersonId()));
+                    }else if(this.supplierServices.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{supply.getSupplierId()})).length == 0){
+                        throw new WMSServiceException(String.format("供货商不存在，请重新提交！(%d)",supply.getSupplierId()));
+                    } else if(this.materialService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{supply.getMaterialId()})).length == 0){
+                        throw new WMSServiceException(String.format("物料不存在，请重新提交！(%d)",supply.getMaterialId()));
+                    }if(supply.getLastUpdatePersonId() != null && this.personService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{supply.getLastUpdatePersonId()})).length == 0){
+                        throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",supply.getLastUpdatePersonId()));
+                    }
+                }
+        );
     }
 }
 
