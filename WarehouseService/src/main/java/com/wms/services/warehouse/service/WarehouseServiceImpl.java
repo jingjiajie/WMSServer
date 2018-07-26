@@ -64,6 +64,7 @@ public class WarehouseServiceImpl implements WarehouseService{
             accountPeriod.setName(warehouses1[i].getName()+"仓库默认会计期间");
             accountPeriod.setStartTime(new Timestamp(System.currentTimeMillis()));
             accountPeriod.setEnded(AccountPeriodService.ended_ture);
+            accountPeriod.setWarehouseId(warehouses1[i].getId());
             accountPeriodList.add(accountPeriod);
         }
         AccountPeriod[] accountPeriods=new AccountPeriod[accountPeriodList.size()];
@@ -123,6 +124,11 @@ public class WarehouseServiceImpl implements WarehouseService{
     @Transactional
     public WarehouseView[] find(String accountBook, Condition cond) throws WMSServiceException{
             return this.warehouseDAO.find(accountBook, cond);
+    }
+
+    @Transactional
+    public Warehouse[] findTable(String accountBook, Condition cond) throws WMSServiceException{
+        return this.warehouseDAO.findTable(accountBook, cond);
     }
 
     @Override

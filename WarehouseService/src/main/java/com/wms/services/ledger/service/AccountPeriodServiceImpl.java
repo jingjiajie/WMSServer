@@ -106,7 +106,7 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
 //                throw new WMSServiceException(String.format("上期期间不存在，请重新提交！(%d)",accountPeriod.getLastAccountPeriodId()));
 //            }
 
-            if(this.warehouseService.find(accountBook,
+            if(this.warehouseService.findTable(accountBook,
                     new Condition().addCondition("id",accountPeriod.getWarehouseId())).length == 0){
                 throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",accountPeriod.getWarehouseId()));
             }
