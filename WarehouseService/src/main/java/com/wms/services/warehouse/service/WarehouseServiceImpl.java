@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.service;
 
+import com.wms.services.ledger.service.AccountPeriodService;
 import com.wms.services.warehouse.dao.WarehouseDAO;
 import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
 import com.wms.utilities.model.*;
@@ -11,7 +12,11 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import sun.java2d.pipe.AAShapePipe;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -19,11 +24,14 @@ import java.util.stream.Stream;
 public class WarehouseServiceImpl implements WarehouseService{
     @Autowired
     WarehouseDAO warehouseDAO;
+    @Autowired
+    AccountPeriodService accountPeriodService;
 
     @Transactional
     public int[] add(String accountBook, Warehouse[] warehouses) throws WMSServiceException
     {
-
+        //自动增加会计期间
+        List<AccountPeriod> accountPeriodList=new ArrayList<>();
        for(int i=0;i<warehouses.length;i++){
            Validator validator=new Validator("仓库名");
            validator.notnull().notEmpty().validate(warehouses[i].getName());
@@ -47,9 +55,21 @@ public class WarehouseServiceImpl implements WarehouseService{
                 throw new WMSServiceException("仓库名："+warehouse.getName()+"已经存在!");
             }
         });
-
-         return warehouseDAO.add(accountBook,warehouses);
-
+        int[] ids=warehouseDAO.add(accountBook,warehouses);
+        List<Integer> idsList=new ArrayList<>();
+        for(int i=0;i<ids.length;i++){idsList.add(ids[i]);}
+        Warehouse[] warehouses1=this.warehouseDAO.findTable(accountBook,new Condition().addCondition("id",idsList.toArray(), ConditionItem.Relation.IN));
+        for(int i=0;i<warehouses1.length;i++){
+            AccountPeriod accountPeriod=new AccountPeriod();
+            accountPeriod.setName(warehouses1[i].getName()+"仓库默认会计期间");
+            accountPeriod.setStartTime(new Timestamp(System.currentTimeMillis()));
+            accountPeriod.setEnded(AccountPeriodService.ended_ture);
+            accountPeriodList.add(accountPeriod);
+        }
+        AccountPeriod[] accountPeriods=new AccountPeriod[accountPeriodList.size()];
+        accountPeriodList.toArray(accountPeriods);
+        this.accountPeriodService.add(accountBook,accountPeriods);
+         return ids;
     }
 
     @Transactional
