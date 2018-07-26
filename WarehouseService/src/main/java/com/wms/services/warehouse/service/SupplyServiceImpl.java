@@ -125,7 +125,7 @@ public class SupplyServiceImpl implements SupplyService {
                 }
                 if(barCodeNo.equals(supplies[j].getBarCodeNo()))
                 {
-                    throw new WMSServiceException("供应商-物料关联条目在添加的列表中重复!");
+                    throw new WMSServiceException("供货信息条码号在添加的列表中重复!");
                 }
             }
         }
