@@ -67,6 +67,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             //取得输入的发生额
             BigDecimal creditAmount=accountRecords[k].getCreditAmount();
             BigDecimal debitAmount=accountRecords[k].getDebitAmount();
+            BigDecimal thisBalance=accountRecords[k].getBalance();
             //找到对应的科目
             AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getAccountTitleId()));
             AccountTitleView accountTitleView=AccountTitleViews[0];
@@ -120,6 +121,11 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     }
                     BigDecimal curBalance = newestAccountRecord.getBalance();
 
+                    if (creditAmount.compareTo(new BigDecimal(0))==0
+                            &&debitAmount.compareTo(new BigDecimal(0))==0){
+                        newestAccountRecord.setBalance(curBalance.add(thisBalance));
+                    }
+                    else{
                     //如果科目类型是借方
                     if (curParentAccountTitle.getDirection() == AccountTitleService.Debit) {
                         newestAccountRecord.setBalance(curBalance.subtract(creditAmount).add(debitAmount));
@@ -127,7 +133,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     } else {
                         newestAccountRecord.setBalance(curBalance.subtract(debitAmount).add(creditAmount));
                     }
-                    updateParentRecordList.add(newestAccountRecord) ;
+                    }
+                    updateParentRecordList.add(newestAccountRecord);
                 }
             });
 
@@ -276,7 +283,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
         //外键检测
         Stream.of(accountRecords).forEach((accountRecord -> {
-            new Validator("余额").notnull().min(0).validate(accountRecord.getBalance());
+            new Validator("余额").min(0).validate(accountRecord.getBalance());
 
 
             //验证外键
