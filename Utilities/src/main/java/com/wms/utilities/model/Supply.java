@@ -66,10 +66,11 @@ public class Supply {
     private Integer defaultUnqualifiedStorageLocationId;
     private Integer defaultDeliveryStorageLocationId;
     private Integer defaultPrepareTargetStorageLocationId;
+    private String barCodeNo;
 
     @Id
-    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -668,12 +669,22 @@ public class Supply {
         this.defaultPrepareTargetStorageLocationId = defaultPrepareTargetStorageLocationId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "BarCodeNo")
+    public String getBarCodeNo() {
+        return barCodeNo;
+    }
 
-        Supply supply = (Supply) o;
+    public void setBarCodeNo(String barCodeNo) {
+        this.barCodeNo = barCodeNo;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        Supply supply = (Supply) object;
 
         if (id != supply.id) return false;
         if (createPersonId != supply.createPersonId) return false;
@@ -781,6 +792,7 @@ public class Supply {
             return false;
         if (defaultPrepareTargetStorageLocationId != null ? !defaultPrepareTargetStorageLocationId.equals(supply.defaultPrepareTargetStorageLocationId) : supply.defaultPrepareTargetStorageLocationId != null)
             return false;
+        if (barCodeNo != null ? !barCodeNo.equals(supply.barCodeNo) : supply.barCodeNo != null) return false;
 
         return true;
     }
@@ -847,6 +859,7 @@ public class Supply {
         result = 31 * result + (defaultUnqualifiedStorageLocationId != null ? defaultUnqualifiedStorageLocationId.hashCode() : 0);
         result = 31 * result + (defaultDeliveryStorageLocationId != null ? defaultDeliveryStorageLocationId.hashCode() : 0);
         result = 31 * result + (defaultPrepareTargetStorageLocationId != null ? defaultPrepareTargetStorageLocationId.hashCode() : 0);
+        result = 31 * result + (barCodeNo != null ? barCodeNo.hashCode() : 0);
         return result;
     }
 }
