@@ -34,7 +34,7 @@ public class SupplyServiceImpl implements SupplyService {
     @Override
     public int[] add(String accountBook, Supply[] supplies) throws WMSServiceException
     {
-
+        this.validateEntities(accountBook,supplies);
         for(int i=0;i<supplies.length;i++){
             MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
             SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
@@ -61,7 +61,7 @@ public class SupplyServiceImpl implements SupplyService {
     @Override
     public void update(String accountBook, Supply[] supplies) throws WMSServiceException{
 
-
+        this.validateEntities(accountBook,supplies);
         for(int i=0;i<supplies.length;i++){
             MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
             SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
