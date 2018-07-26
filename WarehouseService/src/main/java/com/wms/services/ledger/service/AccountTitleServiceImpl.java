@@ -32,7 +32,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
         this.validateEntities(accountBook,accountTitles);
         Stream.of(accountTitles).forEach((accountTitle)->{
             if(this.find(accountBook,new Condition().addCondition("name",new String[]{accountTitle.getName()})).length > 0) {
-                throw new WMSServiceException("科目名称：" + accountTitle.getNo() +"在库存中已经存在!");
+                throw new WMSServiceException("科目名称：" + accountTitle.getName() +"在库存中已经存在!");
             }
             if(this.find(accountBook,new Condition().addCondition("no",new String[]{accountTitle.getNo()})).length > 0) {
                 throw new WMSServiceException("科目编码：" + accountTitle.getNo() +"在库存中已经存在!");
@@ -64,7 +64,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
         Stream.of(accountTitles).forEach((accountTitle)->{
             if(this.find(accountBook,new Condition().addCondition("name",new String[]{accountTitle.getName()})
                     .addCondition("id",new Integer[]{accountTitle.getId()}, ConditionItem.Relation.NOT_EQUAL)).length > 0) {
-                throw new WMSServiceException("科目名称：" + accountTitle.getNo() +"在库存中已经存在!");
+                throw new WMSServiceException("科目名称：" + accountTitle.getName() +"在库存中已经存在!");
             }
             if(this.find(accountBook,new Condition().addCondition("no",new String[]{accountTitle.getNo()})
                     .addCondition("id",new Integer[]{accountTitle.getId()}, ConditionItem.Relation.NOT_EQUAL)).length > 0) {
