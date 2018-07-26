@@ -106,8 +106,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
                 AccountRecord[] allParentAccountRecords = ReflectHelper.createAndCopyFields(accountRecordViews,AccountRecord.class);
 
-                //TODO 返回上级科目的列表
-
+                //TODO 如果存在父级科目的账目记录，直接把余额按照借贷方向增/减发生额
                 if (allParentAccountRecords.length>0) {
                     AccountRecord newestAccountRecord = new AccountRecord();
                     for (int i = 0; i < allParentAccountRecords.length; i++) {
@@ -132,8 +131,6 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                 }
             });
 
-            BigDecimal curBalance=new BigDecimal(0);
-
             AccountRecordView[] accountRecordViews= accountRecordDAO.find(accountBook,new Condition()
                     .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
                     .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
@@ -151,11 +148,10 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                         }
                     }
                 }
-                curBalance=newestAccountRecordView.getBalance();
+                BigDecimal curBalance=newestAccountRecordView.getBalance();
                 //如果科目类型是借方
                 if (accountTitleView.getDirection()==AccountTitleService.Debit){
                     accountRecords[k].setBalance(curBalance.subtract(creditAmount).add(debitAmount));
-
                 }else{
                     accountRecords[k].setBalance(curBalance.subtract(debitAmount).add(creditAmount));
                 }
@@ -168,9 +164,6 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         {
             this.update(accountBook,updateParentRecords);
         }
-
-
-
         return accountRecordDAO.add(accountBook,accountRecords);
     }
 
@@ -241,7 +234,6 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     updateParentRecordList.add(newestAccountRecord);
                 }
             });
-
             //如果科目类型是借方
             if (accountTitleView.getDirection()==AccountTitleService.Debit){
                 accountRecords[k].setBalance(oidAccountTitleViews[0].getBalance().subtract(oldDebitAmount).add(oldCreditAmount).subtract(creditAmount).add(debitAmount));
@@ -249,7 +241,6 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             }else{
                 accountRecords[k].setBalance(oidAccountTitleViews[0].getBalance().subtract(oldCreditAmount).add(oldDebitAmount).subtract(debitAmount).add(creditAmount));
             }
-
         }
         AccountRecord[] updateParentRecords=new AccountRecord[updateParentRecordList.size()];
         updateParentRecordList.toArray(updateParentRecords);
