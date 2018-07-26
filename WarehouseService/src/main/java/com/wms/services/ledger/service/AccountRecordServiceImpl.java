@@ -52,27 +52,30 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 */
     public int[] add(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException
     {
+        //获取当前仓库和期间
         int curWarehouseId= accountRecords[0].getWarehouseId();
         int curAccountPeriodId=accountRecords[0].getAccountPeriodId();
-
+        //数据验证
         this.validateEntities(accountBook,accountRecords);
+        //设置时间
         Stream.of(accountRecords).forEach((accountRecord)->{
             accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
         });
+        //创建列表存放可能要更改余额的父级科目
         List<AccountRecord> updateParentRecordList=new ArrayList<>();
         for (int k=0;k<accountRecords.length;k++){
+            //取得输入的发生额
             BigDecimal creditAmount=accountRecords[k].getCreditAmount();
             BigDecimal debitAmount=accountRecords[k].getDebitAmount();
-
+            //找到对应的科目
             AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getAccountTitleId()));
             AccountTitleView accountTitleView=AccountTitleViews[0];
             AccountTitle[] accountTitles = ReflectHelper.createAndCopyFields(AccountTitleViews,AccountTitle.class);
 
-
+            //判断是否存在子级科目，存在的话将不能在当前科目新加科目记录
             List<FindLinkAccountTitle> findSonAccountTitleList=this.FindSonAccountTitle(accountBook,accountTitles);
             FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
             findSonAccountTitleList.toArray(sonAccountTitles);
-
             List<AccountTitleView> sonAccountTitleViewsList= sonAccountTitles[0].getAccountTitleViews();
             AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
             sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
@@ -81,6 +84,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     &&accountRecords[k].getDebitAmount().compareTo(new BigDecimal(0))!=0){
                 throw new WMSServiceException(String.format("无法添加明细记录！当前账目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", accountTitles[0].getName()));
             }
+
             //TODO 找出当前科目的父代科目
             List<FindLinkAccountTitle> findLinkAccountTitleList=this.FindParentAccountTitle(accountBook,accountTitles);
             FindLinkAccountTitle[] parentAccountTitles=new FindLinkAccountTitle[findLinkAccountTitleList.size()];
