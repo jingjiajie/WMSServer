@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -188,6 +189,9 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setCreditAmount(totalAmount);
        accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
        accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
+       accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
+       accountRecord.setComment(accountSynchronize.getComment());
+       accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
        //管理费用
        int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
        AccountRecord accountRecord1=new AccountRecord();
@@ -195,6 +199,10 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord1.setPersonId(personId);
        accountRecord1.setDebitAmount(totalAmount);
        accountRecord1.setWarehouseId(warehouseId);
+       accountRecord1.setVoucherInfo(accountSynchronize.getVoucherInfo());
+       accountRecord1.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
+       accountRecord1.setComment(accountSynchronize.getComment());
+       accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
        //TODO 将总金额增加到 总账
        accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
        //将整单变为已确认待付款状态
@@ -228,6 +236,9 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setDebitAmount(totalPaidAmount);
        accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
        accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
+       accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
+       accountRecord.setComment(accountSynchronize.getComment());
+       accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
        //银行资产
        int accountTitlePropertyID=payNoteViews[0].getAccountTitlePropertyId();
        //同步到总账
@@ -237,6 +248,9 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord1.setCreditAmount(totalPaidAmount);
        accountRecord1.setWarehouseId(accountSynchronize.getWarehouseId());
        accountRecord1.setVoucherInfo(accountSynchronize.getVoucherInfo());
+       accountRecord1.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
+       accountRecord1.setComment(accountSynchronize.getComment());
+       accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
        accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
        //将整单变为已付款
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
