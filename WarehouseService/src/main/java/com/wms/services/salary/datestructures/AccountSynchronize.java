@@ -60,4 +60,14 @@ public class AccountSynchronize {
     private String voucherInfo;
 
     private String summary;
+
+    public int getAccountPeriodId() {
+        return accountPeriodId;
+    }
+
+    public void setAccountPeriodId(int accountPeriodId) {
+        this.accountPeriodId = accountPeriodId;
+    }
+
+    private int accountPeriodId;
 }

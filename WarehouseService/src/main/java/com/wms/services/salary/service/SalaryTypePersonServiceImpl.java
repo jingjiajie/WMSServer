@@ -40,7 +40,11 @@ public class SalaryTypePersonServiceImpl implements SalaryTypePersonService{
         }
         //重复
         Stream.of(salaryTypePeople).forEach((salaryTypePerson)->{
-            this.idChecker.check(PersonService.class, accountBook, salaryTypePerson.getPersonId(), "人员");
+            try{
+            this.idChecker.check(PersonService.class, accountBook, salaryTypePerson.getPersonId(), "正确的人员");}
+            catch (Exception e){
+                throw new WMSServiceException("填写的人员不存在或未填写人员");
+            }
             Condition cond = new Condition();
             cond.addCondition("personId",salaryTypePerson.getPersonId());
             cond.addCondition("salaryTypeId",salaryTypePerson.getSalaryTypeId());
@@ -64,7 +68,11 @@ public class SalaryTypePersonServiceImpl implements SalaryTypePersonService{
         }
         //重复
         Stream.of(salaryTypePeople).forEach((salaryTypePerson)->{
-            this.idChecker.check(PersonService.class, accountBook, salaryTypePerson.getPersonId(), "人员");
+            try{
+                this.idChecker.check(PersonService.class, accountBook, salaryTypePerson.getPersonId(), "正确的人员");}
+            catch (Exception e){
+                throw new WMSServiceException("填写的人员不存在或未填写人员");
+            }
             Condition cond = new Condition();
             cond.addCondition("personId",salaryTypePerson.getPersonId());
             cond.addCondition("salaryTypeId",salaryTypePerson.getSalaryTypeId());
