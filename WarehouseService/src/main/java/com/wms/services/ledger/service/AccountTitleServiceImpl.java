@@ -91,19 +91,16 @@ public class AccountTitleServiceImpl implements AccountTitleService {
             }
         }
 
-        try {
-            accountTitleDAO.update(accountBook, accountTitles);
-        } catch (DatabaseNotFoundException ex) {
-            throw new WMSServiceException("Accountbook" + accountBook + "not found!");
-        }
+        accountTitleDAO.update(accountBook, accountTitles);
+
     }
 
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
         try {
             accountTitleDAO.remove(accountBook, ids);
-        } catch (DatabaseNotFoundException ex) {
-            throw new WMSServiceException("Accountbook" + accountBook + "not found!");
+        } catch (Throwable ex) {
+            throw new WMSServiceException("删除科目失败，如果科目已经被引用，需要先删除引用内容，才能删除！");
         }
     }
 
