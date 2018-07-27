@@ -383,7 +383,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         DeliveryOrderItem[] deliveryOrderItems = ReflectHelper.createAndCopyFields(itemViews,DeliveryOrderItem.class);
 
         Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
-            if (deliveryOrderItem.getState() !=TransferOrderItemService.STATE_ALL_FINISH) {
+            if (deliveryOrderItem.getState() ==TransferOrderItemService.STATE_IN_TRANSFER) {
                 deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
                 deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
             }
@@ -429,7 +429,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         DeliveryOrder[] deliveryOrders = ReflectHelper.createAndCopyFields(deliveryOrderViews,DeliveryOrder.class);
 
         Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
-            if (deliveryOrderItem.getState() !=TransferOrderItemService.STATE_ALL_FINISH) {
+            if (deliveryOrderItem.getState() ==TransferOrderItemService.STATE_IN_TRANSFER) {
                 deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
                 deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
             }
