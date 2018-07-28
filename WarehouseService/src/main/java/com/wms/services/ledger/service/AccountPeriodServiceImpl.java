@@ -152,15 +152,11 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             curAccountRecordViews = (AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
             accountRecordViewsList.toArray(curAccountRecordViews);
 
-            AccountRecordView newestAccountRecordView=new AccountRecordView();
+            AccountRecordView newestAccountRecordView=curAccountRecordViews[0];
             for (int i=0;i<curAccountRecordViews.length;i++){
-                for (int j=0;j<curAccountRecordViews.length;j++){
-                    if (curAccountRecordViews[i].getTime().after(curAccountRecordViews[j].getTime())){
+                    if (curAccountRecordViews[i].getTime().after(newestAccountRecordView.getTime())){
                         newestAccountRecordView=curAccountRecordViews[i];
-                    }else{
-                        newestAccountRecordView=curAccountRecordViews[j];
                     }
-                }
             }
             AccountRecord theAccountRecord=new AccountRecord();
             theAccountRecord.setWarehouseId(curWarehouseId);
