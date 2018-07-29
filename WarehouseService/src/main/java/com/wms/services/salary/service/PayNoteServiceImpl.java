@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -72,6 +73,9 @@ public class PayNoteServiceImpl implements PayNoteService{
             if(payNoteDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("薪资发放单单号："+payNote.getNo()+"已经存在!");
             }}
+            if(this.IsRepeat(new int[]{payNote.getAccountTitlePropertyId(),payNote.getAccountTitleExpenseId(),payNote.getAccountTitlePayableId()})){
+                throw new WMSServiceException("薪资发放单薪资费用科目、应付款科目、资产科目不允许重复！!");
+            }
         });
         //外键检测
         Stream.of(payNotes).forEach(
@@ -123,6 +127,9 @@ public class PayNoteServiceImpl implements PayNoteService{
                     if (payNoteDAO.find(accountBook, cond).length > 0) {
                         throw new WMSServiceException("薪资发放单单号：" + payNote.getNo() + "已经存在!");
                     }
+            if(this.IsRepeat(new int[]{payNote.getAccountTitlePropertyId(),payNote.getAccountTitleExpenseId(),payNote.getAccountTitlePayableId()})){
+                throw new WMSServiceException("薪资发放单薪资费用科目、应付款科目、资产科目不允许重复！!");
+            }
                 });
 
         Stream.of(payNotes).forEach(
@@ -286,6 +293,23 @@ public class PayNoteServiceImpl implements PayNoteService{
             }
         }
         return result;
+    }
+
+    private  boolean IsRepeat(int[] array)
+    {
+        List<Integer> list= new ArrayList<>();
+        for (int i = 0; i < array.length; i++)
+        {
+            if (list.contains(array[i]))
+            {
+                return true;
+            }
+            else
+            {
+                list.add(array[i], array[i]);
+            }
+        }
+        return false;
     }
 
 
