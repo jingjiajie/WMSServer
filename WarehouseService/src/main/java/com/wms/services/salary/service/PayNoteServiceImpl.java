@@ -3,6 +3,7 @@ package com.wms.services.salary.service;
 import com.wms.services.ledger.service.AccountRecordService;
 import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.ledger.service.PersonService;
+import com.wms.services.ledger.service.TaxService;
 import com.wms.services.salary.dao.PayNoteDAO;
 import com.wms.services.salary.datestructures.*;
 import com.wms.services.warehouse.datastructures.StockTakingOrderAndItems;
@@ -42,6 +43,8 @@ public class PayNoteServiceImpl implements PayNoteService{
     AccountRecordService accountRecordService;
     @Autowired
     OrderNoGenerator orderNoGenerator;
+    @Autowired
+    TaxService taxService;
 
     private static final String NO_PREFIX = "X";
 
@@ -89,6 +92,10 @@ public class PayNoteServiceImpl implements PayNoteService{
                             new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePropertyId()})).length == 0){
                         throw new WMSServiceException(String.format(" 资产科目不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
                     }
+                    if(this.taxService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getTaxId()})).length == 0){
+                        throw new WMSServiceException(String.format(" 税务不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
+                    }
                 }
         );
         return payNoteDAO.add(accountBook,payNotes);
@@ -135,6 +142,10 @@ public class PayNoteServiceImpl implements PayNoteService{
                     if(this.accountTitleService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePropertyId()})).length == 0){
                         throw new WMSServiceException(String.format(" 资产科目不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
+                    }
+                    if(this.taxService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getTaxId()})).length == 0){
+                        throw new WMSServiceException(String.format(" 税务不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
                     }
                 }
         );
