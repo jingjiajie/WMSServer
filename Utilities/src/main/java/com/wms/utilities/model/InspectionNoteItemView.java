@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -33,6 +34,7 @@ public class InspectionNoteItemView {
     private String warehouseEntryItemUnit;
     private BigDecimal warehouseEntryItemUnitAmount;
     private BigDecimal warehouseEntryItemRealAmount;
+    private Timestamp inspectionNoteCreateTime;
 
     @Id
     @Basic
@@ -304,5 +306,15 @@ public class InspectionNoteItemView {
 
     public void setWarehouseEntryItemRealAmount(BigDecimal warehouseEntryItemRealAmount) {
         this.warehouseEntryItemRealAmount = warehouseEntryItemRealAmount;
+    }
+
+    @Basic
+    @Column(name = "InspectionNoteCreateTime")
+    public Timestamp getInspectionNoteCreateTime() {
+        return inspectionNoteCreateTime;
+    }
+
+    public void setInspectionNoteCreateTime(Timestamp inspectionNoteCreateTime) {
+        this.inspectionNoteCreateTime = inspectionNoteCreateTime;
     }
 }

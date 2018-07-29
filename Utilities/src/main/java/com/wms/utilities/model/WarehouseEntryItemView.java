@@ -52,6 +52,7 @@ public class WarehouseEntryItemView {
     private String qualifiedStorageLocationName;
     private String unqualifiedStorageLocationNo;
     private String unqualifiedStorageLocationName;
+    private Timestamp warehouseEntryCreateTime;
 
     @Id
     @Basic
@@ -512,5 +513,15 @@ public class WarehouseEntryItemView {
 
     public void setUnqualifiedStorageLocationName(String unqualifiedStorageLocationName) {
         this.unqualifiedStorageLocationName = unqualifiedStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "WarehouseEntryCreateTime")
+    public Timestamp getWarehouseEntryCreateTime() {
+        return warehouseEntryCreateTime;
+    }
+
+    public void setWarehouseEntryCreateTime(Timestamp warehouseEntryCreateTime) {
+        this.warehouseEntryCreateTime = warehouseEntryCreateTime;
     }
 }

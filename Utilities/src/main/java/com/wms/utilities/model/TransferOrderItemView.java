@@ -37,6 +37,7 @@ public class TransferOrderItemView {
     private Integer materialId;
     private String sourceUnit;
     private BigDecimal sourceUnitAmount;
+    private Timestamp transferOrderCreateTime;
 
     @Basic
     @Id
@@ -397,5 +398,15 @@ public class TransferOrderItemView {
         result = 31 * result + (sourceUnit != null ? sourceUnit.hashCode() : 0);
         result = 31 * result + (sourceUnitAmount != null ? sourceUnitAmount.hashCode() : 0);
         return result;
+    }
+
+    @Basic
+    @Column(name = "TransferOrderCreateTime")
+    public Timestamp getTransferOrderCreateTime() {
+        return transferOrderCreateTime;
+    }
+
+    public void setTransferOrderCreateTime(Timestamp transferOrderCreateTime) {
+        this.transferOrderCreateTime = transferOrderCreateTime;
     }
 }

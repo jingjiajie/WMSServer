@@ -33,6 +33,7 @@ public class DeliveryOrderItemView {
     private String materialProductLine;
     private Integer supplierId;
     private Integer materialId;
+    private Timestamp deliveryOrderCreateTime;
 
     @Id
     @Basic
@@ -296,5 +297,15 @@ public class DeliveryOrderItemView {
 
     public void setMaterialId(Integer materialId) {
         this.materialId = materialId;
+    }
+
+    @Basic
+    @Column(name = "DeliveryOrderCreateTime")
+    public Timestamp getDeliveryOrderCreateTime() {
+        return deliveryOrderCreateTime;
+    }
+
+    public void setDeliveryOrderCreateTime(Timestamp deliveryOrderCreateTime) {
+        this.deliveryOrderCreateTime = deliveryOrderCreateTime;
     }
 }
