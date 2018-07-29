@@ -29,6 +29,10 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
         for(int i=0;i<salaryPeriods.length;i++) {
             Validator validator = new Validator("期间型名");
             validator.notnull().notEmpty().validate(salaryPeriods[i].getName());
+            Validator validator1 = new Validator("期间截止时间");
+            validator1.notnull().notEmpty().validate(salaryPeriods[i].getEndTime());
+            Validator validator2 = new Validator("期间起始时间");
+            validator2.notnull().notEmpty().validate(salaryPeriods[i].getStartTime());
         }
 
         for(int i=0;i<salaryPeriods.length;i++){
@@ -45,6 +49,7 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
             if(salaryPeriodDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("期间名："+salaryPeriod.getName()+"已经存在!");
             }
+            if(salaryPeriod.getEndTime().compareTo(salaryPeriod.getStartTime())<0){throw new WMSServiceException("期间："+salaryPeriod.getName()+"的截止时间必须在开始时间之后!");}
         });
 
         //外键检测
@@ -63,6 +68,10 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
         for(int i=0;i<salaryPeriods.length;i++) {
             Validator validator = new Validator("期间名称");
             validator.notnull().notEmpty().validate(salaryPeriods[i].getName());
+            Validator validator1 = new Validator("期间截止时间");
+            validator1.notnull().notEmpty().validate(salaryPeriods[i].getEndTime());
+            Validator validator2 = new Validator("期间起始时间");
+            validator2.notnull().notEmpty().validate(salaryPeriods[i].getStartTime());
         }
 
         for(int i=0;i<salaryPeriods.length;i++){
@@ -87,6 +96,7 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
             if(salaryPeriodDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("期间名称重复："+salaryPeriods[i].getName());
             }
+            if(salaryPeriods[i].getEndTime().compareTo(salaryPeriods[i].getStartTime())<0){throw new WMSServiceException("期间："+salaryPeriods[i].getName()+"的截止时间必须在开始时间之后!");}
         }
         //外键检测
         Stream.of(salaryPeriods).forEach(
