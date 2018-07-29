@@ -3,7 +3,8 @@ package com.wms.services.salary.service;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.salary.dao.PersonSalaryDAO;
 import com.wms.services.salary.datestructures.AddPersonSalary;
-import com.wms.services.warehouse.service.WarehouseService;
+import com.wms.services.salary.datestructures.SalaryItemTypeState;
+import com.wms.services.warehouse.service.*;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
@@ -40,6 +41,12 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     SalaryTypePersonService salaryTypePersonService;
     @Autowired
     private SessionFactory sessionFactory;
+    @Autowired
+    WarehouseEntryItemService warehouseEntryItemService;
+    @Autowired
+    InspectionNoteItemService inspectionNoteItemService;
+    @Autowired
+    TransferOrderItemService transferOrderItemService;
 
     public int[] add(String accountBook, PersonSalary[] personSalaries) throws WMSServiceException
     {
@@ -191,8 +198,31 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             query.executeUpdate();
         List<PersonSalary> personSalaryList=new ArrayList<>();
         SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
-       SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
-        Map<Integer, List<SalaryTypePersonView>> groupByTypeIdPerson =
+        SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
+        //每次只添加一个类型
+        for(SalaryTypePersonView salaryTypePersonView:salaryTypePersonViews){
+            for(SalaryItemView salaryItemView:salaryItemViews) {
+                PersonSalary personSalary = new PersonSalary();
+                personSalary.setPersonId(salaryTypePersonView.getPersonId());
+                //区分类型
+                if(salaryItemView.getType()== SalaryItemTypeState.REGULAR_SALARY)
+                {
+                    personSalary.setAmount(salaryItemView.getDefaultAmount());
+                }
+                else
+                {
+                    //先按人员查找入库单、送检单、移库单
+
+
+                    personSalary.setAmount(salaryItemView.getDefaultAmount());
+                }
+                personSalary.setSalaryItemId(salaryItemView.getId());
+                personSalary.setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
+                personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
+                personSalaryList.add(personSalary);
+            }
+        }
+/*       Map<Integer, List<SalaryTypePersonView>> groupByTypeIdPerson =
                 Stream.of(salaryTypePersonViews).collect(Collectors.groupingBy(SalaryTypePersonView::getSalaryTypeId));
         Map<Integer, List<SalaryItemView>> groupByTypeIdItem =
                 Stream.of(salaryItemViews).collect(Collectors.groupingBy(SalaryItemView::getSalaryTypeId));
@@ -218,7 +248,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                     }
                 }
             }
-        }
+        }*/
         PersonSalary[] personSalaries=new PersonSalary[personSalaryList.size()];
     personSalaryList.toArray(personSalaries);
     personSalaryDAO.add(accountBook,personSalaries);
