@@ -71,14 +71,14 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             {
                 if (accountRecordViews.length>0) {
                     Stream.of(accountRecordViews).forEach((accountRecordView) -> {
-                        if (accountRecordView.getTime().before(accountPeriodView.getStartTime())) {
+                        if (accountRecordView.getTime().before(accountPeriod.getStartTime())) {
                             throw new WMSServiceException(String.format("本期间的起始时间必须在本期间所有账目记录时间之前，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                         }
                     });
                 }
                 if (lastAccountRecordViews!=null) {
                     Stream.of(lastAccountRecordViews).forEach((lastAccountRecordView) -> {
-                        if (lastAccountRecordView.getTime().after(accountPeriodView.getStartTime())) {
+                        if (lastAccountRecordView.getTime().after(accountPeriod.getStartTime())) {
                             throw new WMSServiceException(String.format("本期间的起始时间必须在上一个会计期间所有账目记录时间之后，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                         }
                     });
@@ -88,16 +88,16 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             if (accountPeriod.getEnded()==AccountPeriodService.ended_ture)
             {
                 Stream.of(accountRecordViews).forEach((accountRecordView)->{
-                    if (accountRecordView.getTime().before(accountPeriodView.getStartTime())){
+                    if (accountRecordView.getTime().before(accountPeriod.getStartTime())){
                         throw new WMSServiceException(String.format("本期间的起始时间必须在本期间所有账目记录时间之前，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                     }
-                    if (accountRecordView.getTime().after(accountPeriodView.getEndTime())){
+                    if (accountRecordView.getTime().after(accountPeriod.getEndTime())){
                         throw new WMSServiceException(String.format("本期间的结束时间必须在本期间所有账目记录时间之后，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                     }
                 });
                 if (lastAccountRecordViews!=null) {
                     Stream.of(lastAccountRecordViews).forEach((lastAccountRecordView) -> {
-                        if (lastAccountRecordView.getTime().after(accountPeriodView.getStartTime())) {
+                        if (lastAccountRecordView.getTime().after(accountPeriod.getStartTime())) {
                             throw new WMSServiceException(String.format("本期间的起始时间必须在上一个会计期间所有账目记录时间之后，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                         }
                     });
