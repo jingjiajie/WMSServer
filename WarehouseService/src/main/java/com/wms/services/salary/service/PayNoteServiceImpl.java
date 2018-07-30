@@ -306,7 +306,7 @@ public class PayNoteServiceImpl implements PayNoteService{
             }
             else
             {
-                list.add(array[i], array[i]);
+                list.add(array[i]);
             }
         }
         return false;
