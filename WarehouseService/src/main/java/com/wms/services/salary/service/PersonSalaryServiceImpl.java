@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -174,6 +176,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
 
     public void addPersonSalaryBySalaryType(String accountBook, AddPersonSalary addPersonSalary)
     {
+        BigDecimal amount=new BigDecimal(0);
         StringBuffer stringBuffer=new StringBuffer();
         stringBuffer.append("(");
         for(int i=0;i<addPersonSalary.getSalaryTypeId().size();i++){ stringBuffer.append(addPersonSalary.getSalaryTypeId().toArray()[i]);
@@ -199,6 +202,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         List<PersonSalary> personSalaryList=new ArrayList<>();
         SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
         SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
+        SalaryPeriodView[] salaryPeriodViews=salaryPeriodService.find(accountBook,new Condition().addCondition("id",addPersonSalary.getSalaryPeriodId()));
+        if(salaryPeriodViews.length!=1){throw new WMSServiceException("查询薪资期间错误！");}
         //每次只添加一个类型
         for(SalaryTypePersonView salaryTypePersonView:salaryTypePersonViews){
             for(SalaryItemView salaryItemView:salaryItemViews) {
@@ -212,9 +217,19 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 else
                 {
                     //先按人员查找入库单、送检单、移库单
-
-
-                    personSalary.setAmount(salaryItemView.getDefaultAmount());
+                    WarehouseEntryItemView[] warehouseEntryItemViews=warehouseEntryItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("warehouseEntryCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
+                    for(int i=0;i<warehouseEntryItemViews.length;i++){
+                        amount=amount.add(warehouseEntryItemViews[i].getRealAmount());
+                    }
+                    InspectionNoteItemView[] inspectionNoteItemViews=inspectionNoteItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("warehouseEntryCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
+                    for(int i=0;i<inspectionNoteItemViews.length;i++){
+                        amount=amount.add(inspectionNoteItemViews[i].getAmount());
+                    }
+                    TransferOrderItemView[] transferOrderItemViews=transferOrderItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("warehouseEntryCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
+                    for(int i=0;i<transferOrderItemViews.length;i++){
+                        amount=amount.add(transferOrderItemViews[i].getRealAmount());
+                    }
+                    personSalary.setAmount(salaryItemView.getDefaultAmount().multiply(amount));
                 }
                 personSalary.setSalaryItemId(salaryItemView.getId());
                 personSalary.setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
