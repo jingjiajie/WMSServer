@@ -221,11 +221,11 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                     for(int i=0;i<warehouseEntryItemViews.length;i++){
                         amount=amount.add(warehouseEntryItemViews[i].getRealAmount());
                     }
-                    InspectionNoteItemView[] inspectionNoteItemViews=inspectionNoteItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("warehouseEntryCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
+                    InspectionNoteItemView[] inspectionNoteItemViews=inspectionNoteItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("inspectionNoteCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
                     for(int i=0;i<inspectionNoteItemViews.length;i++){
                         amount=amount.add(inspectionNoteItemViews[i].getAmount());
                     }
-                    TransferOrderItemView[] transferOrderItemViews=transferOrderItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("warehouseEntryCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
+                    TransferOrderItemView[] transferOrderItemViews=transferOrderItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("transferOrderCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
                     for(int i=0;i<transferOrderItemViews.length;i++){
                         amount=amount.add(transferOrderItemViews[i].getRealAmount());
                     }
