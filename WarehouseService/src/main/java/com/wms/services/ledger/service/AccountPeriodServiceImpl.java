@@ -184,6 +184,10 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
         List<AccountRecord> accountRecordList=new ArrayList();
 
         AccountRecordView[] accountRecordViews= accountRecordService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("accountPeriodId",new Integer[]{oldAccountPeriod.getId()}));
+        if (accountRecordViews.length<=0)
+        {
+            throw new WMSServiceException("当前期间此仓库中无账目记录，无法结转");
+        }
         Map<Integer, List<AccountRecordView>> groupBySupplierIdMap =
                 Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountTitleId));
 
