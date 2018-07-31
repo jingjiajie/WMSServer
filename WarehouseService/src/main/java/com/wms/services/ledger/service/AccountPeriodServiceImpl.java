@@ -50,13 +50,58 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
 
     @Transactional
     public void update(String accountBook, AccountPeriod[] accountPeriods) throws WMSServiceException{
-
         this.validateEntities(accountBook,accountPeriods);
         Stream.of(accountPeriods).forEach((accountPeriod)->{
             if(this.find(accountBook,new Condition().addCondition("name",new String[]{accountPeriod.getName()})
                     .addCondition("warehouseId",new Integer[]{accountPeriod.getWarehouseId()})
                     .addCondition("id",new Integer[]{accountPeriod.getId()}, ConditionItem.Relation.NOT_EQUAL)).length > 0) {
-                throw new WMSServiceException("物料名：" + accountPeriod.getName() +"已经存在!");
+                throw new WMSServiceException("期间名称：" + accountPeriod.getName() +"已经存在!");
+            }
+        });
+
+        Stream.of(accountPeriods).forEach((accountPeriod)->{
+            AccountPeriodView accountPeriodView=this.find(accountBook,new Condition().addCondition("id",new Integer[]{accountPeriod.getId()}))[0];
+            AccountRecordView[] accountRecordViews= accountRecordService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{accountPeriod.getWarehouseId()}).addCondition("accountPeriodId",new Integer[]{accountPeriod.getId()}));
+            AccountRecordView[] lastAccountRecordViews=null;
+            if (accountPeriod.getLastAccountPeriodId()!=null) {
+                lastAccountRecordViews = accountRecordService.find(accountBook, new Condition().addCondition("warehouseId", new Integer[]{accountPeriod.getWarehouseId()}).addCondition("accountPeriodId", new Integer[]{accountPeriod.getLastAccountPeriodId()}));
+            }
+            //如果期间没截止
+            if (accountPeriod.getEnded()==AccountPeriodService.ended_false)
+            {
+                if (accountRecordViews.length>0) {
+                    Stream.of(accountRecordViews).forEach((accountRecordView) -> {
+                        if (accountRecordView.getTime().before(accountPeriod.getStartTime())) {
+                            throw new WMSServiceException(String.format("本期间的起始时间必须在本期间所有账目记录时间之前，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
+                        }
+                    });
+                }
+                if (lastAccountRecordViews!=null) {
+                    Stream.of(lastAccountRecordViews).forEach((lastAccountRecordView) -> {
+                        if (lastAccountRecordView.getTime().after(accountPeriod.getStartTime())) {
+                            throw new WMSServiceException(String.format("本期间的起始时间必须在上一个会计期间所有账目记录时间之后，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
+                        }
+                    });
+                }
+            }
+            //如果期间截止
+            if (accountPeriod.getEnded()==AccountPeriodService.ended_ture)
+            {
+                Stream.of(accountRecordViews).forEach((accountRecordView)->{
+                    if (accountRecordView.getTime().before(accountPeriod.getStartTime())){
+                        throw new WMSServiceException(String.format("本期间的起始时间必须在本期间所有账目记录时间之前，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
+                    }
+                    if (accountRecordView.getTime().after(accountPeriod.getEndTime())){
+                        throw new WMSServiceException(String.format("本期间的结束时间必须在本期间所有账目记录时间之后，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
+                    }
+                });
+                if (lastAccountRecordViews!=null) {
+                    Stream.of(lastAccountRecordViews).forEach((lastAccountRecordView) -> {
+                        if (lastAccountRecordView.getTime().after(accountPeriod.getStartTime())) {
+                            throw new WMSServiceException(String.format("本期间的起始时间必须在上一个会计期间所有账目记录时间之后，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
+                        }
+                    });
+                }
             }
         });
         accountPeriodDAO.update(accountBook,accountPeriods);
@@ -118,17 +163,18 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
         //取得需要的三个关键词
         int curWarehouseId=carryOver.getWarehouseId();
         int curPersonId=carryOver.getPersonId();
+        Timestamp cutTime=carryOver.getStartTime();
         //TODO 结转功能 为了保持会计工作的连续性，一定要把本会计年度末的余额转到下个会计年度
 
         //获得当前仓库，最新的没截止的期间,将其截止并启用新的期间
         AccountPeriodView accountPeriodView=this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("ended",AccountPeriodService.ended_false).addOrder("startTime", OrderItem.Order.DESC))[0];
         AccountPeriod oldAccountPeriod = ReflectHelper.createAndCopyFields(accountPeriodView,AccountPeriod.class);
-        oldAccountPeriod.setEndTime(new Timestamp(System.currentTimeMillis()));
+        oldAccountPeriod.setEndTime(cutTime);
         oldAccountPeriod.setEnded(AccountPeriodService.ended_ture);
         this.update(accountBook,new AccountPeriod[] {oldAccountPeriod});
 
         AccountPeriod newAccountPeriod=new AccountPeriod();
-        newAccountPeriod.setStartTime(new Timestamp(System.currentTimeMillis()));
+        newAccountPeriod.setStartTime(cutTime);
         newAccountPeriod.setLastAccountPeriodId(oldAccountPeriod.getId());
         newAccountPeriod.setEnded(AccountPeriodService.ended_false);
         newAccountPeriod.setName(new Timestamp(System.currentTimeMillis()).toString());
@@ -138,6 +184,10 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
         List<AccountRecord> accountRecordList=new ArrayList();
 
         AccountRecordView[] accountRecordViews= accountRecordService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("accountPeriodId",new Integer[]{oldAccountPeriod.getId()}));
+        if (accountRecordViews.length<=0)
+        {
+            throw new WMSServiceException("当前期间此仓库中无账目记录，无法结转");
+        }
         Map<Integer, List<AccountRecordView>> groupBySupplierIdMap =
                 Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountTitleId));
 
@@ -157,6 +207,9 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
                     if (curAccountRecordViews[i].getTime().after(newestAccountRecordView.getTime())){
                         newestAccountRecordView=curAccountRecordViews[i];
                     }
+                if (curAccountRecordViews[i].getTime().after(cutTime)){
+                    throw new WMSServiceException("结转时间节点不能早于现存记录最后时间！");
+                }
             }
             AccountRecord theAccountRecord=new AccountRecord();
             theAccountRecord.setWarehouseId(curWarehouseId);

@@ -1,5 +1,7 @@
 package com.wms.services.ledger.datestructures;
 
+import java.sql.Timestamp;
+
 public class CarryOver {
     public int getWarehouseId() {
         return warehouseId;
@@ -19,4 +21,14 @@ public class CarryOver {
 
     int warehouseId;
     int personId;
+
+    public Timestamp getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Timestamp startTime) {
+        this.startTime = startTime;
+    }
+
+    Timestamp startTime;
 }
