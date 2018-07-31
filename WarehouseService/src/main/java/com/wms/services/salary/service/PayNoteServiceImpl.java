@@ -46,12 +46,42 @@ public class PayNoteServiceImpl implements PayNoteService{
     OrderNoGenerator orderNoGenerator;
     @Autowired
     TaxService taxService;
+    @Autowired
+    SalaryPeriodService salaryPeriodService;
 
     private static final String NO_PREFIX = "X";
 
     public int[] add(String accountBook, PayNote[] payNotes) throws WMSServiceException
     {
-
+        //外键检测
+        Stream.of(payNotes).forEach(
+                (payNote)->{
+                    if(this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getWarehouseId()})).length == 0){
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",payNote.getWarehouseId()));
+                    }
+                    if(this.accountTitleService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitleExpenseId()})).length == 0){
+                        throw new WMSServiceException(String.format("薪资费用科目不存在，请重新提交！(%d)",payNote.getAccountTitleExpenseId()));
+                    }
+                    if(this.accountTitleService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePayableId()})).length == 0){
+                        throw new WMSServiceException(String.format("应付款科目不存在，请重新提交！(%d)",payNote.getAccountTitlePayableId()));
+                    }
+                    if(this.accountTitleService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePropertyId()})).length == 0){
+                        throw new WMSServiceException(String.format(" 资产科目不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
+                    }
+                    if(this.taxService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getTaxId()})).length == 0){
+                        throw new WMSServiceException(String.format(" 税务不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
+                    }
+                    if(this.salaryPeriodService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getSalaryPeriodId()})).length == 0){
+                        throw new WMSServiceException(String.format("薪资期间不存在，请重新提交！(%d)",payNote.getSalaryPeriodId()));
+                    }
+                }
+        );
         for(int i=0;i<payNotes.length;i++) {
             payNotes[i].setState(PayNoteState.WAITING_FOR_CONFIRM);
         }
@@ -77,7 +107,16 @@ public class PayNoteServiceImpl implements PayNoteService{
                 throw new WMSServiceException("薪资发放单薪资费用科目、应付款科目、资产科目不允许重复！!");
             }
         });
-        //外键检测
+
+        return payNoteDAO.add(accountBook,payNotes);
+    }
+
+    @Transactional
+    public void update(String accountBook, PayNote[] payNotes) throws WMSServiceException{
+        for(int i=0;i<payNotes.length;i++) {
+            Validator validator = new Validator("薪资发放单单号");
+            validator.notnull().notEmpty().validate(payNotes[i].getNo());
+        }
         Stream.of(payNotes).forEach(
                 (payNote)->{
                     if(this.warehouseService.find(accountBook,
@@ -100,17 +139,12 @@ public class PayNoteServiceImpl implements PayNoteService{
                             new Condition().addCondition("id",new Integer[]{ payNote.getTaxId()})).length == 0){
                         throw new WMSServiceException(String.format(" 税务不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
                     }
+                    if(this.salaryPeriodService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getSalaryPeriodId()})).length == 0){
+                        throw new WMSServiceException(String.format("薪资期间不存在，请重新提交！(%d)",payNote.getSalaryPeriodId()));
+                    }
                 }
         );
-        return payNoteDAO.add(accountBook,payNotes);
-    }
-
-    @Transactional
-    public void update(String accountBook, PayNote[] payNotes) throws WMSServiceException{
-        for(int i=0;i<payNotes.length;i++) {
-            Validator validator = new Validator("薪资发放单单号");
-            validator.notnull().notEmpty().validate(payNotes[i].getNo());
-        }
 
         for(int i=0;i<payNotes.length;i++){
             for(int j=i+1;j<payNotes.length;j++){
@@ -132,30 +166,6 @@ public class PayNoteServiceImpl implements PayNoteService{
             }
                 });
 
-        Stream.of(payNotes).forEach(
-                (payNote)->{
-                    if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ payNote.getWarehouseId()})).length == 0){
-                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",payNote.getWarehouseId()));
-                    }
-                    if(this.accountTitleService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitleExpenseId()})).length == 0){
-                        throw new WMSServiceException(String.format("薪资费用科目不存在，请重新提交！(%d)",payNote.getAccountTitleExpenseId()));
-                    }
-                    if(this.accountTitleService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePayableId()})).length == 0){
-                        throw new WMSServiceException(String.format("应付款科目不存在，请重新提交！(%d)",payNote.getAccountTitlePayableId()));
-                    }
-                    if(this.accountTitleService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ payNote.getAccountTitlePropertyId()})).length == 0){
-                        throw new WMSServiceException(String.format(" 资产科目不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
-                    }
-                    if(this.taxService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ payNote.getTaxId()})).length == 0){
-                        throw new WMSServiceException(String.format(" 税务不存在，请重新提交！(%d)",payNote.getAccountTitlePropertyId()));
-                    }
-                }
-        );
         payNoteDAO.update(accountBook,payNotes);
 
     }
