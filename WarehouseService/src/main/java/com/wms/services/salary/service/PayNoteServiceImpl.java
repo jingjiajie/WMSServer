@@ -232,7 +232,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord1.setComment(accountSynchronize.getComment());
        accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
        //TODO 将总金额增加到 总账
-       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
+       //accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
        //将整单变为已确认待付款状态
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
        payNote.setState(PayNoteState.CONFIRM_PAY);
@@ -279,7 +279,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord1.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord1.setComment(accountSynchronize.getComment());
        accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
-       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
+       //accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
        //将整单变为已付款
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
        payNote.setState(PayNoteState.CONFIRM_REAL_PAY);
