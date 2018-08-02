@@ -202,6 +202,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
        if(payNoteViews[0].getState()!= PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("此单不为未确认状态，无法执行确认操作！");}
        PayNoteItemView[] payNoteItemViews=payNoteItemService.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
+       if(payNoteItemViews.length==0){throw new WMSServiceException("操作的薪金发放单中无条目，无法进行同步！");}
        //判断条目是否全部计算同时计算总金额
        BigDecimal totalAmount=new BigDecimal(0);
        for(int i=0;i<payNoteItemViews.length;i++){
@@ -249,6 +250,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
        if(payNoteViews[0].getState()!= PayNoteState.CONFIRM_PAY){throw new WMSServiceException("此单不为等待支付状态，无法执行确认操作！");}
        PayNoteItemView[] payNoteItemViews=payNoteItemService.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
+       if(payNoteItemViews.length==0){throw new WMSServiceException("操作的薪金发放单中无条目，无法进行同步！");}
        //判断条目是否全部计算同时计算总金额
        BigDecimal totalPaidAmount=new BigDecimal(0);
        for(int i=0;i<payNoteItemViews.length;i++){
