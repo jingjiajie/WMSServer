@@ -193,12 +193,16 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         } catch (Throwable ex) {
             throw new DatabaseNotFoundException(accountBook);
         }
+        try{
         Query query=null;
             String sql="DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId in "+stringBuffer.toString()+") and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId in "+stringBuffer.toString()+")";
             query=session.createNativeQuery(sql);
             query.setParameter("salaryPeriodId",addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId",addPersonSalary.getWarehouseId());
-            query.executeUpdate();
+            query.executeUpdate();}
+            catch (Exception e){
+                throw new WMSServiceException("删除旧人员薪资失败！");
+            }
         List<PersonSalary> personSalaryList=new ArrayList<>();
         SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
         SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));

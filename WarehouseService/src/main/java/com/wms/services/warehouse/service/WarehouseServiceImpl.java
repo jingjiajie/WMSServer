@@ -9,6 +9,9 @@ import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.vaildator.Validator;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,8 @@ public class WarehouseServiceImpl implements WarehouseService{
     WarehouseDAO warehouseDAO;
     @Autowired
     AccountPeriodService accountPeriodService;
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Transactional
     public int[] add(String accountBook, Warehouse[] warehouses) throws WMSServiceException
@@ -109,10 +114,38 @@ public class WarehouseServiceImpl implements WarehouseService{
 
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
+        List<Integer> idList=new ArrayList<>();
         for (int id : ids) {
+            idList.add(id);
             if (warehouseDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
                 throw new WMSServiceException(String.format("删除仓库不存在，请重新查询！(%d)", id));
             }
+        }
+        AccountPeriodView[] accountPeriodViews=this.accountPeriodService.find(accountBook,new Condition().addCondition("warehouseId",idList.toArray(), ConditionItem.Relation.IN));
+        if(accountPeriodViews.length!=ids.length||this.IsRepeat(accountPeriodViews)){throw new WMSServiceException("删除供仓库失败，如果仓库已经被引用，需要先删除引用的内容，才能删除该仓库！");}
+        StringBuffer stringBuffer=new StringBuffer();
+        stringBuffer.append("(");
+        for(int i=0;i<accountPeriodViews.length;i++){ stringBuffer.append(accountPeriodViews[i].getWarehouseId());
+            if(i!=accountPeriodViews.length-1)
+            {
+                stringBuffer.append(",");
+            }
+        }
+        stringBuffer.append(")");
+        Session session=this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        try{
+            Query query=null;
+            String sql="DELETE FROM AccountPeriod  where warehouseId in "+stringBuffer.toString();
+            query=session.createNativeQuery(sql);
+            query.executeUpdate();}
+        catch (Exception e){
+            throw new WMSServiceException("删除供仓库失败，如果仓库已经被引用，需要先删除引用的内容，才能删除该仓库！");
         }
         try {
             warehouseDAO.remove(accountBook, ids);
@@ -135,5 +168,22 @@ public class WarehouseServiceImpl implements WarehouseService{
     @Transactional
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.warehouseDAO.findCount(database,cond);
+    }
+
+    private  boolean IsRepeat(AccountPeriodView[] array)
+    {
+        List<Integer> list= new ArrayList<>();
+        for (int i = 0; i < array.length; i++)
+        {
+            if (list.contains(array[i].getWarehouseId()))
+            {
+                return true;
+            }
+            else
+            {
+                list.add(array[i].getWarehouseId());
+            }
+        }
+        return false;
     }
 }
