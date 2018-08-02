@@ -91,7 +91,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
                     .addCondition("accountTitleId",new Integer[]{accountRecords[k].getAccountTitleId(),}));
 
-            //如果有就存上，没有就拉倒
+            //TODO 如果有就存上，没有就看是不是有实际发生额，有的话要提示还没有录入期初余额
             if (accountRecordViews.length>0){
                 AccountRecordView newestAccountRecordView=accountRecordViews[0];
                 for (int i=0;i<accountRecordViews.length;i++){
@@ -106,6 +106,12 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                 }else{
                     accountRecords[k].setBalance(curBalance.subtract(debitAmount).add(creditAmount));
                 }
+            }else{
+                if (creditAmount.compareTo(new BigDecimal(0))!=0
+                        ||debitAmount.compareTo(new BigDecimal(0))!=0){
+                    throw new WMSServiceException(String.format("无法添加账目记录！当前科目未录入期初余额，无法发生业务！科目名称(%s)，", accountTitles[0].getName()));
+                }
+
             }
 
             //TODO 找出当前科目的父代科目
@@ -165,6 +171,18 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         {
             this.accountRecordDAO.update(accountBook,updateParentRecords);
         }
+        return accountRecordDAO.add(accountBook,accountRecords);
+    }
+
+    public int[] simpleAdd(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException
+    {
+        //数据验证
+        this.validateEntities(accountBook,accountRecords);
+        //设置时间
+        Stream.of(accountRecords).forEach((accountRecord)->{
+            accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
+        });
+
         return accountRecordDAO.add(accountBook,accountRecords);
     }
 
@@ -281,6 +299,11 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             this.idChecker.check(AccountPeriodService.class, accountBook, accountRecord.getAccountPeriodId(), "会计期间");
             this.idChecker.check(AccountTitleService.class, accountBook, accountRecord.getAccountTitleId(), "科目");
             this.idChecker.check(PersonService.class, accountBook, accountRecord.getPersonId(), "记录人");
+
+            AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecord.getAccountTitleId()));
+            if (accountTitleViews[0].getEnabled()!=AccountTitleService.ENABLED_ON){
+                throw new WMSServiceException(String.format("该科目已被禁用，无法新添加账目记录，当前科目名称(%s)，", accountTitleViews[0].getName()));
+            }
         }));
 
 
