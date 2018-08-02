@@ -102,6 +102,16 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
                         }
                     });
                 }
+                AccountPeriodView[] decAccountPeriodViews=this.find(accountBook,new Condition().addCondition("lastAccountPeriodId",new Integer[]{accountPeriod.getId()}));
+                if (decAccountPeriodViews.length>0) {
+                    AccountRecordView[] decAccountRecordViews = accountRecordService.find(accountBook, new Condition().addCondition("warehouseId", new Integer[]{accountPeriod.getWarehouseId()}).addCondition("accountPeriodId", new Integer[]{decAccountPeriodViews[0].getId()}));
+                    Stream.of(decAccountRecordViews).forEach((decAccountRecordView) -> {
+                        if (decAccountRecordView.getTime().before(accountPeriod.getEndTime())) {
+                            throw new WMSServiceException(String.format("本期间的结束时间必须在后一个会计期间所有账目记录时间之前，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
+                        }
+                    });
+                }
+
             }
         });
         accountPeriodDAO.update(accountBook,accountPeriods);
@@ -228,7 +238,7 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
         curAccountRecords = (AccountRecord[]) Array.newInstance(AccountRecord.class,accountRecordList.size());
         accountRecordList.toArray(curAccountRecords);
 
-        this.accountRecordService.add(accountBook,curAccountRecords);
+        this.accountRecordService.simpleAdd(accountBook,curAccountRecords);
 
 
     }

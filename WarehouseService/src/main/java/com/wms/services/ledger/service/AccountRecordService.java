@@ -15,4 +15,5 @@ public interface AccountRecordService extends BaseService<AccountRecord,AccountR
     public void AddAccountRecord(String accountBook, AccountRecord[] accountRecords)throws WMSServiceException;
     public List<FindLinkAccountTitle> FindParentAccountTitle(String accountBook, AccountTitle[] accountTitles)throws WMSServiceException;
     public List<FindLinkAccountTitle> FindSonAccountTitle(String accountBook, AccountTitle[] accountTitles)throws WMSServiceException;
+    public int[] simpleAdd(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException;
 }
