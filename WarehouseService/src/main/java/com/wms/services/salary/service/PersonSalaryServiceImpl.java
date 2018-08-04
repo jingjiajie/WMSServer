@@ -176,7 +176,6 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
 
     public void addPersonSalaryBySalaryType(String accountBook, AddPersonSalary addPersonSalary)
     {
-        BigDecimal amount=new BigDecimal(0);
         StringBuffer stringBuffer=new StringBuffer();
         stringBuffer.append("(");
         for(int i=0;i<addPersonSalary.getSalaryTypeId().size();i++){ stringBuffer.append(addPersonSalary.getSalaryTypeId().toArray()[i]);
@@ -220,6 +219,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 }
                 else
                 {
+                    BigDecimal amount=new BigDecimal(0);
                     //先按人员查找入库单、送检单、移库单
                     WarehouseEntryItemView[] warehouseEntryItemViews=warehouseEntryItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("warehouseEntryCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
                     for(int i=0;i<warehouseEntryItemViews.length;i++){
@@ -241,7 +241,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalaryList.add(personSalary);
             }
         }
-/*       Map<Integer, List<SalaryTypePersonView>> groupByTypeIdPerson =
+/*       Map<Integer, List<SalaryTypePersonView>> groupByTypeIdPerson =  .addCondition("warehouseId",addPersonSalary.getWarehouseId()
                 Stream.of(salaryTypePersonViews).collect(Collectors.groupingBy(SalaryTypePersonView::getSalaryTypeId));
         Map<Integer, List<SalaryItemView>> groupByTypeIdItem =
                 Stream.of(salaryItemViews).collect(Collectors.groupingBy(SalaryItemView::getSalaryTypeId));
