@@ -50,6 +50,7 @@ public class PayNoteServiceImpl implements PayNoteService{
     SalaryPeriodService salaryPeriodService;
 
     private static final String NO_PREFIX = "X";
+    private static final BigDecimal ZERO= new BigDecimal(0);
 
     public int[] add(String accountBook, PayNote[] payNotes) throws WMSServiceException
     {
@@ -216,24 +217,28 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setAccountTitleId(accountTitlePayableID);
        accountRecord.setPersonId(personId);
        accountRecord.setCreditAmount(totalAmount);
+       accountRecord.setDebitAmount(ZERO);
        accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
        accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord.setComment(accountSynchronize.getComment());
        accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
+       accountRecord.setBalance(new BigDecimal(1));
        //管理费用
        int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
        AccountRecord accountRecord1=new AccountRecord();
        accountRecord1.setAccountTitleId(accountTitleExpenseID);
        accountRecord1.setPersonId(personId);
        accountRecord1.setDebitAmount(totalAmount);
+       accountRecord1.setCreditAmount(ZERO);
        accountRecord1.setWarehouseId(warehouseId);
        accountRecord1.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord1.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord1.setComment(accountSynchronize.getComment());
+       accountRecord1.setBalance(new BigDecimal(1));
        accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
        //TODO 将总金额增加到 总账
-       //accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
+       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
        //将整单变为已确认待付款状态
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
        payNote.setState(PayNoteState.CONFIRM_PAY);
@@ -264,24 +269,28 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setAccountTitleId(accountTitlePayableID);
        accountRecord.setPersonId(personId);
        accountRecord.setDebitAmount(totalPaidAmount);
+       accountRecord.setCreditAmount(ZERO);
        accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
        accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord.setComment(accountSynchronize.getComment());
+       accountRecord.setBalance(new BigDecimal(1));
        accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
        //银行资产
        int accountTitlePropertyID=payNoteViews[0].getAccountTitlePropertyId();
        //同步到总账
        AccountRecord accountRecord1=new AccountRecord();
-       accountRecord1.setAccountTitleId(accountTitlePayableID);
+       accountRecord1.setAccountTitleId(accountTitlePropertyID);
        accountRecord1.setPersonId(personId);
        accountRecord1.setCreditAmount(totalPaidAmount);
+       accountRecord1.setDebitAmount(ZERO);
        accountRecord1.setWarehouseId(accountSynchronize.getWarehouseId());
        accountRecord1.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord1.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord1.setComment(accountSynchronize.getComment());
+       accountRecord1.setBalance(new BigDecimal(1));
        accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
-       //accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
+       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
        //将整单变为已付款
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
        payNote.setState(PayNoteState.CONFIRM_REAL_PAY);
