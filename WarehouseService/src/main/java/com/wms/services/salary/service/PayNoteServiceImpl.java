@@ -1,5 +1,6 @@
 package com.wms.services.salary.service;
 
+import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
 import com.wms.services.ledger.service.AccountRecordService;
 import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.ledger.service.PersonService;
@@ -52,6 +53,7 @@ public class PayNoteServiceImpl implements PayNoteService{
 
     public int[] add(String accountBook, PayNote[] payNotes) throws WMSServiceException
     {
+
         //外键检测
         Stream.of(payNotes).forEach(
                 (payNote)->{
@@ -105,8 +107,13 @@ public class PayNoteServiceImpl implements PayNoteService{
             if(this.IsRepeat(new int[]{payNote.getAccountTitlePropertyId(),payNote.getAccountTitleExpenseId(),payNote.getAccountTitlePayableId()})){
                 throw new WMSServiceException("薪资发放单薪资费用科目、应付款科目、资产科目不允许重复！!");
             }
+            //判断是否最低级
+            List<Integer> accountTitleId=new ArrayList<>();
+            accountTitleId.add(payNote.getAccountTitlePropertyId());
+            accountTitleId.add(payNote.getAccountTitleExpenseId());
+            accountTitleId.add(payNote.getAccountTitlePayableId());
+            this.HasSonAccountTitle(accountBook,accountTitleId);
         });
-
         return payNoteDAO.add(accountBook,payNotes);
     }
 
@@ -163,10 +170,14 @@ public class PayNoteServiceImpl implements PayNoteService{
             if(this.IsRepeat(new int[]{payNote.getAccountTitlePropertyId(),payNote.getAccountTitleExpenseId(),payNote.getAccountTitlePayableId()})){
                 throw new WMSServiceException("薪资发放单薪资费用科目、应付款科目、资产科目不允许重复！!");
             }
-                });
-
+            //判断是否最低级
+            List<Integer> accountTitleId=new ArrayList<>();
+            accountTitleId.add(payNote.getAccountTitlePropertyId());
+            accountTitleId.add(payNote.getAccountTitleExpenseId());
+            accountTitleId.add(payNote.getAccountTitlePayableId());
+            this.HasSonAccountTitle(accountBook,accountTitleId);
+        });
         payNoteDAO.update(accountBook,payNotes);
-
     }
 
 
@@ -343,5 +354,22 @@ public class PayNoteServiceImpl implements PayNoteService{
         return false;
     }
 
+    private void HasSonAccountTitle(String accountBook,List<Integer> accountTitleId)
+    {
+      AccountTitleView[] accountTitleViews=accountTitleService.find(accountBook,new Condition().addCondition("id",accountTitleId.toArray(), ConditionItem.Relation.IN));
+      for(int i=0;i<accountTitleViews.length;i++){
+          AccountTitle accountTitle=ReflectHelper.createAndCopyFields(accountTitleViews[i],AccountTitle.class);
 
+          List<FindLinkAccountTitle> findSonAccountTitleList=accountRecordService.FindSonAccountTitle(accountBook,new AccountTitle[]{accountTitle});
+          FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
+          findSonAccountTitleList.toArray(sonAccountTitles);
+          List<AccountTitleView> sonAccountTitleViewsList= sonAccountTitles[0].getAccountTitleViews();
+          AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
+          sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
+          if(sonAccountTitleViewsList.size()>0)
+          {
+              throw new WMSServiceException("科目:("+accountTitle.getName()+")不是最低级科目，请修改！");
+          }
+      }
+    }
 }
