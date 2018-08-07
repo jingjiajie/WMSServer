@@ -204,7 +204,9 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             }
         List<PersonSalary> personSalaryList=new ArrayList<>();
         SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
+        if(salaryTypePersonViews.length==0){throw new WMSServiceException("此类型中无人员，无法添加！");}
         SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
+        if(salaryItemViews.length==0){ throw new WMSServiceException("此类型中无薪资项目，无法添加！");}
         SalaryPeriodView[] salaryPeriodViews=salaryPeriodService.find(accountBook,new Condition().addCondition("id",addPersonSalary.getSalaryPeriodId()));
         if(salaryPeriodViews.length!=1){throw new WMSServiceException("查询薪资期间错误！");}
         //每次只添加一个类型

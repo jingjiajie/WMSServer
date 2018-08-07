@@ -3,17 +3,11 @@ package com.wms.services.ledger.service;
 import com.wms.services.ledger.dao.AccountRecordDAO;
 import com.wms.services.ledger.dao.AccountTitleDAO;
 import com.wms.services.ledger.datestructures.TransferAccount;
-import com.wms.services.warehouse.datastructures.StockRecordFind;
-import com.wms.services.warehouse.datastructures.TransferStock;
-import com.wms.services.warehouse.service.StorageLocationService;
-import com.wms.services.warehouse.service.SupplyService;
-import com.wms.services.warehouse.service.TransferOrderService;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.datastructures.ConditionItem;
-import com.wms.utilities.datastructures.OrderItem;
+import com.wms.utilities.exceptions.service.AccountTitleException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
@@ -21,14 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
-import java.lang.reflect.Array;
+
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Transactional
@@ -81,9 +72,9 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
             sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
             if (curSonAccountTitleViews.length>0
-                    &&accountRecords[k].getCreditAmount().compareTo(new BigDecimal(0))!=0
-                    &&accountRecords[k].getDebitAmount().compareTo(new BigDecimal(0))!=0){
-                throw new WMSServiceException(String.format("无法添加明细记录！当前账目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", accountTitles[0].getName()));
+                    &&(accountRecords[k].getCreditAmount().compareTo(new BigDecimal(0))!=0
+                    ||accountRecords[k].getDebitAmount().compareTo(new BigDecimal(0))!=0)){
+                throw new AccountTitleException(String.format("无法添加明细记录！当前账目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", accountTitles[0].getName()));
             }
 
             AccountRecordView[] accountRecordViews= accountRecordDAO.find(accountBook,new Condition()

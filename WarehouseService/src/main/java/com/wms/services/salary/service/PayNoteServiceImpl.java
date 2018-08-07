@@ -6,13 +6,12 @@ import com.wms.services.ledger.service.PersonService;
 import com.wms.services.ledger.service.TaxService;
 import com.wms.services.salary.dao.PayNoteDAO;
 import com.wms.services.salary.datestructures.*;
-import com.wms.services.warehouse.datastructures.StockTakingOrderAndItems;
-import com.wms.services.warehouse.service.StockTakingOrderServiceImpl;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.exceptions.service.AccountTitleException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -238,7 +236,12 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord1.setBalance(new BigDecimal(1));
        accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
        //TODO 将总金额增加到 总账
+       try{
        accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
+       }
+       catch (AccountTitleException e){
+           throw new WMSServiceException("无法向非子级科目记录账目，请将应付款科目和薪资费用科目修改为子级科目！");
+       }
        //将整单变为已确认待付款状态
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
        payNote.setState(PayNoteState.CONFIRM_PAY);
@@ -290,7 +293,14 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord1.setComment(accountSynchronize.getComment());
        accountRecord1.setBalance(new BigDecimal(1));
        accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
+       try
+       {
        accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
+       }
+       catch (AccountTitleException e)
+       {
+           throw new WMSServiceException("无法非子级科目记录账目，请应付款科目和资产科目修改为子级科目");
+       }
        //将整单变为已付款
        PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
        payNote.setState(PayNoteState.CONFIRM_REAL_PAY);
