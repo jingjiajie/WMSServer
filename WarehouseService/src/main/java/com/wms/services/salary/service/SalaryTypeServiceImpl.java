@@ -37,7 +37,7 @@ public class SalaryTypeServiceImpl implements SalaryTypeService {
         //重复
         Stream.of(salaryTypes).forEach((salaryType)->{
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{salaryType.getName()});
+            cond.addCondition("name",new String[]{salaryType.getName()}).addCondition("warehouseId",salaryType.getWarehouseId());
             if(salaryTypeDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("薪金类型名："+salaryType.getName()+"已经存在!");
             }
@@ -71,6 +71,7 @@ public class SalaryTypeServiceImpl implements SalaryTypeService {
         for(int i=0;i<salaryTypes.length;i++){
             Condition cond = new Condition();
             cond.addCondition("name",new String[]{salaryTypes[i].getName()});
+            cond.addCondition("warehouseId",salaryTypes[i].getWarehouseId());
             cond.addCondition("id",new Integer[]{salaryTypes[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
             if(salaryTypeDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("薪金类型名称重复："+salaryTypes[i].getName());
