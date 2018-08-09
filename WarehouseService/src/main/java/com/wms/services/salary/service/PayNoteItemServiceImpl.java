@@ -217,6 +217,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
         List<Integer> state=new ArrayList<>();
         state.add(PayNoteItemState.CALCULATED_PAY);
+        state.add(PayNoteItemState.PAYED);
         PayNoteItem[] payNoteItems= this.getStateItem(payNoteItemViews,state);
         //因为是全部完成，所以金额直接相等
         for(int i=0;i<payNoteItems.length;i++){
@@ -236,6 +237,10 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
                 break;}
         }
         if(dateNull){throw new WMSServiceException("薪资发放单中无可操作条目！");}
+        for(int i=0;i<payNoteItemViews.length;i++){
+            if(payNoteItemViews[i].getPaidAmount().compareTo(new BigDecimal(0))<=0){
+                throw new WMSServiceException("实付金额不能为负，请检查金额！"); }
+        }
         int payNoteId=payNoteItemViews[0].getPayNoteId();
         PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
         if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
