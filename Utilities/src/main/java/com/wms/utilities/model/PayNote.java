@@ -17,10 +17,11 @@ public class PayNote {
     private Integer accountTitleExpenseId;
     private int state;
     private Integer taxId;
+    private Integer salaryTypeId;
 
     @Id
-    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -139,12 +140,22 @@ public class PayNote {
         this.taxId = taxId;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "SalaryTypeID")
+    public Integer getSalaryTypeId() {
+        return salaryTypeId;
+    }
 
-        PayNote payNote = (PayNote) o;
+    public void setSalaryTypeId(Integer salaryTypeId) {
+        this.salaryTypeId = salaryTypeId;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        PayNote payNote = (PayNote) object;
 
         if (id != payNote.id) return false;
         if (warehouseId != payNote.warehouseId) return false;
@@ -161,6 +172,8 @@ public class PayNote {
         if (accountTitleExpenseId != null ? !accountTitleExpenseId.equals(payNote.accountTitleExpenseId) : payNote.accountTitleExpenseId != null)
             return false;
         if (taxId != null ? !taxId.equals(payNote.taxId) : payNote.taxId != null) return false;
+        if (salaryTypeId != null ? !salaryTypeId.equals(payNote.salaryTypeId) : payNote.salaryTypeId != null)
+            return false;
 
         return true;
     }
@@ -179,6 +192,7 @@ public class PayNote {
         result = 31 * result + (accountTitleExpenseId != null ? accountTitleExpenseId.hashCode() : 0);
         result = 31 * result + state;
         result = 31 * result + (taxId != null ? taxId.hashCode() : 0);
+        result = 31 * result + (salaryTypeId != null ? salaryTypeId.hashCode() : 0);
         return result;
     }
 }

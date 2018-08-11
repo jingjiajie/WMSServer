@@ -31,10 +31,11 @@ public class PayNoteView {
     private Integer taxId;
     private String taxName;
     private String taxNo;
+    private Integer salaryTypeId;
 
     @Basic
-    @Column(name = "ID")
     @Id
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -263,12 +264,22 @@ public class PayNoteView {
         this.taxNo = taxNo;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "SalaryTypeID")
+    public Integer getSalaryTypeId() {
+        return salaryTypeId;
+    }
 
-        PayNoteView that = (PayNoteView) o;
+    public void setSalaryTypeId(Integer salaryTypeId) {
+        this.salaryTypeId = salaryTypeId;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        PayNoteView that = (PayNoteView) object;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
@@ -305,6 +316,7 @@ public class PayNoteView {
         if (taxId != null ? !taxId.equals(that.taxId) : that.taxId != null) return false;
         if (taxName != null ? !taxName.equals(that.taxName) : that.taxName != null) return false;
         if (taxNo != null ? !taxNo.equals(that.taxNo) : that.taxNo != null) return false;
+        if (salaryTypeId != null ? !salaryTypeId.equals(that.salaryTypeId) : that.salaryTypeId != null) return false;
 
         return true;
     }
@@ -334,6 +346,7 @@ public class PayNoteView {
         result = 31 * result + (taxId != null ? taxId.hashCode() : 0);
         result = 31 * result + (taxName != null ? taxName.hashCode() : 0);
         result = 31 * result + (taxNo != null ? taxNo.hashCode() : 0);
+        result = 31 * result + (salaryTypeId != null ? salaryTypeId.hashCode() : 0);
         return result;
     }
 }

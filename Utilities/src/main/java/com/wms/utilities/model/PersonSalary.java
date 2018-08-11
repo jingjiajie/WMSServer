@@ -11,10 +11,11 @@ public class PersonSalary {
     private Integer personId;
     private Integer salaryItemId;
     private BigDecimal amount;
+    private Integer edited;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -73,12 +74,22 @@ public class PersonSalary {
         this.amount = amount;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "Edited")
+    public Integer getEdited() {
+        return edited;
+    }
 
-        PersonSalary that = (PersonSalary) o;
+    public void setEdited(Integer edited) {
+        this.edited = edited;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        PersonSalary that = (PersonSalary) object;
 
         if (id != that.id) return false;
         if (warehouseId != null ? !warehouseId.equals(that.warehouseId) : that.warehouseId != null) return false;
@@ -87,6 +98,7 @@ public class PersonSalary {
         if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
         if (salaryItemId != null ? !salaryItemId.equals(that.salaryItemId) : that.salaryItemId != null) return false;
         if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
+        if (edited != null ? !edited.equals(that.edited) : that.edited != null) return false;
 
         return true;
     }
@@ -99,6 +111,7 @@ public class PersonSalary {
         result = 31 * result + (personId != null ? personId.hashCode() : 0);
         result = 31 * result + (salaryItemId != null ? salaryItemId.hashCode() : 0);
         result = 31 * result + (amount != null ? amount.hashCode() : 0);
+        result = 31 * result + (edited != null ? edited.hashCode() : 0);
         return result;
     }
 }

@@ -18,6 +18,8 @@ public class PersonSalaryView {
     private String personName;
     private String salaryPeriodName;
     private String salaryItemName;
+    private Integer edited;
+    private Integer salaryTypeId;
 
     @Basic
     @Id
@@ -120,12 +122,32 @@ public class PersonSalaryView {
         this.salaryItemName = salaryItemName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "Edited")
+    public Integer getEdited() {
+        return edited;
+    }
 
-        PersonSalaryView that = (PersonSalaryView) o;
+    public void setEdited(Integer edited) {
+        this.edited = edited;
+    }
+
+    @Basic
+    @Column(name = "SalaryTypeID")
+    public Integer getSalaryTypeId() {
+        return salaryTypeId;
+    }
+
+    public void setSalaryTypeId(Integer salaryTypeId) {
+        this.salaryTypeId = salaryTypeId;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        PersonSalaryView that = (PersonSalaryView) object;
 
         if (id != that.id) return false;
         if (warehouseId != null ? !warehouseId.equals(that.warehouseId) : that.warehouseId != null) return false;
@@ -141,6 +163,8 @@ public class PersonSalaryView {
             return false;
         if (salaryItemName != null ? !salaryItemName.equals(that.salaryItemName) : that.salaryItemName != null)
             return false;
+        if (edited != null ? !edited.equals(that.edited) : that.edited != null) return false;
+        if (salaryTypeId != null ? !salaryTypeId.equals(that.salaryTypeId) : that.salaryTypeId != null) return false;
 
         return true;
     }
@@ -157,6 +181,8 @@ public class PersonSalaryView {
         result = 31 * result + (personName != null ? personName.hashCode() : 0);
         result = 31 * result + (salaryPeriodName != null ? salaryPeriodName.hashCode() : 0);
         result = 31 * result + (salaryItemName != null ? salaryItemName.hashCode() : 0);
+        result = 31 * result + (edited != null ? edited.hashCode() : 0);
+        result = 31 * result + (salaryTypeId != null ? salaryTypeId.hashCode() : 0);
         return result;
     }
 }
