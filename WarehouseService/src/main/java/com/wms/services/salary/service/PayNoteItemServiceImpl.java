@@ -238,7 +238,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         }
         if(dateNull){throw new WMSServiceException("薪资发放单中无可操作条目！");}
         for(int i=0;i<payNoteItemViews.length;i++){
-            if(payNoteItemViews[i].getPaidAmount().compareTo(new BigDecimal(0))<=0){
+            if(payNoteItemViews[i].getPaidAmount().compareTo(new BigDecimal(0))<0){
                 throw new WMSServiceException("实付金额不能为负，请检查金额！"); }
         }
         int payNoteId=payNoteItemViews[0].getPayNoteId();
