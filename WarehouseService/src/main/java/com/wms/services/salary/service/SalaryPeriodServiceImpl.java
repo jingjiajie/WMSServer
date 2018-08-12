@@ -146,7 +146,7 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
         List<SalaryPeriod> salaryPeriodList= Arrays.asList(salaryPeriods);
         salaryPeriodList.stream().sorted(Comparator.comparing(SalaryPeriod::getStartTime)).reduce((last, cur) -> {
             if (last.getEndTime().compareTo(cur.getStartTime())>=0){
-                throw new WMSServiceException("薪资区间不能重叠！重叠名称： "+last.getName()+" 与 "+cur.getName());
+                throw new WMSServiceException("薪资区间不能重叠！ 期间： "+last.getName()+" 与 "+cur.getName()+"的区间重复！");
             }
             return cur;
         });
@@ -154,9 +154,9 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
 
     private void validateEndTime(String accountBook,SalaryPeriod salaryPeriod)
     {
-        SalaryPeriod[] salaryPeriods=this.salaryPeriodDAO.findTable(accountBook,new Condition().addCondition("warehouseId",salaryPeriod.getWarehouseId()).addCondition("startTime",salaryPeriod.getEndTime(), ConditionItem.Relation.GREATER_THAN_OR_EQUAL_TO));
+        SalaryPeriod[] salaryPeriods=this.salaryPeriodDAO.findTable(accountBook,new Condition().addCondition("warehouseId",salaryPeriod.getWarehouseId()).addCondition("endTime",salaryPeriod.getStartTime(), ConditionItem.Relation.GREATER_THAN_OR_EQUAL_TO));
         if(salaryPeriods.length!=0){
-            throw new WMSServiceException("期间:"+salaryPeriod.getName()+"的起始时间必须大于所有期间的截至时间"+salaryPeriods[0].getEndTime());
+            throw new WMSServiceException("期间:"+salaryPeriod.getName()+"的起始时间必须大于所有期间的截至时间:"+salaryPeriods[0].getEndTime());
         }
     }
 }
