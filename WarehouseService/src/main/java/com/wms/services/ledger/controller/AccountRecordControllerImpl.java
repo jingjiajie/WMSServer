@@ -1,6 +1,7 @@
 package com.wms.services.ledger.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.ledger.datestructures.AccrualCheck;
 import com.wms.services.ledger.service.AccountRecordService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.AccountRecord;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/{accountBook}/account_record")
@@ -58,5 +61,21 @@ public class AccountRecordControllerImpl implements AccountRecordController {
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.accountRecordService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value = "/write_off",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void writeOff(@PathVariable("accountBook") String accountBook,
+                            @RequestBody List<Integer> ids){
+        this.accountRecordService.writeOff(accountBook,ids);
+    }
+
+    @Override
+    @RequestMapping(value = "/accrual_check",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public AccrualCheck accrualCheck(@PathVariable("accountBook") String accountBook,
+                                 @RequestBody AccrualCheck accrualCheck){
+        return this.accountRecordService.accrualCheck(accountBook,accrualCheck);
     }
 }
