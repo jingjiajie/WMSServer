@@ -7,6 +7,7 @@ import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.AccountTitleException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
 
+import com.wms.services.ledger.datestructures.AccrualCheck;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -479,6 +481,49 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             }
         }
         return result;
+    }
+
+    @Override
+    public void writeOff(String accountBook,List<Integer> ids) throws WMSServiceException{
+        if (ids.size() == 0) {
+            throw new WMSServiceException("请选择至少一个账目记录！");
+        }
+        AccountRecordView[] accountRecordViews = this.find(accountBook,new Condition().addCondition("id",ids.toArray(), ConditionItem.Relation.IN));
+        AccountRecord[] accountRecords = ReflectHelper.createAndCopyFields(accountRecordViews,AccountRecord.class);
+
+        Stream.of(accountRecords).forEach((accountRecord)->{
+            BigDecimal creditAmount=accountRecord.getCreditAmount();
+            BigDecimal debitAmount=accountRecord.getDebitAmount();
+            accountRecord.setDebitAmount(creditAmount);
+            accountRecord.setCreditAmount(debitAmount);
+        });
+        this.add(accountBook,accountRecords);
+    }
+
+    @Override
+    public List<AccrualCheck> accrualCheck(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException{
+        int curWarehouseId=accrualCheck.getWarehouseId();
+        int curPersonId=accrualCheck.getPersonId();
+        int curAccountPeriodId=accrualCheck.getCurAccountPeriodId();
+        List<AccrualCheck> returnAccrualCheckList=new ArrayList();
+
+        AccountRecordView[] accountRecordViews= this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
+        if (accountRecordViews.length<=0)
+        {
+            throw new WMSServiceException("当前期间此仓库中无账目记录，无法结转");
+        }
+
+        BigDecimal creditAmount=new BigDecimal(0);
+        BigDecimal debitAmount=new BigDecimal(0);
+        for (int i=0;i<accountRecordViews.length;i++){
+            creditAmount=creditAmount.add(accountRecordViews[i].getCreditAmount());
+            debitAmount=debitAmount.add(accountRecordViews[i].getDebitAmount());
+        }
+        AccrualCheck returnAccrualCheck=new AccrualCheck();
+        returnAccrualCheck.setCreditAmount(creditAmount);
+        returnAccrualCheck.setDebitAmount(debitAmount);
+        returnAccrualCheckList.add(returnAccrualCheck);
+        return returnAccrualCheckList;
     }
 }
 
