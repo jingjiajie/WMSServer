@@ -18,5 +18,5 @@ public interface AccountRecordService extends BaseService<AccountRecord,AccountR
     public List<FindLinkAccountTitle> FindSonAccountTitle(String accountBook, AccountTitle[] accountTitles)throws WMSServiceException;
     public int[] simpleAdd(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException;
     public void writeOff(String accountBook,List<Integer> ids) throws WMSServiceException;
-    public AccrualCheck accrualCheck(String accountBook, AccrualCheck accrualCheck) throws WMSServiceException;
+    public List<AccrualCheck> accrualCheck(String accountBook, AccrualCheck accrualCheck) throws WMSServiceException;
 }

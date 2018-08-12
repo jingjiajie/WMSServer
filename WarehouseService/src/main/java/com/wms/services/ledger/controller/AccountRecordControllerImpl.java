@@ -74,7 +74,7 @@ public class AccountRecordControllerImpl implements AccountRecordController {
     @Override
     @RequestMapping(value = "/accrual_check",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public AccrualCheck accrualCheck(@PathVariable("accountBook") String accountBook,
+    public List<AccrualCheck> accrualCheck(@PathVariable("accountBook") String accountBook,
                                  @RequestBody AccrualCheck accrualCheck){
         return this.accountRecordService.accrualCheck(accountBook,accrualCheck);
     }

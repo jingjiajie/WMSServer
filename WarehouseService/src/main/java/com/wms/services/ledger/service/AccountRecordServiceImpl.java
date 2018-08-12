@@ -501,10 +501,11 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     }
 
     @Override
-    public AccrualCheck  accrualCheck(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException{
+    public List<AccrualCheck> accrualCheck(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException{
         int curWarehouseId=accrualCheck.getWarehouseId();
         int curPersonId=accrualCheck.getPersonId();
         int curAccountPeriodId=accrualCheck.getCurAccountPeriodId();
+        List<AccrualCheck> returnAccrualCheckList=new ArrayList();
 
         AccountRecordView[] accountRecordViews= this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
         if (accountRecordViews.length<=0)
@@ -521,7 +522,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         AccrualCheck returnAccrualCheck=new AccrualCheck();
         returnAccrualCheck.setCreditAmount(creditAmount);
         returnAccrualCheck.setDebitAmount(debitAmount);
-        return returnAccrualCheck;
+        returnAccrualCheckList.add(returnAccrualCheck);
+        return returnAccrualCheckList;
     }
 }
 

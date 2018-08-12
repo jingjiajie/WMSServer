@@ -11,6 +11,6 @@ import java.util.List;
 public interface AccountRecordController
         extends BaseController<AccountRecord,AccountRecordView> {
     public void writeOff(String accountBook,List<Integer> ids) throws WMSServiceException;
-    public AccrualCheck accrualCheck(String accountBook, AccrualCheck accrualCheck) throws WMSServiceException;
+    public List<AccrualCheck> accrualCheck(String accountBook, AccrualCheck accrualCheck) throws WMSServiceException;
 
 }
