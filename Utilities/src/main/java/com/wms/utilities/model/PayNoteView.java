@@ -32,6 +32,7 @@ public class PayNoteView {
     private String taxName;
     private String taxNo;
     private Integer salaryTypeId;
+    private String salaryTypeName;
 
     @Basic
     @Id
@@ -274,6 +275,16 @@ public class PayNoteView {
         this.salaryTypeId = salaryTypeId;
     }
 
+    @Basic
+    @Column(name = "SalaryTypeName")
+    public String getSalaryTypeName() {
+        return salaryTypeName;
+    }
+
+    public void setSalaryTypeName(String salaryTypeName) {
+        this.salaryTypeName = salaryTypeName;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -317,6 +328,8 @@ public class PayNoteView {
         if (taxName != null ? !taxName.equals(that.taxName) : that.taxName != null) return false;
         if (taxNo != null ? !taxNo.equals(that.taxNo) : that.taxNo != null) return false;
         if (salaryTypeId != null ? !salaryTypeId.equals(that.salaryTypeId) : that.salaryTypeId != null) return false;
+        if (salaryTypeName != null ? !salaryTypeName.equals(that.salaryTypeName) : that.salaryTypeName != null)
+            return false;
 
         return true;
     }
@@ -347,6 +360,7 @@ public class PayNoteView {
         result = 31 * result + (taxName != null ? taxName.hashCode() : 0);
         result = 31 * result + (taxNo != null ? taxNo.hashCode() : 0);
         result = 31 * result + (salaryTypeId != null ? salaryTypeId.hashCode() : 0);
+        result = 31 * result + (salaryTypeName != null ? salaryTypeName.hashCode() : 0);
         return result;
     }
 }
