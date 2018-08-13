@@ -7,6 +7,7 @@ import com.wms.services.salary.datestructures.SalaryItemTypeState;
 import com.wms.services.warehouse.service.*;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.datastructures.OrderItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
@@ -113,7 +114,11 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                     throw new WMSServiceException("相同人员、期间、仓库、项目的条目在列表中重复！");}
             }
         }
-
+        //变为已编辑
+        for(int i=0;i<personSalaries.length;i++)
+        {
+            personSalaries[i].setEdited(1);//1为编辑过
+        }
         //重复
         Stream.of(personSalaries).forEach((personSalary)->{
             Condition cond = new Condition();
@@ -176,6 +181,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
 
     public void addPersonSalaryBySalaryType(String accountBook, AddPersonSalary addPersonSalary)
     {
+        /*
         StringBuffer stringBuffer=new StringBuffer();
         stringBuffer.append("(");
         for(int i=0;i<addPersonSalary.getSalaryTypeId().size();i++){ stringBuffer.append(addPersonSalary.getSalaryTypeId().toArray()[i]);
@@ -185,6 +191,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             }
         }
         stringBuffer.append(")");
+        */
         Session session=this.sessionFactory.getCurrentSession();
         session.flush();
         try {
@@ -194,18 +201,19 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         }
         try{
         Query query=null;
-            String sql="DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId in "+stringBuffer.toString()+") and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId in "+stringBuffer.toString()+")";
+            String sql="DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId  and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryPeriodId)";
             query=session.createNativeQuery(sql);
             query.setParameter("salaryPeriodId",addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId",addPersonSalary.getWarehouseId());
+            query.setParameter("salaryPeriodId",addPersonSalary.getSalaryPeriodId());
             query.executeUpdate();}
             catch (Exception e){
                 throw new WMSServiceException("删除旧人员薪资失败！");
             }
         List<PersonSalary> personSalaryList=new ArrayList<>();
-        SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
+        SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId() ));
         if(salaryTypePersonViews.length==0){throw new WMSServiceException("此类型中无人员，无法添加！");}
-        SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId().toArray(), ConditionItem.Relation.IN));
+        SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId()));
         if(salaryItemViews.length==0){ throw new WMSServiceException("此类型中无薪资项目，无法添加！");}
         SalaryPeriodView[] salaryPeriodViews=salaryPeriodService.find(accountBook,new Condition().addCondition("id",addPersonSalary.getSalaryPeriodId()));
         if(salaryPeriodViews.length!=1){throw new WMSServiceException("查询薪资期间错误！");}
@@ -273,6 +281,92 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         PersonSalary[] personSalaries=new PersonSalary[personSalaryList.size()];
     personSalaryList.toArray(personSalaries);
     personSalaryDAO.add(accountBook,personSalaries);
+    }
+
+    private SalaryPeriodView findNewestSalaryPeriod(String accountBook,int warehouseId)
+    {
+        SalaryPeriodView[] salaryPeriodViews=salaryPeriodService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId).addOrder("startTime", OrderItem.Order.DESC));
+        if(salaryPeriodViews.length==0)
+        {
+            throw new WMSServiceException("此仓库中无薪资期间！");
+        }
+        return salaryPeriodViews[0];
+    }
+
+    public void updatePersonSalary(String accountBook, AddPersonSalary addPersonSalary)
+    {
+        SalaryPeriodView salaryPeriodViewNewest=this.findNewestSalaryPeriod(accountBook,addPersonSalary.getWarehouseId());
+
+
+
+    }
+
+    public void updateNewestPeriodPerdonSalary(String accountBook,AddPersonSalary addPersonSalary)
+    {
+        SalaryPeriodView salaryPeriodViewNewest=this.findNewestSalaryPeriod(accountBook,addPersonSalary.getWarehouseId());
+        Session session=this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        try{
+            Query query=null;
+            // 诶编辑过的更新
+            String sql="DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId  and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryPeriodId) and editaed=0";
+            query=session.createNativeQuery(sql);
+            query.setParameter("salaryPeriodId",addPersonSalary.getSalaryPeriodId());
+            query.setParameter("warehouseId",addPersonSalary.getWarehouseId());
+            query.setParameter("salaryPeriodId",addPersonSalary.getSalaryPeriodId());
+            query.executeUpdate();}
+        catch (Exception e){
+            throw new WMSServiceException("删除旧人员薪资失败！");
+        }
+        List<PersonSalary> personSalaryList=new ArrayList<>();
+        SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId() ));
+        if(salaryTypePersonViews.length==0){throw new WMSServiceException("此类型中无人员，无法添加！");}
+        SalaryItemView[] salaryItemViews=salaryItemService.find(accountBook,new Condition().addCondition("salaryTypeId",addPersonSalary.getSalaryTypeId()));
+        if(salaryItemViews.length==0){ throw new WMSServiceException("此类型中无薪资项目，无法添加！");}
+        SalaryPeriodView[] salaryPeriodViews=salaryPeriodService.find(accountBook,new Condition().addCondition("id",addPersonSalary.getSalaryPeriodId()));
+        if(salaryPeriodViews.length!=1){throw new WMSServiceException("查询薪资期间错误！");}
+        //每次只添加一个类型
+        for(SalaryTypePersonView salaryTypePersonView:salaryTypePersonViews){
+            for(SalaryItemView salaryItemView:salaryItemViews) {
+                PersonSalary personSalary = new PersonSalary();
+                personSalary.setPersonId(salaryTypePersonView.getPersonId());
+                //区分类型
+                if(salaryItemView.getType()== SalaryItemTypeState.REGULAR_SALARY)
+                {
+                    personSalary.setAmount(salaryItemView.getDefaultAmount());
+                }
+                else
+                {
+                    BigDecimal amount=new BigDecimal(0);
+                    //先按人员查找入库单、送检单、移库单
+                    WarehouseEntryItemView[] warehouseEntryItemViews=warehouseEntryItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("warehouseEntryCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
+                    for(int i=0;i<warehouseEntryItemViews.length;i++){
+                        amount=amount.add(warehouseEntryItemViews[i].getRealAmount());
+                    }
+                    InspectionNoteItemView[] inspectionNoteItemViews=inspectionNoteItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("inspectionNoteCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
+                    for(int i=0;i<inspectionNoteItemViews.length;i++){
+                        amount=amount.add(inspectionNoteItemViews[i].getAmount());
+                    }
+                    TransferOrderItemView[] transferOrderItemViews=transferOrderItemService.find(accountBook,new Condition().addCondition("personId",salaryTypePersonView.getPersonId()).addCondition("transferOrderCreateTime",new Timestamp[]{salaryPeriodViews[0].getStartTime(),salaryPeriodViews[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
+                    for(int i=0;i<transferOrderItemViews.length;i++){
+                        amount=amount.add(transferOrderItemViews[i].getRealAmount());
+                    }
+                    personSalary.setAmount(salaryItemView.getDefaultAmount().multiply(amount));
+                }
+                personSalary.setSalaryItemId(salaryItemView.getId());
+                personSalary.setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
+                personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
+                personSalaryList.add(personSalary);
+            }
+        }
+        PersonSalary[] personSalaries=new PersonSalary[personSalaryList.size()];
+        personSalaryList.toArray(personSalaries);
+        personSalaryDAO.add(accountBook,personSalaries);
     }
 }
 

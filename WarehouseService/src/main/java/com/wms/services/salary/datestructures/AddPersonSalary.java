@@ -7,7 +7,7 @@ public class AddPersonSalary {
         return salaryPeriodId;
     }
 
-    public List<Integer> getSalaryTypeId() {
+    public int getSalaryTypeId() {
         return salaryTypeId;
     }
 
@@ -15,12 +15,12 @@ public class AddPersonSalary {
         this.salaryPeriodId = salaryPeriodId;
     }
 
-    public void setSalaryTypeId(List<Integer> salaryTypeId) {
+    public void setSalaryTypeId(int salaryTypeId) {
         this.salaryTypeId = salaryTypeId;
     }
 
     private int salaryPeriodId;
-    private List<Integer> salaryTypeId;
+    private int salaryTypeId;
 
     public int getWarehouseId() {
         return warehouseId;
