@@ -269,8 +269,9 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
     if(payNoteViews.length!=1){throw new WMSServiceException("查询薪金发放单出错！");}
     if(payNoteViews[0].getState()!=PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("本单不在待确认状态，无法添加条目！");}
     int periodId=payNoteViews[0].getSalaryPeriodId();
+    int typeId=payNoteViews[0].getSalaryTypeId();
     List<PayNoteItem> payNoteItemList=new ArrayList<>();
-        PersonSalaryView[] personSalaryViews=personSalaryService.find(accountBook,new Condition().addCondition("salaryPeriodId",periodId).addCondition("warehouseId",warehouseId));
+        PersonSalaryView[] personSalaryViews=personSalaryService.find(accountBook,new Condition().addCondition("salaryPeriodId",periodId).addCondition("warehouseId",warehouseId).addCondition("salaryTypeId",typeId));
         Map<Integer, List<PersonSalaryView>> groupByPersonIdMap =
                 Stream.of(personSalaryViews).collect(Collectors.groupingBy(PersonSalaryView::getPersonId));
         for (Map.Entry<Integer, List<PersonSalaryView>> entry : groupByPersonIdMap.entrySet()){
