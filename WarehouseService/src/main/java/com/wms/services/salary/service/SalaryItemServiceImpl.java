@@ -1,6 +1,7 @@
 package com.wms.services.salary.service;
 
 import com.wms.services.salary.dao.SalaryItemDAO;
+import com.wms.services.salary.datestructures.AddPersonSalary;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -23,6 +24,8 @@ public class SalaryItemServiceImpl implements SalaryItemService{
     WarehouseService warehouseService;
     @Autowired
     SalaryTypeService salaryTypeService;
+    @Autowired
+    PersonSalaryService personSalaryService;
     public int[] add(String accountBook, SalaryItem[] salaryItems) throws WMSServiceException
     {
 
@@ -60,7 +63,13 @@ public class SalaryItemServiceImpl implements SalaryItemService{
                         throw new WMSServiceException(String.format("类别不存在，请重新提交！(%d)",salaryItem.getWarehouseId()));
                     }}
         );
-        return salaryItemDAO.add(accountBook,salaryItems);
+        int[] ids= salaryItemDAO.add(accountBook,salaryItems);
+        for(int i=0;i<ids.length;i++){
+            AddPersonSalary addPersonSalary=new AddPersonSalary();
+            addPersonSalary.setWarehouseId(salaryItems[0].getWarehouseId());
+            addPersonSalary.setSalaryTypeId(ids[i]);
+            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalary);}
+        return ids;
     }
 
     @Transactional
@@ -108,6 +117,11 @@ public class SalaryItemServiceImpl implements SalaryItemService{
                     }}
         );
        salaryItemDAO.update(accountBook, salaryItems);
+        for(int i=0;i<salaryItems.length;i++){
+            AddPersonSalary addPersonSalary=new AddPersonSalary();
+            addPersonSalary.setWarehouseId(salaryItems[0].getWarehouseId());
+            addPersonSalary.setSalaryTypeId(salaryItems[i].getSalaryTypeId());
+            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalary);}
     }
 
     @Transactional
@@ -126,6 +140,10 @@ public class SalaryItemServiceImpl implements SalaryItemService{
 
     public SalaryItemView[] find(String accountBook, Condition cond) throws WMSServiceException{
         return this.salaryItemDAO.find(accountBook, cond);
+    }
+
+    public SalaryItem[] findTable(String accountBook, Condition cond) throws WMSServiceException{
+        return this.salaryItemDAO.findTable(accountBook, cond);
     }
 
     public long findCount(String database,Condition cond) throws WMSServiceException{

@@ -136,6 +136,10 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
         return this.salaryPeriodDAO.find(accountBook, cond);
     }
 
+    public SalaryPeriod[] findTable(String accountBook, Condition cond) throws WMSServiceException{
+        return this.salaryPeriodDAO.findTable(accountBook, cond);
+    }
+
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.salaryPeriodDAO.findCount(database,cond);
     }

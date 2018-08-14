@@ -103,9 +103,11 @@ public class SalaryTypePersonServiceImpl implements SalaryTypePersonService{
         return this.salaryTypePersonDAO.find(accountBook, cond);
     }
 
+    public SalaryTypePerson[] findTable(String accountBook, Condition cond) throws WMSServiceException{
+        return this.salaryTypePersonDAO.findTable(accountBook, cond);
+    }
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.salaryTypePersonDAO.findCount(database,cond);
     }
-
 
 }

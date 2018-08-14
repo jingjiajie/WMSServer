@@ -1,6 +1,7 @@
 package com.wms.services.salary.service;
 
 import com.wms.services.salary.dao.SalaryTypeDAO;
+import com.wms.services.salary.datestructures.AddPersonSalary;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -20,6 +21,8 @@ import java.util.stream.Stream;
 public class SalaryTypeServiceImpl implements SalaryTypeService {
     @Autowired
     SalaryTypeDAO salaryTypeDAO;
+    @Autowired
+    PersonSalaryService personSalaryService;
 
 
     public int[] add(String accountBook, SalaryType[] salaryTypes) throws WMSServiceException
@@ -42,9 +45,14 @@ public class SalaryTypeServiceImpl implements SalaryTypeService {
                 throw new WMSServiceException("薪金类型名："+salaryType.getName()+"已经存在!");
             }
         });
-
-        return salaryTypeDAO.add(accountBook,salaryTypes);
-
+        //新加类型需要更新最新期间的人员薪资，没用
+        int[] ids= salaryTypeDAO.add(accountBook,salaryTypes);
+        for(int i=0;i<ids.length;i++){
+        AddPersonSalary addPersonSalary=new AddPersonSalary();
+        addPersonSalary.setWarehouseId(salaryTypes[0].getWarehouseId());
+        addPersonSalary.setSalaryTypeId(ids[i]);
+        this.personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalary);}
+        return ids;
     }
 
     @Transactional
@@ -53,7 +61,6 @@ public class SalaryTypeServiceImpl implements SalaryTypeService {
             Validator validator = new Validator("薪金类型名");
             validator.notnull().notEmpty().validate(salaryTypes[i].getName());
         }
-
         for(int i=0;i<salaryTypes.length;i++){
             for(int j=i+1;j<salaryTypes.length;j++){
                 String name=salaryTypes[i].getName();
@@ -96,6 +103,10 @@ public class SalaryTypeServiceImpl implements SalaryTypeService {
 
     public SalaryTypeView[] find(String accountBook, Condition cond) throws WMSServiceException{
         return this.salaryTypeDAO.find(accountBook, cond);
+    }
+
+    public SalaryType[] findTable(String accountBook, Condition cond) throws WMSServiceException{
+        return this.salaryTypeDAO.findTable(accountBook, cond);
     }
 
     public long findCount(String database,Condition cond) throws WMSServiceException{
