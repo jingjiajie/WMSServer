@@ -1,6 +1,7 @@
 package com.wms.services.salary.service;
 
 import com.wms.services.salary.dao.SalaryPeriodDAO;
+import com.wms.services.salary.datestructures.AddPersonSalary;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -24,6 +25,8 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
     SalaryPeriodDAO salaryPeriodDAO;
     @Autowired
     com.wms.services.warehouse.service.WarehouseService warehouseService;
+    @Autowired
+    PersonSalaryService personSalaryService;
 
 
 
@@ -67,6 +70,11 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
         );
         int[] ids= salaryPeriodDAO.add(accountBook,salaryPeriods);
         this.validateOverlap(accountBook,salaryPeriods[0].getWarehouseId());
+        for(int i=0;i<ids.length;i++){
+            AddPersonSalary addPersonSalary=new AddPersonSalary();
+            addPersonSalary.setWarehouseId(salaryPeriods[0].getWarehouseId());
+            addPersonSalary.setSalaryTypeId(ids[i]);
+            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalary);}
         return ids;
     }
 
