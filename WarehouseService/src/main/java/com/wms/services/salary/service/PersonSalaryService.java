@@ -8,4 +8,5 @@ import com.wms.utilities.service.BaseService;
 public interface PersonSalaryService extends BaseService<PersonSalary,PersonSalaryView> {
     void addPersonSalaryBySalaryType(String accountBook, AddPersonSalary addPersonSalary);
     void updateNewestPeriodPersonSalary(String accountBook, AddPersonSalary addPersonSalary);
+    void addForNewPeriod(String accountBook, AddPersonSalary addPersonSalary);
 }

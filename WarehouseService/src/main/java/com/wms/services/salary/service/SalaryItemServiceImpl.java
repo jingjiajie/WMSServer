@@ -8,16 +8,19 @@ import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.SalaryItem;
 import com.wms.utilities.model.SalaryItemView;
+import com.wms.utilities.model.SalaryType;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Transactional
 @Service
-public class SalaryItemServiceImpl implements SalaryItemService{
+public class SalaryItemServiceImpl implements SalaryItemService {
     @Autowired
     SalaryItemDAO salaryItemDAO;
     @Autowired
@@ -26,106 +29,125 @@ public class SalaryItemServiceImpl implements SalaryItemService{
     SalaryTypeService salaryTypeService;
     @Autowired
     PersonSalaryService personSalaryService;
-    public int[] add(String accountBook, SalaryItem[] salaryItems) throws WMSServiceException
-    {
 
-        for(int i=0;i<salaryItems.length;i++) {
+    public int[] add(String accountBook, SalaryItem[] salaryItems) throws WMSServiceException {
+
+        for (int i = 0; i < salaryItems.length; i++) {
             Validator validator = new Validator("薪金项目名称");
             validator.notnull().notEmpty().validate(salaryItems[i].getName());
             Validator validator1 = new Validator("默认金额");
             validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
         }
 
-        for(int i=0;i<salaryItems.length;i++){
-            for(int j=i+1;j<salaryItems.length;j++){
-                String name=salaryItems[i].getName();
-                if(name.equals(salaryItems[j].getName())){throw new WMSServiceException("薪金项目名称"+name+"在添加的列表中重复!");}
+        for (int i = 0; i < salaryItems.length; i++) {
+            for (int j = i + 1; j < salaryItems.length; j++) {
+                String name = salaryItems[i].getName();
+                if (name.equals(salaryItems[j].getName())) {
+                    throw new WMSServiceException("薪金项目名称" + name + "在添加的列表中重复!");
+                }
             }
         }
         //重复
-        Stream.of(salaryItems).forEach((salaryPeriod)->{
+        Stream.of(salaryItems).forEach((salaryPeriod) -> {
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{salaryPeriod.getName()});
-            cond.addCondition("warehouseId",salaryPeriod.getWarehouseId());
-            if(salaryItemDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("薪金项目名称："+salaryPeriod.getName()+"已经存在!");
+            cond.addCondition("name", new String[]{salaryPeriod.getName()});
+            cond.addCondition("warehouseId", salaryPeriod.getWarehouseId());
+            if (salaryItemDAO.find(accountBook, cond).length > 0) {
+                throw new WMSServiceException("薪金项目名称：" + salaryPeriod.getName() + "已经存在!");
             }
         });
         //外键检测
         Stream.of(salaryItems).forEach(
-                (salaryItem)->{
-                    if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ salaryItem.getWarehouseId()})).length == 0){
-                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",salaryItem.getWarehouseId()));
+                (salaryItem) -> {
+                    if (this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id", new Integer[]{salaryItem.getWarehouseId()})).length == 0) {
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)", salaryItem.getWarehouseId()));
                     }
-                    if(this.salaryTypeService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ salaryItem.getSalaryTypeId()})).length == 0){
-                        throw new WMSServiceException(String.format("类别不存在，请重新提交！(%d)",salaryItem.getWarehouseId()));
-                    }}
+                    if (this.salaryTypeService.find(accountBook,
+                            new Condition().addCondition("id", new Integer[]{salaryItem.getSalaryTypeId()})).length == 0) {
+                        throw new WMSServiceException(String.format("类别不存在，请重新提交！(%d)", salaryItem.getWarehouseId()));
+                    }
+                }
         );
-        int[] ids= salaryItemDAO.add(accountBook,salaryItems);
-        for(int i=0;i<ids.length;i++){
-            AddPersonSalary addPersonSalary=new AddPersonSalary();
+        int[] ids = salaryItemDAO.add(accountBook, salaryItems);
+        List<Integer> salaryTypeId = new ArrayList<>();
+        for (int i = 0; i < salaryItems.length; i++) {
+            if (!salaryTypeId.contains(salaryItems[i].getSalaryTypeId())) {
+                salaryTypeId.add(salaryItems[i].getSalaryTypeId());
+            }
+        }
+        for (int i = 0; i < salaryTypeId.size(); i++) {
+            AddPersonSalary addPersonSalary = new AddPersonSalary();
             addPersonSalary.setWarehouseId(salaryItems[0].getWarehouseId());
-            addPersonSalary.setSalaryTypeId(ids[i]);
-            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalary);}
+            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
+            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook, addPersonSalary);
+        }
         return ids;
     }
 
     @Transactional
-    public void update(String accountBook, SalaryItem[] salaryItems) throws WMSServiceException{
-            for(int i=0;i<salaryItems.length;i++) {
-                Validator validator = new Validator("薪金项目名称");
-                validator.notnull().notEmpty().validate(salaryItems[i].getName());
-                Validator validator1 = new Validator("默认金额");
-                validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
-            }
-            for(int i=0;i<salaryItems.length;i++){
-                for(int j=i+1;j<salaryItems.length;j++){
-                    String name=salaryItems[i].getName();
-                    if(name.equals(salaryItems[j].getName())){throw new WMSServiceException("薪金项目名称"+name+"在添加的列表中重复!");}
+    public void update(String accountBook, SalaryItem[] salaryItems) throws WMSServiceException {
+        for (int i = 0; i < salaryItems.length; i++) {
+            Validator validator = new Validator("薪金项目名称");
+            validator.notnull().notEmpty().validate(salaryItems[i].getName());
+            Validator validator1 = new Validator("默认金额");
+            validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
+        }
+        for (int i = 0; i < salaryItems.length; i++) {
+            for (int j = i + 1; j < salaryItems.length; j++) {
+                String name = salaryItems[i].getName();
+                if (name.equals(salaryItems[j].getName())) {
+                    throw new WMSServiceException("薪金项目名称" + name + "在添加的列表中重复!");
                 }
             }
+        }
         Stream.of(salaryItems).forEach(
-                (salaryItem)->{
-                    if(this.salaryItemDAO.find(accountBook,
-                            new Condition().addCondition("id",salaryItem.getId())).length == 0)
-                    {
-                        throw new WMSServiceException(String.format("要修改的项目不存在请确认后修改(%d)",salaryItem.getId()));
+                (salaryItem) -> {
+                    if (this.salaryItemDAO.find(accountBook,
+                            new Condition().addCondition("id", salaryItem.getId())).length == 0) {
+                        throw new WMSServiceException(String.format("要修改的项目不存在请确认后修改(%d)", salaryItem.getId()));
                     }
                 }
         );
-        for(int i=0;i<salaryItems.length;i++){
+        for (int i = 0; i < salaryItems.length; i++) {
             Condition cond = new Condition();
-            cond.addCondition("name",new String[]{salaryItems[i].getName()});
-            cond.addCondition("warehouseId",salaryItems[i].getWarehouseId());
-            cond.addCondition("id",new Integer[]{salaryItems[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
-            if(salaryItemDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("项目名称重复："+salaryItems[i].getName());
+            cond.addCondition("name", new String[]{salaryItems[i].getName()});
+            cond.addCondition("warehouseId", salaryItems[i].getWarehouseId());
+            cond.addCondition("id", new Integer[]{salaryItems[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            if (salaryItemDAO.find(accountBook, cond).length > 0) {
+                throw new WMSServiceException("项目名称重复：" + salaryItems[i].getName());
             }
         }
         //外键检测
         Stream.of(salaryItems).forEach(
-                (salaryItem)->{
-                    if(this.warehouseService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ salaryItem.getWarehouseId()})).length == 0){
-                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",salaryItem.getWarehouseId()));
+                (salaryItem) -> {
+                    if (this.warehouseService.find(accountBook,
+                            new Condition().addCondition("id", new Integer[]{salaryItem.getWarehouseId()})).length == 0) {
+                        throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)", salaryItem.getWarehouseId()));
                     }
-                    if(this.salaryTypeService.find(accountBook,
-                            new Condition().addCondition("id",new Integer[]{ salaryItem.getSalaryTypeId()})).length == 0){
-                        throw new WMSServiceException(String.format("类别不存在，请重新提交！(%d)",salaryItem.getWarehouseId()));
-                    }}
+                    if (this.salaryTypeService.find(accountBook,
+                            new Condition().addCondition("id", new Integer[]{salaryItem.getSalaryTypeId()})).length == 0) {
+                        throw new WMSServiceException(String.format("类别不存在，请重新提交！(%d)", salaryItem.getWarehouseId()));
+                    }
+                }
         );
-       salaryItemDAO.update(accountBook, salaryItems);
-        for(int i=0;i<salaryItems.length;i++){
-            AddPersonSalary addPersonSalary=new AddPersonSalary();
+        salaryItemDAO.update(accountBook, salaryItems);
+        List<Integer> salaryTypeId = new ArrayList<>();
+        for (int i = 0; i < salaryItems.length; i++) {
+            if (!salaryTypeId.contains(salaryItems[i].getSalaryTypeId())) {
+                salaryTypeId.add(salaryItems[i].getSalaryTypeId());
+            }
+        }
+        for (int i = 0; i < salaryTypeId.size(); i++) {
+            AddPersonSalary addPersonSalary = new AddPersonSalary();
             addPersonSalary.setWarehouseId(salaryItems[0].getWarehouseId());
-            addPersonSalary.setSalaryTypeId(salaryItems[i].getSalaryTypeId());
-            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalary);}
+            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
+            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook, addPersonSalary);
+        }
     }
 
     @Transactional
-    public void remove(String accountBook, int[] ids) throws WMSServiceException{
+    public void remove(String accountBook, int[] ids) throws WMSServiceException {
         for (int id : ids) {
             if (salaryItemDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
                 throw new WMSServiceException(String.format("删除项目不存在，请重新查询！(%d)", id));
@@ -138,16 +160,16 @@ public class SalaryItemServiceImpl implements SalaryItemService{
         }
     }
 
-    public SalaryItemView[] find(String accountBook, Condition cond) throws WMSServiceException{
+    public SalaryItemView[] find(String accountBook, Condition cond) throws WMSServiceException {
         return this.salaryItemDAO.find(accountBook, cond);
     }
 
-    public SalaryItem[] findTable(String accountBook, Condition cond) throws WMSServiceException{
+    public SalaryItem[] findTable(String accountBook, Condition cond) throws WMSServiceException {
         return this.salaryItemDAO.findTable(accountBook, cond);
     }
 
-    public long findCount(String database,Condition cond) throws WMSServiceException{
-        return this.salaryItemDAO.findCount(database,cond);
+    public long findCount(String database, Condition cond) throws WMSServiceException {
+        return this.salaryItemDAO.findCount(database, cond);
     }
 
 

@@ -73,8 +73,8 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
         for(int i=0;i<ids.length;i++){
             AddPersonSalary addPersonSalary=new AddPersonSalary();
             addPersonSalary.setWarehouseId(salaryPeriods[0].getWarehouseId());
-            addPersonSalary.setSalaryTypeId(ids[i]);
-            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalary);}
+            addPersonSalary.setSalaryPeriodId(ids[i]);
+            this.personSalaryService.addForNewPeriod(accountBook,addPersonSalary);}
         return ids;
     }
 
