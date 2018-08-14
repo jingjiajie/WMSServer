@@ -47,6 +47,8 @@ public class PayNoteServiceImpl implements PayNoteService{
     TaxService taxService;
     @Autowired
     SalaryPeriodService salaryPeriodService;
+    @Autowired
+    SalaryTypeService salaryTypeService;
 
     private static final String NO_PREFIX = "X";
     private static final BigDecimal ZERO= new BigDecimal(0);
@@ -80,6 +82,10 @@ public class PayNoteServiceImpl implements PayNoteService{
                     if(this.salaryPeriodService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{ payNote.getSalaryPeriodId()})).length == 0){
                         throw new WMSServiceException(String.format("薪资期间不存在，请重新提交！(%d)",payNote.getSalaryPeriodId()));
+                    }
+                    if(this.salaryTypeService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getSalaryTypeId()})).length == 0){
+                        throw new WMSServiceException(String.format("薪资类型不存在，请重新提交！(%d)",payNote.getSalaryPeriodId()));
                     }
                 }
         );
@@ -148,6 +154,10 @@ public class PayNoteServiceImpl implements PayNoteService{
                     if(this.salaryPeriodService.find(accountBook,
                             new Condition().addCondition("id",new Integer[]{ payNote.getSalaryPeriodId()})).length == 0){
                         throw new WMSServiceException(String.format("薪资期间不存在，请重新提交！(%d)",payNote.getSalaryPeriodId()));
+                    }
+                    if(this.salaryTypeService.find(accountBook,
+                            new Condition().addCondition("id",new Integer[]{ payNote.getSalaryTypeId()})).length == 0){
+                        throw new WMSServiceException(String.format("薪资类型不存在，请重新提交！(%d)",payNote.getSalaryPeriodId()));
                     }
                 }
         );
