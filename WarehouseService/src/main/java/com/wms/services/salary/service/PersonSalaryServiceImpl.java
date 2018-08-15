@@ -363,6 +363,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         {
             itemIds.add(salaryItems[i].getId());
         }
+        //TODO 加人员
         PersonSalary[] personSalaryExist = this.personSalaryDAO.findTable(accountBook, new Condition().addCondition("warehouseId", addPersonSalary.getWarehouseId()).addCondition("salaryPeriodId", addPersonSalary.getSalaryPeriodId()).addCondition("salaryItemId",itemIds.toArray(), ConditionItem.Relation.IN));
         List<PersonSalary> personSalaryList = new ArrayList<>();
         SalaryTypePerson[] salaryTypePersons = salaryTypePersonService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()));

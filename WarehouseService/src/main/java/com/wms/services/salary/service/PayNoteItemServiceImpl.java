@@ -284,6 +284,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         {
             itemIds.add(salaryItems[i].getId());
         }
+        //TODO 加人员
         PersonSalary[] personSalarys=personSalaryService.findTable(accountBook,new Condition().addCondition("salaryPeriodId",periodId).addCondition("warehouseId",warehouseId).addCondition("salaryItemId",itemIds.toArray(), ConditionItem.Relation.IN));
         Map<Integer, List<PersonSalary>> groupByPersonIdMap =
                 Stream.of(personSalarys).collect(Collectors.groupingBy(PersonSalary::getPersonId));
