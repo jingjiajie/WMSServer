@@ -74,19 +74,23 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
             sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
             if (curSonAccountTitleViews.length>0){
-                throw new AccountTitleException(String.format("无法添加明细记录！当前账目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", accountTitles[0].getName()));
+                throw new WMSServiceException(String.format("无法添加明细记录！当前账目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", accountTitles[0].getName()));
             }
 
             AccountRecordView[] accountRecordViews= accountRecordDAO.find(accountBook,new Condition()
                     .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
                     .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
-                    .addCondition("accountTitleId",new Integer[]{accountRecords[k].getAccountTitleId(),}));
+                    .addCondition("accountTitleId",new Integer[]{accountRecords[k].getAccountTitleId()}));
 
             //TODO 如果有就存上，没有就看是不是有实际发生额，有的话要提示还没有录入期初余额
             if (accountRecordViews.length>0){
 
-                if (accountRecords[k].getBalance()!=null){
-                    throw new AccountTitleException(String.format("业务记录无需输入余额，当前科目名称(%s)，", accountTitles[0].getName()));
+                if (creditAmount.compareTo(new BigDecimal(0))==0
+                        &&debitAmount.compareTo(new BigDecimal(0))==0){
+                    throw new WMSServiceException(String.format("业务记录未输入业务发生额，请检查后重新录入！科目名称(%s)，", accountTitles[0].getName()));
+                }
+                if (accountRecords[k].getBalance().compareTo(BigDecimal.ZERO)!=0){
+                    throw new WMSServiceException(String.format("业务记录无需输入余额，当前科目名称(%s)，", accountTitles[0].getName()));
                 }
                 AccountRecordView newestAccountRecordView=accountRecordViews[0];
                 for (int i=0;i<accountRecordViews.length;i++){
@@ -102,9 +106,26 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     accountRecords[k].setBalance(curBalance.subtract(debitAmount).add(creditAmount));
                 }
             }else{
+                if ((creditAmount.compareTo(new BigDecimal(0))!=0
+                        ||debitAmount.compareTo(new BigDecimal(0))!=0)
+                        &&accountRecords[k].getBalance().compareTo(BigDecimal.ZERO)!=0){
+                    throw new WMSServiceException(String.format("无法添加账目记录！输入发生额时请勿输入余额！科目名称(%s)，", accountTitles[0].getName()));
+                }
+                if ((creditAmount.compareTo(new BigDecimal(0))==0
+                        &&debitAmount.compareTo(new BigDecimal(0))==0)
+                        &&accountRecords[k].getBalance().compareTo(BigDecimal.ZERO)==0){
+                    throw new WMSServiceException(String.format("无法添加账目记录！当前未录入非零发生额/余额！科目名称(%s)，", accountTitles[0].getName()));
+                }
+
                 if (creditAmount.compareTo(new BigDecimal(0))!=0
                         ||debitAmount.compareTo(new BigDecimal(0))!=0){
-                    throw new WMSServiceException(String.format("无法添加账目记录！当前科目未录入期初余额，无法发生业务！科目名称(%s)，", accountTitles[0].getName()));
+                    BigDecimal curBalance=new BigDecimal(0);
+                    //如果科目类型是借方
+                    if (accountTitleView.getDirection()==AccountTitleService.Debit){
+                        accountRecords[k].setBalance(curBalance.subtract(creditAmount).add(debitAmount));
+                    }else{
+                        accountRecords[k].setBalance(curBalance.subtract(debitAmount).add(creditAmount));
+                    }
                 }
 
             }
