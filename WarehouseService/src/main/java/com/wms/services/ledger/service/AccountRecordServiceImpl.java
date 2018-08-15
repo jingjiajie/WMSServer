@@ -532,7 +532,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         AccountRecordView[] accountRecordViews= this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
         if (accountRecordViews.length<=0)
         {
-            throw new WMSServiceException("当前期间此仓库中无账目记录，无法结转");
+            throw new WMSServiceException("当前期间此仓库中无账目记录!");
         }
 
         BigDecimal creditAmount=new BigDecimal(0);
@@ -546,6 +546,27 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         returnAccrualCheck.setDebitAmount(debitAmount);
         returnAccrualCheckList.add(returnAccrualCheck);
         return returnAccrualCheckList;
+    }
+
+    @Override
+    public List<AccountRecordView> deficitCheck(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException{
+        int curWarehouseId=accrualCheck.getWarehouseId();
+        int curAccountPeriodId=accrualCheck.getCurAccountPeriodId();
+        List<AccountRecordView> returnAccountRecordViewList=new ArrayList();
+
+        AccountRecordView[] accountRecordViews= this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
+        if (accountRecordViews.length<=0)
+        {
+            throw new WMSServiceException("当前期间此仓库中无账目记录.");
+        }
+
+        for (int i=0;i<accountRecordViews.length;i++){
+            //如果有记录余额小于零，赤字提醒
+            if (accountRecordViews[i].getBalance().compareTo(BigDecimal.ZERO)<0) {
+                returnAccountRecordViewList.add(accountRecordViews[i]);
+            }
+        }
+        return returnAccountRecordViewList;
     }
 }
 

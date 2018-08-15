@@ -78,4 +78,12 @@ public class AccountRecordControllerImpl implements AccountRecordController {
                                  @RequestBody AccrualCheck accrualCheck){
         return this.accountRecordService.accrualCheck(accountBook,accrualCheck);
     }
+
+    @Override
+    @RequestMapping(value = "/deficit_check",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<AccountRecordView> deficitCheck(@PathVariable("accountBook") String accountBook,
+                                           @RequestBody AccrualCheck accrualCheck){
+        return this.accountRecordService.deficitCheck(accountBook,accrualCheck);
+    }
 }
