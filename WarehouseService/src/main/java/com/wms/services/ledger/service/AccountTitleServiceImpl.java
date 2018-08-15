@@ -4,6 +4,7 @@ import com.wms.services.ledger.dao.AccountTitleDAO;
 import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.model.AccountRecordView;
 import com.wms.utilities.model.AccountTitle;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
@@ -52,6 +53,37 @@ public class AccountTitleServiceImpl implements AccountTitleService {
                 throw new WMSServiceException(String.format("无法添加上级科目！当前编码存在子级科目，请检查再重新录入，当前科目名称(%s)，", accountTitles[0].getName()));
             }
         }
+
+        for(int i=0;i<accountTitles.length;i++){
+
+            List<FindLinkAccountTitle> findParentAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,new AccountTitle[]{accountTitles[i]});
+            FindLinkAccountTitle[] parentAccountTitles=new FindLinkAccountTitle[findParentAccountTitleList.size()];
+            findParentAccountTitleList.toArray(parentAccountTitles);
+
+            List<AccountTitleView> parentAccountTitleViewsList= parentAccountTitles[0].getAccountTitleViews();
+            AccountTitleView[] curParentAccountTitleViews=new AccountTitleView[parentAccountTitleViewsList.size()];
+            parentAccountTitleViewsList.toArray(curParentAccountTitleViews);
+
+            Stream.of(curParentAccountTitleViews).forEach((curParentAccountTitleView)->{
+                AccountRecordView[] accountRecordViews= this.accountRecordService.find(accountBook,new Condition()
+                        .addCondition("accountTitleId",new Integer[]{curParentAccountTitleView.getId()}));
+                //存在库存记录
+                if (accountRecordViews.length>0) {
+                    //找出最新那条
+                    AccountRecordView newestAccountRecordView = accountRecordViews[0];
+                    for (int j = 0; j < accountRecordViews.length; j++) {
+                        if (accountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
+                            newestAccountRecordView = accountRecordViews[j];
+                        }
+                    }
+                    //如果父级科目最新一条记录余额不为0
+                    if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO)!=0){
+                        throw new WMSServiceException(String.format("无法添加新的子级科目！当前科目的对应父级科目中还有余额，如要继续需确认上级科目余额为0，当前科目名称(%s)，", accountTitles[0].getName()));
+                    }
+                }
+            });
+        }
+
         int[]ids= accountTitleDAO.add(accountBook, accountTitles);
         List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
         return ids;
