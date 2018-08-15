@@ -120,7 +120,14 @@ public class PayNoteServiceImpl implements PayNoteService{
             accountTitleId.add(payNote.getAccountTitlePayableId());
             this.HasSonAccountTitle(accountBook,accountTitleId);
         });
-        return payNoteDAO.add(accountBook,payNotes);
+        int[] ids= payNoteDAO.add(accountBook,payNotes);
+        for (int id:ids)
+        {
+            AddAllItem addAllItem=new AddAllItem();
+            addAllItem.setPayNoteId(id);
+            payNoteItemService.addAllItem(accountBook,addAllItem);
+        }
+        return ids;
     }
 
     @Transactional
@@ -207,6 +214,10 @@ public class PayNoteServiceImpl implements PayNoteService{
 
     public PayNoteView[] find(String accountBook, Condition cond) throws WMSServiceException{
         return this.payNoteDAO.find(accountBook, cond);
+    }
+
+    public PayNote[] findTable(String accountBook, Condition cond) throws WMSServiceException{
+        return this.payNoteDAO.findTable(accountBook, cond);
     }
 
     public long findCount(String database,Condition cond) throws WMSServiceException{

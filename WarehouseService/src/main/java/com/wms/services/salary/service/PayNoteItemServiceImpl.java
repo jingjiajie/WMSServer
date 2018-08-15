@@ -39,6 +39,8 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
     AccountTitleService accountTitleService;
     @Autowired
     PersonSalaryService personSalaryService;
+    @Autowired
+    SalaryItemService salaryItemService;
 
 
 
@@ -106,6 +108,10 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
 
     public PayNoteItemView[] find(String accountBook, Condition cond) throws WMSServiceException{
         return this.payNoteItemDAO.find(accountBook, cond);
+    }
+
+    public PayNoteItem[] findTable(String accountBook, Condition cond) throws WMSServiceException{
+        return this.payNoteItemDAO.findTable(accountBook, cond);
     }
 
     public long findCount(String database,Condition cond) throws WMSServiceException{
@@ -256,26 +262,33 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
     }
 
     public void addAllItem(String accountBook,AddAllItem AddAllItem){
-    int warehouseId= AddAllItem.getWarehouseId();
+    //int warehouseId= AddAllItem.getWarehouseId();
     int payNoteId= AddAllItem.getPayNoteId();
-    PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
-    PayNoteItemView[] payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
+    PayNote[] payNotes=payNoteService.findTable(accountBook,new Condition().addCondition("id",payNoteId));
+    PayNoteItem[] payNoteItemsTable=payNoteItemDAO.findTable(accountBook,new Condition().addCondition("payNoteId",payNoteId));
     List<Integer> ids=new ArrayList<>();
-    for(int i=0;i<payNoteItemViews.length;i++){ids.add(payNoteItemViews[i].getPersonId());}
+    for(int i=0;i<payNoteItemsTable.length;i++){ids.add(payNoteItemsTable[i].getPersonId());}
         int[] idsArray=new int[ids.size()];
         /*
         for(int i=0;i<ids.size();i++){idsArray[i]=ids.get(i);}
  */
-    if(payNoteViews.length!=1){throw new WMSServiceException("查询薪金发放单出错！");}
-    if(payNoteViews[0].getState()!=PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("本单不在待确认状态，无法添加条目！");}
-    int periodId=payNoteViews[0].getSalaryPeriodId();
-    int typeId=payNoteViews[0].getSalaryTypeId();
+    if(payNotes.length!=1){throw new WMSServiceException("查询薪金发放单出错！");}
+    if(payNotes[0].getState()!=PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("本单不在待确认状态，无法添加条目！");}
+    int periodId=payNotes[0].getSalaryPeriodId();
+    int typeId=payNotes[0].getSalaryTypeId();
+    int warehouseId=payNotes[0].getWarehouseId();
     List<PayNoteItem> payNoteItemList=new ArrayList<>();
-        PersonSalaryView[] personSalaryViews=personSalaryService.find(accountBook,new Condition().addCondition("salaryPeriodId",periodId).addCondition("warehouseId",warehouseId).addCondition("salaryTypeId",typeId));
-        Map<Integer, List<PersonSalaryView>> groupByPersonIdMap =
-                Stream.of(personSalaryViews).collect(Collectors.groupingBy(PersonSalaryView::getPersonId));
-        for (Map.Entry<Integer, List<PersonSalaryView>> entry : groupByPersonIdMap.entrySet()){
-            PersonSalaryView[] personSalaryViewsEachGroup=new PersonSalaryView[entry.getValue().size()];
+        SalaryItem[] salaryItems=this.salaryItemService.findTable(accountBook,new Condition().addCondition("salaryTypeId",typeId));
+        List<Integer> itemIds=new ArrayList<>();
+        for(int i=0;i<salaryItems.length;i++)
+        {
+            itemIds.add(salaryItems[i].getId());
+        }
+        PersonSalary[] personSalarys=personSalaryService.findTable(accountBook,new Condition().addCondition("salaryPeriodId",periodId).addCondition("warehouseId",warehouseId).addCondition("salaryItemId",itemIds.toArray(), ConditionItem.Relation.IN));
+        Map<Integer, List<PersonSalary>> groupByPersonIdMap =
+                Stream.of(personSalarys).collect(Collectors.groupingBy(PersonSalary::getPersonId));
+        for (Map.Entry<Integer, List<PersonSalary>> entry : groupByPersonIdMap.entrySet()){
+            PersonSalary[] personSalaryViewsEachGroup=new PersonSalary[entry.getValue().size()];
             entry.getValue().toArray(personSalaryViewsEachGroup);
             BigDecimal preTaxAmount=new BigDecimal(0);
             for(int i=0;i<personSalaryViewsEachGroup.length;i++){
