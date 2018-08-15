@@ -16,6 +16,9 @@ import com.wms.utilities.exceptions.service.AccountTitleException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +52,8 @@ public class PayNoteServiceImpl implements PayNoteService{
     SalaryPeriodService salaryPeriodService;
     @Autowired
     SalaryTypeService salaryTypeService;
+    @Autowired
+    SessionFactory sessionFactory;
 
     private static final String NO_PREFIX = "X";
     private static final BigDecimal ZERO= new BigDecimal(0);
@@ -201,9 +206,32 @@ public class PayNoteServiceImpl implements PayNoteService{
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
         for (int id : ids) {
-            if (payNoteDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
+            PayNote[] payNotes=payNoteDAO.findTable(accountBook, new Condition().addCondition("id", id));
+            if ( payNotes.length == 0) {
                 throw new WMSServiceException(String.format("删除薪资单不存在，请重新查询！(%d)", id));
             }
+            if(payNotes[0].getState()!=PayNoteState.WAITING_FOR_CONFIRM){
+                throw new WMSServiceException("删除薪资单不在等待确认状态无法删除！ 单号："+payNotes[0].getNo());
+            }
+        }
+        Session session = this.sessionFactory.getCurrentSession();
+
+        StringBuffer stringBuffer=new StringBuffer();
+        stringBuffer.append("(");
+        for(int i=0;i<ids.length;i++){ stringBuffer.append(ids[i]);
+            if(i!=ids.length-1)
+            {
+                stringBuffer.append(",");
+            }
+        }
+        stringBuffer.append(")");
+        try {
+            Query query = null;
+            String sql = "DELETE FROM PayNoteItem WHERE payNoteId in "+stringBuffer.toString();
+            query = session.createNativeQuery(sql);
+            query.executeUpdate();
+        } catch (Exception e) {
+            throw new WMSServiceException("删除薪资发放单条目失败！");
         }
         try {
             payNoteDAO.remove(accountBook, ids);

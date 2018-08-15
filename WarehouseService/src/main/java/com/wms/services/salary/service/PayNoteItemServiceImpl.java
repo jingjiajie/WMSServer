@@ -261,8 +261,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         payNoteItemDAO.update(accountBook,payNoteItems);
     }
 
-    public void addAllItem(String accountBook,AddAllItem AddAllItem){
-    //int warehouseId= AddAllItem.getWarehouseId();
+    public void addOneItem(String accountBook,AddAllItem AddAllItem){
     int payNoteId= AddAllItem.getPayNoteId();
     PayNote[] payNotes=payNoteService.findTable(accountBook,new Condition().addCondition("id",payNoteId));
     PayNoteItem[] payNoteItemsTable=payNoteItemDAO.findTable(accountBook,new Condition().addCondition("payNoteId",payNoteId));
@@ -296,6 +295,65 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
                 preTaxAmount=preTaxAmount.add(personSalaryViewsEachGroup[i].getAmount());
             }
                 if(ids.contains(entry.getKey())){continue;}
+                /*
+            for(int i=0;i<payNoteItemViews.length;i++){
+                if(entry.getKey()==payNoteItemViews[i].getPersonId()&&payNoteItemViews[i].getState()!=PayNoteItemState.PAYED){
+
+                }
+                }
+                */
+            PayNoteItem payNoteItem=new PayNoteItem();
+            payNoteItem.setPersonId(entry.getKey());
+            payNoteItem.setPreTaxAmount(preTaxAmount);
+            payNoteItem.setAfterTaxAmount(BigDecimal.ZERO);
+            payNoteItem.setTaxAmount(BigDecimal.ZERO);
+            payNoteItem.setPaidAmount(BigDecimal.ZERO);
+            payNoteItem.setPayNoteId(payNoteId);
+            payNoteItem.setState(PayNoteItemState.WAITING_FOR_CALCULATE_PAY);
+            payNoteItem.setComment("自动生成薪资单条目");
+            payNoteItemList.add(payNoteItem);
+        }
+        PayNoteItem[] payNoteItems=new PayNoteItem[payNoteItemList.size()];
+        payNoteItemList.toArray(payNoteItems);
+        //TODO
+        payNoteItemDAO.add(accountBook,payNoteItems);
+    }
+
+    public void addAllItem(String accountBook,AddAllItem AddAllItem){
+        //int warehouseId= AddAllItem.getWarehouseId();
+        int payNoteId= AddAllItem.getPayNoteId();
+        PayNote[] payNotes=payNoteService.findTable(accountBook,new Condition().addCondition("id",payNoteId));
+        PayNoteItem[] payNoteItemsTable=payNoteItemDAO.findTable(accountBook,new Condition().addCondition("payNoteId",payNoteId));
+        List<Integer> ids=new ArrayList<>();
+        for(int i=0;i<payNoteItemsTable.length;i++){ids.add(payNoteItemsTable[i].getPersonId());}
+        int[] idsArray=new int[ids.size()];
+        /*
+        for(int i=0;i<ids.size();i++){idsArray[i]=ids.get(i);}
+ */
+        if(payNotes.length!=1){throw new WMSServiceException("查询薪金发放单出错！");}
+        if(payNotes[0].getState()!=PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("本单不在待确认状态，无法添加条目！");}
+        int periodId=payNotes[0].getSalaryPeriodId();
+        int typeId=payNotes[0].getSalaryTypeId();
+        int warehouseId=payNotes[0].getWarehouseId();
+        List<PayNoteItem> payNoteItemList=new ArrayList<>();
+        SalaryItem[] salaryItems=this.salaryItemService.findTable(accountBook,new Condition().addCondition("salaryTypeId",typeId));
+        List<Integer> itemIds=new ArrayList<>();
+        for(int i=0;i<salaryItems.length;i++)
+        {
+            itemIds.add(salaryItems[i].getId());
+        }
+        //TODO 加人员
+        PersonSalary[] personSalarys=personSalaryService.findTable(accountBook,new Condition().addCondition("salaryPeriodId",periodId).addCondition("warehouseId",warehouseId).addCondition("salaryItemId",itemIds.toArray(), ConditionItem.Relation.IN));
+        Map<Integer, List<PersonSalary>> groupByPersonIdMap =
+                Stream.of(personSalarys).collect(Collectors.groupingBy(PersonSalary::getPersonId));
+        for (Map.Entry<Integer, List<PersonSalary>> entry : groupByPersonIdMap.entrySet()){
+            PersonSalary[] personSalaryViewsEachGroup=new PersonSalary[entry.getValue().size()];
+            entry.getValue().toArray(personSalaryViewsEachGroup);
+            BigDecimal preTaxAmount=new BigDecimal(0);
+            for(int i=0;i<personSalaryViewsEachGroup.length;i++){
+                preTaxAmount=preTaxAmount.add(personSalaryViewsEachGroup[i].getAmount());
+            }
+            if(ids.contains(entry.getKey())){continue;}
                 /*
             for(int i=0;i<payNoteItemViews.length;i++){
                 if(entry.getKey()==payNoteItemViews[i].getPersonId()&&payNoteItemViews[i].getState()!=PayNoteItemState.PAYED){
