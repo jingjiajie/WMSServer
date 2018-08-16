@@ -67,7 +67,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
                 }
         );
         //将人员薪资的总数找出来填到税前应付
-        payNoteItems=this.getPersonAmount(accountBook,payNoteItems);
+        //payNoteItems=this.getPersonAmount(accountBook,payNoteItems);
         return payNoteItemDAO.add(accountBook,payNoteItems);
     }
 
