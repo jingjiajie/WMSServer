@@ -18,10 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
 
 import com.wms.services.ledger.datestructures.AccrualCheck;
+
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Transactional
@@ -518,6 +523,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             accountRecord.setDebitAmount(creditAmount);
             accountRecord.setCreditAmount(debitAmount);
             accountRecord.setComment("冲销账目");
+            accountRecord.setBalance(BigDecimal.ZERO);
         });
         this.add(accountBook,accountRecords);
     }
@@ -560,12 +566,32 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             throw new WMSServiceException("当前期间此仓库中无账目记录.");
         }
 
-        for (int i=0;i<accountRecordViews.length;i++){
-            //如果有记录余额小于零，赤字提醒
-            if (accountRecordViews[i].getBalance().compareTo(BigDecimal.ZERO)<0) {
-                returnAccountRecordViewList.add(accountRecordViews[i]);
+        //TODO 按供货商分组
+        Map<Integer, List<AccountRecordView>> groupByAccountTitleId =
+                Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountTitleId));
+
+        Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupByAccountTitleId.entrySet().iterator();
+        //将每组最新的加到一个列表中
+        while (entries.hasNext()) {
+            Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
+            Integer accountTitleId = entry.getKey();
+            List<AccountRecordView> accountRecordViewsList=entry.getValue();
+            AccountRecordView[] curAccountRecordViews=(AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
+            accountRecordViewsList.toArray(curAccountRecordViews);
+
+            AccountRecordView newestAccountRecordView=curAccountRecordViews[0];
+            for (int i=0;i<curAccountRecordViews.length;i++){
+                if (curAccountRecordViews[i].getTime().after(newestAccountRecordView.getTime())) {
+                    newestAccountRecordView = curAccountRecordViews[i];
+                }
+            }
+
+            if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO)<0) {
+                returnAccountRecordViewList.add(newestAccountRecordView);
             }
         }
+
+
         return returnAccountRecordViewList;
     }
 }
