@@ -48,12 +48,13 @@ public class SalaryItemServiceImpl implements SalaryItemService {
             }
         }
         //重复
-        Stream.of(salaryItems).forEach((salaryPeriod) -> {
+        Stream.of(salaryItems).forEach((salaryItem) -> {
             Condition cond = new Condition();
-            cond.addCondition("name", new String[]{salaryPeriod.getName()});
-            cond.addCondition("warehouseId", salaryPeriod.getWarehouseId());
+            cond.addCondition("name", new String[]{salaryItem.getName()});
+            cond.addCondition("warehouseId", salaryItem.getWarehouseId());
+            cond.addCondition("salaryTypeId",salaryItem.getSalaryTypeId());
             if (salaryItemDAO.find(accountBook, cond).length > 0) {
-                throw new WMSServiceException("薪金项目名称：" + salaryPeriod.getName() + "已经存在!");
+                throw new WMSServiceException("薪金项目名称：" + salaryItem.getName() + "已经存在!");
             }
         });
         //外键检测
@@ -114,6 +115,7 @@ public class SalaryItemServiceImpl implements SalaryItemService {
             cond.addCondition("name", new String[]{salaryItems[i].getName()});
             cond.addCondition("warehouseId", salaryItems[i].getWarehouseId());
             cond.addCondition("id", new Integer[]{salaryItems[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            cond.addCondition("salaryTypeId",salaryItems[i].getSalaryTypeId());
             if (salaryItemDAO.find(accountBook, cond).length > 0) {
                 throw new WMSServiceException("项目名称重复：" + salaryItems[i].getName());
             }
