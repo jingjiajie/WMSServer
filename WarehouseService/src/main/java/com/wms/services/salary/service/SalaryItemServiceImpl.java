@@ -65,7 +65,7 @@ public class SalaryItemServiceImpl implements SalaryItemService {
                     }
                     if (this.salaryTypeService.find(accountBook,
                             new Condition().addCondition("id", new Integer[]{salaryItem.getSalaryTypeId()})).length == 0) {
-                        throw new WMSServiceException(String.format("类别不存在，请重新提交！(%d)", salaryItem.getWarehouseId()));
+                        throw new WMSServiceException(String.format("类别不存在，请重新提交！(%d)", salaryItem.getSalaryTypeId()));
                     }
                 }
         );

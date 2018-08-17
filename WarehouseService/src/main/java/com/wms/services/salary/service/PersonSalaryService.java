@@ -8,8 +8,11 @@ import com.wms.utilities.model.PersonSalary;
 import com.wms.utilities.model.PersonSalaryView;
 import com.wms.utilities.service.BaseService;
 
+import java.util.List;
+
 public interface PersonSalaryService extends BaseService<PersonSalary,PersonSalaryView> {
     void addPersonSalaryBySalaryType(String accountBook, AddPersonSalary addPersonSalary);
+    void updateNewestPeriodPersonSalaryDelete(String accountBook, AddPersonSalary addPersonSalary, List<Integer> personRemoveIds);
     void updateNewestPeriodPersonSalary(String accountBook, AddPersonSalary addPersonSalary);
     void addForNewPeriod(String accountBook, AddPersonSalary addPersonSalary);
     PersonSalary[] findTable(String accountBook, Condition cond) throws WMSServiceException;

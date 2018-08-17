@@ -124,10 +124,30 @@ public class SalaryTypePersonServiceImpl implements SalaryTypePersonService {
                 throw new WMSServiceException(String.format("删除薪金类型人员不存在，请重新查询！(%d)", id));
             }
         }
+        List<Integer> idList = new ArrayList<>();
+        for(int id:ids)
+        {
+            idList.add(id);
+        }
+        SalaryTypePerson[] salaryTypePeople=salaryTypePersonDAO.findTable(accountBook,new Condition().addCondition("id",idList.toArray(), ConditionItem.Relation.IN));
         try {
             salaryTypePersonDAO.remove(accountBook, ids);
         } catch (Exception e) {
-            throw new WMSServiceException("删除供薪金类型失败，如果薪金类型人员已经被引用，需要先删除引用的内容，才能删除新薪金类型人员！");
+            throw new WMSServiceException("删除供薪金类型人员失败，如果薪金类型人员已经被引用，需要先删除引用的内容，才能删除新薪金类型人员！");
+        }
+        List<Integer> salaryTypeId = new ArrayList<>();
+        List<Integer> personRemoveId=new ArrayList<>();
+        for (int i = 0; i < salaryTypePeople.length; i++) {
+            personRemoveId.add(salaryTypePeople[i].getPersonId());
+            if (!salaryTypeId.contains(salaryTypePeople[i].getSalaryTypeId())) {
+                salaryTypeId.add(salaryTypePeople[i].getSalaryTypeId());
+            }
+        }
+        for (int i = 0; i < salaryTypeId.size(); i++) {
+            AddPersonSalary addPersonSalary = new AddPersonSalary();
+            addPersonSalary.setWarehouseId(this.findWarehouseId(accountBook,salaryTypeId.get(i)));
+            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
+            this.personSalaryService.updateNewestPeriodPersonSalaryDelete(accountBook, addPersonSalary,personRemoveId);
         }
     }
 
