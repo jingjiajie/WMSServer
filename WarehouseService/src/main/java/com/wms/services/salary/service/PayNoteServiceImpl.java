@@ -284,7 +284,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord.setComment(accountSynchronize.getComment());
        accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
-       accountRecord.setBalance(new BigDecimal(1));
+       accountRecord.setBalance(new BigDecimal(0));
        //管理费用
        int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
        AccountRecord accountRecord1=new AccountRecord();
@@ -296,7 +296,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord1.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord1.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord1.setComment(accountSynchronize.getComment());
-       accountRecord1.setBalance(new BigDecimal(1));
+       accountRecord1.setBalance(new BigDecimal(0));
        accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
        //TODO 将总金额增加到 总账
        try{
@@ -340,7 +340,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord.setComment(accountSynchronize.getComment());
-       accountRecord.setBalance(new BigDecimal(1));
+       accountRecord.setBalance(new BigDecimal(0));
        accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
        //银行资产
        int accountTitlePropertyID=payNoteViews[0].getAccountTitlePropertyId();
@@ -354,7 +354,7 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord1.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord1.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord1.setComment(accountSynchronize.getComment());
-       accountRecord1.setBalance(new BigDecimal(1));
+       accountRecord1.setBalance(new BigDecimal(0));
        accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
        try
        {
