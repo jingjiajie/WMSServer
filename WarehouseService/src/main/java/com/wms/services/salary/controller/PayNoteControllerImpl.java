@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.wms.services.salary.datestructures.AccountSynchronize;
 import com.wms.services.salary.service.PayNoteService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.AccountTitleView;
 import com.wms.utilities.model.PayNote;
 import com.wms.utilities.model.PayNoteView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,14 @@ public class PayNoteControllerImpl implements PayNoteController {
         Condition cond = Condition.fromJson(condStr);
         PayNoteView[] payNoteViews =payNoteService.find(accountBook, cond);
         return payNoteViews;
+    }
+
+    @RequestMapping(value = "/{condStr}/find_son",method = RequestMethod.GET)
+    public AccountTitleView[] findSonAccountTitleForAssociation(@PathVariable("accountBook") String accountBook,
+                                   @PathVariable("condStr") String condStr) {
+        Condition cond = Condition.fromJson(condStr);
+        AccountTitleView[] accountTitleViews =payNoteService.findSonTitleForAssociation(accountBook, cond);
+        return accountTitleViews;
     }
 
     @Override

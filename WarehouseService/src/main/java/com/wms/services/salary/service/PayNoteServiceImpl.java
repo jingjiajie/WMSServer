@@ -1,5 +1,6 @@
 package com.wms.services.salary.service;
 
+import com.wms.services.ledger.dao.AccountTitleDAO;
 import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
 import com.wms.services.ledger.service.AccountRecordService;
 import com.wms.services.ledger.service.AccountTitleService;
@@ -54,6 +55,8 @@ public class PayNoteServiceImpl implements PayNoteService{
     SalaryTypeService salaryTypeService;
     @Autowired
     SessionFactory sessionFactory;
+    @Autowired
+    AccountTitleDAO accountTitleDAO;
 
     private static final String NO_PREFIX = "X";
     private static final BigDecimal ZERO= new BigDecimal(0);
@@ -420,5 +423,27 @@ public class PayNoteServiceImpl implements PayNoteService{
               throw new WMSServiceException("科目:("+accountTitle.getName()+")不是最低级科目，请修改！");
           }
       }
+    }
+
+    public AccountTitleView[] findSonTitleForAssociation(String accountBook,Condition condition)
+    {
+        AccountTitleView[] accountTitleViews=accountTitleService.find(accountBook,condition);
+        List<AccountTitleView> accountTitleViewList=new ArrayList<>();
+        for(int i=0;i<accountTitleViews.length;i++){
+            AccountTitle accountTitle=ReflectHelper.createAndCopyFields(accountTitleViews[i],AccountTitle.class);
+            List<FindLinkAccountTitle> findSonAccountTitleList=accountRecordService.FindSonAccountTitle(accountBook,new AccountTitle[]{accountTitle});
+            FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
+            findSonAccountTitleList.toArray(sonAccountTitles);
+            List<AccountTitleView> sonAccountTitleViewsList= sonAccountTitles[0].getAccountTitleViews();
+            AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
+            sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
+            if(sonAccountTitleViewsList.size()==0)
+            {
+                accountTitleViewList.add(accountTitleViews[i]);
+            }
+        }
+        AccountTitleView[] sonAccountTitle=new AccountTitleView[accountTitleViewList.size()];
+        accountTitleViewList.toArray(sonAccountTitle);
+        return sonAccountTitle;
     }
 }
