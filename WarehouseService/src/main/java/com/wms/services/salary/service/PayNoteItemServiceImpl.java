@@ -12,6 +12,7 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
+import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +75,16 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
     @Transactional
     public void update(String accountBook, PayNoteItem[] payNoteItems) throws WMSServiceException{
 
+        for (int i = 0; i < payNoteItems.length; i++) {
+            Validator validator1 = new Validator("税前应付");
+            validator1.notnull().notEmpty().min(0).validate(payNoteItems[i].getPreTaxAmount());
+            Validator validator= new Validator("税费");
+            validator.notnull().notEmpty().min(0).validate(payNoteItems[i].getTaxAmount());
+            Validator validator2= new Validator("税后应付");
+            validator2.notnull().notEmpty().min(0).validate(payNoteItems[i].getAfterTaxAmount());
+            Validator validator3= new Validator("实付金额");
+            validator3.notnull().notEmpty().min(0).validate(payNoteItems[i].getPaidAmount());
+        }
         //外键检测
         Stream.of(payNoteItems).forEach(
                 (payNoteItem)->{
