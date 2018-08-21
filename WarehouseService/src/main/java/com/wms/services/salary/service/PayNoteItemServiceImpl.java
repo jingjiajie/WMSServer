@@ -48,6 +48,8 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
     public int[] add(String accountBook, PayNoteItem[] payNoteItems) throws WMSServiceException
     {
         for(int i=0;i<payNoteItems.length;i++){
+            Validator validator1 = new Validator("税前应付");
+            validator1.notnull().notEmpty().min(0).validate(payNoteItems[i].getPreTaxAmount());
             payNoteItems[i].setState(PayNoteItemState.WAITING_FOR_CALCULATE_PAY);
             payNoteItems[i].setAfterTaxAmount(BigDecimal.ZERO);
             payNoteItems[i].setTaxAmount(BigDecimal.ZERO);
@@ -84,6 +86,16 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             validator2.notnull().notEmpty().min(0).validate(payNoteItems[i].getAfterTaxAmount());
             Validator validator3= new Validator("实付金额");
             validator3.notnull().notEmpty().min(0).validate(payNoteItems[i].getPaidAmount());
+        }
+        //对于已计算税费的条目应该保持税后应付=税前-税费
+        for (int i = 0; i < payNoteItems.length; i++) {
+           if(payNoteItems[i].getState()!=PayNoteItemState.WAITING_FOR_CALCULATE_PAY)
+           {
+               if(payNoteItems[i].getPreTaxAmount().subtract(payNoteItems[i].getTaxAmount()).compareTo(payNoteItems[i].getAfterTaxAmount())!=0)
+               {
+                   throw new WMSServiceException("条目应满足税后应付=税前-税费！");
+               }
+           }
         }
         //外键检测
         Stream.of(payNoteItems).forEach(
