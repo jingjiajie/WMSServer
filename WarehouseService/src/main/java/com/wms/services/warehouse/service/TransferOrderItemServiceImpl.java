@@ -450,8 +450,4 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         transferOrderService.update(accountBook,new TransferOrder[]{transferOrder});
     }
 
-    @Transactional
-    public void test(){
-       //stockRecordService.modifyAvailableAmount("WMS_Template",);
-    }
 }
