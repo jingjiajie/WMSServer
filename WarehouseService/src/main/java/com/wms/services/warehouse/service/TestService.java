@@ -25,11 +25,4 @@ public class TestService {
         System.out.println("更新后未提交时查询到的单号:"+warehouseEntry1.getNo());
         throw new WMSServiceException("抛出测试错误");
     }
-
-    @Transactional
-    public void testTransfer(){
-
-transferRecordService.test1();
-transferRecordService.test2();
-    }
 }

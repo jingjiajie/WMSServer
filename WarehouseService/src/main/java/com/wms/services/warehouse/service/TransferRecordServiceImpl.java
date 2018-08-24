@@ -49,19 +49,4 @@ public class TransferRecordServiceImpl implements TransferRecordService {
         return this.transferRecordDAO.findCount(database,cond);
     }
 
-    @Override
-    public void test1() throws WMSServiceException{
-        TransferRecord transferRecord=new TransferRecord();
-        transferRecord.setWarehouseId(2);
-        transferRecord.setId(127);
-        this.transferRecordDAO.update("WMS_Template",new TransferRecord[]{transferRecord});
-    }
-
-    @Override
-    public void test2() throws WMSServiceException{
-        Session session=sessionFactory.getCurrentSession();
-        //session.flush();
-        TransferRecordView[] transferRecordViews=this.transferRecordDAO.find("WMS_Template",new Condition().addCondition("id",new Integer[]{127}));
-        TransferRecord[] transferRecordView=this.transferRecordDAO.findTable("WMS_Template",new Condition().addCondition("id",new Integer[]{127}));
-    }
 }
