@@ -19,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -332,8 +335,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         return salaryPeriods[0];
     }
 
-    public void updateNewestPeriodPersonSalaryDelete(String accountBook, AddPersonSalary addPersonSalary, List<Integer> personRemoveIds)
-    {
+    public void updateNewestPeriodPersonSalaryDelete(String accountBook, AddPersonSalary addPersonSalary, List<Integer> personRemoveIds) {
         SalaryPeriod salaryPeriodNewest = this.findNewestSalaryPeriod(accountBook, addPersonSalary.getWarehouseId());
         addPersonSalary.setSalaryPeriodId(salaryPeriodNewest.getId());
         Session session = this.sessionFactory.getCurrentSession();
@@ -344,11 +346,11 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             throw new DatabaseNotFoundException(accountBook);
         }
         //先把删除的人员的人员薪资直接删除
-        StringBuffer stringBuffer=new StringBuffer();
+        StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("(");
-        for(int i=0;i<personRemoveIds.size();i++){ stringBuffer.append(personRemoveIds.toArray()[i]);
-            if(i!=personRemoveIds.size()-1)
-            {
+        for (int i = 0; i < personRemoveIds.size(); i++) {
+            stringBuffer.append(personRemoveIds.toArray()[i]);
+            if (i != personRemoveIds.size() - 1) {
                 stringBuffer.append(",");
             }
         }
@@ -356,7 +358,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         try {
             Query query = null;
             // 没编辑过的更新
-            String sql = "DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in "  +stringBuffer.toString() +  " and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId)";
+            String sql = "DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in " + stringBuffer.toString() + " and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId)";
             query = session.createNativeQuery(sql);
             query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
@@ -386,8 +388,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         }
         //TODO 加人员
         PersonSalary[] personSalaryExist = null;
-        if (itemIds.size() != 0)
-        {
+        if (itemIds.size() != 0) {
             personSalaryExist = this.personSalaryDAO.findTable(accountBook, new Condition().addCondition("warehouseId", addPersonSalary.getWarehouseId()).addCondition("salaryPeriodId", addPersonSalary.getSalaryPeriodId()).addCondition("salaryItemId", itemIds.toArray(), ConditionItem.Relation.IN));
         }
         List<PersonSalary> personSalaryList = new ArrayList<>();
@@ -449,10 +450,6 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         personSalaryDAO.add(accountBook, personSalaries);
 
 
-
-
-
-
     }
 
     //一个类型 最新区间更新
@@ -486,8 +483,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         }
         //TODO 加人员
         PersonSalary[] personSalaryExist = null;
-        if (itemIds.size() != 0)
-        {
+        if (itemIds.size() != 0) {
             personSalaryExist = this.personSalaryDAO.findTable(accountBook, new Condition().addCondition("warehouseId", addPersonSalary.getWarehouseId()).addCondition("salaryPeriodId", addPersonSalary.getSalaryPeriodId()).addCondition("salaryItemId", itemIds.toArray(), ConditionItem.Relation.IN));
         }
         List<PersonSalary> personSalaryList = new ArrayList<>();
@@ -511,7 +507,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 //区分类型
                 if (salaryItem.getType() == SalaryItemTypeState.REGULAR_SALARY) {
                     personSalary.setAmount(salaryItem.getDefaultAmount());
-                } else {
+                } else if (salaryItem.getType() == SalaryItemTypeState.VALUATION_SALARY) {
                     BigDecimal amount = new BigDecimal(0);
                     //先按人员查找入库单、送检单、移库单
                     WarehouseEntryItemView[] warehouseEntryItemViews = warehouseEntryItemService.find(accountBook, new Condition().addCondition("personId", salaryTypePerson.getPersonId()).addCondition("warehouseEntryCreateTime", new Timestamp[]{salaryPeriods[0].getStartTime(), salaryPeriods[0].getEndTime()}, ConditionItem.Relation.BETWEEN));
@@ -527,6 +523,22 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                         amount = amount.add(transferOrderItemViews[i].getRealAmount());
                     }
                     personSalary.setAmount(salaryItem.getDefaultAmount().multiply(amount));
+                }
+                else {
+                    ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+                    ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn");
+                    String name = "Runoob";
+                    BigDecimal result=null;
+                    try {
+                        //nashorn.eval("print('" + name + "')");
+                        //result = (Integer) nashorn.eval("10 + 2");
+                        nashorn.eval("var a=23");
+                        nashorn.eval("var b=25");
+                        result=BigDecimal.valueOf((double)nashorn.eval("a+b"));
+                    } catch (ScriptException e) {
+                        System.out.println("执行脚本错误: " + e.getMessage());
+                    }
+                    System.out.println(result);
                 }
                 personSalary.setSalaryItemId(salaryItem.getId());
                 personSalary.setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
