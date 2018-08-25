@@ -9,6 +9,4 @@ public interface TransferRecordService {
     int[] add(String accountBook, TransferRecord transferRecords[]) throws WMSServiceException;
     TransferRecordView[] find(String accountBook, Condition cond) throws WMSServiceException;
     long findCount(String database,Condition cond) throws WMSServiceException;
-    void test1();
-    void test2();
 }

@@ -13,6 +13,9 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +39,7 @@ public class SalaryItemServiceImpl implements SalaryItemService {
             Validator validator = new Validator("薪金项目名称");
             validator.notnull().notEmpty().validate(salaryItems[i].getName());
             Validator validator1 = new Validator("默认金额");
-            validator1.notnull().notEmpty().min(0).validate(salaryItems[i].getDefaultAmount());
+            validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
         }
 
         for (int i = 0; i < salaryItems.length; i++) {
@@ -92,7 +95,7 @@ public class SalaryItemServiceImpl implements SalaryItemService {
             Validator validator = new Validator("薪金项目名称");
             validator.notnull().notEmpty().validate(salaryItems[i].getName());
             Validator validator1 = new Validator("默认金额");
-            validator1.notnull().notEmpty().min(0).validate(salaryItems[i].getDefaultAmount());
+            validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
         }
         for (int i = 0; i < salaryItems.length; i++) {
             for (int j = i + 1; j < salaryItems.length; j++) {
