@@ -2,6 +2,7 @@ package com.wms.services.salary.service;
 
 import com.wms.services.salary.dao.SalaryItemDAO;
 import com.wms.services.salary.datestructures.AddPersonSalary;
+import com.wms.services.salary.datestructures.SalaryItemTypeState;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -13,6 +14,8 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.regex.*;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -38,8 +41,9 @@ public class SalaryItemServiceImpl implements SalaryItemService {
         for (int i = 0; i < salaryItems.length; i++) {
             Validator validator = new Validator("薪金项目名称");
             validator.notnull().notEmpty().validate(salaryItems[i].getName());
+            if(salaryItems[i].getType()!=SalaryItemTypeState.Formula){
             Validator validator1 = new Validator("默认金额");
-            validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
+            validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());}
         }
 
         for (int i = 0; i < salaryItems.length; i++) {
@@ -55,9 +59,24 @@ public class SalaryItemServiceImpl implements SalaryItemService {
             Condition cond = new Condition();
             cond.addCondition("name", new String[]{salaryItem.getName()});
             cond.addCondition("warehouseId", salaryItem.getWarehouseId());
-            cond.addCondition("salaryTypeId",salaryItem.getSalaryTypeId());
+            cond.addCondition("salaryTypeId", salaryItem.getSalaryTypeId());
             if (salaryItemDAO.find(accountBook, cond).length > 0) {
                 throw new WMSServiceException("薪金项目名称：" + salaryItem.getName() + "已经存在!");
+            }
+        });
+        //判断标识符是否合法
+        Stream.of(salaryItems).forEach((salaryItem) -> {
+            if (salaryItem.getType() == SalaryItemTypeState.Formula) {
+                if (salaryItem.getFormula() == null || salaryItem.getFormula().equals("")) {
+                    throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的公式为空!");
+                } else {
+                    if (!this.isString(salaryItem.getIdentifier())) {
+                        throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的英文标识符不符合规则：以英文、下划线开头且只包括英文、下划线、数字组成!");
+                    }
+                    if (!this.isString(salaryItem.getFormula())) {
+                        throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的公式不符合规则：以英文、下划线开头且只包括英文、下划线、数字组成!");
+                    }
+                }
             }
         });
         //外键检测
@@ -94,8 +113,9 @@ public class SalaryItemServiceImpl implements SalaryItemService {
         for (int i = 0; i < salaryItems.length; i++) {
             Validator validator = new Validator("薪金项目名称");
             validator.notnull().notEmpty().validate(salaryItems[i].getName());
-            Validator validator1 = new Validator("默认金额");
-            validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
+            if(salaryItems[i].getType()!=SalaryItemTypeState.Formula){
+                Validator validator1 = new Validator("默认金额");
+                validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());}
         }
         for (int i = 0; i < salaryItems.length; i++) {
             for (int j = i + 1; j < salaryItems.length; j++) {
@@ -113,12 +133,27 @@ public class SalaryItemServiceImpl implements SalaryItemService {
                     }
                 }
         );
+        //判断标识符是否合法
+        Stream.of(salaryItems).forEach((salaryItem) -> {
+            if (salaryItem.getType() == SalaryItemTypeState.Formula) {
+                if (salaryItem.getFormula() == null || salaryItem.getFormula().equals("")) {
+                    throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的公式为空!");
+                } else {
+                    if (!this.isString(salaryItem.getIdentifier())) {
+                        throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的英文标识符不符合规则：以英文、下划线开头且只包括英文、下划线、数字组成!");
+                    }
+                    if (!this.isString(salaryItem.getFormula())) {
+                        throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的公式不符合规则：以英文、下划线开头且只包括英文、下划线、数字组成!");
+                    }
+                }
+            }
+        });
         for (int i = 0; i < salaryItems.length; i++) {
             Condition cond = new Condition();
             cond.addCondition("name", new String[]{salaryItems[i].getName()});
             cond.addCondition("warehouseId", salaryItems[i].getWarehouseId());
             cond.addCondition("id", new Integer[]{salaryItems[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
-            cond.addCondition("salaryTypeId",salaryItems[i].getSalaryTypeId());
+            cond.addCondition("salaryTypeId", salaryItems[i].getSalaryTypeId());
             if (salaryItemDAO.find(accountBook, cond).length > 0) {
                 throw new WMSServiceException("项目名称重复：" + salaryItems[i].getName());
             }
@@ -177,5 +212,17 @@ public class SalaryItemServiceImpl implements SalaryItemService {
         return this.salaryItemDAO.findCount(database, cond);
     }
 
-
+    private Boolean isString(String str) {
+        Boolean bl = false;
+        //首先,使用Pattern解释要使用的正则表达式，其中^表是字符串的开始，$表示字符串的结尾。
+        Pattern pt = Pattern.compile("^[0-9a-zA-Z_]\\w*$");
+        //然后使用Matcher来对比目标字符串与上面解释得结果
+        Matcher mt = pt.matcher(str);
+        //如果能够匹配则返回true。实际上还有一种方法mt.find()，某些时候，可能不是比对单一的一个字符串，
+        //可能是一组，那如果只要求其中一个字符串符合要求就可以用find方法了.
+        if (mt.matches()) {
+            bl = true;
+        }
+        return bl;
+    }
 }
