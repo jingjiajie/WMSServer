@@ -73,8 +73,8 @@ public class SalaryItemServiceImpl implements SalaryItemService {
                     if (!this.isString(salaryItem.getIdentifier())) {
                         throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的英文标识符不符合规则：以英文、下划线开头且只包括英文、下划线、数字组成!");
                     }
-                    if (!this.isString(salaryItem.getFormula())) {
-                        throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的公式不符合规则：以英文、下划线开头且只包括英文、下划线、数字组成!");
+                    if (!this.isFormula(salaryItem.getFormula())) {
+                        throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的公式不符合规则：以英文、下划线开头且只包括英文、下划线、数字和基本运算符合组成!");
                     }
                 }
             }
@@ -142,8 +142,8 @@ public class SalaryItemServiceImpl implements SalaryItemService {
                     if (!this.isString(salaryItem.getIdentifier())) {
                         throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的英文标识符不符合规则：以英文、下划线开头且只包括英文、下划线、数字组成!");
                     }
-                    if (!this.isString(salaryItem.getFormula())) {
-                        throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的公式不符合规则：以英文、下划线开头且只包括英文、下划线、数字组成!");
+                    if (!this.isFormula(salaryItem.getFormula())) {
+                        throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的公式不符合规则：以英文、下划线开头且只包括英文、下划线、数字和基本运算符合组成!");
                     }
                 }
             }
@@ -216,6 +216,20 @@ public class SalaryItemServiceImpl implements SalaryItemService {
         Boolean bl = false;
         //首先,使用Pattern解释要使用的正则表达式，其中^表是字符串的开始，$表示字符串的结尾。
         Pattern pt = Pattern.compile("^[0-9a-zA-Z_]\\w*$");
+        //然后使用Matcher来对比目标字符串与上面解释得结果
+        Matcher mt = pt.matcher(str);
+        //如果能够匹配则返回true。实际上还有一种方法mt.find()，某些时候，可能不是比对单一的一个字符串，
+        //可能是一组，那如果只要求其中一个字符串符合要求就可以用find方法了.
+        if (mt.matches()) {
+            bl = true;
+        }
+        return bl;
+    }
+
+    private Boolean isFormula(String str) {
+        Boolean bl = false;
+        //首先,使用Pattern解释要使用的正则表达式，其中^表是字符串的开始，$表示字符串的结尾。
+        Pattern pt = Pattern.compile("^[\\w\\.\\/\\*\\-\\+\\(\\)\\s\\=]*$");
         //然后使用Matcher来对比目标字符串与上面解释得结果
         Matcher mt = pt.matcher(str);
         //如果能够匹配则返回true。实际上还有一种方法mt.find()，某些时候，可能不是比对单一的一个字符串，
