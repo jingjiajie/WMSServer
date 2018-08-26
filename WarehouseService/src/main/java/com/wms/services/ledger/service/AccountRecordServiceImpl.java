@@ -325,6 +325,16 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             }
         }));
 
+        //外键检测
+        Stream.of(accountRecords).forEach((accountRecord -> {
+
+            if(accountRecord.getCreditAmount().compareTo(BigDecimal.ZERO)!=0
+                    &&accountRecord.getDebitAmount().compareTo(BigDecimal.ZERO)!=0){
+                throw new WMSServiceException("发生额只能填写借方或者贷方其中一个方向！无法添加账目记录!");
+            }
+
+        }));
+
 
     }
 
