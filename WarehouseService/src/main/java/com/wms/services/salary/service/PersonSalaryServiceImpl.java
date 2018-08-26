@@ -285,9 +285,9 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 BigDecimal result = null;
                 try {
                     nashorn.eval(identifier);
-                    result = BigDecimal.valueOf((double) nashorn.eval(formula));
+                    result = GetBigDecimal.getBigDecimal(nashorn.eval(formula));
                 } catch (ScriptException e) {
-                    System.out.println("执行脚本错误: " + e.getMessage());
+                    System.out.println("请检查公式优先级！: " + e.getMessage());
                 }
                 personSalary.setAmount(result);
                 personSalary.setSalaryItemId(salaryItem.getId());
