@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -230,17 +231,6 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                             amount = amount.add(transferOrderItemViews[i].getRealAmount());
                         }
                         personSalary.setAmount(salaryItem.getDefaultAmount().multiply(amount));
-                    } else {
-                        ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-                        ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn");
-                        BigDecimal result = null;
-                        try {
-                            nashorn.eval("var a=23");
-                            nashorn.eval("var b=25");
-                            result = BigDecimal.valueOf((double) nashorn.eval("a+b"));
-                        } catch (ScriptException e) {
-                            System.out.println("执行脚本错误: " + e.getMessage());
-                        }
                     }
                     personSalary.setSalaryItemId(salaryItem.getId());
                     personSalary.setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
@@ -259,6 +249,28 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     //把所有跟公式有关的人员薪资先删除，再添加
     public  void refreshFormula(String accountBook, AddPersonSalary addPersonSalary)
     {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        try {
+            Query query = null;
+            String sql = "SELECT FROM PersonSalary as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId and p.personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and p.salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and (SELECT s.type from salaryItem as s where s.id=p.salaryItemId )!=2";
+            query=session.createNativeQuery(sql,PersonSalary.class);
+            query = session.createNativeQuery(sql);
+            query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
+            query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
+            query.setParameter("salaryTypeId", addPersonSalary.getSalaryTypeId());
+            PersonSalary[] resultArray=null;
+            List<PersonSalary> resultList = query.list();
+            resultArray = (PersonSalary[]) Array.newInstance(PersonSalary.class,resultList.size());
+            resultList.toArray(resultArray);
+        } catch (Exception e) {
+            throw new WMSServiceException("！");
+        }
         personService.remove(accountBook,addPersonSalary.getPersonSalaryIds());
         this.addFormula(accountBook,addPersonSalary);
     }
