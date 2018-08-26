@@ -256,9 +256,11 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         }
     }
 
-
-    public  void refreshFormula(String accountBook, AddPersonSalary addPersonSalary,List<Integer> personSalaryIds) {
-
+    //把所有跟公式有关的人员薪资先删除，再添加
+    public  void refreshFormula(String accountBook, AddPersonSalary addPersonSalary)
+    {
+        personService.remove(accountBook,addPersonSalary.getPersonSalaryIds());
+        this.addFormula(accountBook,addPersonSalary);
     }
 
     //将一个类型的公式添加进去 不管删除
