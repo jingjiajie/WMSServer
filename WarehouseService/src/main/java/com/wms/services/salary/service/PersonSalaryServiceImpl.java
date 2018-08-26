@@ -251,6 +251,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     {
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
+        List<Integer> personSalaryIds=new ArrayList<>();
+        int[] ids=null;
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
         } catch (Throwable ex) {
@@ -258,7 +260,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         }
         try {
             Query query = null;
-            String sql = "SELECT FROM PersonSalary as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId and p.personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and p.salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and (SELECT s.type from salaryItem as s where s.id=p.salaryItemId )!=2";
+            String sql = "SELECT  p.* FROM PersonSalary as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId and p.personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and p.salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and (SELECT s.type from SalaryItem as s where s.id=p.salaryItemId )!=2";
             query=session.createNativeQuery(sql,PersonSalary.class);
             query = session.createNativeQuery(sql);
             query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
@@ -268,10 +270,15 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             List<PersonSalary> resultList = query.list();
             resultArray = (PersonSalary[]) Array.newInstance(PersonSalary.class,resultList.size());
             resultList.toArray(resultArray);
+            ids=new int[resultArray.length];
+            for(int i=0;i<resultArray.length;i++)
+            {
+                ids[i]=resultArray[i].getId();
+            }
         } catch (Exception e) {
             throw new WMSServiceException("！");
         }
-        personService.remove(accountBook,addPersonSalary.getPersonSalaryIds());
+        personService.remove(accountBook,ids);
         this.addFormula(accountBook,addPersonSalary);
     }
 
