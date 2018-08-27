@@ -251,7 +251,6 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     {
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
-        List<Integer> personSalaryIds=new ArrayList<>();
         int[] ids=null;
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -278,7 +277,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         } catch (Exception e) {
             throw new WMSServiceException("查询人员薪资出错！");
         }
-        personService.remove(accountBook,ids);
+        personSalaryDAO.remove(accountBook,ids);
         this.addFormula(accountBook,addPersonSalary);
     }
 
