@@ -31,4 +31,14 @@ public class AddPersonSalary {
     }
 
     private int warehouseId;
+
+    public int[] getPersonSalaryIds() {
+        return personSalaryIds;
+    }
+
+    public void setPersonSalaryIds(int[] personSalaryIds) {
+        this.personSalaryIds = personSalaryIds;
+    }
+
+    private int[] personSalaryIds;
 }

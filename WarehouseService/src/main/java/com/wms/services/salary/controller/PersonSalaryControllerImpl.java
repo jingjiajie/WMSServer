@@ -71,8 +71,16 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
         personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalaries);
     }
 
+    @RequestMapping(value = "/refresh_formula",method = RequestMethod.POST)
+    @ResponseBody
+    public void refreshFormula(@PathVariable("accountBook") String accountBook,
+                               @RequestBody AddPersonSalary addPersonSalary) {
+        personSalaryService.refreshFormula(accountBook,addPersonSalary);
+    }
+
     @RequestMapping(value = "/remove_no",method = RequestMethod.DELETE)
     public void removeNo() {
         return;
     }
+
 }
