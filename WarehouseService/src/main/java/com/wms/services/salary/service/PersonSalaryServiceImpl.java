@@ -237,7 +237,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                     personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
                     //没编辑过
                     personSalary.setEdited(0);
-                    personSalaryList.add(personSalary);
+                    if(salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON&&salaryItem.getType()!=SalaryItemTypeState.Formula)
+                    {personSalaryList.add(personSalary);}
                 }
             }
             PersonSalary[] personSalaries = new PersonSalary[personSalaryList.size()];
@@ -251,7 +252,6 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     {
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
-        List<Integer> personSalaryIds=new ArrayList<>();
         int[] ids=null;
         try {
             session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
@@ -260,9 +260,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         }
         try {
             Query query = null;
-            String sql = "SELECT  p.* FROM PersonSalary as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId and p.personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and p.salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and (SELECT s.type from SalaryItem as s where s.id=p.salaryItemId )!=2";
+            String sql = "SELECT  p.* FROM PersonSalary as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId and p.personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and p.salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and (SELECT s.type from SalaryItem as s where s.id=p.salaryItemId )=2";
             query=session.createNativeQuery(sql,PersonSalary.class);
-            query = session.createNativeQuery(sql);
             query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
             query.setParameter("salaryTypeId", addPersonSalary.getSalaryTypeId());
@@ -276,9 +275,9 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 ids[i]=resultArray[i].getId();
             }
         } catch (Exception e) {
-            throw new WMSServiceException("！");
+            throw new WMSServiceException("查询人员薪资出错！");
         }
-        personService.remove(accountBook,ids);
+        personSalaryDAO.remove(accountBook,ids);
         this.addFormula(accountBook,addPersonSalary);
     }
 
@@ -286,7 +285,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     private void addFormula(String accountBook, AddPersonSalary addPersonSalary) {
         List<PersonSalary> personSalaryList = new ArrayList<>();
         SalaryTypePerson[] salaryTypePersons = salaryTypePersonService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()));
-        SalaryItem[] salaryItems = salaryItemService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()).addCondition("type", SalaryItemTypeState.Formula).addOrder("type", OrderItem.Order.DESC));
+        SalaryItem[] salaryItems = salaryItemService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()).addCondition("type", SalaryItemTypeState.Formula).addOrder("priority", OrderItem.Order.DESC));
         SalaryPeriod[] salaryPeriods = salaryPeriodService.findTable(accountBook, new Condition().addCondition("id", addPersonSalary.getSalaryPeriodId()));
         if (salaryPeriods.length != 1) {
             throw new WMSServiceException("查询薪资期间错误！");
@@ -294,19 +293,19 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         //每次只添加一个类型
         for (SalaryTypePerson salaryTypePerson : salaryTypePersons) {
            //已经按优先级排序
+            ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+            ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn");
             for (SalaryItem salaryItem : salaryItems) {
                 PersonSalary personSalary = new PersonSalary();
                 personSalary.setPersonId(salaryTypePerson.getPersonId());
                 String formula=salaryItem.getFormula()+";";
-                String identifier="var"+salaryItem.getIdentifier()+";";
-                ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-                ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn");
+                String identifier="var "+salaryItem.getIdentifier()+";";
                 BigDecimal result = null;
                 try {
                     nashorn.eval(identifier);
                     result = GetBigDecimal.getBigDecimal(nashorn.eval(formula));
                 } catch (ScriptException e) {
-                    System.out.println("请检查公式优先级！: " + e.getMessage());
+                    throw new WMSServiceException("请检查公式是和优先级是否正确！: " + e.getMessage());
                 }
                 personSalary.setAmount(result);
                 personSalary.setSalaryItemId(salaryItem.getId());
@@ -448,7 +447,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         try {
             Query query = null;
             // 没编辑过的更新
-            String sql = "DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and edited=0 and (SELECT t.typeId FROM SalaryItem as t where t.id=SalaryItemId)!=2";
+            String sql = "DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and edited=0 and (SELECT t.type FROM SalaryItem as t where t.id=SalaryItemId)!=2";
             query = session.createNativeQuery(sql);
             query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
@@ -466,7 +465,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         //TODO 加人员
         PersonSalary[] personSalaryExist = null;
         if (itemIds.size() != 0) {
-            personSalaryExist = this.personSalaryDAO.findTable(accountBook, new Condition().addCondition("warehouseId", addPersonSalary.getWarehouseId()).addCondition("salaryPeriodId", addPersonSalary.getSalaryPeriodId()).addCondition("salaryItemId", itemIds.toArray(), ConditionItem.Relation.IN).addCondition("type",SalaryItemTypeState.Formula, ConditionItem.Relation.NOT_EQUAL));
+            //personSalaryExist = this.personSalaryDAO.findTable(accountBook, new Condition().addCondition("warehouseId", addPersonSalary.getWarehouseId()).addCondition("salaryPeriodId", addPersonSalary.getSalaryPeriodId()).addCondition("salaryItemId", itemIds.toArray(), ConditionItem.Relation.IN).addCondition("type",SalaryItemTypeState.Formula, ConditionItem.Relation.NOT_EQUAL));
+            personSalaryExist =this.findExistPersonSalary(accountBook,addPersonSalary);
         }
         List<PersonSalary> personSalaryList = new ArrayList<>();
         SalaryTypePerson[] salaryTypePersons = salaryTypePersonService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()));
@@ -505,13 +505,14 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
                 //没编辑过
                 personSalary.setEdited(0);
-                if (personSalaryExist == null) {
+                if (personSalaryExist == null&&salaryItem.getType()!=SalaryItemTypeState.Formula) {
                     personSalaryList.add(personSalary);
                 } else {
                     for (PersonSalary personSalaryExistEach : personSalaryExist) {
                         //项目、人员、仓库、期间不全相同的加入，相同的说明已经编辑过，就不再更新
                         if (!(personSalaryExistEach.getSalaryItemId().equals(personSalary.getSalaryItemId()) && personSalaryExistEach.getPersonId().equals(personSalary.getPersonId()) && personSalaryExistEach.getWarehouseId().equals(personSalary.getWarehouseId()) && personSalaryExistEach.getSalaryPeriodId().equals(personSalary.getSalaryPeriodId()))) {
-                            personSalaryList.add(personSalary);
+                            if(salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON&&salaryItem.getType()!=SalaryItemTypeState.Formula)
+                            {personSalaryList.add(personSalary);}
                         }
                     }
                 }
@@ -536,7 +537,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         try {
             Query query = null;
             // 没编辑过的和非公式计算的更新
-            String sql = "DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and edited=0 and (SELECT t.typeId FROM SalaryItem AS t where t.id=SalaryItemId)!=2";
+            String sql = "DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and edited=0 and (SELECT t.type FROM SalaryItem AS t where t.id=SalaryItemId)!=2";
             query = session.createNativeQuery(sql);
             query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
@@ -553,13 +554,12 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         }
         //TODO 加人员
         PersonSalary[] personSalaryExist = null;
-        if (itemIds.size() != 0) {
-            personSalaryExist = this.personSalaryDAO.findTable(accountBook, new Condition().addCondition("warehouseId", addPersonSalary.getWarehouseId()).addCondition("salaryPeriodId", addPersonSalary.getSalaryPeriodId()).addCondition("salaryItemId", itemIds.toArray(), ConditionItem.Relation.IN).addCondition("type",SalaryItemTypeState.Formula, ConditionItem.Relation.NOT_EQUAL));
+        if (itemIds.size() != 0)
+        {
+            personSalaryExist =this.findExistPersonSalary(accountBook,addPersonSalary);
         }
         List<PersonSalary> personSalaryList = new ArrayList<>();
         SalaryTypePerson[] salaryTypePersons = salaryTypePersonService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()));
-
-
         SalaryPeriod[] salaryPeriods = salaryPeriodService.findTable(accountBook, new Condition().addCondition("id", addPersonSalary.getSalaryPeriodId()));
         if (salaryPeriods.length != 1) {
             throw new WMSServiceException("查询薪资期间错误！");
@@ -594,13 +594,14 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
                 //没编辑过
                 personSalary.setEdited(0);
-                if (personSalaryExist == null) {
+                if (personSalaryExist == null&&salaryItem.getType()!=SalaryItemTypeState.Formula) {
                     personSalaryList.add(personSalary);
                 } else {
                     for (PersonSalary personSalaryExistEach : personSalaryExist) {
                         //项目、人员、仓库、期间不全相同的加入，相同的说明已经编辑过，就不再更新
                         if (!(personSalaryExistEach.getSalaryItemId().equals(personSalary.getSalaryItemId()) && personSalaryExistEach.getPersonId().equals(personSalary.getPersonId()) && personSalaryExistEach.getWarehouseId().equals(personSalary.getWarehouseId()) && personSalaryExistEach.getSalaryPeriodId().equals(personSalary.getSalaryPeriodId()))) {
-                            personSalaryList.add(personSalary);
+                            if(salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON&&salaryItem.getType()!=SalaryItemTypeState.Formula)
+                            {personSalaryList.add(personSalary);}
                         }
                     }
                 }
@@ -609,6 +610,31 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         PersonSalary[] personSalaries = new PersonSalary[personSalaryList.size()];
         personSalaryList.toArray(personSalaries);
         personSalaryDAO.add(accountBook, personSalaries);
+    }
+    private PersonSalary[] findExistPersonSalary(String accountBook,AddPersonSalary addPersonSalary)
+    {
+        PersonSalary[] resultArray=null;
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        try {
+            Query query = null;
+            String sql = "SELECT  p.* FROM PersonSalary as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId and p.personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and p.salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and (SELECT s.type from SalaryItem as s where s.id=p.salaryItemId )!=2";
+            query=session.createNativeQuery(sql,PersonSalary.class);
+            query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
+            query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
+            query.setParameter("salaryTypeId", addPersonSalary.getSalaryTypeId());
+            List<PersonSalary> resultList = query.list();
+            resultArray = (PersonSalary[]) Array.newInstance(PersonSalary.class,resultList.size());
+            resultList.toArray(resultArray);
+        } catch (Exception e) {
+            throw new WMSServiceException("查询人员薪资出错！");
+        }
+        return resultArray;
     }
 }
 
