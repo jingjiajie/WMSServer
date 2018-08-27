@@ -276,7 +276,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 ids[i]=resultArray[i].getId();
             }
         } catch (Exception e) {
-            throw new WMSServiceException("！");
+            throw new WMSServiceException("查询人员薪资出错！");
         }
         personService.remove(accountBook,ids);
         this.addFormula(accountBook,addPersonSalary);
@@ -448,7 +448,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         try {
             Query query = null;
             // 没编辑过的更新
-            String sql = "DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and edited=0 and (SELECT t.typeId FROM SalaryItem as t where t.id=SalaryItemId)!=2";
+            String sql = "DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and edited=0 and (SELECT t.type FROM SalaryItem as t where t.id=SalaryItemId)!=2";
             query = session.createNativeQuery(sql);
             query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
@@ -536,7 +536,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         try {
             Query query = null;
             // 没编辑过的和非公式计算的更新
-            String sql = "DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and edited=0 and (SELECT t.typeId FROM SalaryItem AS t where t.id=SalaryItemId)!=2";
+            String sql = "DELETE FROM PersonSalary  where salaryPeriodId=:salaryPeriodId and warehouseId=:warehouseId and personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and edited=0 and (SELECT t.type FROM SalaryItem AS t where t.id=SalaryItemId)!=2";
             query = session.createNativeQuery(sql);
             query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
