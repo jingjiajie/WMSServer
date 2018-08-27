@@ -260,7 +260,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         }
         try {
             Query query = null;
-            String sql = "SELECT  p.* FROM PersonSalary as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId and p.personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and p.salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and (SELECT s.type from SalaryItem as s where s.id=p.salaryItemId )!=2";
+            String sql = "SELECT  p.* FROM PersonSalary as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId and p.personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and p.salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and (SELECT s.type from SalaryItem as s where s.id=p.salaryItemId )=2";
             query=session.createNativeQuery(sql,PersonSalary.class);
             query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
@@ -285,7 +285,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     private void addFormula(String accountBook, AddPersonSalary addPersonSalary) {
         List<PersonSalary> personSalaryList = new ArrayList<>();
         SalaryTypePerson[] salaryTypePersons = salaryTypePersonService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()));
-        SalaryItem[] salaryItems = salaryItemService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()).addCondition("type", SalaryItemTypeState.Formula).addOrder("type", OrderItem.Order.DESC));
+        SalaryItem[] salaryItems = salaryItemService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()).addCondition("type", SalaryItemTypeState.Formula).addOrder("priority", OrderItem.Order.DESC));
         SalaryPeriod[] salaryPeriods = salaryPeriodService.findTable(accountBook, new Condition().addCondition("id", addPersonSalary.getSalaryPeriodId()));
         if (salaryPeriods.length != 1) {
             throw new WMSServiceException("查询薪资期间错误！");
@@ -293,19 +293,19 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         //每次只添加一个类型
         for (SalaryTypePerson salaryTypePerson : salaryTypePersons) {
            //已经按优先级排序
+            ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+            ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn");
             for (SalaryItem salaryItem : salaryItems) {
                 PersonSalary personSalary = new PersonSalary();
                 personSalary.setPersonId(salaryTypePerson.getPersonId());
                 String formula=salaryItem.getFormula()+";";
-                String identifier="var"+salaryItem.getIdentifier()+";";
-                ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-                ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn");
+                String identifier="var "+salaryItem.getIdentifier()+";";
                 BigDecimal result = null;
                 try {
                     nashorn.eval(identifier);
                     result = GetBigDecimal.getBigDecimal(nashorn.eval(formula));
                 } catch (ScriptException e) {
-                    System.out.println("请检查公式是和优先级是否正确！: " + e.getMessage());
+                    throw new WMSServiceException("请检查公式是和优先级是否正确！: " + e.getMessage());
                 }
                 personSalary.setAmount(result);
                 personSalary.setSalaryItemId(salaryItem.getId());
