@@ -237,7 +237,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                     personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
                     //没编辑过
                     personSalary.setEdited(0);
-                    personSalaryList.add(personSalary);
+                    if(salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON)
+                    {personSalaryList.add(personSalary);}
                 }
             }
             PersonSalary[] personSalaries = new PersonSalary[personSalaryList.size()];
@@ -510,7 +511,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                     for (PersonSalary personSalaryExistEach : personSalaryExist) {
                         //项目、人员、仓库、期间不全相同的加入，相同的说明已经编辑过，就不再更新
                         if (!(personSalaryExistEach.getSalaryItemId().equals(personSalary.getSalaryItemId()) && personSalaryExistEach.getPersonId().equals(personSalary.getPersonId()) && personSalaryExistEach.getWarehouseId().equals(personSalary.getWarehouseId()) && personSalaryExistEach.getSalaryPeriodId().equals(personSalary.getSalaryPeriodId()))) {
-                            personSalaryList.add(personSalary);
+                            if(salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON)
+                            {personSalaryList.add(personSalary);}
                         }
                     }
                 }
@@ -599,7 +601,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                     for (PersonSalary personSalaryExistEach : personSalaryExist) {
                         //项目、人员、仓库、期间不全相同的加入，相同的说明已经编辑过，就不再更新
                         if (!(personSalaryExistEach.getSalaryItemId().equals(personSalary.getSalaryItemId()) && personSalaryExistEach.getPersonId().equals(personSalary.getPersonId()) && personSalaryExistEach.getWarehouseId().equals(personSalary.getWarehouseId()) && personSalaryExistEach.getSalaryPeriodId().equals(personSalary.getSalaryPeriodId()))) {
-                            personSalaryList.add(personSalary);
+                            if(salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON)
+                            {personSalaryList.add(personSalary);}
                         }
                     }
                 }
