@@ -339,7 +339,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     }
 
     @Deprecated
-    public void RealTransformAccount(String accountBook, TransferAccount transferAccount)throws WMSServiceException
+    public void RealTransferAccount(String accountBook, TransferAccount transferAccount)throws WMSServiceException
     {
 
         AccountTitleView[] OutAccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",transferAccount.getOutaccountTitleId()));
@@ -351,74 +351,44 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         accountRecord.setAccountTitleId(OutAccountTitleView.getId());
         accountRecord.setAccountPeriodId(transferAccount.getAccountPeriodId());
         accountRecord.setPersonId(transferAccount.getPersonId());
-        accountRecord.setComment(transferAccount.getComment());
+        accountRecord.setComment("转账记录");
         accountRecord.setWarehouseId(transferAccount.getWarehouseId());
-        accountRecord.setSummary(transferAccount.getSummary());
+//        accountRecord.setSummary(transferAccount.getSummary());
         accountRecord.setVoucherInfo(transferAccount.getVoucherInfo());
 
         AccountRecord accountRecord1=new AccountRecord();
         accountRecord1.setAccountTitleId(InAccountTitleView.getId());
         accountRecord1.setAccountPeriodId(transferAccount.getAccountPeriodId());
         accountRecord1.setPersonId(transferAccount.getPersonId());
-        accountRecord1.setComment(transferAccount.getComment());
+        accountRecord1.setComment("转账记录");
         accountRecord1.setWarehouseId(transferAccount.getWarehouseId());
-        accountRecord1.setSummary(transferAccount.getSummary());
+//        accountRecord1.setSummary(transferAccount.getSummary());
         accountRecord1.setVoucherInfo(transferAccount.getVoucherInfo());
-//之前用了service 我改成了DAO 用service 无法注入
-        AccountRecordView[] accountRecordViews= accountRecordDAO.find(accountBook,new Condition()
-                .addCondition("warehouseId",new Integer[]{transferAccount.getWarehouseId()})
-                .addCondition("accountPeriodId",new Integer[]{transferAccount.getAccountPeriodId()})
-                .addCondition("accountTitleId",new Integer[]{OutAccountTitleView.getId()}));
 
-        AccountRecordView newestAccountRecordView=accountRecordViews[0];
-        for (int i=0;i<accountRecordViews.length;i++){
-                if (accountRecordViews[i].getTime().after(newestAccountRecordView.getTime())){
-                    newestAccountRecordView=accountRecordViews[i];
-                }
+
+        if (OutAccountTitleView.getDirection()==AccountTitleService.Debit){
+            accountRecord.setCreditAmount(transferAccount.getChangeAmount());
+            accountRecord.setDebitAmount(BigDecimal.ZERO);
+            accountRecord.setBalance(BigDecimal.ZERO);
+
+            accountRecord1.setDebitAmount(transferAccount.getChangeAmount());
+            accountRecord1.setCreditAmount(BigDecimal.ZERO);
+            accountRecord1.setBalance(BigDecimal.ZERO);
+
+        }else{
+            accountRecord.setDebitAmount(transferAccount.getChangeAmount());
+            accountRecord.setCreditAmount(BigDecimal.ZERO);
+            accountRecord.setBalance(BigDecimal.ZERO);
+
+            accountRecord1.setCreditAmount(transferAccount.getChangeAmount());
+            accountRecord1.setDebitAmount(BigDecimal.ZERO);
+            accountRecord1.setBalance(BigDecimal.ZERO);
+
         }
 
-//之前用了service 我改成了DAO 用service 无法注入
-        AccountRecordView[] inaccountRecordViews= accountRecordDAO.find(accountBook,new Condition()
-                .addCondition("warehouseId",new Integer[]{transferAccount.getWarehouseId()})
-                .addCondition("accountPeriodId",new Integer[]{transferAccount.getAccountPeriodId()})
-                .addCondition("accountTitleId",new Integer[]{InAccountTitleView.getId()}));
 
-        AccountRecordView newestAccountRecordView1=inaccountRecordViews[0];
-        for (int i=0;i<inaccountRecordViews.length;i++){
-                if (inaccountRecordViews[i].getTime().after(newestAccountRecordView1.getTime())){
-                    newestAccountRecordView1=inaccountRecordViews[i];
-                }
-        }
 
-        if (OutAccountTitleView.getDirection()==InAccountTitleView.getDirection()){
-            if (OutAccountTitleView.getDirection()==AccountTitleService.Debit){
-                //todo 找出最新一条的余额扣掉
-                accountRecord.setCreditAmount(transferAccount.getChangeAmount());
-                accountRecord.setBalance(newestAccountRecordView.getBalance().subtract(transferAccount.getChangeAmount()));
-                accountRecord1.setDebitAmount(transferAccount.getChangeAmount());
-                accountRecord1.setBalance(newestAccountRecordView1.getBalance().add(transferAccount.getChangeAmount()));
-            }else{
-                accountRecord.setDebitAmount(transferAccount.getChangeAmount());
-                accountRecord.setBalance(newestAccountRecordView.getBalance().subtract(transferAccount.getChangeAmount()));
-                accountRecord1.setCreditAmount(transferAccount.getChangeAmount());
-                accountRecord1.setBalance(newestAccountRecordView1.getBalance().add(transferAccount.getChangeAmount()));
-            }
-        }
 
-        if (OutAccountTitleView.getDirection()!=InAccountTitleView.getDirection()){
-            if (OutAccountTitleView.getDirection()==AccountTitleService.Debit){
-                //todo 找出最新一条的余额扣掉
-                accountRecord.setCreditAmount(transferAccount.getChangeAmount());
-                accountRecord.setBalance(newestAccountRecordView.getBalance().subtract(transferAccount.getChangeAmount()));
-                accountRecord1.setDebitAmount(transferAccount.getChangeAmount());
-                accountRecord1.setBalance(newestAccountRecordView1.getBalance().subtract(transferAccount.getChangeAmount()));
-            }else{
-                accountRecord.setDebitAmount(transferAccount.getChangeAmount());
-                accountRecord.setBalance(newestAccountRecordView.getBalance().subtract(transferAccount.getChangeAmount()));
-                accountRecord1.setCreditAmount(transferAccount.getChangeAmount());
-                accountRecord1.setBalance(newestAccountRecordView1.getBalance().subtract(transferAccount.getChangeAmount()));
-            }
-        }
         this.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
     }
 
