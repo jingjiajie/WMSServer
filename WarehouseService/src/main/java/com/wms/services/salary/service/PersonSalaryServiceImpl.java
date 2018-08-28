@@ -297,7 +297,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 PersonSalary personSalary = new PersonSalary();
                 personSalary.setPersonId(salaryTypePerson.getPersonId());
                 String formula=salaryItem.getFormula()+";";
-                String identifier="var"+salaryItem.getIdentifier()+";";
+                String identifier="var "+salaryItem.getIdentifier()+";";
                 ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
                 ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn");
                 BigDecimal result = null;
@@ -305,7 +305,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                     nashorn.eval(identifier);
                     result = GetBigDecimal.getBigDecimal(nashorn.eval(formula));
                 } catch (ScriptException e) {
-                    System.out.println("请检查公式是和优先级是否正确！: " + e.getMessage());
+                    throw new WMSServiceException("请检查公式是和优先级是否正确！: " + e.getMessage());
                 }
                 personSalary.setAmount(result);
                 personSalary.setSalaryItemId(salaryItem.getId());
