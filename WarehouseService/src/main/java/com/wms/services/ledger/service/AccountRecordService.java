@@ -12,7 +12,7 @@ import com.wms.utilities.service.BaseService;
 import java.util.List;
 
 public interface AccountRecordService extends BaseService<AccountRecord,AccountRecordView> {
-    public void RealTransformAccount(String accountBook, TransferAccount transferAccount)throws WMSServiceException;
+    public void RealTransferAccount(String accountBook, TransferAccount transferAccount)throws WMSServiceException;
     public void AddAccountRecord(String accountBook, AccountRecord[] accountRecords)throws WMSServiceException;
     public List<FindLinkAccountTitle> FindParentAccountTitle(String accountBook, AccountTitle[] accountTitles)throws WMSServiceException;
     public List<FindLinkAccountTitle> FindSonAccountTitle(String accountBook, AccountTitle[] accountTitles)throws WMSServiceException;
