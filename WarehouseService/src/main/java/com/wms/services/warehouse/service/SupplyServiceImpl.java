@@ -111,22 +111,22 @@ public class SupplyServiceImpl implements SupplyService {
         Stream.of(supplies).forEach((supply -> {
             new Validator("供货商ID").notEmpty().validate(supply.getSupplierId());
             new Validator("物料ID").notEmpty().validate(supply.getMaterialId());
-            new Validator("条码号").notEmpty().validate(supply.getBarCodeNo());
+            //new Validator("条码号").notEmpty().validate(supply.getBarCodeNo());
         }));
 
         for(int i=0;i<supplies.length;i++){
             for(int j=i+1;j<supplies.length;j++){
                 int materialId=supplies[i].getMaterialId();
                 int supplierId=supplies[i].getSupplierId();
-                String barCodeNo=supplies[i].getBarCodeNo();
+                //String barCodeNo=supplies[i].getBarCodeNo();
                 if(materialId==supplies[j].getMaterialId()&&supplierId==supplies[j].getSupplierId())
                 {
                     throw new WMSServiceException("供应商-物料关联条目在添加的列表中重复!");
-                }
+                }/*
                 if(barCodeNo.equals(supplies[j].getBarCodeNo()))
                 {
                     throw new WMSServiceException("供货信息条码号在添加的列表中重复!");
-                }
+                }*/
             }
         }
         //外键检测
