@@ -1,9 +1,6 @@
 package com.wms.utilities.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -16,6 +13,10 @@ public class SalaryItemView {
     private int warehouseId;
     private String warehouseName;
     private String salaryTypeName;
+    private String formula;
+    private int giveOut;
+    private int priority;
+    private String identifier;
 
     @Basic
     @Id
@@ -98,16 +99,58 @@ public class SalaryItemView {
         this.salaryTypeName = salaryTypeName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "Formula")
+    public String getFormula() {
+        return formula;
+    }
 
-        SalaryItemView that = (SalaryItemView) o;
+    public void setFormula(String formula) {
+        this.formula = formula;
+    }
+
+    @Basic
+    @Column(name = "GiveOut")
+    public int getGiveOut() {
+        return giveOut;
+    }
+
+    public void setGiveOut(int giveOut) {
+        this.giveOut = giveOut;
+    }
+
+    @Basic
+    @Column(name = "Priority")
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    @Basic
+    @Column(name = "Identifier")
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        SalaryItemView that = (SalaryItemView) object;
 
         if (id != that.id) return false;
         if (type != that.type) return false;
         if (warehouseId != that.warehouseId) return false;
+        if (giveOut != that.giveOut) return false;
+        if (priority != that.priority) return false;
         if (salaryTypeId != null ? !salaryTypeId.equals(that.salaryTypeId) : that.salaryTypeId != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (defaultAmount != null ? !defaultAmount.equals(that.defaultAmount) : that.defaultAmount != null)
@@ -116,6 +159,8 @@ public class SalaryItemView {
             return false;
         if (salaryTypeName != null ? !salaryTypeName.equals(that.salaryTypeName) : that.salaryTypeName != null)
             return false;
+        if (formula != null ? !formula.equals(that.formula) : that.formula != null) return false;
+        if (identifier != null ? !identifier.equals(that.identifier) : that.identifier != null) return false;
 
         return true;
     }
@@ -130,6 +175,10 @@ public class SalaryItemView {
         result = 31 * result + warehouseId;
         result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
         result = 31 * result + (salaryTypeName != null ? salaryTypeName.hashCode() : 0);
+        result = 31 * result + (formula != null ? formula.hashCode() : 0);
+        result = 31 * result + giveOut;
+        result = 31 * result + priority;
+        result = 31 * result + (identifier != null ? identifier.hashCode() : 0);
         return result;
     }
 }

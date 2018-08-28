@@ -2,6 +2,7 @@ package com.wms.services.ledger.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.ledger.datestructures.AccrualCheck;
+import com.wms.services.ledger.datestructures.TransferAccount;
 import com.wms.services.ledger.service.AccountRecordService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.AccountRecord;
@@ -85,5 +86,13 @@ public class AccountRecordControllerImpl implements AccountRecordController {
     public List<AccountRecordView> deficitCheck(@PathVariable("accountBook") String accountBook,
                                            @RequestBody AccrualCheck accrualCheck){
         return this.accountRecordService.deficitCheck(accountBook,accrualCheck);
+    }
+
+    @Override
+    @RequestMapping(value = "/real_transfer_account",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void RealTransferAccount(@PathVariable("accountBook") String accountBook,
+                         @RequestBody TransferAccount transferAccount){
+        this.accountRecordService.RealTransferAccount(accountBook,transferAccount);
     }
 }
