@@ -20,5 +20,7 @@ public interface AccountRecordService extends BaseService<AccountRecord,AccountR
     public void writeOff(String accountBook,List<Integer> ids) throws WMSServiceException;
     public List<AccrualCheck> accrualCheck(String accountBook, AccrualCheck accrualCheck) throws WMSServiceException;
     public List<AccountRecordView> deficitCheck(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException;
+    public List<AccrualCheck> showBalance(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException;
+
 
     }

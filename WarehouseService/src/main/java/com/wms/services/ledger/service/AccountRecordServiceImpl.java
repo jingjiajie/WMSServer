@@ -546,7 +546,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             throw new WMSServiceException("当前期间此仓库中无账目记录.");
         }
 
-        //TODO 按供货商分组
+        //按科目分组
         Map<Integer, List<AccountRecordView>> groupByAccountTitleId =
                 Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountTitleId));
 
@@ -574,5 +574,71 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
         return returnAccountRecordViewList;
     }
+
+    @Override
+    public List<AccrualCheck> showBalance(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException{
+
+        int curWarehouseId=accrualCheck.getWarehouseId();
+        int curAccountPeriodId=accrualCheck.getCurAccountPeriodId();
+        int curAccountTitleId= accrualCheck.getCurAccountTitleId();
+        List<AccrualCheck> returnAccrualCheckList=new ArrayList();
+        AccrualCheck accrualCheck1=new AccrualCheck();
+
+
+        AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",new Integer[]{curAccountTitleId}));
+        AccountTitle[] accountTitles = ReflectHelper.createAndCopyFields(accountTitleViews,AccountTitle.class);
+
+        //判断是否存在子级科目
+        List<FindLinkAccountTitle> findSonAccountTitleList=this.FindSonAccountTitle(accountBook,accountTitles);
+        FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
+        findSonAccountTitleList.toArray(sonAccountTitles);
+        List<AccountTitleView> sonAccountTitleViewsList= sonAccountTitles[0].getAccountTitleViews();
+        AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
+        sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
+
+        //没有子代就把自己科目最新的余额返回
+        if (curSonAccountTitleViews.length==0){
+            AccountRecordView[] accountRecordViews= this.find(accountBook,new Condition()
+                    .addCondition("warehouseId",new Integer[]{curWarehouseId})
+                    .addCondition("accountTitleId",new Integer[]{curAccountTitleId})
+                    .addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
+
+            AccountRecordView newestAccountRecordView=accountRecordViews[0];
+            for (int i=0;i<accountRecordViews.length;i++){
+                if (accountRecordViews[i].getTime().after(newestAccountRecordView.getTime())) {
+                    newestAccountRecordView = accountRecordViews[i];
+                }
+            }
+
+            accrualCheck1.setBalance(newestAccountRecordView.getBalance());
+        }else{
+            BigDecimal sumBalance=BigDecimal.ZERO;
+            for(int i=0;i<curSonAccountTitleViews.length;i++){
+                AccountRecordView[] accountRecordViews= this.find(accountBook,new Condition()
+                        .addCondition("warehouseId",new Integer[]{curWarehouseId})
+                        .addCondition("accountTitleId",new Integer[]{curSonAccountTitleViews[i].getId()})
+                        .addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
+                if (accountRecordViews.length>0){
+
+                    AccountRecordView newestAccountRecordView=accountRecordViews[0];
+                    for (int j=0;j<accountRecordViews.length;j++){
+                        if (accountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
+                            newestAccountRecordView = accountRecordViews[j];
+                        }
+                    }
+                    sumBalance=sumBalance.add(newestAccountRecordView.getBalance());
+                }
+            }
+            accrualCheck1.setBalance(sumBalance);
+        }
+        returnAccrualCheckList.add(accrualCheck1);
+
+
+
+
+        return returnAccrualCheckList;
+
+    }
+
 }
 

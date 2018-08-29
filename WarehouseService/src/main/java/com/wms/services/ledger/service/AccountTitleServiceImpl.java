@@ -185,7 +185,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
             }
         }
 
-
+        List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
         accountTitleDAO.update(accountBook, accountTitles);
 
     }

@@ -53,4 +53,24 @@ public class AccrualCheck {
 
     BigDecimal debitAmount;
 
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    BigDecimal balance;
+
+    public int getCurAccountTitleId() {
+        return curAccountTitleId;
+    }
+
+    public void setCurAccountTitleId(int curAccountTitleId) {
+        this.curAccountTitleId = curAccountTitleId;
+    }
+
+    int curAccountTitleId;
+
 }

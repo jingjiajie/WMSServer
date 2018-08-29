@@ -15,6 +15,8 @@ public interface AccountRecordController
     public List<AccrualCheck> accrualCheck(String accountBook, AccrualCheck accrualCheck) throws WMSServiceException;
     public List<AccountRecordView> deficitCheck(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException;
     public void RealTransferAccount(String accountBook, TransferAccount transferAccount)throws WMSServiceException;
+    public List<AccrualCheck> showBalance(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException;
+
 
 
 }
