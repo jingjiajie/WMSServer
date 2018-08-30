@@ -95,4 +95,12 @@ public class AccountRecordControllerImpl implements AccountRecordController {
                          @RequestBody TransferAccount transferAccount){
         this.accountRecordService.RealTransferAccount(accountBook,transferAccount);
     }
+
+    @Override
+    @RequestMapping(value = "/show_balance",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<AccrualCheck> showBalance(@PathVariable("accountBook") String accountBook,
+                         @RequestBody AccrualCheck accrualCheck){
+        return this.accountRecordService.showBalance(accountBook,accrualCheck);
+    }
 }
