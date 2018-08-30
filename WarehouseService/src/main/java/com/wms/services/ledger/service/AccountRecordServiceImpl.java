@@ -318,6 +318,9 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             this.idChecker.check(AccountPeriodService.class, accountBook, accountRecord.getAccountPeriodId(), "会计期间");
             this.idChecker.check(AccountTitleService.class, accountBook, accountRecord.getAccountTitleId(), "科目");
             this.idChecker.check(PersonService.class, accountBook, accountRecord.getPersonId(), "记录人");
+            new Validator("贷方金额").notEmpty().validate(accountRecord.getCreditAmount());
+            new Validator("借方金额").notEmpty().validate(accountRecord.getDebitAmount());
+
 
             AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecord.getAccountTitleId()));
             if (accountTitleViews[0].getEnabled()!=AccountTitleService.ENABLED_ON){
@@ -341,6 +344,9 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     @Deprecated
     public void RealTransferAccount(String accountBook, TransferAccount transferAccount)throws WMSServiceException
     {
+        if (transferAccount.getChangeAmount().compareTo(BigDecimal.ZERO)<0){
+            throw new WMSServiceException(String.format("转账申请发生额不能为负数，请重新检查后提交！凭证号：(%s)", transferAccount.getVoucherInfo()));
+        }
 
         AccountTitleView[] OutAccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",transferAccount.getOutaccountTitleId()));
         AccountTitleView OutAccountTitleView=OutAccountTitleViews[0];
