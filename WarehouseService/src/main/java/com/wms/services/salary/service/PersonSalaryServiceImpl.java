@@ -505,7 +505,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
                 //没编辑过
                 personSalary.setEdited(0);
-                if (personSalaryExist == null&&salaryItem.getType()!=SalaryItemTypeState.Formula) {
+                if (personSalaryExist.length==0&&salaryItem.getType()!=SalaryItemTypeState.Formula&&salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON) {
                     personSalaryList.add(personSalary);
                 } else {
                     for (PersonSalary personSalaryExistEach : personSalaryExist) {
@@ -594,7 +594,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
                 //没编辑过
                 personSalary.setEdited(0);
-                if (personSalaryExist == null&&salaryItem.getType()!=SalaryItemTypeState.Formula) {
+                if (personSalaryExist.length==0&&salaryItem.getType()!=SalaryItemTypeState.Formula&&salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON) {
                     personSalaryList.add(personSalary);
                 } else {
                     for (PersonSalary personSalaryExistEach : personSalaryExist) {
