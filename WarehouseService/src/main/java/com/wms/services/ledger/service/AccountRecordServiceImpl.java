@@ -3,6 +3,7 @@ package com.wms.services.ledger.service;
 import com.wms.services.ledger.dao.AccountRecordDAO;
 import com.wms.services.ledger.dao.AccountTitleDAO;
 import com.wms.services.ledger.datestructures.TransferAccount;
+import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.ReflectHelper;
@@ -22,10 +23,7 @@ import com.wms.services.ledger.datestructures.AccrualCheck;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -638,12 +636,50 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             accrualCheck1.setBalance(sumBalance);
         }
         returnAccrualCheckList.add(accrualCheck1);
-
-
-
-
         return returnAccrualCheckList;
 
+    }
+
+    @Override
+    public List<TreeViewData> buildAccountTitleTreeView(String accountBook) throws WMSServiceException{
+
+        AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("enabled",1));
+
+        for (int i=0;i<accountTitleViews.length;i++){
+            accountTitleViews[i].setDirection(accountTitleViews[i].getNo().length());
+        }
+
+        List<AccountTitleView> accountTitleViewList= Arrays.asList(accountTitleViews);
+        List<AccountTitleView> newAccountTitleViewList =accountTitleViewList.stream().sorted(Comparator.comparing(AccountTitleView::getDirection)).collect(Collectors.toList());
+        AccountTitleView[] newAccountTitleViews =new AccountTitleView[newAccountTitleViewList.size()];
+        newAccountTitleViewList.toArray(newAccountTitleViews);
+
+        //替换成新的数组类型
+        TreeViewData[] treeViewDatas =new TreeViewData[newAccountTitleViews.length];
+
+        for (int i=0;i<treeViewDatas.length;i++){
+            TreeViewData treeViewData =new TreeViewData();
+            treeViewData.setAccountTitleNo(newAccountTitleViews[i].getNo());
+            treeViewData.setAccountTitleName(newAccountTitleViews[i].getName());
+            treeViewData.setAccountTitleId(i);
+            treeViewData.setParentAccountTitleId(0);
+            treeViewDatas[i]=treeViewData;
+        }
+
+        //合理编码
+        for (int i=0;i<treeViewDatas.length;i++){
+            String theNo=treeViewDatas[i].getAccountTitleNo();
+            for (int j=i;j<treeViewDatas.length;j++){
+                //如果后面有编码是以该编码开头，则替换掉PID
+                if (newAccountTitleViews[j].getNo().startsWith(theNo)
+                        &&!newAccountTitleViews[j].getNo().equals(theNo)){
+                    treeViewDatas[j].setParentAccountTitleId(treeViewDatas[i].getAccountTitleId());
+                }
+            }
+        }
+        List<TreeViewData> returnAccountTitleTreeViewList=Arrays.asList(treeViewDatas);
+
+        return returnAccountTitleTreeViewList;
     }
 
 }
