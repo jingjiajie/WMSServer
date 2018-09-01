@@ -3,6 +3,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.ledger.datestructures.AccrualCheck;
 import com.wms.services.ledger.datestructures.TransferAccount;
+import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.services.ledger.service.AccountRecordService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.AccountRecord;
@@ -102,5 +103,12 @@ public class AccountRecordControllerImpl implements AccountRecordController {
     public List<AccrualCheck> showBalance(@PathVariable("accountBook") String accountBook,
                          @RequestBody AccrualCheck accrualCheck){
         return this.accountRecordService.showBalance(accountBook,accrualCheck);
+    }
+
+    @Override
+    @RequestMapping(value = "/build_tree_view",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<TreeViewData> buildAccountTitleTreeView(@PathVariable("accountBook") String accountBook){
+        return this.accountRecordService.buildAccountTitleTreeView(accountBook);
     }
 }

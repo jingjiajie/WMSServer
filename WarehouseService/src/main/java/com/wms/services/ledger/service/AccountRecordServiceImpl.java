@@ -336,7 +336,6 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
         }));
 
-
     }
 
     @Deprecated
@@ -389,10 +388,6 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             accountRecord1.setBalance(BigDecimal.ZERO);
 
         }
-
-
-
-
         this.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
     }
 
@@ -606,15 +601,18 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     .addCondition("warehouseId",new Integer[]{curWarehouseId})
                     .addCondition("accountTitleId",new Integer[]{curAccountTitleId})
                     .addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
-
-            AccountRecordView newestAccountRecordView=accountRecordViews[0];
-            for (int i=0;i<accountRecordViews.length;i++){
-                if (accountRecordViews[i].getTime().after(newestAccountRecordView.getTime())) {
-                    newestAccountRecordView = accountRecordViews[i];
+            if(accountRecordViews.length>0) {
+                AccountRecordView newestAccountRecordView = accountRecordViews[0];
+                for (int i = 0; i < accountRecordViews.length; i++) {
+                    if (accountRecordViews[i].getTime().after(newestAccountRecordView.getTime())) {
+                        newestAccountRecordView = accountRecordViews[i];
+                    }
                 }
+                accrualCheck1.setBalance(newestAccountRecordView.getBalance());
             }
-
-            accrualCheck1.setBalance(newestAccountRecordView.getBalance());
+            else{
+                accrualCheck1.setBalance(BigDecimal.ZERO);
+            }
         }else{
             BigDecimal sumBalance=BigDecimal.ZERO;
             for(int i=0;i<curSonAccountTitleViews.length;i++){
@@ -655,15 +653,26 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         newAccountTitleViewList.toArray(newAccountTitleViews);
 
         //替换成新的数组类型
-        TreeViewData[] treeViewDatas =new TreeViewData[newAccountTitleViews.length];
+        TreeViewData[] treeViewDatas =new TreeViewData[newAccountTitleViews.length+1];
 
         for (int i=0;i<treeViewDatas.length;i++){
-            TreeViewData treeViewData =new TreeViewData();
-            treeViewData.setAccountTitleNo(newAccountTitleViews[i].getNo());
-            treeViewData.setAccountTitleName(newAccountTitleViews[i].getName());
-            treeViewData.setAccountTitleId(i);
-            treeViewData.setParentAccountTitleId(0);
-            treeViewDatas[i]=treeViewData;
+            if(i==0){
+                TreeViewData treeViewData =new TreeViewData();
+                treeViewData.setAccountTitleNo("全部科目");
+                treeViewData.setAccountTitleName("全部科目");
+                treeViewData.setAccountTitleId(0);
+                treeViewData.setParentAccountTitleId(0);
+                treeViewDatas[i]=treeViewData;
+            }
+            if(i>0){
+                TreeViewData treeViewData =new TreeViewData();
+                treeViewData.setAccountTitleNo(newAccountTitleViews[i-1].getNo());
+                treeViewData.setAccountTitleName(newAccountTitleViews[i-1].getName());
+                treeViewData.setAccountTitleId(i);
+                treeViewData.setParentAccountTitleId(0);
+                treeViewDatas[i]=treeViewData;
+            }
+
         }
 
         //合理编码
@@ -671,8 +680,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             String theNo=treeViewDatas[i].getAccountTitleNo();
             for (int j=i;j<treeViewDatas.length;j++){
                 //如果后面有编码是以该编码开头，则替换掉PID
-                if (newAccountTitleViews[j].getNo().startsWith(theNo)
-                        &&!newAccountTitleViews[j].getNo().equals(theNo)){
+                if (treeViewDatas[j].getAccountTitleNo().startsWith(theNo)
+                        &&!treeViewDatas[j].getAccountTitleNo().equals(theNo)){
                     treeViewDatas[j].setParentAccountTitleId(treeViewDatas[i].getAccountTitleId());
                 }
             }
