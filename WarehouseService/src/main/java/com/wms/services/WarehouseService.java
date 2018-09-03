@@ -29,6 +29,5 @@ public class WarehouseService {
 
         AccountRecordService accountRecordService=applicationContext.getBean(AccountRecordService.class);
         List<TreeViewData> a= accountRecordService.buildAccountTitleTreeView("WMS_Template");
-
     }
 }
