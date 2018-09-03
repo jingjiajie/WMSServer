@@ -17,8 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Transactional
@@ -123,37 +127,55 @@ public class AccountTitleServiceImpl implements AccountTitleService {
                 //如果旧的编码属于父级科目
                 if (curSonAccountTitleViews.length>0){
                     //啥事没有
-                }else{
+
+                }else {
 
                     //找新的编码是否属于父级科目
-                    List<FindLinkAccountTitle> findSonAccountTitleList1=this.accountRecordService.FindSonAccountTitle(accountBook,new AccountTitle[]{accountTitles[i]});
-                    FindLinkAccountTitle[] sonAccountTitles1=new FindLinkAccountTitle[findSonAccountTitleList1.size()];
+                    List<FindLinkAccountTitle> findSonAccountTitleList1 = this.accountRecordService.FindSonAccountTitle(accountBook, new AccountTitle[]{accountTitles[i]});
+                    FindLinkAccountTitle[] sonAccountTitles1 = new FindLinkAccountTitle[findSonAccountTitleList1.size()];
                     findSonAccountTitleList1.toArray(sonAccountTitles1);
 
-                    List<AccountTitleView> sonAccountTitleViewsList1= sonAccountTitles1[0].getAccountTitleViews();
-                    AccountTitleView[] curSonAccountTitleViews1=new AccountTitleView[sonAccountTitleViewsList1.size()];
+                    List<AccountTitleView> sonAccountTitleViewsList1 = sonAccountTitles1[0].getAccountTitleViews();
+                    AccountTitleView[] curSonAccountTitleViews1 = new AccountTitleView[sonAccountTitleViewsList1.size()];
                     sonAccountTitleViewsList1.toArray(curSonAccountTitleViews1);
                     //如果想变成别的父级科目，则自身余额需要为0
-                    if (curSonAccountTitleViews1.length>0){
-                        AccountRecordView[] thaccountRecordViews= this.accountRecordService.find(accountBook,new Condition()
-                                .addCondition("accountTitleId",new Integer[]{oldAccountTitles[0].getId()}));
+                    if (curSonAccountTitleViews1.length > 0) {
+                        AccountRecordView[] thaccountRecordViews = this.accountRecordService.find(accountBook, new Condition()
+                                .addCondition("accountTitleId", new Integer[]{oldAccountTitles[0].getId()}));
+
+
                         //存在库存记录
-                        if (thaccountRecordViews.length>0) {
-                            //找出最新那条
-                            AccountRecordView newestAccountRecordView = thaccountRecordViews[0];
-                            for (int j = 0; j < thaccountRecordViews.length; j++) {
-                                if (thaccountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
-                                    newestAccountRecordView = thaccountRecordViews[j];
+                        if (thaccountRecordViews.length > 0) {
+                            //按科目分组
+                            Map<Integer, List<AccountRecordView>> groupByWarehouseId =
+                                    Stream.of(thaccountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getWarehouseId));
+
+                            Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupByWarehouseId.entrySet().iterator();
+                            //将每组最新的加到一个列表中
+                            while (entries.hasNext()) {
+                                Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
+                                Integer warehouseId = entry.getKey();
+                                List<AccountRecordView> accountRecordViewsList=entry.getValue();
+                                AccountRecordView[] curAccountRecordViews=(AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
+                                accountRecordViewsList.toArray(curAccountRecordViews);
+
+                                //找出最新那条
+                                AccountRecordView newestAccountRecordView = curAccountRecordViews[0];
+                                for (int j = 0; j < curAccountRecordViews.length; j++) {
+                                    if (curAccountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
+                                        newestAccountRecordView = curAccountRecordViews[j];
+                                    }
+                                }
+                                //如果父级科目最新一条记录余额不为0
+                                if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO) != 0) {
+                                    throw new WMSServiceException(String.format("无法修改为新的子级科目！当前科目编码的对应父级科目：(%s)在仓库：(%s)中还有余额，如要继续需确认上级科目余额为0，当前科目名称(%s)，",newestAccountRecordView.getAccountTitleName(),newestAccountRecordView.getWarehouseName(), accountTitles[0].getName()));
                                 }
                             }
-                            //如果父级科目最新一条记录余额不为0
-                            if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO) != 0) {
-                                throw new WMSServiceException(String.format("无法修改为新的父级科目！当前科目中还有余额，如要继续需确认余额为0，当前科目名称(%s)，", accountTitles[0].getName()));
-                            }
+
                         }
                     }
 
-
+                }
                     //判断是否修改成为子级科目
                     List<FindLinkAccountTitle> findParentAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,new AccountTitle[]{accountTitles[i]});
                     FindLinkAccountTitle[] parentAccountTitles=new FindLinkAccountTitle[findParentAccountTitleList.size()];
@@ -168,20 +190,36 @@ public class AccountTitleServiceImpl implements AccountTitleService {
                                 .addCondition("accountTitleId",new Integer[]{curParentAccountTitleView.getId()}));
                         //存在库存记录
                         if (accountRecordViews.length>0) {
-                            //找出最新那条
-                            AccountRecordView newestAccountRecordView = accountRecordViews[0];
-                            for (int j = 0; j < accountRecordViews.length; j++) {
-                                if (accountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
-                                    newestAccountRecordView = accountRecordViews[j];
+
+                            //按科目分组
+                            Map<Integer, List<AccountRecordView>> groupByWarehouseId =
+                                    Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getWarehouseId));
+
+                            Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupByWarehouseId.entrySet().iterator();
+                            //将每组最新的加到一个列表中
+                            while (entries.hasNext()) {
+                                Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
+                                Integer warehouseId = entry.getKey();
+                                List<AccountRecordView> accountRecordViewsList=entry.getValue();
+                                AccountRecordView[] curAccountRecordViews=(AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
+                                accountRecordViewsList.toArray(curAccountRecordViews);
+
+                                //找出最新那条
+                                AccountRecordView newestAccountRecordView = curAccountRecordViews[0];
+                                for (int j = 0; j < curAccountRecordViews.length; j++) {
+                                    if (curAccountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
+                                        newestAccountRecordView = curAccountRecordViews[j];
+                                    }
+                                }
+                                //如果父级科目最新一条记录余额不为0
+                                if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO)!=0){
+                                    throw new WMSServiceException(String.format("无法修改为新的子级科目！当前科目编码的对应父级科目：(%s)在仓库：(%s)中还有余额，如要继续需确认上级科目余额为0，当前科目名称(%s)，",newestAccountRecordView.getAccountTitleName(),newestAccountRecordView.getWarehouseName(), accountTitles[0].getName()));
                                 }
                             }
-                            //如果父级科目最新一条记录余额不为0
-                            if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO)!=0){
-                                throw new WMSServiceException(String.format("无法修改为新的子级科目！当前科目编码的对应父级科目中还有余额，如要继续需确认上级科目余额为0，当前科目名称(%s)，", accountTitles[0].getName()));
-                            }
+
                         }
                     });
-                }
+
             }
         }
 
