@@ -285,7 +285,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     private void addFormula(String accountBook, AddPersonSalary addPersonSalary) {
         List<PersonSalary> personSalaryList = new ArrayList<>();
         SalaryTypePerson[] salaryTypePersons = salaryTypePersonService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()));
-        SalaryItem[] salaryItems = salaryItemService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()).addCondition("type", SalaryItemTypeState.Formula).addOrder("priority", OrderItem.Order.DESC));
+        SalaryItem[] salaryItems = salaryItemService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()).addOrder("priority", OrderItem.Order.DESC));
         SalaryPeriod[] salaryPeriods = salaryPeriodService.findTable(accountBook, new Condition().addCondition("id", addPersonSalary.getSalaryPeriodId()));
         if (salaryPeriods.length != 1) {
             throw new WMSServiceException("查询薪资期间错误！");
@@ -296,10 +296,32 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
             ScriptEngine nashorn = scriptEngineManager.getEngineByName("nashorn");
             for (SalaryItem salaryItem : salaryItems) {
+                if(salaryItem.getIdentifier()==null)
+                {
+                    continue;
+                }
+                if(salaryItem.getIdentifier().equals(""))
+                {
+                    continue;
+                }
                 PersonSalary personSalary = new PersonSalary();
                 personSalary.setPersonId(salaryTypePerson.getPersonId());
-                String formula=salaryItem.getFormula()+";";
-                String identifier="var "+salaryItem.getIdentifier()+";";
+                String formula="";
+                String identifier="";
+                if(salaryItem.getType()==SalaryItemTypeState.Formula)
+                {
+                    formula=salaryItem.getIdentifier()+"="+salaryItem.getFormula()+";";
+                    identifier="var "+salaryItem.getIdentifier()+";";
+                }
+                else if(salaryItem.getType()==SalaryItemTypeState.REGULAR_SALARY){
+                    formula=salaryItem.getIdentifier()+"="+salaryItem.getDefaultAmount()+";";
+                    identifier="var "+salaryItem.getIdentifier()+";";
+                }
+                else if(salaryItem.getType()==SalaryItemTypeState.VALUATION_SALARY)
+                {
+                    formula=salaryItem.getIdentifier()+"="+salaryItem.getDefaultAmount()+";";
+                    identifier="var "+salaryItem.getIdentifier()+";";
+                }
                 BigDecimal result = null;
                 try {
                     nashorn.eval(identifier);
@@ -314,7 +336,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
                 //没编辑过
                 personSalary.setEdited(0);
-                if(salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON)
+                if(salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON&&salaryItem.getType()==SalaryItemTypeState.Formula)
                 {
                 personSalaryList.add(personSalary);
                 }
