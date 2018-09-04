@@ -91,6 +91,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
 
         int[]ids= accountTitleDAO.add(accountBook, accountTitles);
         List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
+        List<FindLinkAccountTitle> findLinkAccountTitleList1=this.accountRecordService.FindSonAccountTitle(accountBook,accountTitles);
         return ids;
 
     }
@@ -224,6 +225,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
         }
 
         List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
+        List<FindLinkAccountTitle> findLinkAccountTitleList1=this.accountRecordService.FindSonAccountTitle(accountBook,accountTitles);
         accountTitleDAO.update(accountBook, accountTitles);
 
     }

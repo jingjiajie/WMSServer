@@ -318,6 +318,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             this.idChecker.check(PersonService.class, accountBook, accountRecord.getPersonId(), "记录人");
             new Validator("贷方金额").notEmpty().validate(accountRecord.getCreditAmount());
             new Validator("借方金额").notEmpty().validate(accountRecord.getDebitAmount());
+            new Validator("余额").notEmpty().validate(accountRecord.getBalance());
 
 
             AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecord.getAccountTitleId()));
@@ -415,6 +416,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         for (int i=0;i<accountTitles.length;i++){
 
             int curType=accountTitles[i].getType();
+            int curDirection=accountTitles[i].getDirection();
+
             String curAccountTitleName=accountTitles[i].getName();
 
             FindLinkAccountTitle findLinkAccountTitle = new FindLinkAccountTitle();
@@ -431,12 +434,16 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     {
                         throw new WMSServiceException(String.format("科目与上级科目类型不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
                     }
+                    if (curDirection!=accountTitle.getDirection())
+                    {
+                        throw new WMSServiceException(String.format("科目与上级科目余额方向不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
+                    }
                 }
             });
             String[] parentAccountTitleNos=new String[parentAccountTitleNoList.size()];
             parentAccountTitleNoList.toArray(parentAccountTitleNos);
 
-            AccountTitleView[] accountTitleViews=new AccountTitleView[parentAccountTitleNos.length];
+
             for (int j=0;j<parentAccountTitleNos.length;j++) {
                 AccountTitleView[] curAccountTitleView = this.accountTitleService.find(accountBook, new Condition().addCondition("no", parentAccountTitleNos[j]));
                 if (curAccountTitleView.length==0){
@@ -455,6 +462,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         for (int i=0;i<accountTitles.length;i++){
 
             int curType=accountTitles[i].getType();
+            int curDirection=accountTitles[i].getDirection();
             String curAccountTitleName=accountTitles[i].getName();
 
             FindLinkAccountTitle findLinkAccountTitle = new FindLinkAccountTitle();
@@ -471,12 +479,16 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     {
                         throw new WMSServiceException(String.format("科目与上级科目类型不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
                     }
+                    if (curDirection!=accountTitle.getDirection())
+                    {
+                        throw new WMSServiceException(String.format("科目与上级科目余额方向不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
+                    }
                 }
             });
             String[] parentAccountTitleNos=new String[parentAccountTitleNoList.size()];
             parentAccountTitleNoList.toArray(parentAccountTitleNos);
 
-            AccountTitleView[] accountTitleViews=new AccountTitleView[parentAccountTitleNos.length];
+
             for (int j=0;j<parentAccountTitleNos.length;j++) {
                 AccountTitleView[] curAccountTitleView = this.accountTitleService.find(accountBook, new Condition().addCondition("no", parentAccountTitleNos[j]));
                 if (curAccountTitleView.length==0){
