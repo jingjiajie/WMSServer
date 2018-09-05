@@ -3,8 +3,9 @@ package com.wms.services.settlement.dao;
 import com.wms.utilities.dao.BaseDAOImpl;
 import com.wms.utilities.model.SettlementNoteItem;
 import com.wms.utilities.model.SettlementNoteItemView;
+import org.springframework.stereotype.Repository;
 
-
+@Repository
 public class SettlementNoteItemDAOImpl
     extends BaseDAOImpl<SettlementNoteItem,SettlementNoteItemView>
     implements SettlementNoteItemDAO{

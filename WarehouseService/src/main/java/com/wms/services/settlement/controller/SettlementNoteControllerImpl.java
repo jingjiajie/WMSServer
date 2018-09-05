@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/{accountBook}/settlement_note")
 public class SettlementNoteControllerImpl implements SettlementNoteController{
-
     @Autowired
     SettlementNoteService settlementNoteService;
 
