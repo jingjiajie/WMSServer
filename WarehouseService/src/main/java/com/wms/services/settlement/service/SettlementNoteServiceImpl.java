@@ -1,8 +1,11 @@
 package com.wms.services.settlement.service;
 
+import com.wms.services.ledger.service.AccountTitleService;
+import com.wms.services.ledger.service.PersonService;
 import com.wms.services.settlement.dao.SettlementNoteDAO;
 import com.wms.services.warehouse.service.SafetyStockService;
 import com.wms.services.warehouse.service.WarehouseService;
+import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.Material;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.stream.Stream;
 
 
@@ -22,17 +26,25 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
     @Autowired
     SettlementNoteDAO settlementNoteDAO;
     @Autowired
-    WarehouseService warehouseService;
+    AccountTitleService accountTitleService;
+    @Autowired
+    IDChecker idChecker;
 
     @Override
     public int[] add(String accountBook, SettlementNote[] settlementNotes) throws WMSServiceException
     {
+        this.validateEntities(accountBook,settlementNotes);
+
+        Stream.of(settlementNotes).forEach((settlementNote -> {
+            settlementNote.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        }));
         return settlementNoteDAO.add(accountBook,settlementNotes);
     }
 
     @Override
     public void update(String accountBook, SettlementNote[] settlementNotes) throws WMSServiceException
     {
+        this.validateEntities(accountBook,settlementNotes);
         settlementNoteDAO.update(accountBook, settlementNotes);
     }
 
@@ -58,15 +70,16 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
         return this.settlementNoteDAO.find(accountBook, cond);
     }
 
-    private void validateEntities(String accountBook,Material[] materials) throws WMSServiceException{
-        Stream.of(materials).forEach((material -> {
-            new Validator("是否启用").min(0).max(1).validate(material.getEnabled());
-            new Validator("代号").notEmpty().validate(material.getNo());
-            new Validator("物料名称").notEmpty().validate(material.getName());
-            if(this.warehouseService.find(accountBook,
-                    new Condition().addCondition("id",material.getWarehouseId())).length == 0){
-                throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",material.getWarehouseId()));
-            }
+    private void validateEntities(String accountBook,SettlementNote[] settlementNotes) throws WMSServiceException{
+        Stream.of(settlementNotes).forEach((settlementNote -> {
+            new Validator("状态").min(0).max(2).validate(settlementNote.getState());
+            new Validator("单号").notEmpty().validate(settlementNote.getNo());
+
+            this.idChecker.check(AccountTitleService.class, accountBook, settlementNote.getAccountTitleIncomeId(), "收入科目ID");
+            this.idChecker.check(AccountTitleService.class, accountBook, settlementNote.getAccountTitleReceivableId(), "应收款科目ID");
+            this.idChecker.check(AccountTitleService.class, accountBook, settlementNote.getAccountTitlePropertyId(), "资产科目ID");
+            this.idChecker.check(SummaryNoteService.class, accountBook, settlementNote.getSummaryNoteId(), "汇总单ID");
+
         }));
     }
 
