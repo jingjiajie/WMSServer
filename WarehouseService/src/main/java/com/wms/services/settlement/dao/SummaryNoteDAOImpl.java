@@ -1,4 +1,4 @@
-package com.wms.services.settlemen.dao;
+package com.wms.services.settlement.dao;
 
 import com.wms.utilities.dao.BaseDAOImpl;
 import com.wms.utilities.model.SummaryNote;
