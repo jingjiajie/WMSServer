@@ -207,79 +207,41 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
     @Transactional
     public void update(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException{
-        int curWarehouseId= accountRecords[0].getWarehouseId();
-        int curAccountPeriodId=accountRecords[0].getAccountPeriodId();
 
         this.validateEntities(accountBook,accountRecords);
-        List<AccountRecord> updateParentRecordList=new ArrayList<>();
         for (int k=0;k<accountRecords.length;k++){
 
             AccountRecordView[] oidAccountTitleViews=this.find(accountBook,new Condition().addCondition("id",accountRecords[k].getId()));
 
-            BigDecimal oldCreditAmount=oidAccountTitleViews[0].getCreditAmount();
-            BigDecimal oldDebitAmount=oidAccountTitleViews[0].getDebitAmount();
-
-            BigDecimal creditAmount=accountRecords[k].getCreditAmount();
-            BigDecimal debitAmount=accountRecords[k].getDebitAmount();
-
-            AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getAccountTitleId()));
-            AccountTitleView accountTitleView=AccountTitleViews[0];
-            AccountTitle[] accountTitles = ReflectHelper.createAndCopyFields(AccountTitleViews,AccountTitle.class);
-
-//            //TODO 找出当前科目的父代科目
-//            List<FindLinkAccountTitle> findLinkAccountTitleList=this.FindParentAccountTitle(accountBook,accountTitles);
-//            FindLinkAccountTitle[] parentAccountTitles=new FindLinkAccountTitle[findLinkAccountTitleList.size()];
-//            findLinkAccountTitleList.toArray(parentAccountTitles);
-//
-//            List<AccountTitleView> accountTitleViewsList= parentAccountTitles[0].getAccountTitleViews();
-//            AccountTitleView[] curParentAccountTitleViews=new AccountTitleView[accountTitleViewsList.size()];
-//            accountTitleViewsList.toArray(curParentAccountTitleViews);
-//
-//            AccountTitle[] curParentAccountTitles = ReflectHelper.createAndCopyFields(curParentAccountTitleViews,AccountTitle.class);
-//
-//            //TODO 对当前科目的父代科目最新的账目记录余额进行更新
-//            Stream.of(curParentAccountTitles).forEach((curParentAccountTitle)->{
-//
-//                AccountRecordView[] accountRecordViews= accountRecordDAO.find(accountBook,new Condition()
-//                        .addCondition("warehouseId",new Integer[]{curWarehouseId})
-//                        .addCondition("accountPeriodId",new Integer[]{curAccountPeriodId})
-//                        .addCondition("accountTitleId",new Integer[]{curParentAccountTitle.getId()}));
-//
-//                AccountRecord[] allParentAccountRecords = ReflectHelper.createAndCopyFields(accountRecordViews,AccountRecord.class);
-//
-//                //TODO 返回上级科目的列表
-//
-//                if (allParentAccountRecords.length>0) {
-//                    AccountRecord newestAccountRecord = allParentAccountRecords[0];
-//                    for (int i = 0; i < allParentAccountRecords.length; i++) {
-//                            if (allParentAccountRecords[i].getTime().after(newestAccountRecord.getTime())) {
-//                                newestAccountRecord = allParentAccountRecords[i];
-//                            }
-//                    }
-//                    BigDecimal curBalance = newestAccountRecord.getBalance();
-//
-//                    //如果科目类型是借方
-//                    if (curParentAccountTitle.getDirection() == AccountTitleService.Debit) {
-//                        newestAccountRecord.setBalance(curBalance.subtract(oldDebitAmount).add(oldCreditAmount).subtract(creditAmount).add(debitAmount));
-//
-//                    } else {
-//                        newestAccountRecord.setBalance(curBalance.subtract(oldCreditAmount).add(oldDebitAmount).subtract(debitAmount).add(creditAmount));
-//                    }
-//                    updateParentRecordList.add(newestAccountRecord);
-//                }
-//            });
-            //如果科目类型是借方
-            if (accountTitleView.getDirection()==AccountTitleService.Debit){
-                accountRecords[k].setBalance(oidAccountTitleViews[0].getBalance().subtract(oldDebitAmount).add(oldCreditAmount).subtract(creditAmount).add(debitAmount));
-
-            }else{
-                accountRecords[k].setBalance(oidAccountTitleViews[0].getBalance().subtract(oldCreditAmount).add(oldDebitAmount).subtract(debitAmount).add(creditAmount));
+            if(oidAccountTitleViews[0].getCreditAmount().compareTo(accountRecords[k].getCreditAmount())!=0
+                    ||oidAccountTitleViews[0].getDebitAmount().compareTo(accountRecords[k].getDebitAmount())!=0
+                    ||oidAccountTitleViews[0].getBalance().compareTo(accountRecords[k].getBalance())!=0
+                    ||oidAccountTitleViews[0].getAccountTitleId()!=accountRecords[k].getAccountTitleId()){
+                throw new WMSServiceException(String.format("无法修改账目记录！发生额/余额/科目名称无法修改！如需订正，请进行冲销操作，原科目名称(%s)", oidAccountTitleViews[0].getAccountTitleName()));
             }
         }
-        AccountRecord[] updateParentRecords=new AccountRecord[updateParentRecordList.size()];
-        updateParentRecordList.toArray(updateParentRecords);
 
-        accountRecordDAO.update(accountBook,updateParentRecords);
+//        for (int k=0;k<accountRecords.length;k++){
+//
+//            AccountRecordView[] oidAccountTitleViews=this.find(accountBook,new Condition().addCondition("id",accountRecords[k].getId()));
+//
+//            BigDecimal oldCreditAmount=oidAccountTitleViews[0].getCreditAmount();
+//            BigDecimal oldDebitAmount=oidAccountTitleViews[0].getDebitAmount();
+//
+//            BigDecimal creditAmount=accountRecords[k].getCreditAmount();
+//            BigDecimal debitAmount=accountRecords[k].getDebitAmount();
+//
+//            AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getAccountTitleId()));
+//            AccountTitleView accountTitleView=AccountTitleViews[0];
+//
+//            //如果科目类型是借方
+//            if (accountTitleView.getDirection()==AccountTitleService.Debit){
+//                accountRecords[k].setBalance(oidAccountTitleViews[0].getBalance().subtract(oldDebitAmount).add(oldCreditAmount).subtract(creditAmount).add(debitAmount));
+//
+//            }else{
+//                accountRecords[k].setBalance(oidAccountTitleViews[0].getBalance().subtract(oldCreditAmount).add(oldDebitAmount).subtract(debitAmount).add(creditAmount));
+//            }
+//        }
 
         accountRecordDAO.update(accountBook,accountRecords);
     }
