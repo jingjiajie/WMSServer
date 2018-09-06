@@ -31,12 +31,14 @@ public class SettlementNoteItemServiceImpl
     @Override
     public int[] add(String accountBook, SettlementNoteItem[] settlementNoteItems) throws WMSServiceException
     {
+        this.validateEntities(accountBook,settlementNoteItems);
         return settlementNoteItemDAO.add(accountBook,settlementNoteItems);
     }
 
     @Override
     public void update(String accountBook, SettlementNoteItem[] settlementNoteItems) throws WMSServiceException
     {
+        this.validateEntities(accountBook,settlementNoteItems);
         settlementNoteItemDAO.update(accountBook, settlementNoteItems);
     }
 

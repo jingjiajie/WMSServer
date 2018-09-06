@@ -24,12 +24,14 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public int[] add(String accountBook, Invoice[] invoices) throws WMSServiceException
     {
+        this.validateEntities(accountBook,invoices);
         return invoiceDAO.add(accountBook,invoices);
     }
 
     @Override
     public void update(String accountBook, Invoice[] invoices) throws WMSServiceException
     {
+        this.validateEntities(accountBook,invoices);
         invoiceDAO.update(accountBook, invoices);
     }
 
@@ -57,8 +59,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private void validateEntities(String accountBook,Invoice[] invoices) throws WMSServiceException{
         Stream.of(invoices).forEach((invoice -> {
-            new Validator("代号").notEmpty().validate(invoice.getNo());
-            new Validator("物料名称").notEmpty().validate(invoice.getTrackingNumber());
+            new Validator("发票编号").notEmpty().validate(invoice.getNo());
+            new Validator("状态").min(0).max(2).validate(invoice.getState());
 
         }));
     }
