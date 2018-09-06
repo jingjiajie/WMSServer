@@ -2,6 +2,7 @@ package com.wms.services.settlement.service;
 
 import com.wms.services.settlement.dao.SummaryNoteDAO;
 import com.wms.services.settlement.dao.SummaryNoteItemDAO;
+import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -21,16 +22,20 @@ implements SummaryNoteItemService{
     SummaryNoteItemDAO summaryNoteItemDAO;
     @Autowired
     WarehouseService warehouseService;
+    @Autowired
+    SupplierServices supplierServices;
 
     @Override
     public int[] add(String accountBook, SummaryNoteItem[] summaryNoteItems) throws WMSServiceException
     {
+        this.validateEntities(accountBook,summaryNoteItems);
         return summaryNoteItemDAO.add(accountBook,summaryNoteItems);
     }
 
     @Override
     public void update(String accountBook, SummaryNoteItem[] summaryNoteItems) throws WMSServiceException
     {
+        this.validateEntities(accountBook,summaryNoteItems);
         summaryNoteItemDAO.update(accountBook, summaryNoteItems);
     }
 
@@ -56,14 +61,13 @@ implements SummaryNoteItemService{
         return this.summaryNoteItemDAO.find(accountBook, cond);
     }
 
-    private void validateEntities(String accountBook,Material[] materials) throws WMSServiceException{
-        Stream.of(materials).forEach((material -> {
-            new Validator("是否启用").min(0).max(1).validate(material.getEnabled());
-            new Validator("代号").notEmpty().validate(material.getNo());
-            new Validator("物料名称").notEmpty().validate(material.getName());
-            if(this.warehouseService.find(accountBook,
-                    new Condition().addCondition("id",material.getWarehouseId())).length == 0){
-                throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",material.getWarehouseId()));
+    private void validateEntities(String accountBook,SummaryNoteItem[] summaryNoteItems) throws WMSServiceException{
+        Stream.of(summaryNoteItems).forEach((summaryNoteItem -> {
+            new Validator("使用面积").greaterThan(0).notEmpty().notnull().validate(summaryNoteItem.getArea());
+            new Validator("放置天数").notEmpty().notnull().greaterThan(0).validate(summaryNoteItem.getDays());
+            if(this.supplierServices.find(accountBook,
+                    new Condition().addCondition("id",summaryNoteItem.getSupplierId())).length == 0){
+                throw new WMSServiceException(String.format("供应商不存在，请重新提交！(%d)",summaryNoteItem.getSupplierId()));
             }
         }));
     }
