@@ -83,4 +83,6 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.settlementNoteDAO.findCount(database,cond);
     }
+
+
 }
