@@ -1,5 +1,6 @@
 package com.wms.services.settlement.service;
 
+import com.wms.services.ledger.service.PersonService;
 import com.wms.services.settlement.dao.SummaryNoteDAO;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.Condition;
@@ -7,11 +8,14 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.Material;
 import com.wms.utilities.model.SummaryNote;
 import com.wms.utilities.model.SummaryNoteView;
+import com.wms.utilities.model.Supplier;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -22,17 +26,24 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     SummaryNoteDAO summaryNoteDAO;
     @Autowired
     WarehouseService warehouseService;
+    @Autowired
+    PersonService personService;
 
     @Override
     public int[] add(String accountBook, SummaryNote[] summaryNotes) throws WMSServiceException
     {
-        return summaryNoteDAO.add(accountBook,summaryNotes);
+        this.validateEntities(accountBook,summaryNotes);
+        int[] ids= summaryNoteDAO.add(accountBook,summaryNotes);
+        this.validateDupication(accountBook,summaryNotes);
+        return ids;
     }
 
     @Override
     public void update(String accountBook, SummaryNote[] summaryNotes) throws WMSServiceException
     {
+        this.validateEntities(accountBook,summaryNotes);
         summaryNoteDAO.update(accountBook, summaryNotes);
+        this.validateDupication(accountBook,summaryNotes);
     }
 
     @Override
@@ -57,16 +68,36 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         return this.summaryNoteDAO.find(accountBook, cond);
     }
 
-    private void validateEntities(String accountBook,Material[] materials) throws WMSServiceException{
-        Stream.of(materials).forEach((material -> {
-            new Validator("是否启用").min(0).max(1).validate(material.getEnabled());
-            new Validator("代号").notEmpty().validate(material.getNo());
-            new Validator("物料名称").notEmpty().validate(material.getName());
+    private void validateEntities(String accountBook,SummaryNote[] summaryNotes) throws WMSServiceException{
+        Stream.of(summaryNotes).forEach((summaryNote -> {
+            new Validator("代号").notEmpty().validate(summaryNote.getNo());
+            if(summaryNote.getStartTime().compareTo(summaryNote.getEndTime())<=0)
+            {
+                throw new WMSServiceException("汇总单的截止时间必须在起始时间之后！单号："+summaryNote.getNo());
+            }
             if(this.warehouseService.find(accountBook,
-                    new Condition().addCondition("id",material.getWarehouseId())).length == 0){
-                throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",material.getWarehouseId()));
+                    new Condition().addCondition("id",summaryNote.getWarehouseId())).length == 0){
+                throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)",summaryNote.getWarehouseId()));
+            }
+            if(this.personService.find(accountBook,
+                    new Condition().addCondition("id",summaryNote.getCreatePersonId())).length == 0){
+                throw new WMSServiceException(String.format("人员不存在，请重新提交！(%d)",summaryNote.getCreatePersonId()));
             }
         }));
+    }
+
+    private void validateDupication(String accountBook,SummaryNote[] summaryNotes)
+    {
+        Condition cond = new Condition();
+        cond.addCondition("warehouseId",summaryNotes[0].getWarehouseId());
+        SummaryNote[] summaryNotesCheck=summaryNoteDAO.findTable(accountBook,cond);
+        List<SummaryNote> summaryNoteList= Arrays.asList(summaryNotesCheck);
+        summaryNoteList.stream().reduce((last, cur) -> {
+            if (last.getNo().equals(cur.getNo())){
+                throw new WMSServiceException("汇总单单号重复:"+cur.getNo());
+            }
+            return cur;
+        });
     }
 
     @Override
