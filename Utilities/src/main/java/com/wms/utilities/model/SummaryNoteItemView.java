@@ -14,7 +14,6 @@ public class SummaryNoteItemView {
     private BigDecimal area;
     private BigDecimal days;
     private BigDecimal deliveryTimes;
-    private int state;
     private String supplierName;
     private String supplierNo;
 
@@ -79,15 +78,7 @@ public class SummaryNoteItemView {
         this.deliveryTimes = deliveryTimes;
     }
 
-    @Basic
-    @Column(name = "State")
-    public int getState() {
-        return state;
-    }
 
-    public void setState(int state) {
-        this.state = state;
-    }
 
     @Basic
     @Column(name = "SupplierName")
@@ -119,7 +110,6 @@ public class SummaryNoteItemView {
         if (id != that.id) return false;
         if (summaryNoteId != that.summaryNoteId) return false;
         if (supplierId != that.supplierId) return false;
-        if (state != that.state) return false;
         if (area != null ? !area.equals(that.area) : that.area != null) return false;
         if (days != null ? !days.equals(that.days) : that.days != null) return false;
         if (deliveryTimes != null ? !deliveryTimes.equals(that.deliveryTimes) : that.deliveryTimes != null)
@@ -138,7 +128,6 @@ public class SummaryNoteItemView {
         result = 31 * result + (area != null ? area.hashCode() : 0);
         result = 31 * result + (days != null ? days.hashCode() : 0);
         result = 31 * result + (deliveryTimes != null ? deliveryTimes.hashCode() : 0);
-        result = 31 * result + state;
         result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
         return result;

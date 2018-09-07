@@ -16,6 +16,7 @@ public class SettlementNoteItemView {
     private BigDecimal actualPayment;
     private String supplierName;
     private String supplierNo;
+    private int state;
 
     @Basic
     @Id
@@ -98,6 +99,16 @@ public class SettlementNoteItemView {
         this.supplierNo = supplierNo;
     }
 
+    @Basic
+    @Column(name = "State")
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,6 +126,7 @@ public class SettlementNoteItemView {
             return false;
         if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
         if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
+        if (state != that.state) return false;
 
         return true;
     }
@@ -129,6 +141,7 @@ public class SettlementNoteItemView {
         result = 31 * result + (actualPayment != null ? actualPayment.hashCode() : 0);
         result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
+        result = 31 * result + state;
         return result;
     }
 }

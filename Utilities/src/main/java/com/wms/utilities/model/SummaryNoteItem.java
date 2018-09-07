@@ -11,7 +11,6 @@ public class SummaryNoteItem {
     private BigDecimal area;
     private BigDecimal days;
     private BigDecimal deliveryTimes;
-    private int state;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,15 +73,6 @@ public class SummaryNoteItem {
         this.deliveryTimes = deliveryTimes;
     }
 
-    @Basic
-    @Column(name = "State")
-    public int getState() {
-        return state;
-    }
-
-    public void setState(int state) {
-        this.state = state;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -94,7 +84,6 @@ public class SummaryNoteItem {
         if (id != that.id) return false;
         if (summaryNoteId != that.summaryNoteId) return false;
         if (supplierId != that.supplierId) return false;
-        if (state != that.state) return false;
         if (area != null ? !area.equals(that.area) : that.area != null) return false;
         if (days != null ? !days.equals(that.days) : that.days != null) return false;
         if (deliveryTimes != null ? !deliveryTimes.equals(that.deliveryTimes) : that.deliveryTimes != null)
@@ -111,7 +100,6 @@ public class SummaryNoteItem {
         result = 31 * result + (area != null ? area.hashCode() : 0);
         result = 31 * result + (days != null ? days.hashCode() : 0);
         result = 31 * result + (deliveryTimes != null ? deliveryTimes.hashCode() : 0);
-        result = 31 * result + state;
         return result;
     }
 }
