@@ -35,6 +35,8 @@ public class SupplyServiceImpl implements SupplyService {
     public int[] add(String accountBook, Supply[] supplies) throws WMSServiceException
     {
         this.validateEntities(accountBook,supplies);
+
+
         for(int i=0;i<supplies.length;i++){
             MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
             SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getSupplierId()}));
@@ -52,6 +54,18 @@ public class SupplyServiceImpl implements SupplyService {
 
         for (int i=0;i<supplies.length;i++)
         {
+            if (supplies[i].getBarCodeNo().length()==0){
+                int noLength=7;
+                String thNo= String.valueOf(supplies[i].getId());
+                int curLength=noLength-(thNo.length());
+                StringBuffer sb = new StringBuffer();
+                for (int j = 0; j < curLength;j++) {
+                    sb.append('0');
+                }
+                sb.append(thNo);
+                supplies[i].setBarCodeNo(sb.toString());
+            }
+
             supplies[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
             supplies[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
         }
