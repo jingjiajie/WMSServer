@@ -15,6 +15,8 @@ public class SummaryNoteView {
     private Timestamp createTime;
     private Integer createPersonId;
     private String createPersonName;
+    private Integer warehouseId;
+    private String warehouseName;
 
     @Basic
     @Id
@@ -87,6 +89,26 @@ public class SummaryNoteView {
         this.createPersonName = createPersonName;
     }
 
+    @Basic
+    @Column(name = "WarehouseID")
+    public Integer getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(Integer warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    @Basic
+    @Column(name = "WarehouseName")
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -103,6 +125,9 @@ public class SummaryNoteView {
             return false;
         if (createPersonName != null ? !createPersonName.equals(that.createPersonName) : that.createPersonName != null)
             return false;
+        if (warehouseId != null ? !warehouseId.equals(that.warehouseId) : that.warehouseId != null) return false;
+        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
+            return false;
 
         return true;
     }
@@ -116,6 +141,8 @@ public class SummaryNoteView {
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         result = 31 * result + (createPersonId != null ? createPersonId.hashCode() : 0);
         result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
+        result = 31 * result + (warehouseId != null ? warehouseId.hashCode() : 0);
+        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
         return result;
     }
 }

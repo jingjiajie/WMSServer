@@ -1,14 +1,10 @@
 package com.wms.services.settlement.service;
 
 import com.wms.services.ledger.service.AccountTitleService;
-import com.wms.services.ledger.service.PersonService;
 import com.wms.services.settlement.dao.SettlementNoteDAO;
-import com.wms.services.warehouse.service.SafetyStockService;
-import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.Material;
 import com.wms.utilities.model.SettlementNote;
 import com.wms.utilities.model.SettlementNoteView;
 import com.wms.utilities.vaildator.Validator;

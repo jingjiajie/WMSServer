@@ -11,6 +11,7 @@ public class SummaryNote {
     private Timestamp endTime;
     private Timestamp createTime;
     private Integer createPersonId;
+    private Integer warehouseId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,6 +74,16 @@ public class SummaryNote {
         this.createPersonId = createPersonId;
     }
 
+    @Basic
+    @Column(name = "WarehouseID")
+    public Integer getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(Integer warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,6 +98,7 @@ public class SummaryNote {
         if (createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) return false;
         if (createPersonId != null ? !createPersonId.equals(that.createPersonId) : that.createPersonId != null)
             return false;
+        if (warehouseId != null ? !warehouseId.equals(that.warehouseId) : that.warehouseId != null) return false;
 
         return true;
     }
@@ -99,6 +111,7 @@ public class SummaryNote {
         result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         result = 31 * result + (createPersonId != null ? createPersonId.hashCode() : 0);
+        result = 31 * result + (warehouseId != null ? warehouseId.hashCode() : 0);
         return result;
     }
 }

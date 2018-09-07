@@ -24,6 +24,9 @@ public class SettlementNoteView {
     private String accountTitlePropertyNo;
     private String accountTitlePropertyName;
     private String createPersonName;
+    private String summaryNoteNo;
+    private String warehouseName;
+    private Integer warehouseId;
 
     @Basic
     @Id
@@ -186,6 +189,36 @@ public class SettlementNoteView {
         this.createPersonName = createPersonName;
     }
 
+    @Basic
+    @Column(name = "SummaryNoteNo")
+    public String getSummaryNoteNo() {
+        return summaryNoteNo;
+    }
+
+    public void setSummaryNoteNo(String summaryNoteNo) {
+        this.summaryNoteNo = summaryNoteNo;
+    }
+
+    @Basic
+    @Column(name = "WarehouseName")
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
+    }
+
+    @Basic
+    @Column(name = "WarehouseID")
+    public Integer getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(Integer warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -220,6 +253,11 @@ public class SettlementNoteView {
             return false;
         if (createPersonName != null ? !createPersonName.equals(that.createPersonName) : that.createPersonName != null)
             return false;
+        if (summaryNoteNo != null ? !summaryNoteNo.equals(that.summaryNoteNo) : that.summaryNoteNo != null)
+            return false;
+        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
+            return false;
+        if (warehouseId != null ? !warehouseId.equals(that.warehouseId) : that.warehouseId != null) return false;
 
         return true;
     }
@@ -242,6 +280,9 @@ public class SettlementNoteView {
         result = 31 * result + (accountTitlePropertyNo != null ? accountTitlePropertyNo.hashCode() : 0);
         result = 31 * result + (accountTitlePropertyName != null ? accountTitlePropertyName.hashCode() : 0);
         result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
+        result = 31 * result + (summaryNoteNo != null ? summaryNoteNo.hashCode() : 0);
+        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
+        result = 31 * result + (warehouseId != null ? warehouseId.hashCode() : 0);
         return result;
     }
 }
