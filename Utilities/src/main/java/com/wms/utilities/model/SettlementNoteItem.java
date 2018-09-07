@@ -11,6 +11,7 @@ public class SettlementNoteItem {
     private BigDecimal storageCharge;
     private BigDecimal logisticFee;
     private BigDecimal actualPayment;
+    private int state;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,6 +74,16 @@ public class SettlementNoteItem {
         this.actualPayment = actualPayment;
     }
 
+    @Basic
+    @Column(name = "State")
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -83,6 +94,7 @@ public class SettlementNoteItem {
         if (id != that.id) return false;
         if (settlementNoteId != that.settlementNoteId) return false;
         if (supplierId != that.supplierId) return false;
+        if (state != that.state) return false;
         if (storageCharge != null ? !storageCharge.equals(that.storageCharge) : that.storageCharge != null)
             return false;
         if (logisticFee != null ? !logisticFee.equals(that.logisticFee) : that.logisticFee != null) return false;
@@ -100,6 +112,7 @@ public class SettlementNoteItem {
         result = 31 * result + (storageCharge != null ? storageCharge.hashCode() : 0);
         result = 31 * result + (logisticFee != null ? logisticFee.hashCode() : 0);
         result = 31 * result + (actualPayment != null ? actualPayment.hashCode() : 0);
+        result = 31 * result + state;
         return result;
     }
 }
