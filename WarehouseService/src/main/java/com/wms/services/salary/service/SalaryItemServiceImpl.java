@@ -144,7 +144,11 @@ public class SalaryItemServiceImpl implements SalaryItemService {
             if (salaryItem.getType() == SalaryItemTypeState.Formula) {
                 if (salaryItem.getFormula() == null || salaryItem.getFormula().equals("")) {
                     throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的公式为空!");
-                } else {
+                }
+                if (salaryItem.getIdentifier() == null || salaryItem.getIdentifier().equals("")) {
+                    throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的标识符为空!");
+                }
+                else {
                     if (!this.isString(salaryItem.getIdentifier())) {
                         throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的英文标识符不符合规则：以英文、下划线开头且只包括英文、下划线、数字组成!");
                     }
