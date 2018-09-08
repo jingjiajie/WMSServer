@@ -41,9 +41,10 @@ public class SalaryItemServiceImpl implements SalaryItemService {
         for (int i = 0; i < salaryItems.length; i++) {
             Validator validator = new Validator("薪金项目名称");
             validator.notnull().notEmpty().validate(salaryItems[i].getName());
-            if(salaryItems[i].getType()!=SalaryItemTypeState.Formula){
-            Validator validator1 = new Validator("默认金额");
-            validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());}
+            if (salaryItems[i].getType() != SalaryItemTypeState.Formula) {
+                Validator validator1 = new Validator("默认金额");
+                validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
+            }
         }
 
         for (int i = 0; i < salaryItems.length; i++) {
@@ -69,7 +70,11 @@ public class SalaryItemServiceImpl implements SalaryItemService {
             if (salaryItem.getType() == SalaryItemTypeState.Formula) {
                 if (salaryItem.getFormula() == null || salaryItem.getFormula().equals("")) {
                     throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的公式为空!");
-                } else {
+                }
+                if (salaryItem.getIdentifier() == null || salaryItem.getIdentifier().equals("")) {
+                    throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的标识符为空!");
+                }
+                else {
                     if (!this.isString(salaryItem.getIdentifier())) {
                         throw new WMSServiceException("薪金项目：" + salaryItem.getName() + "的英文标识符不符合规则：以英文、下划线开头且只包括英文、下划线、数字组成!");
                     }
@@ -113,9 +118,10 @@ public class SalaryItemServiceImpl implements SalaryItemService {
         for (int i = 0; i < salaryItems.length; i++) {
             Validator validator = new Validator("薪金项目名称");
             validator.notnull().notEmpty().validate(salaryItems[i].getName());
-            if(salaryItems[i].getType()!=SalaryItemTypeState.Formula){
+            if (salaryItems[i].getType() != SalaryItemTypeState.Formula) {
                 Validator validator1 = new Validator("默认金额");
-                validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());}
+                validator1.notnull().notEmpty().validate(salaryItems[i].getDefaultAmount());
+            }
         }
         for (int i = 0; i < salaryItems.length; i++) {
             for (int j = i + 1; j < salaryItems.length; j++) {
