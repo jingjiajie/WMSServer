@@ -84,7 +84,9 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     private void validateEntities(String accountBook,SummaryNote[] summaryNotes) throws WMSServiceException{
         Stream.of(summaryNotes).forEach((summaryNote -> {
             new Validator("代号").notEmpty().validate(summaryNote.getNo());
-            if(summaryNote.getStartTime().compareTo(summaryNote.getEndTime())<=0)
+            new Validator("起始时间").notEmpty().validate(summaryNote.getStartTime());
+            new Validator("截止时间").notEmpty().validate(summaryNote.getEndTime());
+            if(summaryNote.getStartTime().compareTo(summaryNote.getEndTime())>=0)
             {
                 throw new WMSServiceException("汇总单的截止时间必须在起始时间之后！单号："+summaryNote.getNo());
             }
