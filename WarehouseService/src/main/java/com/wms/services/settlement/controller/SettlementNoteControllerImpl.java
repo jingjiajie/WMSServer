@@ -2,6 +2,7 @@ package com.wms.services.settlement.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.settlement.datastructures.LedgerSynchronous;
 import com.wms.services.settlement.service.SettlementNoteService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.*;
@@ -57,5 +58,21 @@ public class SettlementNoteControllerImpl implements SettlementNoteController{
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.settlementNoteService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/synchronous_receivables}",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void synchronousReceivables(@PathVariable("accountBook") String accountBook,
+                                       @RequestBody LedgerSynchronous ledgerSynchronous){
+        this.settlementNoteService.synchronousReceivables(accountBook, ledgerSynchronous);
+    }
+
+    @Override
+    @RequestMapping(value="/synchronous_receipt}",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void synchronousReceipt(@PathVariable("accountBook") String accountBook,
+                                       @RequestBody LedgerSynchronous ledgerSynchronous){
+        this.settlementNoteService.synchronousReceipt(accountBook, ledgerSynchronous);
     }
 }

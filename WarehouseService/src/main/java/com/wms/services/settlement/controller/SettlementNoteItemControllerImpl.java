@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/{accountBook}/settlement_note_item")
 public class SettlementNoteItemControllerImpl implements SettlementNoteItemController{
@@ -59,4 +61,13 @@ public class SettlementNoteItemControllerImpl implements SettlementNoteItemContr
                           @PathVariable("condStr") String condStr){
         return this.settlementNoteItemService.findCount(accountBook, Condition.fromJson(condStr));
     }
+
+    @Override
+    @RequestMapping(value = "/confirm",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void confirm(@PathVariable("accountBook") String accountBook,
+                            @RequestBody List<Integer> ids){
+        this.settlementNoteItemService.confirm(accountBook,ids);
+    }
+
 }
