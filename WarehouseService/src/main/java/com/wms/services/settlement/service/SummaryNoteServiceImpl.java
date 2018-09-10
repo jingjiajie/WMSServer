@@ -2,7 +2,9 @@ package com.wms.services.settlement.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.settlement.dao.SummaryNoteDAO;
+import com.wms.services.warehouse.service.StockTakingOrderServiceImpl;
 import com.wms.services.warehouse.service.WarehouseService;
+import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.Material;
@@ -28,13 +30,24 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     WarehouseService warehouseService;
     @Autowired
     PersonService personService;
+    @Autowired
+    OrderNoGenerator orderNoGenerator;
+
+    private static final String NO_PREFIX = "H";
 
     @Override
     public int[] add(String accountBook, SummaryNote[] summaryNotes) throws WMSServiceException
     {
+        //生成/检测单号
+        Stream.of(summaryNotes).forEach((summaryNote) -> {
+            //如果单号留空则自动生成
+            if (summaryNote.getNo() == null) {
+                summaryNote.setNo(this.orderNoGenerator.generateNextNo(accountBook, SummaryNoteServiceImpl.NO_PREFIX));
+            }
+        });
         this.validateEntities(accountBook,summaryNotes);
         int[] ids= summaryNoteDAO.add(accountBook,summaryNotes);
-        this.validateDupication(accountBook,summaryNotes);
+        this.validateDuplication(accountBook,summaryNotes);
         return ids;
     }
 
@@ -43,7 +56,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     {
         this.validateEntities(accountBook,summaryNotes);
         summaryNoteDAO.update(accountBook, summaryNotes);
-        this.validateDupication(accountBook,summaryNotes);
+        this.validateDuplication(accountBook,summaryNotes);
     }
 
     @Override
@@ -86,7 +99,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         }));
     }
 
-    private void validateDupication(String accountBook,SummaryNote[] summaryNotes)
+    private void validateDuplication(String accountBook,SummaryNote[] summaryNotes)
     {
         Condition cond = new Condition();
         cond.addCondition("warehouseId",summaryNotes[0].getWarehouseId());
