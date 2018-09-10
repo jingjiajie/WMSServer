@@ -61,7 +61,7 @@ public class SettlementNoteControllerImpl implements SettlementNoteController{
     }
 
     @Override
-    @RequestMapping(value="/synchronous_receivables}",method = RequestMethod.POST)
+    @RequestMapping(value="/synchronous_receivables",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void synchronousReceivables(@PathVariable("accountBook") String accountBook,
                                        @RequestBody LedgerSynchronous ledgerSynchronous){
@@ -69,10 +69,10 @@ public class SettlementNoteControllerImpl implements SettlementNoteController{
     }
 
     @Override
-    @RequestMapping(value="/synchronous_receipt}",method = RequestMethod.POST)
+    @RequestMapping(value="/synchronous_receipt",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void synchronousReceipt(@PathVariable("accountBook") String accountBook,
-                                       @RequestBody LedgerSynchronous ledgerSynchronous){
+                                   @RequestBody LedgerSynchronous ledgerSynchronous){
         this.settlementNoteService.synchronousReceipt(accountBook, ledgerSynchronous);
     }
 }

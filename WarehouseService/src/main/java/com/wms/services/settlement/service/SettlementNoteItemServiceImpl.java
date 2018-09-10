@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Stream;
@@ -77,6 +78,11 @@ public class SettlementNoteItemServiceImpl
             new Validator("仓储费").notEmpty().validate(settlementNoteItem.getStorageCharge());
             new Validator("物流费").notEmpty().validate(settlementNoteItem.getLogisticFee());
             new Validator("实付金额").notEmpty().validate(settlementNoteItem.getActualPayment());
+
+            BigDecimal sumFee=settlementNoteItem.getStorageCharge().add(settlementNoteItem.getLogisticFee());
+            if (settlementNoteItem.getActualPayment().compareTo(sumFee)>0){
+                throw new WMSServiceException("实付金额不能大于仓储费和物流费用之和!");
+            }
         }));
     }
 

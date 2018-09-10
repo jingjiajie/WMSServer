@@ -8,5 +8,5 @@ import com.wms.utilities.model.SettlementNoteView;
 
 public interface SettlementNoteController extends BaseController<SettlementNote,SettlementNoteView> {
     public void synchronousReceivables(String accountBook,LedgerSynchronous ledgerSynchronous) throws WMSServiceException;
-    public void synchronousReceipt(String accountBook,LedgerSynchronous ledgerSynchronous) throws WMSServiceException;
+    void synchronousReceipt(String accountBook,LedgerSynchronous ledgerSynchronous);
 }
