@@ -5,6 +5,7 @@ import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.settlement.dao.SettlementNoteDAO;
 import com.wms.services.settlement.datastructures.LedgerSynchronous;
 import com.wms.utilities.IDChecker;
+import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -36,15 +37,23 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
     AccountRecordService accountRecordService;
     @Autowired
     IDChecker idChecker;
+    @Autowired
+    OrderNoGenerator orderNoGenerator;
+
+    private static final String NO_PREFIX = "S";
 
     @Override
     public int[] add(String accountBook, SettlementNote[] settlementNotes) throws WMSServiceException
     {
-        this.validateEntities(accountBook,settlementNotes);
 
-        Stream.of(settlementNotes).forEach((settlementNote -> {
-            settlementNote.setCreateTime(new Timestamp(System.currentTimeMillis()));
-        }));
+        //生成/检测单号
+        Stream.of(settlementNotes).forEach((settlementNote) -> {
+            //如果单号留空则自动生成
+            if (settlementNote.getNo() == null) {
+                settlementNote.setNo(this.orderNoGenerator.generateNextNo(accountBook, SettlementNoteServiceImpl.NO_PREFIX));
+            }
+        });
+        this.validateEntities(accountBook,settlementNotes);
         return settlementNoteDAO.add(accountBook,settlementNotes);
     }
 
@@ -122,7 +131,7 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
                 accountRecord.setComment("结算单应收同步");
                 accountRecord.setWarehouseId(settlementNoteView.getWarehouseId());
                 accountRecord.setCreditAmount(settlementNoteItemView.getStorageCharge().add(settlementNoteItemView.getLogisticFee()));
-                accountRecord.setCreditAmount(BigDecimal.ZERO);
+                accountRecord.setDebitAmount(BigDecimal.ZERO);
                 accountRecord.setBalance(BigDecimal.ZERO);
                 accountRecord.setSummary(settlementNoteItemView.getSupplierName());
 
@@ -179,7 +188,7 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
                 accountRecord.setComment("结算单实收款同步");
                 accountRecord.setWarehouseId(settlementNoteView.getWarehouseId());
                 accountRecord.setCreditAmount(settlementNoteItemView.getActualPayment());
-                accountRecord.setCreditAmount(BigDecimal.ZERO);
+                accountRecord.setDebitAmount(BigDecimal.ZERO);
                 accountRecord.setBalance(BigDecimal.ZERO);
                 accountRecord.setSummary(settlementNoteItemView.getSupplierName());
 
