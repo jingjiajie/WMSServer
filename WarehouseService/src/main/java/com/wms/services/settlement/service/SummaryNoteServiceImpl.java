@@ -42,7 +42,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         Stream.of(summaryNotes).forEach((summaryNote) -> {
             //如果单号留空则自动生成
             if (summaryNote.getNo() == null) {
-                summaryNote.setNo(this.orderNoGenerator.generateNextNo(accountBook, SummaryNoteServiceImpl.NO_PREFIX));
+                summaryNote.setNo(this.orderNoGenerator.generateNextNo(accountBook, SummaryNoteServiceImpl.NO_PREFIX,summaryNote.getWarehouseId()));
             }
         });
         this.validateEntities(accountBook,summaryNotes);
