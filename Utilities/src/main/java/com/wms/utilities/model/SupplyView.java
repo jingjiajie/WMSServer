@@ -90,6 +90,7 @@ public class SupplyView {
     private String materialProductLine;
     private BigDecimal defaultInspectionAmount;
     private String barCodeNo;
+    private BigDecimal trayCapacity;
 
     @Basic
     @Id
@@ -902,6 +903,16 @@ public class SupplyView {
         this.barCodeNo = barCodeNo;
     }
 
+    @Basic
+    @Column(name = "TrayCapacity")
+    public BigDecimal getTrayCapacity() {
+        return trayCapacity;
+    }
+
+    public void setTrayCapacity(BigDecimal trayCapacity) {
+        this.trayCapacity = trayCapacity;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -1049,6 +1060,7 @@ public class SupplyView {
         if (defaultInspectionAmount != null ? !defaultInspectionAmount.equals(that.defaultInspectionAmount) : that.defaultInspectionAmount != null)
             return false;
         if (barCodeNo != null ? !barCodeNo.equals(that.barCodeNo) : that.barCodeNo != null) return false;
+        if (trayCapacity != null ? !trayCapacity.equals(that.trayCapacity) : that.trayCapacity != null) return false;
 
         return true;
     }
@@ -1136,6 +1148,7 @@ public class SupplyView {
         result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
         result = 31 * result + (defaultInspectionAmount != null ? defaultInspectionAmount.hashCode() : 0);
         result = 31 * result + (barCodeNo != null ? barCodeNo.hashCode() : 0);
+        result = 31 * result + (trayCapacity != null ? trayCapacity.hashCode() : 0);
         return result;
     }
 }

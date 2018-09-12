@@ -67,6 +67,7 @@ public class Supply {
     private Integer defaultDeliveryStorageLocationId;
     private Integer defaultPrepareTargetStorageLocationId;
     private String barCodeNo;
+    private BigDecimal trayCapacity;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -679,6 +680,16 @@ public class Supply {
         this.barCodeNo = barCodeNo;
     }
 
+    @Basic
+    @Column(name = "TrayCapacity")
+    public BigDecimal getTrayCapacity() {
+        return trayCapacity;
+    }
+
+    public void setTrayCapacity(BigDecimal trayCapacity) {
+        this.trayCapacity = trayCapacity;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -793,6 +804,8 @@ public class Supply {
         if (defaultPrepareTargetStorageLocationId != null ? !defaultPrepareTargetStorageLocationId.equals(supply.defaultPrepareTargetStorageLocationId) : supply.defaultPrepareTargetStorageLocationId != null)
             return false;
         if (barCodeNo != null ? !barCodeNo.equals(supply.barCodeNo) : supply.barCodeNo != null) return false;
+        if (trayCapacity != null ? !trayCapacity.equals(supply.trayCapacity) : supply.trayCapacity != null)
+            return false;
 
         return true;
     }
@@ -860,6 +873,7 @@ public class Supply {
         result = 31 * result + (defaultDeliveryStorageLocationId != null ? defaultDeliveryStorageLocationId.hashCode() : 0);
         result = 31 * result + (defaultPrepareTargetStorageLocationId != null ? defaultPrepareTargetStorageLocationId.hashCode() : 0);
         result = 31 * result + (barCodeNo != null ? barCodeNo.hashCode() : 0);
+        result = 31 * result + (trayCapacity != null ? trayCapacity.hashCode() : 0);
         return result;
     }
 }
