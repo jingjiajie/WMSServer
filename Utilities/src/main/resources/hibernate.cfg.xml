@@ -93,6 +93,12 @@
       <mapping class="com.wms.utilities.model.SettlementNoteView"/>
       <mapping class="com.wms.utilities.model.SummaryNoteItemView"/>
       <mapping class="com.wms.utilities.model.SummaryNoteView"/>
+      <mapping class="com.wms.utilities.model.Price"/>
+      <mapping class="com.wms.utilities.model.SummaryDetails"/>
+      <mapping class="com.wms.utilities.model.TrayThresholds"/>
+      <mapping class="com.wms.utilities.model.PriceView"/>
+      <mapping class="com.wms.utilities.model.SummaryDetailsView"/>
+      <mapping class="com.wms.utilities.model.TrayThresholdsView"/>
 
 
       <!-- DB schema will be updated if needed -->

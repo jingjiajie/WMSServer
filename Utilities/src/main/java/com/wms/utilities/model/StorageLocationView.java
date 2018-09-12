@@ -4,6 +4,8 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.math.BigDecimal;
+
 @Entity
 public class StorageLocationView {
     private int id;
@@ -14,9 +16,15 @@ public class StorageLocationView {
     private int warehouseId;
     private String storageAreaNo;
     private String storageAreaName;
+    private BigDecimal reservedArea;
+    private BigDecimal piles;
+    private BigDecimal length;
+    private BigDecimal width;
+    private BigDecimal lengthPadding;
+    private BigDecimal widthPadding;
 
-    @Id
     @Basic
+    @Id
     @Column(name = "ID")
     public int getId() {
         return id;
@@ -96,12 +104,72 @@ public class StorageLocationView {
         this.storageAreaName = storageAreaName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "ReservedArea")
+    public BigDecimal getReservedArea() {
+        return reservedArea;
+    }
 
-        StorageLocationView that = (StorageLocationView) o;
+    public void setReservedArea(BigDecimal reservedArea) {
+        this.reservedArea = reservedArea;
+    }
+
+    @Basic
+    @Column(name = "Piles")
+    public BigDecimal getPiles() {
+        return piles;
+    }
+
+    public void setPiles(BigDecimal piles) {
+        this.piles = piles;
+    }
+
+    @Basic
+    @Column(name = "Length")
+    public BigDecimal getLength() {
+        return length;
+    }
+
+    public void setLength(BigDecimal length) {
+        this.length = length;
+    }
+
+    @Basic
+    @Column(name = "Width")
+    public BigDecimal getWidth() {
+        return width;
+    }
+
+    public void setWidth(BigDecimal width) {
+        this.width = width;
+    }
+
+    @Basic
+    @Column(name = "LengthPadding")
+    public BigDecimal getLengthPadding() {
+        return lengthPadding;
+    }
+
+    public void setLengthPadding(BigDecimal lengthPadding) {
+        this.lengthPadding = lengthPadding;
+    }
+
+    @Basic
+    @Column(name = "WidthPadding")
+    public BigDecimal getWidthPadding() {
+        return widthPadding;
+    }
+
+    public void setWidthPadding(BigDecimal widthPadding) {
+        this.widthPadding = widthPadding;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        StorageLocationView that = (StorageLocationView) object;
 
         if (id != that.id) return false;
         if (storageAreaId != that.storageAreaId) return false;
@@ -113,6 +181,13 @@ public class StorageLocationView {
             return false;
         if (storageAreaName != null ? !storageAreaName.equals(that.storageAreaName) : that.storageAreaName != null)
             return false;
+        if (reservedArea != null ? !reservedArea.equals(that.reservedArea) : that.reservedArea != null) return false;
+        if (piles != null ? !piles.equals(that.piles) : that.piles != null) return false;
+        if (length != null ? !length.equals(that.length) : that.length != null) return false;
+        if (width != null ? !width.equals(that.width) : that.width != null) return false;
+        if (lengthPadding != null ? !lengthPadding.equals(that.lengthPadding) : that.lengthPadding != null)
+            return false;
+        if (widthPadding != null ? !widthPadding.equals(that.widthPadding) : that.widthPadding != null) return false;
 
         return true;
     }
@@ -127,6 +202,12 @@ public class StorageLocationView {
         result = 31 * result + warehouseId;
         result = 31 * result + (storageAreaNo != null ? storageAreaNo.hashCode() : 0);
         result = 31 * result + (storageAreaName != null ? storageAreaName.hashCode() : 0);
+        result = 31 * result + (reservedArea != null ? reservedArea.hashCode() : 0);
+        result = 31 * result + (piles != null ? piles.hashCode() : 0);
+        result = 31 * result + (length != null ? length.hashCode() : 0);
+        result = 31 * result + (width != null ? width.hashCode() : 0);
+        result = 31 * result + (lengthPadding != null ? lengthPadding.hashCode() : 0);
+        result = 31 * result + (widthPadding != null ? widthPadding.hashCode() : 0);
         return result;
     }
 }
