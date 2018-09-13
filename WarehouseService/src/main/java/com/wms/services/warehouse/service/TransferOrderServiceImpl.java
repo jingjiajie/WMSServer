@@ -51,9 +51,9 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         Stream.of(objs).forEach(obj->{
             if(obj.getNo() == null || obj.getNo().isEmpty()) {
                 if(obj.getType()==TransferOrderService.TYPE_PACKAGE){
-                    obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX));
+                    obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX,obj.getWarehouseId()));
                 }else if(obj.getType()==TransferOrderService.TYPE_PUT){
-                    obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX1));
+                    obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX1,obj.getWarehouseId()));
                 }
             }
             obj.setState(TransferOrderItemService.STATE_IN_TRANSFER);//新建移库单记为状态0

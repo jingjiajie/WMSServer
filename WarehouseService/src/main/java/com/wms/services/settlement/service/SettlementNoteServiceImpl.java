@@ -50,7 +50,7 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
         Stream.of(settlementNotes).forEach((settlementNote) -> {
             //如果单号留空则自动生成
             if (settlementNote.getNo() == null) {
-                settlementNote.setNo(this.orderNoGenerator.generateNextNo(accountBook, SettlementNoteServiceImpl.NO_PREFIX));
+                settlementNote.setNo(this.orderNoGenerator.generateNextNo(accountBook, SettlementNoteServiceImpl.NO_PREFIX,settlementNote.getWarehouseId()));
             }
         });
         this.validateEntities(accountBook,settlementNotes);

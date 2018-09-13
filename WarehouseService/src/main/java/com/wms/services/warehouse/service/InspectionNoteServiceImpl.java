@@ -50,7 +50,7 @@ public class InspectionNoteServiceImpl
         Stream.of(inspectionNotes).forEach(obj->{
             //如果单号为空，则生成单号
             if(obj.getNo() == null || obj.getNo().isEmpty()) {
-                obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX));
+                obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX,obj.getWarehouseId()));
             }
             obj.setCreateTime(new Timestamp(System.currentTimeMillis()));
         });
