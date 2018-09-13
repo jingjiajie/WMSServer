@@ -104,6 +104,12 @@
                 <value>com.wms.utilities.model.SettlementNoteView</value>
                 <value>com.wms.utilities.model.SettlementNoteItemView</value>
                 <value>com.wms.utilities.model.InvoiceView</value>
+                <value>com.wms.utilities.model.SummaryDetails</value>
+                <value>com.wms.utilities.model.TrayThresholds</value>
+                <value>com.wms.utilities.model.Price</value>
+                <value>com.wms.utilities.model.SummaryDetailsView</value>
+                <value>com.wms.utilities.model.TrayThresholdsView</value>
+                <value>com.wms.utilities.model.PriceView</value>
             </list>
         </property>
     </bean>
