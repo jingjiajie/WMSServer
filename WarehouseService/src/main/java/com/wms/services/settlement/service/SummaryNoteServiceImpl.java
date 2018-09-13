@@ -2,22 +2,23 @@ package com.wms.services.settlement.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.settlement.dao.SummaryNoteDAO;
-import com.wms.services.warehouse.service.StockTakingOrderServiceImpl;
-import com.wms.services.warehouse.service.WarehouseService;
+import com.wms.services.warehouse.service.*;
 import com.wms.utilities.OrderNoGenerator;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.Material;
-import com.wms.utilities.model.SummaryNote;
-import com.wms.utilities.model.SummaryNoteView;
-import com.wms.utilities.model.Supplier;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -32,6 +33,16 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     PersonService personService;
     @Autowired
     OrderNoGenerator orderNoGenerator;
+    @Autowired
+    DeliveryOrderItemService deliveryOrderItemService;
+    @Autowired
+    SupplyService supplyService;
+    @Autowired
+    SummaryNoteItemService summaryNoteItemService;
+    @Autowired
+    DeliveryOrderService deliveryOrderService;
+    @Autowired
+    SummaryDetailsService summaryDetailsService;
 
     private static final String NO_PREFIX = "H";
 
@@ -118,5 +129,89 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     @Override
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.summaryNoteDAO.findCount(database,cond);
+    }
+
+    public void summaryDelivery(String accountBook,SummaryNote summaryNote) throws WMSServiceException{
+        Timestamp startTime=summaryNote.getStartTime();
+        Timestamp endTime=summaryNote.getEndTime();
+        int warehouseId=summaryNote.getWarehouseId();
+
+        if (this.find(accountBook,new Condition().addCondition("id",summaryNote.getId())).length==0){
+            throw new WMSServiceException(String.format("汇总单不存在，请重新提交！(%s)",summaryNote.getNo()));
+        }
+        List<SummaryDetails> summaryDetailsList=new ArrayList();
+
+        //找时间段内发货的出库单
+        DeliveryOrderView[] deliveryOrderViews=this.deliveryOrderService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId)
+                .addCondition("deliverTime",startTime, ConditionItem.Relation.GREATER_THAN)
+                .addCondition("deliverTime",endTime, ConditionItem.Relation.LESS_THAN_OR_EQUAL_TO));
+        if (deliveryOrderViews.length==0){
+            throw new WMSServiceException(String.format("该时间段仓库里没有出库单发货操作，请重新提交！(%d)",warehouseId));
+        }
+
+        Stream.of(deliveryOrderViews).forEach((deliveryOrderView) -> {
+            DeliveryOrderItemView[] deliveryOrderItemViews=this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("deliveryOrderId",deliveryOrderView.getId()));
+
+            if (deliveryOrderItemViews.length!=0) {
+                //按科目分组
+                Map<Integer, List<DeliveryOrderItemView>> groupBySupplyId =
+                        Stream.of(deliveryOrderItemViews).collect(Collectors.groupingBy(DeliveryOrderItemView::getSupplyId));
+
+                Iterator<Map.Entry<Integer, List<DeliveryOrderItemView>>> entries = groupBySupplyId.entrySet().iterator();
+                //将每组最新的加到一个列表中
+                while (entries.hasNext()) {
+                    Map.Entry<Integer, List<DeliveryOrderItemView>> entry = entries.next();
+                    Integer supplyId = entry.getKey();
+                    List<DeliveryOrderItemView> deliveryOrderItemViewList = entry.getValue();
+                    DeliveryOrderItemView[] curDeliveryOrderItemViews = (DeliveryOrderItemView[]) Array.newInstance(DeliveryOrderItemView.class, deliveryOrderItemViewList.size());
+                    deliveryOrderItemViewList.toArray(curDeliveryOrderItemViews);
+
+                    BigDecimal deliveryAmount=BigDecimal.ZERO;
+                    if (curDeliveryOrderItemViews.length!=0) {
+                        for (int i = 0; i < curDeliveryOrderItemViews.length; i++) {
+                            deliveryAmount = deliveryAmount.add(curDeliveryOrderItemViews[i].getRealAmount());
+                        }
+
+                        SummaryNoteItemView[] summaryNoteItemViews = this.summaryNoteItemService.find(accountBook, new Condition().addCondition("summaryNoteId", summaryNote.getId())
+                                .addCondition("supplierId", curDeliveryOrderItemViews[0].getSupplierId()));
+                        if (summaryNoteItemViews.length == 0) {
+                            throw new WMSServiceException(String.format("汇总单条目不存在，请重新提交！(%s)", summaryNote.getNo()));
+                        }
+
+                        SummaryDetailsView[] summaryDetailsViews = this.summaryDetailsService.find(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItemViews[0].getId())
+                                .addCondition("supplyId", supplyId));
+
+                        if (summaryDetailsViews.length != 1) {
+                            throw new WMSServiceException(String.format("汇总单条目详情对应供货不唯一，请重新提交！(%s)", summaryNote.getNo()));
+                        }
+
+                        SummaryDetails[] summaryDetails = ReflectHelper.createAndCopyFields(summaryDetailsViews, SummaryDetails.class);
+
+                        summaryDetails[0].setDeliveryAmount(deliveryAmount);
+                        summaryDetailsList.add(summaryDetails[0]);
+                    }
+                }
+            }
+
+        });
+
+        SummaryDetails[] returnSummaryDetails=new SummaryDetails[summaryDetailsList.size()];
+        summaryDetailsList.toArray(returnSummaryDetails);
+        this.summaryDetailsService.update(accountBook,returnSummaryDetails);
+
+        SummaryNoteItemView[] summaryNoteItemViews = this.summaryNoteItemService.find(accountBook, new Condition().addCondition("summaryNoteId", summaryNote.getId()));
+        SummaryNoteItem[] summaryNoteItems = ReflectHelper.createAndCopyFields(summaryNoteItemViews, SummaryNoteItem.class);
+
+        Stream.of(summaryNoteItems).forEach(summaryNoteItem -> {
+            BigDecimal deliveryAmount=BigDecimal.ZERO;
+            SummaryDetailsView[] summaryDetailsViews = this.summaryDetailsService.find(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItem.getId()));
+            if (summaryDetailsViews.length!=0){
+                for(int i=0;i<summaryDetailsViews.length;i++){
+                    deliveryAmount = deliveryAmount.add(summaryDetailsViews[i].getDeliveryAmount());
+                }
+            }
+            summaryNoteItem.setTotalDeliveryAmount(deliveryAmount);
+        });
+        this.summaryNoteItemService.update(accountBook,summaryNoteItems);
     }
 }
