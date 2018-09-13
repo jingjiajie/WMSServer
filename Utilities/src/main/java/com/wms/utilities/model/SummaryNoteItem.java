@@ -8,9 +8,9 @@ public class SummaryNoteItem {
     private int id;
     private int summaryNoteId;
     private int supplierId;
-    private BigDecimal area;
+    private BigDecimal totalArea;
     private BigDecimal days;
-    private BigDecimal deliveryTimes;
+    private BigDecimal totalDeliveryAmount;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,13 +44,13 @@ public class SummaryNoteItem {
     }
 
     @Basic
-    @Column(name = "Area")
-    public BigDecimal getArea() {
-        return area;
+    @Column(name = "TotalArea")
+    public BigDecimal getTotalArea() {
+        return totalArea;
     }
 
-    public void setArea(BigDecimal area) {
-        this.area = area;
+    public void setTotalArea(BigDecimal totalArea) {
+        this.totalArea = totalArea;
     }
 
     @Basic
@@ -64,15 +64,14 @@ public class SummaryNoteItem {
     }
 
     @Basic
-    @Column(name = "DeliveryTimes")
-    public BigDecimal getDeliveryTimes() {
-        return deliveryTimes;
+    @Column(name = "TotalDeliveryAmount")
+    public BigDecimal getTotalDeliveryAmount() {
+        return totalDeliveryAmount;
     }
 
-    public void setDeliveryTimes(BigDecimal deliveryTimes) {
-        this.deliveryTimes = deliveryTimes;
+    public void setTotalDeliveryAmount(BigDecimal totalDeliveryAmount) {
+        this.totalDeliveryAmount = totalDeliveryAmount;
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -84,9 +83,9 @@ public class SummaryNoteItem {
         if (id != that.id) return false;
         if (summaryNoteId != that.summaryNoteId) return false;
         if (supplierId != that.supplierId) return false;
-        if (area != null ? !area.equals(that.area) : that.area != null) return false;
+        if (totalArea != null ? !totalArea.equals(that.totalArea) : that.totalArea != null) return false;
         if (days != null ? !days.equals(that.days) : that.days != null) return false;
-        if (deliveryTimes != null ? !deliveryTimes.equals(that.deliveryTimes) : that.deliveryTimes != null)
+        if (totalDeliveryAmount != null ? !totalDeliveryAmount.equals(that.totalDeliveryAmount) : that.totalDeliveryAmount != null)
             return false;
 
         return true;
@@ -97,9 +96,9 @@ public class SummaryNoteItem {
         int result = id;
         result = 31 * result + summaryNoteId;
         result = 31 * result + supplierId;
-        result = 31 * result + (area != null ? area.hashCode() : 0);
+        result = 31 * result + (totalArea != null ? totalArea.hashCode() : 0);
         result = 31 * result + (days != null ? days.hashCode() : 0);
-        result = 31 * result + (deliveryTimes != null ? deliveryTimes.hashCode() : 0);
+        result = 31 * result + (totalDeliveryAmount != null ? totalDeliveryAmount.hashCode() : 0);
         return result;
     }
 }
