@@ -210,7 +210,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
                     deliveryAmount = deliveryAmount.add(summaryDetailsViews[i].getDeliveryAmount());
                 }
             }
-            summaryNoteItem.setDeliveryTimes(deliveryAmount);
+            summaryNoteItem.setTotalDeliveryAmount(deliveryAmount);
         });
         this.summaryNoteItemService.update(accountBook,summaryNoteItems);
     }
