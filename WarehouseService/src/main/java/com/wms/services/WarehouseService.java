@@ -1,6 +1,11 @@
 package com.wms.services;
 import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.services.salary.service.GetBigDecimal;
+import com.wms.services.settlement.service.SummaryNoteService;
+import com.wms.utilities.ReflectHelper;
+import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.SummaryNote;
+import com.wms.utilities.model.SummaryNoteView;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,7 +32,10 @@ public class WarehouseService {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
 
-        AccountRecordService accountRecordService=applicationContext.getBean(AccountRecordService.class);
-        List<TreeViewData> a= accountRecordService.buildAccountTitleTreeView("WMS_Template");
+        SummaryNoteService summaryNoteService=applicationContext.getBean(SummaryNoteService.class);
+        SummaryNoteView[] summaryNoteViews=summaryNoteService.find("WMS_Template",new Condition().addCondition("id",4));
+        SummaryNote[] summaryNotes = ReflectHelper.createAndCopyFields(summaryNoteViews, SummaryNote.class);
+
+        summaryNoteService.summaryDelivery("WMS_Template",summaryNotes[0]);
     }
 }

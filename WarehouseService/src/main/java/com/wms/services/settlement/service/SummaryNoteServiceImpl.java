@@ -1,6 +1,7 @@
 package com.wms.services.settlement.service;
 
 import com.wms.services.ledger.service.PersonService;
+import com.wms.services.settlement.dao.SummaryDetailsDAO;
 import com.wms.services.settlement.dao.SummaryNoteDAO;
 import com.wms.services.warehouse.service.*;
 import com.wms.utilities.OrderNoGenerator;
@@ -43,6 +44,8 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     DeliveryOrderService deliveryOrderService;
     @Autowired
     SummaryDetailsService summaryDetailsService;
+    @Autowired
+    SummaryDetailsDAO summaryDetailsDAO;
 
     private static final String NO_PREFIX = "H";
 
@@ -131,6 +134,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         return this.summaryNoteDAO.findCount(database,cond);
     }
 
+    @Override
     public void summaryDelivery(String accountBook,SummaryNote summaryNote) throws WMSServiceException{
         Timestamp startTime=summaryNote.getStartTime();
         Timestamp endTime=summaryNote.getEndTime();
@@ -149,51 +153,53 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
             throw new WMSServiceException(String.format("该时间段仓库里没有出库单发货操作，请重新提交！(%d)",warehouseId));
         }
 
-        Stream.of(deliveryOrderViews).forEach((deliveryOrderView) -> {
-            DeliveryOrderItemView[] deliveryOrderItemViews=this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("deliveryOrderId",deliveryOrderView.getId()));
+        Integer[] ids=new Integer[deliveryOrderViews.length];
+        for (int i=0;i<deliveryOrderViews.length;i++){
+            ids[i]=deliveryOrderViews[i].getId();
+        }
+        DeliveryOrderItemView[] deliveryOrderItemViews=this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("deliveryOrderId",ids, ConditionItem.Relation.IN));
 
-            if (deliveryOrderItemViews.length!=0) {
-                //按科目分组
-                Map<Integer, List<DeliveryOrderItemView>> groupBySupplyId =
-                        Stream.of(deliveryOrderItemViews).collect(Collectors.groupingBy(DeliveryOrderItemView::getSupplyId));
+        if (deliveryOrderItemViews.length!=0) {
+            //按科目分组
+            Map<Integer, List<DeliveryOrderItemView>> groupBySupplyId =
+                    Stream.of(deliveryOrderItemViews).collect(Collectors.groupingBy(DeliveryOrderItemView::getSupplyId));
 
-                Iterator<Map.Entry<Integer, List<DeliveryOrderItemView>>> entries = groupBySupplyId.entrySet().iterator();
-                //将每组最新的加到一个列表中
-                while (entries.hasNext()) {
-                    Map.Entry<Integer, List<DeliveryOrderItemView>> entry = entries.next();
-                    Integer supplyId = entry.getKey();
-                    List<DeliveryOrderItemView> deliveryOrderItemViewList = entry.getValue();
-                    DeliveryOrderItemView[] curDeliveryOrderItemViews = (DeliveryOrderItemView[]) Array.newInstance(DeliveryOrderItemView.class, deliveryOrderItemViewList.size());
-                    deliveryOrderItemViewList.toArray(curDeliveryOrderItemViews);
+            Iterator<Map.Entry<Integer, List<DeliveryOrderItemView>>> entries = groupBySupplyId.entrySet().iterator();
+            //将每组最新的加到一个列表中
+            while (entries.hasNext()) {
+                Map.Entry<Integer, List<DeliveryOrderItemView>> entry = entries.next();
+                Integer supplyId = entry.getKey();
+                List<DeliveryOrderItemView> deliveryOrderItemViewList = entry.getValue();
+                DeliveryOrderItemView[] curDeliveryOrderItemViews = (DeliveryOrderItemView[]) Array.newInstance(DeliveryOrderItemView.class, deliveryOrderItemViewList.size());
+                deliveryOrderItemViewList.toArray(curDeliveryOrderItemViews);
 
-                    BigDecimal deliveryAmount=BigDecimal.ZERO;
-                    if (curDeliveryOrderItemViews.length!=0) {
-                        for (int i = 0; i < curDeliveryOrderItemViews.length; i++) {
-                            deliveryAmount = deliveryAmount.add(curDeliveryOrderItemViews[i].getRealAmount());
-                        }
-
-                        SummaryNoteItemView[] summaryNoteItemViews = this.summaryNoteItemService.find(accountBook, new Condition().addCondition("summaryNoteId", summaryNote.getId())
-                                .addCondition("supplierId", curDeliveryOrderItemViews[0].getSupplierId()));
-                        if (summaryNoteItemViews.length == 0) {
-                            throw new WMSServiceException(String.format("汇总单条目不存在，请重新提交！(%s)", summaryNote.getNo()));
-                        }
-
-                        SummaryDetailsView[] summaryDetailsViews = this.summaryDetailsService.find(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItemViews[0].getId())
-                                .addCondition("supplyId", supplyId));
-
-                        if (summaryDetailsViews.length != 1) {
-                            throw new WMSServiceException(String.format("汇总单条目详情对应供货不唯一，请重新提交！(%s)", summaryNote.getNo()));
-                        }
-
-                        SummaryDetails[] summaryDetails = ReflectHelper.createAndCopyFields(summaryDetailsViews, SummaryDetails.class);
-
-                        summaryDetails[0].setDeliveryAmount(deliveryAmount);
-                        summaryDetailsList.add(summaryDetails[0]);
+                BigDecimal deliveryAmount=BigDecimal.ZERO;
+                if (curDeliveryOrderItemViews.length!=0) {
+                    for (int i = 0; i < curDeliveryOrderItemViews.length; i++) {
+                        deliveryAmount = deliveryAmount.add(curDeliveryOrderItemViews[i].getRealAmount());
                     }
+
+                    SummaryNoteItemView[] summaryNoteItemViews = this.summaryNoteItemService.find(accountBook, new Condition().addCondition("summaryNoteId", summaryNote.getId())
+                            .addCondition("supplierId", curDeliveryOrderItemViews[0].getSupplierId()));
+                    if (summaryNoteItemViews.length == 0) {
+                        throw new WMSServiceException(String.format("汇总单条目不存在，请重新提交！(%s)", summaryNote.getNo()));
+                    }
+
+                    SummaryDetailsView[] summaryDetailsViews = this.summaryDetailsService.find(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItemViews[0].getId())
+                            .addCondition("supplyId", supplyId));
+
+                    if (summaryDetailsViews.length != 1) {
+                        throw new WMSServiceException(String.format("汇总单条目详情对应供货不唯一，请重新提交！(%s)", summaryNote.getNo()));
+                    }
+
+                    SummaryDetails[] summaryDetails = ReflectHelper.createAndCopyFields(summaryDetailsViews, SummaryDetails.class);
+
+                    summaryDetails[0].setDeliveryAmount(deliveryAmount);
+                    summaryDetailsList.add(summaryDetails[0]);
                 }
             }
+        }
 
-        });
 
         SummaryDetails[] returnSummaryDetails=new SummaryDetails[summaryDetailsList.size()];
         summaryDetailsList.toArray(returnSummaryDetails);
@@ -204,10 +210,10 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
 
         Stream.of(summaryNoteItems).forEach(summaryNoteItem -> {
             BigDecimal deliveryAmount=BigDecimal.ZERO;
-            SummaryDetailsView[] summaryDetailsViews = this.summaryDetailsService.find(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItem.getId()));
-            if (summaryDetailsViews.length!=0){
-                for(int i=0;i<summaryDetailsViews.length;i++){
-                    deliveryAmount = deliveryAmount.add(summaryDetailsViews[i].getDeliveryAmount());
+            SummaryDetails[] summaryDetails = this.summaryDetailsDAO.findTable(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItem.getId()));
+            if (summaryDetails.length!=0){
+                for(int i=0;i<summaryDetails.length;i++){
+                    deliveryAmount = deliveryAmount.add(summaryDetails[i].getDeliveryAmount());
                 }
             }
             summaryNoteItem.setTotalDeliveryAmount(deliveryAmount);
