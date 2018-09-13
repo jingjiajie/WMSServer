@@ -11,11 +11,11 @@ public class SummaryNoteItemView {
     private int id;
     private int summaryNoteId;
     private int supplierId;
-    private BigDecimal area;
     private BigDecimal days;
-    private BigDecimal deliveryTimes;
     private String supplierName;
     private String supplierNo;
+    private BigDecimal totalArea;
+    private BigDecimal totalDeliveryAmount;
 
     @Basic
     @Id
@@ -49,16 +49,6 @@ public class SummaryNoteItemView {
     }
 
     @Basic
-    @Column(name = "Area")
-    public BigDecimal getArea() {
-        return area;
-    }
-
-    public void setArea(BigDecimal area) {
-        this.area = area;
-    }
-
-    @Basic
     @Column(name = "Days")
     public BigDecimal getDays() {
         return days;
@@ -67,18 +57,6 @@ public class SummaryNoteItemView {
     public void setDays(BigDecimal days) {
         this.days = days;
     }
-
-    @Basic
-    @Column(name = "DeliveryTimes")
-    public BigDecimal getDeliveryTimes() {
-        return deliveryTimes;
-    }
-
-    public void setDeliveryTimes(BigDecimal deliveryTimes) {
-        this.deliveryTimes = deliveryTimes;
-    }
-
-
 
     @Basic
     @Column(name = "SupplierName")
@@ -100,6 +78,26 @@ public class SummaryNoteItemView {
         this.supplierNo = supplierNo;
     }
 
+    @Basic
+    @Column(name = "TotalArea")
+    public BigDecimal getTotalArea() {
+        return totalArea;
+    }
+
+    public void setTotalArea(BigDecimal totalArea) {
+        this.totalArea = totalArea;
+    }
+
+    @Basic
+    @Column(name = "TotalDeliveryAmount")
+    public BigDecimal getTotalDeliveryAmount() {
+        return totalDeliveryAmount;
+    }
+
+    public void setTotalDeliveryAmount(BigDecimal totalDeliveryAmount) {
+        this.totalDeliveryAmount = totalDeliveryAmount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -110,12 +108,12 @@ public class SummaryNoteItemView {
         if (id != that.id) return false;
         if (summaryNoteId != that.summaryNoteId) return false;
         if (supplierId != that.supplierId) return false;
-        if (area != null ? !area.equals(that.area) : that.area != null) return false;
         if (days != null ? !days.equals(that.days) : that.days != null) return false;
-        if (deliveryTimes != null ? !deliveryTimes.equals(that.deliveryTimes) : that.deliveryTimes != null)
-            return false;
         if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
         if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
+        if (totalArea != null ? !totalArea.equals(that.totalArea) : that.totalArea != null) return false;
+        if (totalDeliveryAmount != null ? !totalDeliveryAmount.equals(that.totalDeliveryAmount) : that.totalDeliveryAmount != null)
+            return false;
 
         return true;
     }
@@ -125,11 +123,11 @@ public class SummaryNoteItemView {
         int result = id;
         result = 31 * result + summaryNoteId;
         result = 31 * result + supplierId;
-        result = 31 * result + (area != null ? area.hashCode() : 0);
         result = 31 * result + (days != null ? days.hashCode() : 0);
-        result = 31 * result + (deliveryTimes != null ? deliveryTimes.hashCode() : 0);
         result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
+        result = 31 * result + (totalArea != null ? totalArea.hashCode() : 0);
+        result = 31 * result + (totalDeliveryAmount != null ? totalDeliveryAmount.hashCode() : 0);
         return result;
     }
 }

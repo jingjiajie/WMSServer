@@ -63,7 +63,7 @@ implements SummaryNoteItemService{
 
     private void validateEntities(String accountBook,SummaryNoteItem[] summaryNoteItems) throws WMSServiceException{
         Stream.of(summaryNoteItems).forEach((summaryNoteItem -> {
-            new Validator("使用面积").greaterThan(0).notEmpty().notnull().validate(summaryNoteItem.getArea());
+            new Validator("使用面积").greaterThan(0).notEmpty().notnull().validate(summaryNoteItem.getTotalArea());
             new Validator("放置天数").notEmpty().notnull().greaterThan(0).validate(summaryNoteItem.getDays());
             if(this.supplierServices.find(accountBook,
                     new Condition().addCondition("id",summaryNoteItem.getSupplierId())).length == 0){
