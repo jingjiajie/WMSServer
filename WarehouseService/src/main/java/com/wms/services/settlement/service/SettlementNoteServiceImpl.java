@@ -39,6 +39,12 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
     IDChecker idChecker;
     @Autowired
     OrderNoGenerator orderNoGenerator;
+    @Autowired
+    SummaryNoteItemService summaryNoteItemService;
+    @Autowired
+    SummaryDetailsService summaryDetailsService;
+    @Autowired
+    PriceService priceService;
 
     private static final String NO_PREFIX = "S";
 
@@ -54,6 +60,51 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
             }
         });
         this.validateEntities(accountBook,settlementNotes);
+
+        List<SettlementNoteItem> settlementNoteItemList=new ArrayList();
+
+        Stream.of(settlementNotes).forEach((settlementNote) -> {
+            int summaryNoteId=settlementNote.getSummaryNoteId();
+            SummaryNoteItemView[] summaryNoteItemViews=this.summaryNoteItemService.find(accountBook,new Condition().addCondition("summaryNoteId",summaryNoteId));
+
+            Stream.of(summaryNoteItemViews).forEach((summaryNoteItemView) -> {
+                SettlementNoteItem settlementNoteItem=new SettlementNoteItem();
+                settlementNoteItem.setState(0);
+                settlementNoteItem.setSupplierId(summaryNoteItemView.getSupplierId());
+                settlementNoteItem.setSettlementNoteId(settlementNote.getId());
+
+                BigDecimal thAreaPrice=BigDecimal.ZERO;
+                BigDecimal thLogisticFee=BigDecimal.ZERO;
+
+                SummaryDetailsView[] summaryDetailsViews=this.summaryDetailsService.find(accountBook,new Condition().addCondition("summaryNoteItemId",summaryNoteItemView.getId()));
+                for (int i=0;i<summaryDetailsViews.length;i++){
+                    PriceView[] priceViews=this.priceService.find(accountBook,new Condition().addCondition("supplyId",summaryDetailsViews[i].getSupplyId()));
+                    if (priceViews.length==0){
+                        throw new WMSServiceException(String.format("供货商：（%s），物料：（%s），价格不存在！", summaryDetailsViews[i].getSupplierName(),summaryDetailsViews[i].getMaterialName()));
+                    }
+                    PriceView priceView=priceViews[0];
+                    BigDecimal areaPrice=priceView.getAreaUnitPrice().multiply(summaryDetailsViews[i].getArea());
+                    BigDecimal logisticFee=BigDecimal.ZERO;
+                    if (summaryDetailsViews[i].getDeliveryAmount().compareTo(priceView.getLogisticsThreshold1())<0){
+                        logisticFee=priceView.getLogisticsUnitPrice1().multiply(summaryDetailsViews[i].getDeliveryAmount());
+                    }else if (summaryDetailsViews[i].getDeliveryAmount().compareTo(priceView.getLogisticsThreshold2())<0){
+                        logisticFee=priceView.getLogisticsUnitPrice2().multiply(summaryDetailsViews[i].getDeliveryAmount());
+                    }else if (summaryDetailsViews[i].getDeliveryAmount().compareTo(priceView.getLogisticsThreshold3())<0){
+                        logisticFee=priceView.getLogisticsUnitPrice3().multiply(summaryDetailsViews[i].getDeliveryAmount());
+                    }
+                    thAreaPrice=thAreaPrice.add(areaPrice);
+                    thLogisticFee=thLogisticFee.add(logisticFee);
+                }
+                settlementNoteItem.setLogisticFee(thLogisticFee);
+                settlementNoteItem.setStorageCharge(thAreaPrice);
+                settlementNoteItem.setActualPayment(thAreaPrice.add(thLogisticFee));
+                settlementNoteItemList.add(settlementNoteItem);
+            });
+        });
+        SettlementNoteItem[] settlementNoteItems=new SettlementNoteItem[settlementNoteItemList.size()];
+        settlementNoteItemList.toArray(settlementNoteItems);
+
+        this.settlementNoteItemService.add(accountBook,settlementNoteItems);
         return settlementNoteDAO.add(accountBook,settlementNotes);
     }
 
