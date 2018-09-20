@@ -54,5 +54,4 @@ public class TrayServiceImpl implements TrayService{
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.commonDataService.findCount(database,cond);
     }
-
 }

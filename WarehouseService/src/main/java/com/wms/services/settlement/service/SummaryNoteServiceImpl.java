@@ -8,9 +8,13 @@ import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +50,8 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     SummaryDetailsService summaryDetailsService;
     @Autowired
     SummaryDetailsDAO summaryDetailsDAO;
+    @Autowired
+    private SessionFactory sessionFactory;
 
     private static final String NO_PREFIX = "H";
 
@@ -219,5 +225,33 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
             summaryNoteItem.setTotalDeliveryAmount(deliveryAmount);
         });
         this.summaryNoteItemService.update(accountBook,summaryNoteItems);
+    }
+
+    public void generateSummaryNotes(String accountBook,int warehouseId,int summaryNoteId) throws WMSServiceException{
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        int[] ids=null;
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        try {
+            Query query = null;
+            String sql = "{CALL main(?,?)}";
+            query=session.createNativeQuery(sql);
+            query.setParameter("summaryNoteId", summaryNoteId);
+            query.setParameter("warehouse_insert", warehouseId);
+            List<Object[]> list = query.list();
+/*
+                for (list : list) {
+                    Map<Integer, List<DeliveryOrderItemView>> groupBySupplyId =
+                    Stream.of(list).collect(Collectors.groupingBy(DeliveryOrderItemView::getSupplyId));
+
+
+                }*/
+        } catch (Exception e) {
+            throw new WMSServiceException("查询人员薪资出错！");
+        }
     }
 }

@@ -8,4 +8,5 @@ import com.wms.utilities.service.BaseService;
 public interface SummaryNoteService
         extends BaseService<SummaryNote,SummaryNoteView> {
     public void summaryDelivery(String accountBook,SummaryNote summaryNote);
+    public void generateSummaryNotes(String accountBook,int warehouseId,int summaryNoteId) throws WMSServiceException;
 }
