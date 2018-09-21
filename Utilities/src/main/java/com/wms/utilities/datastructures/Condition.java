@@ -100,6 +100,20 @@ public class Condition {
                         hqlString.append(String.format(" AND %s LIKE :value%d", cond.getKey(), valueNum));
                         queryParams.put("value" + valueNum, "%" + condValues[0] + "%");
                         break;
+                    case STARTS_WITH:
+                        if (condValues.length != 1) {
+                            throw new ConditionException("STARTS_WITH relation needs one value");
+                        }
+                        hqlString.append(String.format(" AND %s LIKE :value%d", cond.getKey(), valueNum));
+                        queryParams.put("value" + valueNum, condValues[0]+"%");
+                        break;
+                    case ENDS_WITH:
+                        if (condValues.length != 1) {
+                            throw new ConditionException("ENDS_WITH relation needs one value");
+                        }
+                        hqlString.append(String.format(" AND %s LIKE :value%d", cond.getKey(), valueNum));
+                        queryParams.put("value" + valueNum, "%" + condValues[0]);
+                        break;
                     case GREATER_THAN:
                         if (condValues.length != 1) {
                             throw new ConditionException("GREATER_THAN relation needs one value");
