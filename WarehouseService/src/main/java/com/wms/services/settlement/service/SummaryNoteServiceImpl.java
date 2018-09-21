@@ -54,6 +54,10 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     SummaryDetailsDAO summaryDetailsDAO;
     @Autowired
     private SessionFactory sessionFactory;
+    @Autowired
+    TrayThresholdsService trayThresholdsService;
+    @Autowired
+    TrayService trayService;
 
     private static final String NO_PREFIX = "H";
 
@@ -230,6 +234,20 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     }
 
     public void generateSummaryNotes(String accountBook,int warehouseId,int summaryNoteId) throws WMSServiceException{
+        //判断托位长度和阙值
+        TrayThresholdsView[] trayThresholdsViews =this.trayThresholdsService.find(accountBook,
+                new Condition().addCondition("warehouseId",warehouseId).addCondition("threshold",1));
+        if(trayThresholdsViews.length!=1)
+        {
+            throw new WMSServiceException("请检查当前仓库的托位阙值，至少包含值：\" 1 \'!");
+        }
+       CommonData[] commonData= trayService.find(accountBook,new Condition().addCondition("key","Tray_Length_"+warehouseId));
+        CommonData[] commonData1= trayService.find(accountBook,new Condition().addCondition("key","Tray_Width_"+warehouseId));
+        if(commonData.length!=1||commonData1.length!=1)
+        {
+            throw new WMSServiceException("请设置当前仓库的标准托位大小！");
+        }
+
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
         int[] ids=null;

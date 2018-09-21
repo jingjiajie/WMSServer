@@ -36,6 +36,6 @@ public class WarehouseService {
         //SummaryNoteView[] summaryNoteViews=summaryNoteService.find("WMS_Template",new Condition().addCondition("id",4));
         //SummaryNote[] summaryNotes = ReflectHelper.createAndCopyFields(summaryNoteViews, SummaryNote.class);
         //summaryNoteService.summaryDelivery("WMS_Template",summaryNotes[0]);
-        summaryNoteService.generateSummaryNotes("WMS_Template",1,1);
+            summaryNoteService.generateSummaryNotes("WMS_Template",1,1);
     }
 }

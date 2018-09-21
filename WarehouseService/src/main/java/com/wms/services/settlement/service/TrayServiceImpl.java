@@ -35,13 +35,13 @@ public class TrayServiceImpl implements TrayService{
         try {
             for (int id : ids) {
                 if (commonDataService.find(accountBook, new Condition().addCondition("id", new Integer[]{id})).length == 0) {
-                    throw new WMSServiceException(String.format("删除托位阙值不存在，请重新查询！(%d)", id));
+                    throw new WMSServiceException(String.format("删除托位不存在，请重新查询！(%d)", id));
                 }
             }
             commonDataService.remove(accountBook, ids);
         }
         catch (Throwable ex){
-            throw new WMSServiceException("删除托位阙值信息失败，如果托位阙值信息已经被引用，需要先删除引用的内容，才能删除该托位阙值");
+            throw new WMSServiceException("删除托位信息失败，如果托位阙值信息已经被引用，需要先删除引用的内容，才能删除该托位阙值");
         }
     }
 
