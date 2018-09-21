@@ -3,6 +3,7 @@ package com.wms.services.settlement.service;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.settlement.dao.SummaryDetailsDAO;
 import com.wms.services.settlement.dao.SummaryNoteDAO;
+import com.wms.services.settlement.datastructures.StockRecordAmount;
 import com.wms.services.warehouse.service.*;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
@@ -238,18 +239,11 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         }
         try {
             Query query = null;
-            String sql = "{CALL main(?,?)}";
+            String sql = "{CALL main_copy("+summaryNoteId+","+warehouseId+")}";
             query=session.createNativeQuery(sql);
-            query.setParameter("summaryNoteId", summaryNoteId);
-            query.setParameter("warehouse_insert", warehouseId);
-            List<Object[]> list = query.list();
-/*
-                for (list : list) {
-                    Map<Integer, List<DeliveryOrderItemView>> groupBySupplyId =
-                    Stream.of(list).collect(Collectors.groupingBy(DeliveryOrderItemView::getSupplyId));
+            List<StockRecordAmount[]> stockRecordAmountList = (List<StockRecordAmount[]>)query.list();
+            int a=0;
 
-
-                }*/
         } catch (Exception e) {
             throw new WMSServiceException("查询人员薪资出错！");
         }

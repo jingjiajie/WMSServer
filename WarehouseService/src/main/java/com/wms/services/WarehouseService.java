@@ -33,9 +33,9 @@ public class WarehouseService {
         System.out.println("仓库服务启动...");
 
         SummaryNoteService summaryNoteService=applicationContext.getBean(SummaryNoteService.class);
-        SummaryNoteView[] summaryNoteViews=summaryNoteService.find("WMS_Template",new Condition().addCondition("id",4));
-        SummaryNote[] summaryNotes = ReflectHelper.createAndCopyFields(summaryNoteViews, SummaryNote.class);
-
-        summaryNoteService.summaryDelivery("WMS_Template",summaryNotes[0]);
+        //SummaryNoteView[] summaryNoteViews=summaryNoteService.find("WMS_Template",new Condition().addCondition("id",4));
+        //SummaryNote[] summaryNotes = ReflectHelper.createAndCopyFields(summaryNoteViews, SummaryNote.class);
+        //summaryNoteService.summaryDelivery("WMS_Template",summaryNotes[0]);
+        summaryNoteService.generateSummaryNotes("WMS_Template",1,1);
     }
 }
