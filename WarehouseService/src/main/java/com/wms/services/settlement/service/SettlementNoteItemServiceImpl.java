@@ -103,6 +103,5 @@ public class SettlementNoteItemServiceImpl
         });
 
         this.update(accountBook,settlementNoteItems);
-
     }
 }
