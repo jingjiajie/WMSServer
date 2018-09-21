@@ -17,6 +17,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.object.SqlQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -239,9 +240,12 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         }
         try {
             Query query = null;
-            String sql = "{CALL main_copy("+summaryNoteId+","+warehouseId+")}";
+            //SqlQuery query1=session.createSQLQuery("call testCall()");
+            String sql = "CALL main_copy("+summaryNoteId+","+warehouseId+")";
+            //String sql="call testCall("+100+")";
             query=session.createNativeQuery(sql);
-            List<StockRecordAmount[]> stockRecordAmountList = (List<StockRecordAmount[]>)query.list();
+            List list = query.list();
+            //List<StockRecordAmount[]> stockRecordAmountList = (List<StockRecordAmount[]>)query.list();
             int a=0;
 
         } catch (Exception e) {
