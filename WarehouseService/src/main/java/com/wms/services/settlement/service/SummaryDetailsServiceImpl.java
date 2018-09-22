@@ -30,6 +30,12 @@ implements SummaryDetailsService{
     }
 
     @Override
+    public int[] addIn(String accountBook, SummaryDetails[] summaryDetails) throws WMSServiceException
+    {
+        return summaryDetailsDAO.add(accountBook,summaryDetails);
+    }
+
+    @Override
     public void update(String accountBook, SummaryDetails[] summaryDetails) throws WMSServiceException
     {
         this.validateEntities(accountBook,summaryDetails);

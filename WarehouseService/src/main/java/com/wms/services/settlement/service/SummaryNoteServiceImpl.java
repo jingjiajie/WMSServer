@@ -305,10 +305,10 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
                 summaryDetails.setSummaryNoteItemId(itemIds[0]);
                 summaryDetailsList.add(summaryDetails);
             }
-            SummaryDetails[] summaryDetails=new SummaryDetails[summaryDetailsList.size()];
-            summaryDetailsList.toArray(summaryDetails);
-            summaryDetailsService.add(accountBook,summaryDetails);
         }
+        SummaryDetails[] summaryDetails=new SummaryDetails[summaryDetailsList.size()];
+        summaryDetailsList.toArray(summaryDetails);
+        summaryDetailsService.addIn(accountBook,summaryDetails);
     }
 }
 
