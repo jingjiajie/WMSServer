@@ -58,4 +58,15 @@ public class SummaryNoteControllerImpl implements SummaryNoteController {
                           @PathVariable("condStr") String condStr){
         return this.summaryNoteService.findCount(accountBook, Condition.fromJson(condStr));
     }
+
+
+    @Override
+    @RequestMapping(value = "/generate_summary/{warehosudId}/{summaryNoteId}", method = RequestMethod.PUT)
+    @ResponseStatus(HttpStatus.OK)
+    public void generateSummaryNotes(@PathVariable("accountBook") String accountBook,
+                                     @PathVariable("warehouseId") int warehosueId,
+                                     @PathVariable("summaryNoteId") int summaryNoteId) {
+        this.summaryNoteService.generateSummaryNotes(accountBook, warehosueId, summaryNoteId);
+    }
+
 }
