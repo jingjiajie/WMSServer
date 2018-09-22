@@ -2,6 +2,7 @@ package com.wms.services.settlement.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.settlement.datastructures.AddAllItem;
 import com.wms.services.settlement.service.SummaryNoteService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.*;
@@ -61,12 +62,11 @@ public class SummaryNoteControllerImpl implements SummaryNoteController {
 
 
     @Override
-    @RequestMapping(value = "/generate_summary/{warehosudId}/{summaryNoteId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/generate_summary", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void generateSummaryNotes(@PathVariable("accountBook") String accountBook,
-                                     @PathVariable("warehouseId") int warehosueId,
-                                     @PathVariable("summaryNoteId") int summaryNoteId) {
-        this.summaryNoteService.generateSummaryNotes(accountBook, warehosueId, summaryNoteId);
+                                     @RequestBody AddAllItem addAllItem) {
+        this.summaryNoteService.generateSummaryNotes(accountBook, addAllItem.getWarehouseId(), addAllItem.getSummaryNoteId());
     }
 
 }
