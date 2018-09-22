@@ -235,6 +235,8 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
 
     public void generateSummaryNotes(String accountBook,int warehouseId,int summaryNoteId) throws WMSServiceException{
         //判断托位长度和阙值
+        List<SummaryDetails> summaryDetailsList=new ArrayList<>();
+        List<StockRecordAmount> stockRecordAmountList=new ArrayList<>();
         TrayThresholdsView[] trayThresholdsViews =this.trayThresholdsService.find(accountBook,
                 new Condition().addCondition("warehouseId",warehouseId).addCondition("threshold",1));
         if(trayThresholdsViews.length!=1)
@@ -258,16 +260,37 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         }
         try {
             Query query = null;
-            //SqlQuery query1=session.createSQLQuery("call testCall()");
-            String sql = "CALL main_copy("+summaryNoteId+","+warehouseId+")";
-            //String sql="call testCall("+100+")";
-            query=session.createNativeQuery(sql);
-            List list = query.list();
-            //List<StockRecordAmount[]> stockRecordAmountList = (List<StockRecordAmount[]>)query.list();
-            int a=0;
-
+            String sql = "CALL main_copy(" + summaryNoteId + "," + warehouseId + ")";
+            query = session.createNativeQuery(sql);
+            //supplyId storageLocations area trays supplerId
+            List<Object[]> list = query.list();
+            if (list != null && list.size() > 0) {
+                for (Object[] objects : list) {
+                    StockRecordAmount stockRecordAmount=new StockRecordAmount();
+                    stockRecordAmount.setSupplyId((int)objects[0]);
+                    stockRecordAmount.setStorageLocations((BigDecimal)objects[1]);
+                    stockRecordAmount.setArea((BigDecimal)objects[2]);
+                    stockRecordAmount.setTrays((BigDecimal)objects[3]);
+                    stockRecordAmount.setSuplierId((int)objects[4]);
+                    stockRecordAmountList.add(stockRecordAmount);
+                }
+            }
         } catch (Exception e) {
             throw new WMSServiceException("查询人员薪资出错！");
         }
+        StockRecordAmount[] stockRecordAmounts=new StockRecordAmount[stockRecordAmountList.size()];
+        stockRecordAmountList.toArray(stockRecordAmounts);
+        //分组
+        Map<Integer, List<StockRecordAmount>> groupBySupplierId=
+                Stream.of(stockRecordAmounts).collect(Collectors.groupingBy(StockRecordAmount::getSuplierId));
+
+        Iterator<Map.Entry<Integer, List<StockRecordAmount>>> entries = groupBySupplierId.entrySet().iterator();
+        //将每组最新的加到一个列表中
+        while (entries.hasNext()) {
+            Map.Entry<Integer, List<StockRecordAmount>> entry = entries.next();
+            Integer supplierId = entry.getKey();
+            List<StockRecordAmount> recordAmounts = entry.getValue();
+            }
+        }
     }
-}
+
