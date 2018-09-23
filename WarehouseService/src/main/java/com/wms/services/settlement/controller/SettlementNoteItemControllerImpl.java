@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -63,10 +64,12 @@ public class SettlementNoteItemControllerImpl implements SettlementNoteItemContr
     }
 
     @Override
-    @RequestMapping(value = "/confirm",method = RequestMethod.POST)
+    @RequestMapping(value = "/confirm/{id}",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void confirm(@PathVariable("accountBook") String accountBook,
-                            @RequestBody List<Integer> ids){
+                            @PathVariable("id") int id) {
+        List<Integer> ids=new ArrayList<>();
+        ids.add(id);
         this.settlementNoteItemService.confirm(accountBook,ids);
     }
 

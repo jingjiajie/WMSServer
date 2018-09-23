@@ -8,6 +8,6 @@ import com.wms.utilities.model.SettlementNoteItemView;
 import java.util.List;
 
 public interface SettlementNoteItemController extends BaseController<SettlementNoteItem,SettlementNoteItemView> {
-    public void confirm(String accountBook,List<Integer> ids) throws WMSServiceException;
-
+    public void confirm(String accountBook,int id) throws WMSServiceException;
+    //public void confirm(String accountBook) throws WMSServiceException;
     }
