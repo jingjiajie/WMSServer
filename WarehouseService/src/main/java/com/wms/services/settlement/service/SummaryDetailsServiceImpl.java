@@ -43,6 +43,12 @@ implements SummaryDetailsService{
     }
 
     @Override
+    public void updateIn(String accountBook, SummaryDetails[] summaryDetails) throws WMSServiceException
+    {
+        summaryDetailsDAO.update(accountBook, summaryDetails);
+    }
+
+    @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
 
         try {
@@ -62,6 +68,11 @@ implements SummaryDetailsService{
     @Override
     public SummaryDetailsView[] find(String accountBook, Condition cond) throws WMSServiceException {
         return this.summaryDetailsDAO.find(accountBook, cond);
+    }
+
+    @Override
+    public SummaryDetails[] findTable(String accountBook, Condition cond) throws WMSServiceException {
+        return this.summaryDetailsDAO.findTable(accountBook, cond);
     }
 
     private void validateEntities(String accountBook,SummaryDetails[] summaryDetails) throws WMSServiceException{

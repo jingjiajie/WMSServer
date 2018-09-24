@@ -157,7 +157,8 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
                 .addCondition("deliverTime", startTime, ConditionItem.Relation.GREATER_THAN)
                 .addCondition("deliverTime", endTime, ConditionItem.Relation.LESS_THAN_OR_EQUAL_TO));
         if (deliveryOrderViews.length == 0) {
-            throw new WMSServiceException(String.format("该时间段仓库里没有出库单发货操作，请重新提交！(%d)", warehouseId));
+            //throw new WMSServiceException(String.format("该时间段仓库里没有出库单发货操作，请重新提交！(%d)", warehouseId));
+            return;
         }
 
         Integer[] ids = new Integer[deliveryOrderViews.length];
@@ -186,15 +187,14 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
                         deliveryAmount = deliveryAmount.add(curDeliveryOrderItemViews[i].getRealAmount());
                     }
 
-                    SummaryNoteItemView[] summaryNoteItemViews = this.summaryNoteItemService.find(accountBook, new Condition().addCondition("summaryNoteId", summaryNote.getId())
+                    SummaryNoteItem[] summaryNoteItemViews = this.summaryNoteItemService.findTable(accountBook, new Condition().addCondition("summaryNoteId", summaryNote.getId())
                             .addCondition("supplierId", curDeliveryOrderItemViews[0].getSupplierId()));
                     if (summaryNoteItemViews.length == 0) {
                         throw new WMSServiceException(String.format("汇总单条目不存在，请重新提交！(%s)", summaryNote.getNo()));
                     }
 
-                    SummaryDetailsView[] summaryDetailsViews = this.summaryDetailsService.find(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItemViews[0].getId())
+                    SummaryDetails[] summaryDetailsViews = this.summaryDetailsService.findTable(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItemViews[0].getId())
                             .addCondition("supplyId", supplyId));
-
                     if (summaryDetailsViews.length != 1) {
                         throw new WMSServiceException(String.format("汇总单条目详情对应供货不唯一，请重新提交！(%s)", summaryNote.getNo()));
                     }
@@ -210,7 +210,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
 
         SummaryDetails[] returnSummaryDetails = new SummaryDetails[summaryDetailsList.size()];
         summaryDetailsList.toArray(returnSummaryDetails);
-        this.summaryDetailsService.update(accountBook, returnSummaryDetails);
+        this.summaryDetailsService.updateIn(accountBook, returnSummaryDetails);
 
         SummaryNoteItemView[] summaryNoteItemViews = this.summaryNoteItemService.find(accountBook, new Condition().addCondition("summaryNoteId", summaryNote.getId()));
         SummaryNoteItem[] summaryNoteItems = ReflectHelper.createAndCopyFields(summaryNoteItemViews, SummaryNoteItem.class);
@@ -292,6 +292,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
             summaryNoteItem.setSummaryNoteId(summaryNoteId);
             summaryNoteItem.setSupplierId(supplierId);
             summaryNoteItem.setTotalArea(areaSum);
+            summaryNoteItem.setTotalDeliveryAmount(new BigDecimal(0));
             int[] itemIds = summaryNoteItemService.add(accountBook, new SummaryNoteItem[]{summaryNoteItem});
             if (itemIds.length != 1) {
                 throw new WMSServiceException("添加汇总单条目出错！");
@@ -303,12 +304,18 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
                 summaryDetails.setSupplyId(stockRecordAmount.getSupplyId());
                 summaryDetails.setStorageLocations(stockRecordAmount.getStorageLocations());
                 summaryDetails.setSummaryNoteItemId(itemIds[0]);
+                summaryDetails.setDeliveryAmount(new BigDecimal(0));
                 summaryDetailsList.add(summaryDetails);
             }
         }
         SummaryDetails[] summaryDetails=new SummaryDetails[summaryDetailsList.size()];
         summaryDetailsList.toArray(summaryDetails);
         summaryDetailsService.addIn(accountBook,summaryDetails);
+        SummaryNote[] summaryNotes=this.summaryNoteDAO.findTable(accountBook,new Condition().addCondition("id",summaryNoteId));
+        if(summaryNotes.length!=1){
+            throw new WMSServiceException("查询汇总单出错！");
+        }
+        this.summaryDelivery(accountBook,summaryNotes[0]);
     }
 }
 

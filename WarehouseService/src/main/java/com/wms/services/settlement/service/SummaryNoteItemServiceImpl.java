@@ -61,6 +61,11 @@ implements SummaryNoteItemService{
         return this.summaryNoteItemDAO.find(accountBook, cond);
     }
 
+    @Override
+    public SummaryNoteItem[] findTable(String accountBook, Condition cond) throws WMSServiceException {
+        return this.summaryNoteItemDAO.findTable(accountBook, cond);
+    }
+
     private void validateEntities(String accountBook,SummaryNoteItem[] summaryNoteItems) throws WMSServiceException{
         Stream.of(summaryNoteItems).forEach((summaryNoteItem -> {
             //new Validator("使用面积").greaterThan(0).notEmpty().notnull().validate(summaryNoteItem.getTotalArea());
