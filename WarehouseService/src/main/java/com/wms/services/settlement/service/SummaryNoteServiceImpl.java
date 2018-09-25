@@ -293,6 +293,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
             summaryNoteItem.setSupplierId(supplierId);
             summaryNoteItem.setTotalArea(areaSum);
             summaryNoteItem.setTotalDeliveryAmount(new BigDecimal(0));
+            summaryNoteItem.setDays(new BigDecimal(30));
             int[] itemIds = summaryNoteItemService.add(accountBook, new SummaryNoteItem[]{summaryNoteItem});
             if (itemIds.length != 1) {
                 throw new WMSServiceException("添加汇总单条目出错！");
