@@ -252,7 +252,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         }
         try {
             Query query = null;
-            String sql = "CALL main_copy(" + summaryNoteId + "," + warehouseId + ")";
+            String sql = "CALL GetSummaryImfor(" + summaryNoteId + "," + warehouseId + ")";
             query = session.createNativeQuery(sql);
             //supplyId storageLocations area trays supplerId
             List<Object[]> list = query.list();
