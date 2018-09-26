@@ -2,15 +2,20 @@ package com.wms.services.settlement.service;
 
 import com.wms.services.settlement.dao.InvoiceDAO;
 import com.wms.services.warehouse.service.WarehouseService;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.Invoice;
 import com.wms.utilities.model.InvoiceView;
+import com.wms.utilities.model.SettlementNoteItem;
+import com.wms.utilities.model.SettlementNoteItemView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -68,5 +73,19 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.invoiceDAO.findCount(database,cond);
+    }
+
+    @Override
+    public void confirm(String accountBook,List<Integer> ids) throws WMSServiceException{
+
+        InvoiceView[] invoiceViews= this.find(accountBook,new Condition().addCondition("id",ids.toArray(), ConditionItem.Relation.IN));
+        if (invoiceViews.length == 0) return;
+        Invoice[] invoices = ReflectHelper.createAndCopyFields(invoiceViews,Invoice.class);
+
+        Stream.of(invoices).forEach(invoice -> {
+            invoice.setState(InvoiceService.Confirmed);
+        });
+
+        this.update(accountBook,invoices);
     }
 }

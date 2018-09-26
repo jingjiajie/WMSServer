@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/{accountBook}/invoice")
 public class InvoiceControllerImpl implements InvoiceController{
@@ -58,5 +61,15 @@ public class InvoiceControllerImpl implements InvoiceController{
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.invoiceService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value = "/confirm/{id}",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void confirm(@PathVariable("accountBook") String accountBook,
+                        @PathVariable("id") int id) {
+        List<Integer> ids=new ArrayList<>();
+        ids.add(id);
+        this.invoiceService.confirm(accountBook,ids);
     }
 }
