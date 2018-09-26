@@ -10,6 +10,6 @@ import java.util.List;
 public interface InvoiceService extends BaseService<Invoice,InvoiceView> {
     void confirm(String accountBook,List<Integer> ids) throws WMSServiceException;
 
-    int To_be_confirmed = 0;
-    int Confirmed = 1;
+    int To_be_confirmed = 1;
+    int Confirmed = 2;
 }
