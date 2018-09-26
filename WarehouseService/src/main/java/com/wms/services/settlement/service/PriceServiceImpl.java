@@ -65,7 +65,18 @@ public class PriceServiceImpl implements PriceService{
             new Validator("物流单价1").notEmpty().validate(price.getLogisticsUnitPrice1());
             new Validator("面积单价").notEmpty().validate(price.getAreaUnitPrice());
             this.idChecker.check(SupplyService.class,accountBook,price.getSupplyId(),"供货ID");
+
+            if(price.getLogisticsThreshold2()!=null
+                    &&price.getLogisticsThreshold1().compareTo(price.getLogisticsThreshold2())>=0){
+                throw new WMSServiceException("物流阈值2的值不能小于物流阈值1！");
+            }
+            if(price.getLogisticsThreshold3()!=null
+                    &&price.getLogisticsThreshold1().compareTo(price.getLogisticsThreshold3())>=0
+                    &&price.getLogisticsThreshold2().compareTo(price.getLogisticsThreshold3())>=0){
+                throw new WMSServiceException("物流阈值3的值不能小于物流阈值1！");
+            }
         }));
+
     }
 
     @Override
