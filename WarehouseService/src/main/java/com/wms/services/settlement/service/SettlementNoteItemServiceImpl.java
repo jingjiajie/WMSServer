@@ -37,6 +37,9 @@ public class SettlementNoteItemServiceImpl
     public int[] add(String accountBook, SettlementNoteItem[] settlementNoteItems) throws WMSServiceException
     {
         this.validateEntities(accountBook,settlementNoteItems);
+        for(SettlementNoteItem settlementNoteItem:settlementNoteItems){
+            settlementNoteItem.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        }
         return settlementNoteItemDAO.add(accountBook,settlementNoteItems);
     }
 

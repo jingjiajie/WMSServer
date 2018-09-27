@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.stream.Stream;
 
 @Service
@@ -29,6 +30,7 @@ implements SummaryNoteItemService{
     public int[] add(String accountBook, SummaryNoteItem[] summaryNoteItems) throws WMSServiceException
     {
         this.validateEntities(accountBook,summaryNoteItems);
+        for(SummaryNoteItem summaryNoteItem:summaryNoteItems){summaryNoteItem.setCreateTime(new Timestamp(System.currentTimeMillis()));}
         return summaryNoteItemDAO.add(accountBook,summaryNoteItems);
     }
 
