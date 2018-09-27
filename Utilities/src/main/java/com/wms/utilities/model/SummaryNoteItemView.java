@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Entity
 public class SummaryNoteItemView {
@@ -16,6 +17,7 @@ public class SummaryNoteItemView {
     private String supplierNo;
     private BigDecimal totalArea;
     private BigDecimal totalDeliveryAmount;
+    private Timestamp createTime;
 
     @Basic
     @Id
@@ -98,12 +100,22 @@ public class SummaryNoteItemView {
         this.totalDeliveryAmount = totalDeliveryAmount;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "CreateTime")
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
 
-        SummaryNoteItemView that = (SummaryNoteItemView) o;
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        SummaryNoteItemView that = (SummaryNoteItemView) object;
 
         if (id != that.id) return false;
         if (summaryNoteId != that.summaryNoteId) return false;
@@ -114,6 +126,7 @@ public class SummaryNoteItemView {
         if (totalArea != null ? !totalArea.equals(that.totalArea) : that.totalArea != null) return false;
         if (totalDeliveryAmount != null ? !totalDeliveryAmount.equals(that.totalDeliveryAmount) : that.totalDeliveryAmount != null)
             return false;
+        if (createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) return false;
 
         return true;
     }
@@ -128,6 +141,7 @@ public class SummaryNoteItemView {
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
         result = 31 * result + (totalArea != null ? totalArea.hashCode() : 0);
         result = 31 * result + (totalDeliveryAmount != null ? totalDeliveryAmount.hashCode() : 0);
+        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         return result;
     }
 }

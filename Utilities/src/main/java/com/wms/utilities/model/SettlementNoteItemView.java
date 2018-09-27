@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Entity
 public class SettlementNoteItemView {
@@ -17,6 +18,7 @@ public class SettlementNoteItemView {
     private String supplierName;
     private String supplierNo;
     private int state;
+    private Timestamp createTime;
 
     @Basic
     @Id
@@ -143,5 +145,15 @@ public class SettlementNoteItemView {
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
         result = 31 * result + state;
         return result;
+    }
+
+    @Basic
+    @Column(name = "CreateTime")
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
     }
 }

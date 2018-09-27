@@ -2,6 +2,7 @@ package com.wms.utilities.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Entity
 public class SummaryNoteItem {
@@ -11,6 +12,7 @@ public class SummaryNoteItem {
     private BigDecimal totalArea;
     private BigDecimal days;
     private BigDecimal totalDeliveryAmount;
+    private Timestamp createTime;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,12 +75,22 @@ public class SummaryNoteItem {
         this.totalDeliveryAmount = totalDeliveryAmount;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "CreateTime")
+    public Timestamp getCreateTime() {
+        return createTime;
+    }
 
-        SummaryNoteItem that = (SummaryNoteItem) o;
+    public void setCreateTime(Timestamp createTime) {
+        this.createTime = createTime;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        SummaryNoteItem that = (SummaryNoteItem) object;
 
         if (id != that.id) return false;
         if (summaryNoteId != that.summaryNoteId) return false;
@@ -87,6 +99,7 @@ public class SummaryNoteItem {
         if (days != null ? !days.equals(that.days) : that.days != null) return false;
         if (totalDeliveryAmount != null ? !totalDeliveryAmount.equals(that.totalDeliveryAmount) : that.totalDeliveryAmount != null)
             return false;
+        if (createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) return false;
 
         return true;
     }
@@ -99,6 +112,7 @@ public class SummaryNoteItem {
         result = 31 * result + (totalArea != null ? totalArea.hashCode() : 0);
         result = 31 * result + (days != null ? days.hashCode() : 0);
         result = 31 * result + (totalDeliveryAmount != null ? totalDeliveryAmount.hashCode() : 0);
+        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         return result;
     }
 }
