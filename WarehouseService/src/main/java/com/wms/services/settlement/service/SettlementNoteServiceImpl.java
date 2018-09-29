@@ -83,7 +83,7 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
                         throw new WMSServiceException(String.format("供货商：（%s），物料：（%s），价格不存在！", summaryDetailsViews[i].getSupplierName(),summaryDetailsViews[i].getMaterialName()));
                     }
                     PriceView priceView=priceViews[0];
-                    BigDecimal areaPrice=priceView.getAreaUnitPrice().multiply(summaryDetailsViews[i].getArea());
+                    BigDecimal areaPrice=priceView.getAreaUnitPrice().multiply(summaryDetailsViews[i].getArea()).multiply(summaryNoteItemView.getDays());
                     BigDecimal logisticFee=BigDecimal.ZERO;
                     if (summaryDetailsViews[i].getDeliveryAmount().compareTo(priceView.getLogisticsThreshold1())<0){
                         logisticFee=priceView.getLogisticsUnitPrice1().multiply(summaryDetailsViews[i].getDeliveryAmount());
