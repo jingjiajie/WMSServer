@@ -87,8 +87,12 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
                     BigDecimal logisticFee=BigDecimal.ZERO;
                     if (summaryDetailsViews[i].getDeliveryAmount().compareTo(priceView.getLogisticsThreshold1())<0){
                         logisticFee=priceView.getLogisticsUnitPrice1().multiply(summaryDetailsViews[i].getDeliveryAmount());
+                    }else if (priceView.getLogisticsThreshold2()==null){
+                        logisticFee=priceView.getLogisticsUnitPrice2().multiply(summaryDetailsViews[i].getDeliveryAmount());
                     }else if (summaryDetailsViews[i].getDeliveryAmount().compareTo(priceView.getLogisticsThreshold2())<0){
                         logisticFee=priceView.getLogisticsUnitPrice2().multiply(summaryDetailsViews[i].getDeliveryAmount());
+                    }else if (priceView.getLogisticsThreshold3()==null){
+                        logisticFee=priceView.getLogisticsUnitPrice3().multiply(summaryDetailsViews[i].getDeliveryAmount());
                     }else if (summaryDetailsViews[i].getDeliveryAmount().compareTo(priceView.getLogisticsThreshold3())<0){
                         logisticFee=priceView.getLogisticsUnitPrice3().multiply(summaryDetailsViews[i].getDeliveryAmount());
                     }
