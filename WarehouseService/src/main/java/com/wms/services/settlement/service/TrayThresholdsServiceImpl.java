@@ -84,7 +84,7 @@ public class TrayThresholdsServiceImpl implements TrayThresholdsService{
         TrayThresholds[] trayThresholds1=trayThresholdsDAO.findTable(accountBook,cond);
         List<TrayThresholds> trayThresholds2= Arrays.asList(trayThresholds1);
         trayThresholds2.stream().reduce((last, cur) -> {
-            if (last.getThreshold().equals(cur.getThreshold())){
+            if ((last.getThreshold().subtract(cur.getThreshold())).compareTo(new BigDecimal(0))==0){
                 throw new WMSServiceException("阙值不能重复:"+cur.getThreshold());
             }
             return cur;

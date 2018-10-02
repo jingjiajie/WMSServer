@@ -7,10 +7,15 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.SummaryDetails;
 import com.wms.utilities.model.SummaryDetailsView;
 import com.wms.utilities.model.SummaryNoteItem;
+import com.wms.utilities.model.TrayThresholds;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -86,6 +91,20 @@ implements SummaryDetailsService{
                 throw new WMSServiceException(String.format("供货不存在，请重新提交！(%d)",summaryDetail.getSupplyId()));
             }
         }));
+    }
+
+    private void validateDuplication(String accountBook,SummaryDetails[] summaryDetails)
+    {
+        Condition cond = new Condition();
+        cond.addCondition("summaryNoteItemId",summaryDetails[0].getSummaryNoteItemId());
+        SummaryDetails[] summaryDetails1=summaryDetailsDAO.findTable(accountBook,cond);
+        List<SummaryDetails> summaryDetailsList= Arrays.asList(summaryDetails1);
+        summaryDetailsList.stream().reduce((last, cur) -> {
+            if ((last.getSupplyId()==cur.getSupplyId())){
+                throw new WMSServiceException("详情中供货不能重复!");
+            }
+            return cur;
+        });
     }
 
     @Override
