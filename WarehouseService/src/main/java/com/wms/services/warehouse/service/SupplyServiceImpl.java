@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -34,8 +36,8 @@ public class SupplyServiceImpl implements SupplyService {
     @Override
     public int[] add(String accountBook, Supply[] supplies) throws WMSServiceException
     {
-        this.validateEntities(accountBook,supplies);
 
+        this.validateEntities(accountBook,supplies);
 
         for(int i=0;i<supplies.length;i++){
             MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
@@ -52,24 +54,31 @@ public class SupplyServiceImpl implements SupplyService {
             }
         }
 
-        for (int i=0;i<supplies.length;i++)
+
+        int[] ids= supplyDAO.add(accountBook,supplies);
+        List<Supply> updateSuppliesDoneList = new ArrayList<>();
+        for (int i=0;i<ids.length;i++)
         {
-            if (supplies[i].getBarCodeNo().length()==0){
+            Supply[] suppliesDone= supplyDAO.findTable(accountBook,new Condition().addCondition("id",ids[i], ConditionItem.Relation.IN));
+            if (suppliesDone[0].getBarCodeNo()==null){
                 int noLength=7;
-                String thNo= String.valueOf(supplies[i].getId());
+                String thNo= String.valueOf(suppliesDone[0].getId());
                 int curLength=noLength-(thNo.length());
                 StringBuffer sb = new StringBuffer();
                 for (int j = 0; j < curLength;j++) {
                     sb.append('0');
                 }
                 sb.append(thNo);
-                supplies[i].setBarCodeNo(sb.toString());
+                suppliesDone[0].setBarCodeNo(sb.toString());
+                updateSuppliesDoneList.add(suppliesDone[0]);
+            }else{
+                new Validator("条码号长度").min(7).validate(suppliesDone[i].getBarCodeNo().length());
             }
-
-            supplies[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
-            supplies[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
         }
-        return supplyDAO.add(accountBook,supplies);
+
+        this.update(accountBook,updateSuppliesDoneList.toArray(new Supply[updateSuppliesDoneList.size()]));
+
+        return ids;
     }
 
     @Override
@@ -88,7 +97,8 @@ public class SupplyServiceImpl implements SupplyService {
             if(supplyDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMaterial[0].getName());
             }
-            SupplyView[] supplyViews= this.find(accountBook,new Condition().addCondition("barCodeNo",new String[]{supplies[i].getBarCodeNo()}));
+            SupplyView[] supplyViews= this.find(accountBook,new Condition().addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
+                    .addCondition("barCodeNo",new String[]{supplies[i].getBarCodeNo()}));
             if(supplyViews.length > 0){
                 throw new WMSServiceException("供应信息条码号重复！对应供应商-物料关联条目："+curSupplier[0].getName()+curMaterial[0].getName()+"条码号："+supplies[i].getBarCodeNo());
             }
@@ -126,6 +136,7 @@ public class SupplyServiceImpl implements SupplyService {
             new Validator("供货商ID").notEmpty().validate(supply.getSupplierId());
             new Validator("物料ID").notEmpty().validate(supply.getMaterialId());
             new Validator("单托含量").notEmpty().validate(supply.getTrayCapacity());
+
         }));
 
         for(int i=0;i<supplies.length;i++){
