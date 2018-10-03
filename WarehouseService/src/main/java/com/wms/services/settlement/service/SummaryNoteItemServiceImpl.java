@@ -72,11 +72,13 @@ implements SummaryNoteItemService{
         Stream.of(summaryNoteItems).forEach((summaryNoteItem -> {
             //new Validator("使用面积").greaterThan(0).notEmpty().notnull().validate(summaryNoteItem.getTotalArea());
             //new Validator("放置天数").notEmpty().notnull().greaterThan(0).validate(summaryNoteItem.getDays());
-            if(this.summaryNoteItemDAO.find(accountBook,
-                    new Condition().addCondition("supplierId",summaryNoteItem.getSupplierId()).addCondition("id",summaryNoteItem.getId())).length > 1){
-                throw new WMSServiceException(String.format("供应商在此单内重复！(%d)",summaryNoteItem.getSupplierId()));
+            SummaryNoteItemView[] summaryNoteItemViews=this.summaryNoteItemDAO.find(accountBook,
+                    new Condition().addCondition("supplierId",summaryNoteItem.getSupplierId()).addCondition("summaryNoteId",summaryNoteItem.getSummaryNoteId()));
+            if(summaryNoteItemViews.length > 0){
+                SupplierView[] supplierViews=this.supplierServices.find(accountBook,new Condition().addCondition("id",summaryNoteItemViews[0].getSupplierId()));
+                if(supplierViews.length!=1){throw new WMSServiceException("数据验证中查询供应商出错,可能已经删除！");}
+                throw new WMSServiceException(String.format("供应商(%s)在此单内重复！(%d)",supplierViews[0].getName(),summaryNoteItem.getSupplierId()));
             }
-
             if(this.supplierServices.find(accountBook,
                     new Condition().addCondition("id",summaryNoteItem.getSupplierId())).length == 0){
                 throw new WMSServiceException(String.format("供应商不存在，请重新提交！(%d)",summaryNoteItem.getSupplierId()));
