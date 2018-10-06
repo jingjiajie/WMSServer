@@ -61,17 +61,20 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
         });
         this.validateEntities(accountBook,settlementNotes);
 
+        int[] ids=settlementNoteDAO.add(accountBook,settlementNotes);
+
         List<SettlementNoteItem> settlementNoteItemList=new ArrayList();
 
-        Stream.of(settlementNotes).forEach((settlementNote) -> {
-            int summaryNoteId=settlementNote.getSummaryNoteId();
+        for(int j=0;j<ids.length;j++){
+            int summaryNoteId=settlementNotes[j].getSummaryNoteId();
+            int settlementNoteId=ids[j];
             SummaryNoteItemView[] summaryNoteItemViews=this.summaryNoteItemService.find(accountBook,new Condition().addCondition("summaryNoteId",summaryNoteId));
 
             Stream.of(summaryNoteItemViews).forEach((summaryNoteItemView) -> {
                 SettlementNoteItem settlementNoteItem=new SettlementNoteItem();
                 settlementNoteItem.setState(0);
                 settlementNoteItem.setSupplierId(summaryNoteItemView.getSupplierId());
-                settlementNoteItem.setSettlementNoteId(settlementNote.getId());
+                settlementNoteItem.setSettlementNoteId(settlementNoteId);
 
                 BigDecimal thAreaPrice=BigDecimal.ZERO;
                 BigDecimal thLogisticFee=BigDecimal.ZERO;
@@ -104,12 +107,12 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
                 settlementNoteItem.setActualPayment(thAreaPrice.add(thLogisticFee));
                 settlementNoteItemList.add(settlementNoteItem);
             });
-        });
+        }
         SettlementNoteItem[] settlementNoteItems=new SettlementNoteItem[settlementNoteItemList.size()];
         settlementNoteItemList.toArray(settlementNoteItems);
 
         this.settlementNoteItemService.add(accountBook,settlementNoteItems);
-        return settlementNoteDAO.add(accountBook,settlementNotes);
+        return ids;
     }
 
     @Override
