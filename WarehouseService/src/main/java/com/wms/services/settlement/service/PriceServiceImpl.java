@@ -5,6 +5,7 @@ import com.wms.services.settlement.dao.PriceDAO;
 import com.wms.services.warehouse.service.SupplyService;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.Price;
 import com.wms.utilities.model.PriceView;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 @Service
@@ -27,6 +29,22 @@ public class PriceServiceImpl implements PriceService{
     public int[] add(String accountBook, Price[] prices) throws WMSServiceException
     {
         this.validateEntities(accountBook,prices);
+        for(int i=0;i<prices.length;i++){
+            for(int j=i+1;j<prices.length;j++){
+                int supplyId=prices[i].getSupplyId();
+                if(supplyId==prices[j].getSupplyId())
+                {
+                    throw new WMSServiceException("供货价格信息在添加的列表中重复!");
+                }
+            }
+        }
+        for(int i=0;i<prices.length;i++){
+            Condition cond = new Condition();
+            cond.addCondition("supplyId",new Integer[]{prices[i].getSupplyId()});
+            if(this.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("已存在相同供货价格信息！");
+            }
+        }
         return priceDAO.add(accountBook,prices);
     }
 
@@ -34,6 +52,24 @@ public class PriceServiceImpl implements PriceService{
     public void update(String accountBook, Price[] prices) throws WMSServiceException
     {
         this.validateEntities(accountBook,prices);
+        for(int i=0;i<prices.length;i++){
+            for(int j=i+1;j<prices.length;j++){
+                int supplyId=prices[i].getSupplyId();
+                if(supplyId==prices[j].getSupplyId())
+                {
+                    throw new WMSServiceException("供货价格信息在添加的列表中重复!");
+                }
+            }
+        }
+        for(int i=0;i<prices.length;i++){
+            Condition cond = new Condition();
+            cond.addCondition("supplyId",new Integer[]{prices[i].getSupplyId()});
+            cond.addCondition("id",new Integer[]{prices[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
+            if(this.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("已存在相同供货价格信息！");
+            }
+        }
+
         priceDAO.update(accountBook, prices);
     }
 
