@@ -204,8 +204,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             new Validator("打印次数").min(0).validate(transferOrder.getPrintTimes());
 
             idChecker.check(WarehouseService.class,accountBook,transferOrder.getWarehouseId(),"仓库")
-                    .check(PersonService.class,accountBook,transferOrder.getCreatePersonId(),"创建人员")
-                    .check(SupplierServices.class,accountBook,transferOrder.getSupplierId(),"创建人员");
+                    .check(PersonService.class,accountBook,transferOrder.getCreatePersonId(),"创建人员");
 
             if (transferOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
                     new Condition().addCondition("id", transferOrder.getLastUpdatePersonId())).length == 0) {
