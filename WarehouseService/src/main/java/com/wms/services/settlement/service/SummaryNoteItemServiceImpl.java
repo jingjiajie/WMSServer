@@ -18,31 +18,47 @@ import java.util.stream.Stream;
 @Service
 @Transactional
 public class SummaryNoteItemServiceImpl
-implements SummaryNoteItemService{
+        implements SummaryNoteItemService {
     @Autowired
     SummaryNoteItemDAO summaryNoteItemDAO;
     @Autowired
     WarehouseService warehouseService;
     @Autowired
     SupplierServices supplierServices;
+    @Autowired
+    SummaryDetailsService summaryDetailsService;
 
     @Override
-    public int[] add(String accountBook, SummaryNoteItem[] summaryNoteItems) throws WMSServiceException
-    {
-        this.validateEntities(accountBook,summaryNoteItems);
-        for(SummaryNoteItem summaryNoteItem:summaryNoteItems){summaryNoteItem.setCreateTime(new Timestamp(System.currentTimeMillis()));}
-        return summaryNoteItemDAO.add(accountBook,summaryNoteItems);
+    public int[] add(String accountBook, SummaryNoteItem[] summaryNoteItems) throws WMSServiceException {
+        this.validateEntities(accountBook, summaryNoteItems);
+        for (SummaryNoteItem summaryNoteItem : summaryNoteItems) {
+            summaryNoteItem.setCreateTime(new Timestamp(System.currentTimeMillis()));
+        }
+        int[] ids= summaryNoteItemDAO.add(accountBook, summaryNoteItems);
+        this.validateDucpicate(accountBook,summaryNoteItems);
+        return ids;
     }
 
     @Override
-    public void update(String accountBook, SummaryNoteItem[] summaryNoteItems) throws WMSServiceException
-    {
-        this.validateEntities(accountBook,summaryNoteItems);
+    public void update(String accountBook, SummaryNoteItem[] summaryNoteItems) throws WMSServiceException {
+        this.validateEntities(accountBook, summaryNoteItems);
+        Stream.of(summaryNoteItems).forEach((summaryNoteItem) -> {
+            int summaryNoteItemId = summaryNoteItem.getId();
+            SummaryDetailsView[] summaryDetails = summaryDetailsService.find(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItemId));
+            if (summaryDetails.length != 0)
+            {
+                if (summaryDetails[0].getSupplierId() != summaryNoteItem.getSupplierId())
+                {
+                 throw new WMSServiceException("条目供应商必须与详情供应商相同！");
+                }
+            }
+        });
         summaryNoteItemDAO.update(accountBook, summaryNoteItems);
+        this.validateDucpicate(accountBook,summaryNoteItems);
     }
 
     @Override
-    public void remove(String accountBook, int[] ids) throws WMSServiceException{
+    public void remove(String accountBook, int[] ids) throws WMSServiceException {
 
         try {
             for (int id : ids) {
@@ -52,8 +68,7 @@ implements SummaryNoteItemService{
             }
 
             summaryNoteItemDAO.remove(accountBook, ids);
-        }
-        catch (Throwable ex){
+        } catch (Throwable ex) {
             throw new WMSServiceException("删除汇总单条目信息失败，如果汇总单条目信息已经被引用，需要先删除引用的内容，才能删除该汇总单条目");
         }
     }
@@ -68,26 +83,33 @@ implements SummaryNoteItemService{
         return this.summaryNoteItemDAO.findTable(accountBook, cond);
     }
 
-    private void validateEntities(String accountBook,SummaryNoteItem[] summaryNoteItems) throws WMSServiceException{
+    private void validateEntities(String accountBook, SummaryNoteItem[] summaryNoteItems) throws WMSServiceException {
         Stream.of(summaryNoteItems).forEach((summaryNoteItem -> {
             //new Validator("使用面积").greaterThan(0).notEmpty().notnull().validate(summaryNoteItem.getTotalArea());
             //new Validator("放置天数").notEmpty().notnull().greaterThan(0).validate(summaryNoteItem.getDays());
-            SummaryNoteItemView[] summaryNoteItemViews=this.summaryNoteItemDAO.find(accountBook,
-                    new Condition().addCondition("supplierId",summaryNoteItem.getSupplierId()).addCondition("summaryNoteId",summaryNoteItem.getSummaryNoteId()));
-            if(summaryNoteItemViews.length > 0){
-                SupplierView[] supplierViews=this.supplierServices.find(accountBook,new Condition().addCondition("id",summaryNoteItemViews[0].getSupplierId()));
-                if(supplierViews.length!=1){throw new WMSServiceException("数据验证中查询供应商出错,可能已经删除！");}
-                throw new WMSServiceException(String.format("供应商(%s)在此单内重复！(%d)",supplierViews[0].getName(),summaryNoteItem.getSupplierId()));
+            if (this.supplierServices.find(accountBook,
+                    new Condition().addCondition("id", summaryNoteItem.getSupplierId())).length == 0) {
+                throw new WMSServiceException(String.format("供应商不存在，请重新提交！(%d)", summaryNoteItem.getSupplierId()));
             }
-            if(this.supplierServices.find(accountBook,
-                    new Condition().addCondition("id",summaryNoteItem.getSupplierId())).length == 0){
-                throw new WMSServiceException(String.format("供应商不存在，请重新提交！(%d)",summaryNoteItem.getSupplierId()));
+        }));
+    }
+
+    private void validateDucpicate(String accountBook, SummaryNoteItem[] summaryNoteItems) throws WMSServiceException {
+        Stream.of(summaryNoteItems).forEach((summaryNoteItem -> {
+            SummaryNoteItemView[] summaryNoteItemViews = this.summaryNoteItemDAO.find(accountBook,
+                    new Condition().addCondition("supplierId", summaryNoteItem.getSupplierId()).addCondition("summaryNoteId", summaryNoteItem.getSummaryNoteId()));
+            if (summaryNoteItemViews.length > 0) {
+                SupplierView[] supplierViews = this.supplierServices.find(accountBook, new Condition().addCondition("id", summaryNoteItemViews[0].getSupplierId()));
+                if (supplierViews.length != 1) {
+                    throw new WMSServiceException("数据验证中查询供应商出错,可能已经删除！");
+                }
+                throw new WMSServiceException(String.format("供应商(%s)在此单内重复！(%d)", supplierViews[0].getName(), summaryNoteItem.getSupplierId()));
             }
         }));
     }
 
     @Override
-    public long findCount(String database,Condition cond) throws WMSServiceException{
-        return this.summaryNoteItemDAO.findCount(database,cond);
+    public long findCount(String database, Condition cond) throws WMSServiceException {
+        return this.summaryNoteItemDAO.findCount(database, cond);
     }
 }
