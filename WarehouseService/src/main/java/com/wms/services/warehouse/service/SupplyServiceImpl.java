@@ -73,6 +73,12 @@ public class SupplyServiceImpl implements SupplyService {
                 updateSuppliesDoneList.add(suppliesDone[0]);
             }else{
                 new Validator("条码号长度").min(7).validate(suppliesDone[i].getBarCodeNo().length());
+                String barCarNo=suppliesDone[i].getBarCodeNo();
+                for (int j = barCarNo.length();--j>=0;){
+                    if (!Character.isDigit(barCarNo.charAt(j))){
+                        throw new WMSServiceException("供货条码号必须为纯数字！出错条码号："+barCarNo);
+                    }
+                }
             }
         }
 
@@ -86,6 +92,13 @@ public class SupplyServiceImpl implements SupplyService {
 
         this.validateEntities(accountBook,supplies);
         for(int i=0;i<supplies.length;i++){
+            new Validator("条码号长度").min(7).validate(supplies[i].getBarCodeNo().length());
+            String barCarNo=supplies[i].getBarCodeNo();
+            for (int j = barCarNo.length();--j>=0;){
+                if (!Character.isDigit(barCarNo.charAt(j))){
+                    throw new WMSServiceException("供货条码号必须为纯数字！出错条码号："+barCarNo);
+                }
+            }
             MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
             SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getSupplierId()}));
             Condition cond = new Condition();
