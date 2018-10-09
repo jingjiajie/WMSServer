@@ -73,4 +73,12 @@ public class SettlementNoteItemControllerImpl implements SettlementNoteItemContr
         this.settlementNoteItemService.confirm(accountBook,ids);
     }
 
+    @Override
+    @RequestMapping(value = "/normalConfirm",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void normalConfirm(@PathVariable("accountBook") String accountBook,
+                        @RequestBody List<Integer> ids) {
+        this.settlementNoteItemService.confirm(accountBook,ids);
+    }
+
 }

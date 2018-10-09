@@ -104,7 +104,7 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
                 }
                 settlementNoteItem.setLogisticFee(thLogisticFee);
                 settlementNoteItem.setStorageCharge(thAreaPrice);
-                settlementNoteItem.setActualPayment(thAreaPrice.add(thLogisticFee));
+                settlementNoteItem.setActualPayment(BigDecimal.ZERO);
                 settlementNoteItemList.add(settlementNoteItem);
             });
         }
@@ -166,6 +166,7 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
     public void synchronousReceivables(String accountBook,LedgerSynchronous ledgerSynchronous) throws WMSServiceException{
 
         SettlementNoteView[] settlementNoteViews =this.find(accountBook,new Condition().addCondition("id",ledgerSynchronous.getSettlementNoteIds().toArray(),ConditionItem.Relation.IN));
+        SettlementNote[] settlementNotes = ReflectHelper.createAndCopyFields(settlementNoteViews,SettlementNote.class);
         List<AccountRecord> accountRecordList=new ArrayList();
 
         Stream.of(settlementNoteViews).forEach(settlementNoteView -> {
@@ -215,13 +216,17 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
         accountRecordList.toArray(accountRecords);
 
         this.accountRecordService.add(accountBook,accountRecords);
-
+        Stream.of(settlementNotes).forEach(settlementNote -> {
+            settlementNote.setState(SettlementNoteService.Synchronous_receivables);
+        });
+        this.update(accountBook,settlementNotes);
     }
 
     @Override
     public void synchronousReceipt(String accountBook,LedgerSynchronous ledgerSynchronous) throws WMSServiceException{
 
         SettlementNoteView[] settlementNoteViews =this.find(accountBook,new Condition().addCondition("id",ledgerSynchronous.getSettlementNoteIds().toArray(),ConditionItem.Relation.IN));
+        SettlementNote[] settlementNotes = ReflectHelper.createAndCopyFields(settlementNoteViews,SettlementNote.class);
         List<AccountRecord> accountRecordList=new ArrayList();
 
         Stream.of(settlementNoteViews).forEach(settlementNoteView -> {
@@ -272,6 +277,10 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
         accountRecordList.toArray(accountRecords);
 
         this.accountRecordService.add(accountBook,accountRecords);
+        Stream.of(settlementNotes).forEach(settlementNote -> {
+            settlementNote.setState(SettlementNoteService.Synchronous_receipt);
+        });
+        this.update(accountBook,settlementNotes);
 
     }
 }
