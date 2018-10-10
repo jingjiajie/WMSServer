@@ -42,10 +42,11 @@ public class SupplierView {
     private String createPersonName;
     private String lastUpdatePersonName;
     private int enabled;
+    private String serialNo;
 
-    @Id
     @Basic
-    @Column(name = "ID", nullable = false)
+    @Id
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -55,7 +56,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
@@ -65,7 +66,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "No", nullable = true, length = 64)
+    @Column(name = "No")
     public String getNo() {
         return no;
     }
@@ -75,7 +76,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "FullName", nullable = true, length = 64)
+    @Column(name = "FullName")
     public String getFullName() {
         return fullName;
     }
@@ -85,7 +86,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "Name", nullable = true, length = 64)
+    @Column(name = "Name")
     public String getName() {
         return name;
     }
@@ -95,7 +96,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "EnterpriseCode", nullable = true, length = 64)
+    @Column(name = "EnterpriseCode")
     public String getEnterpriseCode() {
         return enterpriseCode;
     }
@@ -105,7 +106,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "ContractNo", nullable = true, length = 64)
+    @Column(name = "ContractNo")
     public String getContractNo() {
         return contractNo;
     }
@@ -115,7 +116,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "ContractStartTime", nullable = true)
+    @Column(name = "ContractStartTime")
     public Timestamp getContractStartTime() {
         return contractStartTime;
     }
@@ -125,7 +126,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "ContractEndTime", nullable = true)
+    @Column(name = "ContractEndTime")
     public Timestamp getContractEndTime() {
         return contractEndTime;
     }
@@ -135,7 +136,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "InvoiceDelayMonth", nullable = true, precision = 3)
+    @Column(name = "InvoiceDelayMonth")
     public BigDecimal getInvoiceDelayMonth() {
         return invoiceDelayMonth;
     }
@@ -145,7 +146,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "BalanceDelayMonth", nullable = true, precision = 3)
+    @Column(name = "BalanceDelayMonth")
     public BigDecimal getBalanceDelayMonth() {
         return balanceDelayMonth;
     }
@@ -155,7 +156,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "NetArea", nullable = true, precision = 3)
+    @Column(name = "NetArea")
     public BigDecimal getNetArea() {
         return netArea;
     }
@@ -165,7 +166,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "FixedStorageCost", nullable = true, precision = 3)
+    @Column(name = "FixedStorageCost")
     public BigDecimal getFixedStorageCost() {
         return fixedStorageCost;
     }
@@ -175,7 +176,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "ContractStorageArea", nullable = true, precision = 3)
+    @Column(name = "ContractStorageArea")
     public BigDecimal getContractStorageArea() {
         return contractStorageArea;
     }
@@ -185,7 +186,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "TaxpayerNumber", nullable = true, length = 64)
+    @Column(name = "TaxpayerNumber")
     public String getTaxpayerNumber() {
         return taxpayerNumber;
     }
@@ -195,7 +196,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "Address", nullable = true, length = 64)
+    @Column(name = "Address")
     public String getAddress() {
         return address;
     }
@@ -205,7 +206,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "Tel", nullable = true, length = 64)
+    @Column(name = "Tel")
     public String getTel() {
         return tel;
     }
@@ -215,7 +216,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "BankName", nullable = true, length = 64)
+    @Column(name = "BankName")
     public String getBankName() {
         return bankName;
     }
@@ -225,7 +226,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "BankAccount", nullable = true, length = 64)
+    @Column(name = "BankAccount")
     public String getBankAccount() {
         return bankAccount;
     }
@@ -235,7 +236,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "BankNo", nullable = true, length = 64)
+    @Column(name = "BankNo")
     public String getBankNo() {
         return bankNo;
     }
@@ -245,7 +246,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "ZipCode", nullable = true, length = 64)
+    @Column(name = "ZipCode")
     public String getZipCode() {
         return zipCode;
     }
@@ -255,7 +256,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "RecipientName", nullable = true, length = 64)
+    @Column(name = "RecipientName")
     public String getRecipientName() {
         return recipientName;
     }
@@ -265,7 +266,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "ContractState", nullable = true, length = 64)
+    @Column(name = "ContractState")
     public String getContractState() {
         return contractState;
     }
@@ -275,7 +276,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "IsHistory", nullable = false)
+    @Column(name = "IsHistory")
     public int getIsHistory() {
         return isHistory;
     }
@@ -285,7 +286,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "NewestSupplierID", nullable = true)
+    @Column(name = "NewestSupplierID")
     public Integer getNewestSupplierId() {
         return newestSupplierId;
     }
@@ -295,7 +296,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "CreatePersonID", nullable = false)
+    @Column(name = "CreatePersonID")
     public int getCreatePersonId() {
         return createPersonId;
     }
@@ -305,7 +306,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "CreateTime", nullable = false)
+    @Column(name = "CreateTime")
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -315,7 +316,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "LastUpdatePersonID", nullable = true)
+    @Column(name = "LastUpdatePersonID")
     public Integer getLastUpdatePersonId() {
         return lastUpdatePersonId;
     }
@@ -325,7 +326,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "LastUpdateTime", nullable = true)
+    @Column(name = "LastUpdateTime")
     public Timestamp getLastUpdateTime() {
         return lastUpdateTime;
     }
@@ -335,7 +336,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "WarehouseName", nullable = false, length = 64)
+    @Column(name = "WarehouseName")
     public String getWarehouseName() {
         return warehouseName;
     }
@@ -345,7 +346,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "CreatePersonName", nullable = false, length = 64)
+    @Column(name = "CreatePersonName")
     public String getCreatePersonName() {
         return createPersonName;
     }
@@ -355,7 +356,7 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "LastUpdatePersonName", nullable = false, length = 64)
+    @Column(name = "LastUpdatePersonName")
     public String getLastUpdatePersonName() {
         return lastUpdatePersonName;
     }
@@ -365,13 +366,23 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "Enabled", nullable = false)
+    @Column(name = "Enabled")
     public int getEnabled() {
         return enabled;
     }
 
     public void setEnabled(int enabled) {
         this.enabled = enabled;
+    }
+
+    @Basic
+    @Column(name = "SerialNo")
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
     }
 
     @Override
@@ -430,6 +441,7 @@ public class SupplierView {
             return false;
         if (lastUpdatePersonName != null ? !lastUpdatePersonName.equals(that.lastUpdatePersonName) : that.lastUpdatePersonName != null)
             return false;
+        if (serialNo != null ? !serialNo.equals(that.serialNo) : that.serialNo != null) return false;
 
         return true;
     }
@@ -469,6 +481,7 @@ public class SupplierView {
         result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
         result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
         result = 31 * result + enabled;
+        result = 31 * result + (serialNo != null ? serialNo.hashCode() : 0);
         return result;
     }
 }
