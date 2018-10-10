@@ -65,7 +65,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         //验证结构
         this.validateEntities(accountBook,deliveryOrders);
         //生成创建时间
-        Stream.of(deliveryOrders).forEach((deliveryOrder) -> deliveryOrder.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
+//        Stream.of(deliveryOrders).forEach((deliveryOrder) -> deliveryOrder.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
 
         //生成/检测单号
         Stream.of(deliveryOrders).forEach((deliveryOrder) -> {
