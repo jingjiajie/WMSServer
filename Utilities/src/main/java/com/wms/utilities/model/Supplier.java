@@ -35,11 +35,12 @@ public class Supplier {
     private Timestamp createTime;
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
-    private int enabled=1;
+    private int enabled;
+    private String serialNo;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -49,7 +50,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
@@ -59,7 +60,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "No", nullable = true, length = 64)
+    @Column(name = "No")
     public String getNo() {
         return no;
     }
@@ -69,7 +70,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "FullName", nullable = true, length = 64)
+    @Column(name = "FullName")
     public String getFullName() {
         return fullName;
     }
@@ -79,7 +80,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "Name", nullable = true, length = 64)
+    @Column(name = "Name")
     public String getName() {
         return name;
     }
@@ -89,7 +90,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "EnterpriseCode", nullable = true, length = 64)
+    @Column(name = "EnterpriseCode")
     public String getEnterpriseCode() {
         return enterpriseCode;
     }
@@ -99,7 +100,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ContractNo", nullable = true, length = 64)
+    @Column(name = "ContractNo")
     public String getContractNo() {
         return contractNo;
     }
@@ -109,7 +110,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ContractStartTime", nullable = true)
+    @Column(name = "ContractStartTime")
     public Timestamp getContractStartTime() {
         return contractStartTime;
     }
@@ -119,7 +120,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ContractEndTime", nullable = true)
+    @Column(name = "ContractEndTime")
     public Timestamp getContractEndTime() {
         return contractEndTime;
     }
@@ -129,7 +130,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "InvoiceDelayMonth", nullable = true, precision = 3)
+    @Column(name = "InvoiceDelayMonth")
     public BigDecimal getInvoiceDelayMonth() {
         return invoiceDelayMonth;
     }
@@ -139,7 +140,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "BalanceDelayMonth", nullable = true, precision = 3)
+    @Column(name = "BalanceDelayMonth")
     public BigDecimal getBalanceDelayMonth() {
         return balanceDelayMonth;
     }
@@ -149,7 +150,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "NetArea", nullable = true, precision = 3)
+    @Column(name = "NetArea")
     public BigDecimal getNetArea() {
         return netArea;
     }
@@ -159,7 +160,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "FixedStorageCost", nullable = true, precision = 3)
+    @Column(name = "FixedStorageCost")
     public BigDecimal getFixedStorageCost() {
         return fixedStorageCost;
     }
@@ -169,7 +170,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ContractStorageArea", nullable = true, precision = 3)
+    @Column(name = "ContractStorageArea")
     public BigDecimal getContractStorageArea() {
         return contractStorageArea;
     }
@@ -179,7 +180,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "TaxpayerNumber", nullable = true, length = 64)
+    @Column(name = "TaxpayerNumber")
     public String getTaxpayerNumber() {
         return taxpayerNumber;
     }
@@ -189,7 +190,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "Address", nullable = true, length = 64)
+    @Column(name = "Address")
     public String getAddress() {
         return address;
     }
@@ -199,7 +200,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "Tel", nullable = true, length = 64)
+    @Column(name = "Tel")
     public String getTel() {
         return tel;
     }
@@ -209,7 +210,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "BankName", nullable = true, length = 64)
+    @Column(name = "BankName")
     public String getBankName() {
         return bankName;
     }
@@ -219,7 +220,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "BankAccount", nullable = true, length = 64)
+    @Column(name = "BankAccount")
     public String getBankAccount() {
         return bankAccount;
     }
@@ -229,7 +230,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "BankNo", nullable = true, length = 64)
+    @Column(name = "BankNo")
     public String getBankNo() {
         return bankNo;
     }
@@ -239,7 +240,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ZipCode", nullable = true, length = 64)
+    @Column(name = "ZipCode")
     public String getZipCode() {
         return zipCode;
     }
@@ -249,7 +250,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "RecipientName", nullable = true, length = 64)
+    @Column(name = "RecipientName")
     public String getRecipientName() {
         return recipientName;
     }
@@ -259,7 +260,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ContractState", nullable = true, length = 64)
+    @Column(name = "ContractState")
     public String getContractState() {
         return contractState;
     }
@@ -269,7 +270,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "IsHistory", nullable = false)
+    @Column(name = "IsHistory")
     public int getIsHistory() {
         return isHistory;
     }
@@ -279,7 +280,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "NewestSupplierID", nullable = true)
+    @Column(name = "NewestSupplierID")
     public Integer getNewestSupplierId() {
         return newestSupplierId;
     }
@@ -289,7 +290,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "CreatePersonID", nullable = false)
+    @Column(name = "CreatePersonID")
     public int getCreatePersonId() {
         return createPersonId;
     }
@@ -299,7 +300,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "CreateTime", nullable = false)
+    @Column(name = "CreateTime")
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -309,7 +310,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "LastUpdatePersonID", nullable = true)
+    @Column(name = "LastUpdatePersonID")
     public Integer getLastUpdatePersonId() {
         return lastUpdatePersonId;
     }
@@ -319,7 +320,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "LastUpdateTime", nullable = true)
+    @Column(name = "LastUpdateTime")
     public Timestamp getLastUpdateTime() {
         return lastUpdateTime;
     }
@@ -329,13 +330,23 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "Enabled", nullable = false)
+    @Column(name = "Enabled")
     public int getEnabled() {
         return enabled;
     }
 
     public void setEnabled(int enabled) {
         this.enabled = enabled;
+    }
+
+    @Basic
+    @Column(name = "SerialNo")
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
     }
 
     @Override
@@ -389,6 +400,7 @@ public class Supplier {
             return false;
         if (lastUpdateTime != null ? !lastUpdateTime.equals(supplier.lastUpdateTime) : supplier.lastUpdateTime != null)
             return false;
+        if (serialNo != null ? !serialNo.equals(supplier.serialNo) : supplier.serialNo != null) return false;
 
         return true;
     }
@@ -425,6 +437,7 @@ public class Supplier {
         result = 31 * result + (lastUpdatePersonId != null ? lastUpdatePersonId.hashCode() : 0);
         result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
         result = 31 * result + enabled;
+        result = 31 * result + (serialNo != null ? serialNo.hashCode() : 0);
         return result;
     }
 }

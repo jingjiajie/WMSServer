@@ -16,6 +16,7 @@ public class SupplyView {
     private BigDecimal defaultEntryAmount;
     private String defaultEntryUnit;
     private BigDecimal defaultEntryUnitAmount;
+    private BigDecimal defaultInspectionAmount;
     private String defaultInspectionUnit;
     private BigDecimal defaultInspectionUnitAmount;
     private BigDecimal defaultDeliveryAmount;
@@ -62,35 +63,25 @@ public class SupplyView {
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
     private int enabled;
+    private String defaultEntryStorageLocationNo;
+    private String defaultInspectionStorageLocationNo;
+    private String defaultQualifiedStorageLocationNo;
+    private String defaultUnqualifiedStorageLocationNo;
+    private String defaultDeliveryStorageLocationNo;
+    private String defaultPrepareTargetStorageLocationNo;
+    private String barCodeNo;
+    private BigDecimal trayCapacity;
+    private String serialNo;
     private String warehouseName;
-    private String materialNo;
     private String materialName;
+    private String materialNo;
+    private String materialSerialNo;
+    private String materialProductLine;
+    private String supplierSerialNo;
     private String supplierNo;
     private String supplierName;
     private String createPersonName;
     private String lastUpdatePersonName;
-    private Integer defaultEntryStorageLocationId;
-    private Integer defaultInspectionStorageLocationId;
-    private Integer defaultQualifiedStorageLocationId;
-    private Integer defaultUnqualifiedStorageLocationId;
-    private Integer defaultDeliveryStorageLocationId;
-    private Integer defaultPrepareTargetStorageLocationId;
-    private String defaultEntryStorageLocationNo;
-    private String defaultEntryStorageLocationName;
-    private String defaultInspectionStorageLocationNo;
-    private String defaultInspectionStorageLocationName;
-    private String defaultQualifiedStorageLocationNo;
-    private String defaultQualifiedStorageLocationName;
-    private String defaultUnqualifiedStorageLocationNo;
-    private String defaultUnqualifiedStorageLocationName;
-    private String defaultDeliveryStorageLocationNo;
-    private String defaultDeliveryStorageLocationName;
-    private String defaultPrepareTargetStorageLocationNo;
-    private String defaultPrepareTargetStorageLocationName;
-    private String materialProductLine;
-    private BigDecimal defaultInspectionAmount;
-    private String barCodeNo;
-    private BigDecimal trayCapacity;
 
     @Basic
     @Id
@@ -161,6 +152,16 @@ public class SupplyView {
 
     public void setDefaultEntryUnitAmount(BigDecimal defaultEntryUnitAmount) {
         this.defaultEntryUnitAmount = defaultEntryUnitAmount;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionAmount")
+    public BigDecimal getDefaultInspectionAmount() {
+        return defaultInspectionAmount;
+    }
+
+    public void setDefaultInspectionAmount(BigDecimal defaultInspectionAmount) {
+        this.defaultInspectionAmount = defaultInspectionAmount;
     }
 
     @Basic
@@ -624,6 +625,96 @@ public class SupplyView {
     }
 
     @Basic
+    @Column(name = "DefaultEntryStorageLocationNo")
+    public String getDefaultEntryStorageLocationNo() {
+        return defaultEntryStorageLocationNo;
+    }
+
+    public void setDefaultEntryStorageLocationNo(String defaultEntryStorageLocationNo) {
+        this.defaultEntryStorageLocationNo = defaultEntryStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultInspectionStorageLocationNo")
+    public String getDefaultInspectionStorageLocationNo() {
+        return defaultInspectionStorageLocationNo;
+    }
+
+    public void setDefaultInspectionStorageLocationNo(String defaultInspectionStorageLocationNo) {
+        this.defaultInspectionStorageLocationNo = defaultInspectionStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultQualifiedStorageLocationNo")
+    public String getDefaultQualifiedStorageLocationNo() {
+        return defaultQualifiedStorageLocationNo;
+    }
+
+    public void setDefaultQualifiedStorageLocationNo(String defaultQualifiedStorageLocationNo) {
+        this.defaultQualifiedStorageLocationNo = defaultQualifiedStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultUnqualifiedStorageLocationNo")
+    public String getDefaultUnqualifiedStorageLocationNo() {
+        return defaultUnqualifiedStorageLocationNo;
+    }
+
+    public void setDefaultUnqualifiedStorageLocationNo(String defaultUnqualifiedStorageLocationNo) {
+        this.defaultUnqualifiedStorageLocationNo = defaultUnqualifiedStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultDeliveryStorageLocationNo")
+    public String getDefaultDeliveryStorageLocationNo() {
+        return defaultDeliveryStorageLocationNo;
+    }
+
+    public void setDefaultDeliveryStorageLocationNo(String defaultDeliveryStorageLocationNo) {
+        this.defaultDeliveryStorageLocationNo = defaultDeliveryStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "DefaultPrepareTargetStorageLocationNo")
+    public String getDefaultPrepareTargetStorageLocationNo() {
+        return defaultPrepareTargetStorageLocationNo;
+    }
+
+    public void setDefaultPrepareTargetStorageLocationNo(String defaultPrepareTargetStorageLocationNo) {
+        this.defaultPrepareTargetStorageLocationNo = defaultPrepareTargetStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "BarCodeNo")
+    public String getBarCodeNo() {
+        return barCodeNo;
+    }
+
+    public void setBarCodeNo(String barCodeNo) {
+        this.barCodeNo = barCodeNo;
+    }
+
+    @Basic
+    @Column(name = "TrayCapacity")
+    public BigDecimal getTrayCapacity() {
+        return trayCapacity;
+    }
+
+    public void setTrayCapacity(BigDecimal trayCapacity) {
+        this.trayCapacity = trayCapacity;
+    }
+
+    @Basic
+    @Column(name = "SerialNo")
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
+    }
+
+    @Basic
     @Column(name = "WarehouseName")
     public String getWarehouseName() {
         return warehouseName;
@@ -631,6 +722,16 @@ public class SupplyView {
 
     public void setWarehouseName(String warehouseName) {
         this.warehouseName = warehouseName;
+    }
+
+    @Basic
+    @Column(name = "MaterialName")
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
     }
 
     @Basic
@@ -644,13 +745,33 @@ public class SupplyView {
     }
 
     @Basic
-    @Column(name = "MaterialName")
-    public String getMaterialName() {
-        return materialName;
+    @Column(name = "MaterialSerialNo")
+    public String getMaterialSerialNo() {
+        return materialSerialNo;
     }
 
-    public void setMaterialName(String materialName) {
-        this.materialName = materialName;
+    public void setMaterialSerialNo(String materialSerialNo) {
+        this.materialSerialNo = materialSerialNo;
+    }
+
+    @Basic
+    @Column(name = "MaterialProductLine")
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
+    @Basic
+    @Column(name = "SupplierSerialNo")
+    public String getSupplierSerialNo() {
+        return supplierSerialNo;
+    }
+
+    public void setSupplierSerialNo(String supplierSerialNo) {
+        this.supplierSerialNo = supplierSerialNo;
     }
 
     @Basic
@@ -693,232 +814,12 @@ public class SupplyView {
         this.lastUpdatePersonName = lastUpdatePersonName;
     }
 
-    @Basic
-    @Column(name = "DefaultEntryStorageLocationID")
-    public Integer getDefaultEntryStorageLocationId() {
-        return defaultEntryStorageLocationId;
-    }
-
-    public void setDefaultEntryStorageLocationId(Integer defaultEntryStorageLocationId) {
-        this.defaultEntryStorageLocationId = defaultEntryStorageLocationId;
-    }
-
-    @Basic
-    @Column(name = "DefaultInspectionStorageLocationID")
-    public Integer getDefaultInspectionStorageLocationId() {
-        return defaultInspectionStorageLocationId;
-    }
-
-    public void setDefaultInspectionStorageLocationId(Integer defaultInspectionStorageLocationId) {
-        this.defaultInspectionStorageLocationId = defaultInspectionStorageLocationId;
-    }
-
-    @Basic
-    @Column(name = "DefaultQualifiedStorageLocationID")
-    public Integer getDefaultQualifiedStorageLocationId() {
-        return defaultQualifiedStorageLocationId;
-    }
-
-    public void setDefaultQualifiedStorageLocationId(Integer defaultQualifiedStorageLocationId) {
-        this.defaultQualifiedStorageLocationId = defaultQualifiedStorageLocationId;
-    }
-
-    @Basic
-    @Column(name = "DefaultUnqualifiedStorageLocationID")
-    public Integer getDefaultUnqualifiedStorageLocationId() {
-        return defaultUnqualifiedStorageLocationId;
-    }
-
-    public void setDefaultUnqualifiedStorageLocationId(Integer defaultUnqualifiedStorageLocationId) {
-        this.defaultUnqualifiedStorageLocationId = defaultUnqualifiedStorageLocationId;
-    }
-
-    @Basic
-    @Column(name = "DefaultDeliveryStorageLocationID")
-    public Integer getDefaultDeliveryStorageLocationId() {
-        return defaultDeliveryStorageLocationId;
-    }
-
-    public void setDefaultDeliveryStorageLocationId(Integer defaultDeliveryStorageLocationId) {
-        this.defaultDeliveryStorageLocationId = defaultDeliveryStorageLocationId;
-    }
-
-    @Basic
-    @Column(name = "DefaultPrepareTargetStorageLocationID")
-    public Integer getDefaultPrepareTargetStorageLocationId() {
-        return defaultPrepareTargetStorageLocationId;
-    }
-
-    public void setDefaultPrepareTargetStorageLocationId(Integer defaultPrepareTargetStorageLocationId) {
-        this.defaultPrepareTargetStorageLocationId = defaultPrepareTargetStorageLocationId;
-    }
-
-    @Basic
-    @Column(name = "DefaultEntryStorageLocationNo")
-    public String getDefaultEntryStorageLocationNo() {
-        return defaultEntryStorageLocationNo;
-    }
-
-    public void setDefaultEntryStorageLocationNo(String defaultEntryStorageLocationNo) {
-        this.defaultEntryStorageLocationNo = defaultEntryStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "DefaultEntryStorageLocationName")
-    public String getDefaultEntryStorageLocationName() {
-        return defaultEntryStorageLocationName;
-    }
-
-    public void setDefaultEntryStorageLocationName(String defaultEntryStorageLocationName) {
-        this.defaultEntryStorageLocationName = defaultEntryStorageLocationName;
-    }
-
-    @Basic
-    @Column(name = "DefaultInspectionStorageLocationNo")
-    public String getDefaultInspectionStorageLocationNo() {
-        return defaultInspectionStorageLocationNo;
-    }
-
-    public void setDefaultInspectionStorageLocationNo(String defaultInspectionStorageLocationNo) {
-        this.defaultInspectionStorageLocationNo = defaultInspectionStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "DefaultInspectionStorageLocationName")
-    public String getDefaultInspectionStorageLocationName() {
-        return defaultInspectionStorageLocationName;
-    }
-
-    public void setDefaultInspectionStorageLocationName(String defaultInspectionStorageLocationName) {
-        this.defaultInspectionStorageLocationName = defaultInspectionStorageLocationName;
-    }
-
-    @Basic
-    @Column(name = "DefaultQualifiedStorageLocationNo")
-    public String getDefaultQualifiedStorageLocationNo() {
-        return defaultQualifiedStorageLocationNo;
-    }
-
-    public void setDefaultQualifiedStorageLocationNo(String defaultQualifiedStorageLocationNo) {
-        this.defaultQualifiedStorageLocationNo = defaultQualifiedStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "DefaultQualifiedStorageLocationName")
-    public String getDefaultQualifiedStorageLocationName() {
-        return defaultQualifiedStorageLocationName;
-    }
-
-    public void setDefaultQualifiedStorageLocationName(String defaultQualifiedStorageLocationName) {
-        this.defaultQualifiedStorageLocationName = defaultQualifiedStorageLocationName;
-    }
-
-    @Basic
-    @Column(name = "DefaultUnqualifiedStorageLocationNo")
-    public String getDefaultUnqualifiedStorageLocationNo() {
-        return defaultUnqualifiedStorageLocationNo;
-    }
-
-    public void setDefaultUnqualifiedStorageLocationNo(String defaultUnqualifiedStorageLocationNo) {
-        this.defaultUnqualifiedStorageLocationNo = defaultUnqualifiedStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "DefaultUnqualifiedStorageLocationName")
-    public String getDefaultUnqualifiedStorageLocationName() {
-        return defaultUnqualifiedStorageLocationName;
-    }
-
-    public void setDefaultUnqualifiedStorageLocationName(String defaultUnqualifiedStorageLocationName) {
-        this.defaultUnqualifiedStorageLocationName = defaultUnqualifiedStorageLocationName;
-    }
-
-    @Basic
-    @Column(name = "DefaultDeliveryStorageLocationNo")
-    public String getDefaultDeliveryStorageLocationNo() {
-        return defaultDeliveryStorageLocationNo;
-    }
-
-    public void setDefaultDeliveryStorageLocationNo(String defaultDeliveryStorageLocationNo) {
-        this.defaultDeliveryStorageLocationNo = defaultDeliveryStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "DefaultDeliveryStorageLocationName")
-    public String getDefaultDeliveryStorageLocationName() {
-        return defaultDeliveryStorageLocationName;
-    }
-
-    public void setDefaultDeliveryStorageLocationName(String defaultDeliveryStorageLocationName) {
-        this.defaultDeliveryStorageLocationName = defaultDeliveryStorageLocationName;
-    }
-
-    @Basic
-    @Column(name = "DefaultPrepareTargetStorageLocationNo")
-    public String getDefaultPrepareTargetStorageLocationNo() {
-        return defaultPrepareTargetStorageLocationNo;
-    }
-
-    public void setDefaultPrepareTargetStorageLocationNo(String defaultPrepareTargetStorageLocationNo) {
-        this.defaultPrepareTargetStorageLocationNo = defaultPrepareTargetStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "DefaultPrepareTargetStorageLocationName")
-    public String getDefaultPrepareTargetStorageLocationName() {
-        return defaultPrepareTargetStorageLocationName;
-    }
-
-    public void setDefaultPrepareTargetStorageLocationName(String defaultPrepareTargetStorageLocationName) {
-        this.defaultPrepareTargetStorageLocationName = defaultPrepareTargetStorageLocationName;
-    }
-
-    @Basic
-    @Column(name = "MaterialProductLine")
-    public String getMaterialProductLine() {
-        return materialProductLine;
-    }
-
-    public void setMaterialProductLine(String materialProductLine) {
-        this.materialProductLine = materialProductLine;
-    }
-
-    @Basic
-    @Column(name = "DefaultInspectionAmount")
-    public BigDecimal getDefaultInspectionAmount() {
-        return defaultInspectionAmount;
-    }
-
-    public void setDefaultInspectionAmount(BigDecimal defaultInspectionAmount) {
-        this.defaultInspectionAmount = defaultInspectionAmount;
-    }
-
-    @Basic
-    @Column(name = "BarCodeNo")
-    public String getBarCodeNo() {
-        return barCodeNo;
-    }
-
-    public void setBarCodeNo(String barCodeNo) {
-        this.barCodeNo = barCodeNo;
-    }
-
-    @Basic
-    @Column(name = "TrayCapacity")
-    public BigDecimal getTrayCapacity() {
-        return trayCapacity;
-    }
-
-    public void setTrayCapacity(BigDecimal trayCapacity) {
-        this.trayCapacity = trayCapacity;
-    }
-
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        SupplyView that = (SupplyView) object;
+        SupplyView that = (SupplyView) o;
 
         if (id != that.id) return false;
         if (createPersonId != that.createPersonId) return false;
@@ -931,6 +832,8 @@ public class SupplyView {
         if (defaultEntryUnit != null ? !defaultEntryUnit.equals(that.defaultEntryUnit) : that.defaultEntryUnit != null)
             return false;
         if (defaultEntryUnitAmount != null ? !defaultEntryUnitAmount.equals(that.defaultEntryUnitAmount) : that.defaultEntryUnitAmount != null)
+            return false;
+        if (defaultInspectionAmount != null ? !defaultInspectionAmount.equals(that.defaultInspectionAmount) : that.defaultInspectionAmount != null)
             return false;
         if (defaultInspectionUnit != null ? !defaultInspectionUnit.equals(that.defaultInspectionUnit) : that.defaultInspectionUnit != null)
             return false;
@@ -1009,58 +912,37 @@ public class SupplyView {
             return false;
         if (lastUpdateTime != null ? !lastUpdateTime.equals(that.lastUpdateTime) : that.lastUpdateTime != null)
             return false;
+        if (defaultEntryStorageLocationNo != null ? !defaultEntryStorageLocationNo.equals(that.defaultEntryStorageLocationNo) : that.defaultEntryStorageLocationNo != null)
+            return false;
+        if (defaultInspectionStorageLocationNo != null ? !defaultInspectionStorageLocationNo.equals(that.defaultInspectionStorageLocationNo) : that.defaultInspectionStorageLocationNo != null)
+            return false;
+        if (defaultQualifiedStorageLocationNo != null ? !defaultQualifiedStorageLocationNo.equals(that.defaultQualifiedStorageLocationNo) : that.defaultQualifiedStorageLocationNo != null)
+            return false;
+        if (defaultUnqualifiedStorageLocationNo != null ? !defaultUnqualifiedStorageLocationNo.equals(that.defaultUnqualifiedStorageLocationNo) : that.defaultUnqualifiedStorageLocationNo != null)
+            return false;
+        if (defaultDeliveryStorageLocationNo != null ? !defaultDeliveryStorageLocationNo.equals(that.defaultDeliveryStorageLocationNo) : that.defaultDeliveryStorageLocationNo != null)
+            return false;
+        if (defaultPrepareTargetStorageLocationNo != null ? !defaultPrepareTargetStorageLocationNo.equals(that.defaultPrepareTargetStorageLocationNo) : that.defaultPrepareTargetStorageLocationNo != null)
+            return false;
+        if (barCodeNo != null ? !barCodeNo.equals(that.barCodeNo) : that.barCodeNo != null) return false;
+        if (trayCapacity != null ? !trayCapacity.equals(that.trayCapacity) : that.trayCapacity != null) return false;
+        if (serialNo != null ? !serialNo.equals(that.serialNo) : that.serialNo != null) return false;
         if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
             return false;
-        if (materialNo != null ? !materialNo.equals(that.materialNo) : that.materialNo != null) return false;
         if (materialName != null ? !materialName.equals(that.materialName) : that.materialName != null) return false;
+        if (materialNo != null ? !materialNo.equals(that.materialNo) : that.materialNo != null) return false;
+        if (materialSerialNo != null ? !materialSerialNo.equals(that.materialSerialNo) : that.materialSerialNo != null)
+            return false;
+        if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
+            return false;
+        if (supplierSerialNo != null ? !supplierSerialNo.equals(that.supplierSerialNo) : that.supplierSerialNo != null)
+            return false;
         if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
         if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
         if (createPersonName != null ? !createPersonName.equals(that.createPersonName) : that.createPersonName != null)
             return false;
         if (lastUpdatePersonName != null ? !lastUpdatePersonName.equals(that.lastUpdatePersonName) : that.lastUpdatePersonName != null)
             return false;
-        if (defaultEntryStorageLocationId != null ? !defaultEntryStorageLocationId.equals(that.defaultEntryStorageLocationId) : that.defaultEntryStorageLocationId != null)
-            return false;
-        if (defaultInspectionStorageLocationId != null ? !defaultInspectionStorageLocationId.equals(that.defaultInspectionStorageLocationId) : that.defaultInspectionStorageLocationId != null)
-            return false;
-        if (defaultQualifiedStorageLocationId != null ? !defaultQualifiedStorageLocationId.equals(that.defaultQualifiedStorageLocationId) : that.defaultQualifiedStorageLocationId != null)
-            return false;
-        if (defaultUnqualifiedStorageLocationId != null ? !defaultUnqualifiedStorageLocationId.equals(that.defaultUnqualifiedStorageLocationId) : that.defaultUnqualifiedStorageLocationId != null)
-            return false;
-        if (defaultDeliveryStorageLocationId != null ? !defaultDeliveryStorageLocationId.equals(that.defaultDeliveryStorageLocationId) : that.defaultDeliveryStorageLocationId != null)
-            return false;
-        if (defaultPrepareTargetStorageLocationId != null ? !defaultPrepareTargetStorageLocationId.equals(that.defaultPrepareTargetStorageLocationId) : that.defaultPrepareTargetStorageLocationId != null)
-            return false;
-        if (defaultEntryStorageLocationNo != null ? !defaultEntryStorageLocationNo.equals(that.defaultEntryStorageLocationNo) : that.defaultEntryStorageLocationNo != null)
-            return false;
-        if (defaultEntryStorageLocationName != null ? !defaultEntryStorageLocationName.equals(that.defaultEntryStorageLocationName) : that.defaultEntryStorageLocationName != null)
-            return false;
-        if (defaultInspectionStorageLocationNo != null ? !defaultInspectionStorageLocationNo.equals(that.defaultInspectionStorageLocationNo) : that.defaultInspectionStorageLocationNo != null)
-            return false;
-        if (defaultInspectionStorageLocationName != null ? !defaultInspectionStorageLocationName.equals(that.defaultInspectionStorageLocationName) : that.defaultInspectionStorageLocationName != null)
-            return false;
-        if (defaultQualifiedStorageLocationNo != null ? !defaultQualifiedStorageLocationNo.equals(that.defaultQualifiedStorageLocationNo) : that.defaultQualifiedStorageLocationNo != null)
-            return false;
-        if (defaultQualifiedStorageLocationName != null ? !defaultQualifiedStorageLocationName.equals(that.defaultQualifiedStorageLocationName) : that.defaultQualifiedStorageLocationName != null)
-            return false;
-        if (defaultUnqualifiedStorageLocationNo != null ? !defaultUnqualifiedStorageLocationNo.equals(that.defaultUnqualifiedStorageLocationNo) : that.defaultUnqualifiedStorageLocationNo != null)
-            return false;
-        if (defaultUnqualifiedStorageLocationName != null ? !defaultUnqualifiedStorageLocationName.equals(that.defaultUnqualifiedStorageLocationName) : that.defaultUnqualifiedStorageLocationName != null)
-            return false;
-        if (defaultDeliveryStorageLocationNo != null ? !defaultDeliveryStorageLocationNo.equals(that.defaultDeliveryStorageLocationNo) : that.defaultDeliveryStorageLocationNo != null)
-            return false;
-        if (defaultDeliveryStorageLocationName != null ? !defaultDeliveryStorageLocationName.equals(that.defaultDeliveryStorageLocationName) : that.defaultDeliveryStorageLocationName != null)
-            return false;
-        if (defaultPrepareTargetStorageLocationNo != null ? !defaultPrepareTargetStorageLocationNo.equals(that.defaultPrepareTargetStorageLocationNo) : that.defaultPrepareTargetStorageLocationNo != null)
-            return false;
-        if (defaultPrepareTargetStorageLocationName != null ? !defaultPrepareTargetStorageLocationName.equals(that.defaultPrepareTargetStorageLocationName) : that.defaultPrepareTargetStorageLocationName != null)
-            return false;
-        if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
-            return false;
-        if (defaultInspectionAmount != null ? !defaultInspectionAmount.equals(that.defaultInspectionAmount) : that.defaultInspectionAmount != null)
-            return false;
-        if (barCodeNo != null ? !barCodeNo.equals(that.barCodeNo) : that.barCodeNo != null) return false;
-        if (trayCapacity != null ? !trayCapacity.equals(that.trayCapacity) : that.trayCapacity != null) return false;
 
         return true;
     }
@@ -1074,6 +956,7 @@ public class SupplyView {
         result = 31 * result + (defaultEntryAmount != null ? defaultEntryAmount.hashCode() : 0);
         result = 31 * result + (defaultEntryUnit != null ? defaultEntryUnit.hashCode() : 0);
         result = 31 * result + (defaultEntryUnitAmount != null ? defaultEntryUnitAmount.hashCode() : 0);
+        result = 31 * result + (defaultInspectionAmount != null ? defaultInspectionAmount.hashCode() : 0);
         result = 31 * result + (defaultInspectionUnit != null ? defaultInspectionUnit.hashCode() : 0);
         result = 31 * result + (defaultInspectionUnitAmount != null ? defaultInspectionUnitAmount.hashCode() : 0);
         result = 31 * result + (defaultDeliveryAmount != null ? defaultDeliveryAmount.hashCode() : 0);
@@ -1120,35 +1003,25 @@ public class SupplyView {
         result = 31 * result + (lastUpdatePersonId != null ? lastUpdatePersonId.hashCode() : 0);
         result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
         result = 31 * result + enabled;
+        result = 31 * result + (defaultEntryStorageLocationNo != null ? defaultEntryStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (defaultInspectionStorageLocationNo != null ? defaultInspectionStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (defaultQualifiedStorageLocationNo != null ? defaultQualifiedStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (defaultUnqualifiedStorageLocationNo != null ? defaultUnqualifiedStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (defaultDeliveryStorageLocationNo != null ? defaultDeliveryStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (defaultPrepareTargetStorageLocationNo != null ? defaultPrepareTargetStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (barCodeNo != null ? barCodeNo.hashCode() : 0);
+        result = 31 * result + (trayCapacity != null ? trayCapacity.hashCode() : 0);
+        result = 31 * result + (serialNo != null ? serialNo.hashCode() : 0);
         result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
-        result = 31 * result + (materialNo != null ? materialNo.hashCode() : 0);
         result = 31 * result + (materialName != null ? materialName.hashCode() : 0);
+        result = 31 * result + (materialNo != null ? materialNo.hashCode() : 0);
+        result = 31 * result + (materialSerialNo != null ? materialSerialNo.hashCode() : 0);
+        result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
+        result = 31 * result + (supplierSerialNo != null ? supplierSerialNo.hashCode() : 0);
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
         result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
         result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
         result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
-        result = 31 * result + (defaultEntryStorageLocationId != null ? defaultEntryStorageLocationId.hashCode() : 0);
-        result = 31 * result + (defaultInspectionStorageLocationId != null ? defaultInspectionStorageLocationId.hashCode() : 0);
-        result = 31 * result + (defaultQualifiedStorageLocationId != null ? defaultQualifiedStorageLocationId.hashCode() : 0);
-        result = 31 * result + (defaultUnqualifiedStorageLocationId != null ? defaultUnqualifiedStorageLocationId.hashCode() : 0);
-        result = 31 * result + (defaultDeliveryStorageLocationId != null ? defaultDeliveryStorageLocationId.hashCode() : 0);
-        result = 31 * result + (defaultPrepareTargetStorageLocationId != null ? defaultPrepareTargetStorageLocationId.hashCode() : 0);
-        result = 31 * result + (defaultEntryStorageLocationNo != null ? defaultEntryStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultEntryStorageLocationName != null ? defaultEntryStorageLocationName.hashCode() : 0);
-        result = 31 * result + (defaultInspectionStorageLocationNo != null ? defaultInspectionStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultInspectionStorageLocationName != null ? defaultInspectionStorageLocationName.hashCode() : 0);
-        result = 31 * result + (defaultQualifiedStorageLocationNo != null ? defaultQualifiedStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultQualifiedStorageLocationName != null ? defaultQualifiedStorageLocationName.hashCode() : 0);
-        result = 31 * result + (defaultUnqualifiedStorageLocationNo != null ? defaultUnqualifiedStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultUnqualifiedStorageLocationName != null ? defaultUnqualifiedStorageLocationName.hashCode() : 0);
-        result = 31 * result + (defaultDeliveryStorageLocationNo != null ? defaultDeliveryStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultDeliveryStorageLocationName != null ? defaultDeliveryStorageLocationName.hashCode() : 0);
-        result = 31 * result + (defaultPrepareTargetStorageLocationNo != null ? defaultPrepareTargetStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultPrepareTargetStorageLocationName != null ? defaultPrepareTargetStorageLocationName.hashCode() : 0);
-        result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
-        result = 31 * result + (defaultInspectionAmount != null ? defaultInspectionAmount.hashCode() : 0);
-        result = 31 * result + (barCodeNo != null ? barCodeNo.hashCode() : 0);
-        result = 31 * result + (trayCapacity != null ? trayCapacity.hashCode() : 0);
         return result;
     }
 }

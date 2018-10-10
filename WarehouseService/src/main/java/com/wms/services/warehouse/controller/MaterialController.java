@@ -1,8 +1,8 @@
 package com.wms.services.warehouse.controller;
 
+import com.wms.utilities.model.Material;
 import com.wms.utilities.model.MaterialView;
 import org.springframework.http.ResponseEntity;
-import com.wms.utilities.model.Material;
 
 public interface MaterialController {
     ResponseEntity<int[]> add(String accountBook,Material[] materials);

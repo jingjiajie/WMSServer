@@ -1,7 +1,6 @@
 package com.wms.utilities.model;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 public class Material {
@@ -11,10 +10,11 @@ public class Material {
     private String no;
     private String productLine;
     private int enabled;
+    private String serialNo;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -24,7 +24,7 @@ public class Material {
     }
 
     @Basic
-    @Column(name = "Name", nullable = false, length = 64)
+    @Column(name = "Name")
     public String getName() {
         return name;
     }
@@ -34,7 +34,7 @@ public class Material {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
@@ -44,7 +44,7 @@ public class Material {
     }
 
     @Basic
-    @Column(name = "No", nullable = false, length = 64)
+    @Column(name = "No")
     public String getNo() {
         return no;
     }
@@ -54,7 +54,7 @@ public class Material {
     }
 
     @Basic
-    @Column(name = "ProductLine", nullable = false, length = 64)
+    @Column(name = "ProductLine")
     public String getProductLine() {
         return productLine;
     }
@@ -64,7 +64,7 @@ public class Material {
     }
 
     @Basic
-    @Column(name = "Enabled", nullable = false)
+    @Column(name = "Enabled")
     public int getEnabled() {
         return enabled;
     }
@@ -73,22 +73,44 @@ public class Material {
         this.enabled = enabled;
     }
 
+    @Basic
+    @Column(name = "SerialNo")
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Material material = (Material) o;
-        return id == material.id &&
-                warehouseId == material.warehouseId &&
-                enabled == material.enabled &&
-                Objects.equals(name, material.name) &&
-                Objects.equals(no, material.no) &&
-                Objects.equals(productLine, material.productLine);
+
+        if (id != material.id) return false;
+        if (warehouseId != material.warehouseId) return false;
+        if (enabled != material.enabled) return false;
+        if (name != null ? !name.equals(material.name) : material.name != null) return false;
+        if (no != null ? !no.equals(material.no) : material.no != null) return false;
+        if (productLine != null ? !productLine.equals(material.productLine) : material.productLine != null)
+            return false;
+        if (serialNo != null ? !serialNo.equals(material.serialNo) : material.serialNo != null) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, name, warehouseId, no, productLine, enabled);
+        int result = id;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + warehouseId;
+        result = 31 * result + (no != null ? no.hashCode() : 0);
+        result = 31 * result + (productLine != null ? productLine.hashCode() : 0);
+        result = 31 * result + enabled;
+        result = 31 * result + (serialNo != null ? serialNo.hashCode() : 0);
+        return result;
     }
 }
