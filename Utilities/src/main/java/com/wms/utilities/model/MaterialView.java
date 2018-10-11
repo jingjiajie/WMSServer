@@ -15,6 +15,7 @@ public class MaterialView {
     private String warehouseName;
     private String productLine;
     private int enabled;
+    private String serialNo;
 
     @Id
     @Basic
@@ -105,5 +106,15 @@ public class MaterialView {
     public int hashCode() {
 
         return Objects.hash(id, name, warehouseId, no, warehouseName, productLine, enabled);
+    }
+
+    @Basic
+    @Column(name = "SerialNo")
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
     }
 }

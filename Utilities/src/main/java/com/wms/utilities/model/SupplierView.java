@@ -42,6 +42,7 @@ public class SupplierView {
     private String createPersonName;
     private String lastUpdatePersonName;
     private int enabled;
+    private String serialNo;
 
     @Id
     @Basic
@@ -470,5 +471,15 @@ public class SupplierView {
         result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
         result = 31 * result + enabled;
         return result;
+    }
+
+    @Basic
+    @Column(name = "SerialNo")
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
     }
 }

@@ -36,6 +36,7 @@ public class Supplier {
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
     private int enabled=1;
+    private String serialNo;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -426,5 +427,15 @@ public class Supplier {
         result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
         result = 31 * result + enabled;
         return result;
+    }
+
+    @Basic
+    @Column(name = "SerialNo")
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
     }
 }

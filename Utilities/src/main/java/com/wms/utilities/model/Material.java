@@ -11,6 +11,7 @@ public class Material {
     private String no;
     private String productLine;
     private int enabled;
+    private String serialNo;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,5 +91,15 @@ public class Material {
     public int hashCode() {
 
         return Objects.hash(id, name, warehouseId, no, productLine, enabled);
+    }
+
+    @Basic
+    @Column(name = "SerialNo")
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
     }
 }

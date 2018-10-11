@@ -2,8 +2,6 @@ package com.wms.services.warehouse.datastructures;
 
 import com.wms.utilities.model.InspectionNoteItemView;
 import com.wms.utilities.model.InspectionNoteView;
-import com.wms.utilities.model.WarehouseEntryItemView;
-import com.wms.utilities.model.WarehouseEntryView;
 
 import java.util.List;
 
