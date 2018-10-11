@@ -8,7 +8,6 @@ import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.Material;
 import com.wms.utilities.model.SettlementNoteItem;
 import com.wms.utilities.model.SettlementNoteItemView;
 import com.wms.utilities.vaildator.Validator;

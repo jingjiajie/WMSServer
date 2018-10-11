@@ -897,7 +897,6 @@ public class SupplyView {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(id, warehouseId, supplierId, materialId, defaultEntryAmount, defaultEntryUnit, defaultEntryUnitAmount, defaultInspectionAmount, defaultInspectionUnit, defaultInspectionUnitAmount, defaultDeliveryAmount, defaultDeliveryUnit, defaultDeliveryUnitAmount, validPeriod, photoIndex, containerNo, factory, workPosition, supplierType, type, size, groupPrincipal, singleBoxPhotoIndex, singleBoxPackagingBoxType, singleBoxLength, singleBoxWidth, singleBoxHeight, singleBoxSnp, singleBoxRatedMinimumBoxCount, singleBoxWeight, singleBoxLayerCount, singleBoxStorageCount, singleBoxTheoreticalLayerCount, singleBoxTheoreticalStorageHeight, singleBoxThroreticalStorageCount, outerPackingPhotoIndex, outerPackingBoxType, outerPackingLength, outerPackingWidth, outerPackingHeight, outerPackingSnp, outerPackingComment, outerPackingRequiredLayers, deliveryBoxType, deliveryBoxLength, deliveryBoxWidth, deliveryBoxHeight, isHistory, newestSupplyId, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime, enabled, defaultEntryStorageLocationNo, defaultInspectionStorageLocationNo, defaultQualifiedStorageLocationNo, defaultUnqualifiedStorageLocationNo, defaultDeliveryStorageLocationNo, defaultPrepareTargetStorageLocationNo, barCodeNo, trayCapacity, serialNo, warehouseName, materialName, materialNo, materialSerialNo, materialProductLine, supplierSerialNo, supplierNo, supplierName, createPersonName, lastUpdatePersonName);
     }
 }

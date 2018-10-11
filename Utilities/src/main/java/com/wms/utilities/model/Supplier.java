@@ -3,6 +3,7 @@ package com.wms.utilities.model;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity
 public class Supplier {
@@ -35,12 +36,12 @@ public class Supplier {
     private Timestamp createTime;
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
-    private int enabled=1;
+    private int enabled;
     private String serialNo;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -50,7 +51,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
@@ -60,7 +61,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "No", nullable = true, length = 64)
+    @Column(name = "No")
     public String getNo() {
         return no;
     }
@@ -70,7 +71,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "FullName", nullable = true, length = 64)
+    @Column(name = "FullName")
     public String getFullName() {
         return fullName;
     }
@@ -80,7 +81,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "Name", nullable = true, length = 64)
+    @Column(name = "Name")
     public String getName() {
         return name;
     }
@@ -90,7 +91,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "EnterpriseCode", nullable = true, length = 64)
+    @Column(name = "EnterpriseCode")
     public String getEnterpriseCode() {
         return enterpriseCode;
     }
@@ -100,7 +101,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ContractNo", nullable = true, length = 64)
+    @Column(name = "ContractNo")
     public String getContractNo() {
         return contractNo;
     }
@@ -110,7 +111,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ContractStartTime", nullable = true)
+    @Column(name = "ContractStartTime")
     public Timestamp getContractStartTime() {
         return contractStartTime;
     }
@@ -120,7 +121,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ContractEndTime", nullable = true)
+    @Column(name = "ContractEndTime")
     public Timestamp getContractEndTime() {
         return contractEndTime;
     }
@@ -130,7 +131,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "InvoiceDelayMonth", nullable = true, precision = 3)
+    @Column(name = "InvoiceDelayMonth")
     public BigDecimal getInvoiceDelayMonth() {
         return invoiceDelayMonth;
     }
@@ -140,7 +141,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "BalanceDelayMonth", nullable = true, precision = 3)
+    @Column(name = "BalanceDelayMonth")
     public BigDecimal getBalanceDelayMonth() {
         return balanceDelayMonth;
     }
@@ -150,7 +151,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "NetArea", nullable = true, precision = 3)
+    @Column(name = "NetArea")
     public BigDecimal getNetArea() {
         return netArea;
     }
@@ -160,7 +161,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "FixedStorageCost", nullable = true, precision = 3)
+    @Column(name = "FixedStorageCost")
     public BigDecimal getFixedStorageCost() {
         return fixedStorageCost;
     }
@@ -170,7 +171,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ContractStorageArea", nullable = true, precision = 3)
+    @Column(name = "ContractStorageArea")
     public BigDecimal getContractStorageArea() {
         return contractStorageArea;
     }
@@ -180,7 +181,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "TaxpayerNumber", nullable = true, length = 64)
+    @Column(name = "TaxpayerNumber")
     public String getTaxpayerNumber() {
         return taxpayerNumber;
     }
@@ -190,7 +191,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "Address", nullable = true, length = 64)
+    @Column(name = "Address")
     public String getAddress() {
         return address;
     }
@@ -200,7 +201,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "Tel", nullable = true, length = 64)
+    @Column(name = "Tel")
     public String getTel() {
         return tel;
     }
@@ -210,7 +211,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "BankName", nullable = true, length = 64)
+    @Column(name = "BankName")
     public String getBankName() {
         return bankName;
     }
@@ -220,7 +221,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "BankAccount", nullable = true, length = 64)
+    @Column(name = "BankAccount")
     public String getBankAccount() {
         return bankAccount;
     }
@@ -230,7 +231,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "BankNo", nullable = true, length = 64)
+    @Column(name = "BankNo")
     public String getBankNo() {
         return bankNo;
     }
@@ -240,7 +241,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ZipCode", nullable = true, length = 64)
+    @Column(name = "ZipCode")
     public String getZipCode() {
         return zipCode;
     }
@@ -250,7 +251,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "RecipientName", nullable = true, length = 64)
+    @Column(name = "RecipientName")
     public String getRecipientName() {
         return recipientName;
     }
@@ -260,7 +261,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "ContractState", nullable = true, length = 64)
+    @Column(name = "ContractState")
     public String getContractState() {
         return contractState;
     }
@@ -270,7 +271,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "IsHistory", nullable = false)
+    @Column(name = "IsHistory")
     public int getIsHistory() {
         return isHistory;
     }
@@ -280,7 +281,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "NewestSupplierID", nullable = true)
+    @Column(name = "NewestSupplierID")
     public Integer getNewestSupplierId() {
         return newestSupplierId;
     }
@@ -290,7 +291,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "CreatePersonID", nullable = false)
+    @Column(name = "CreatePersonID")
     public int getCreatePersonId() {
         return createPersonId;
     }
@@ -300,7 +301,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "CreateTime", nullable = false)
+    @Column(name = "CreateTime")
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -310,7 +311,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "LastUpdatePersonID", nullable = true)
+    @Column(name = "LastUpdatePersonID")
     public Integer getLastUpdatePersonId() {
         return lastUpdatePersonId;
     }
@@ -320,7 +321,7 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "LastUpdateTime", nullable = true)
+    @Column(name = "LastUpdateTime")
     public Timestamp getLastUpdateTime() {
         return lastUpdateTime;
     }
@@ -330,103 +331,13 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "Enabled", nullable = false)
+    @Column(name = "Enabled")
     public int getEnabled() {
         return enabled;
     }
 
     public void setEnabled(int enabled) {
         this.enabled = enabled;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Supplier supplier = (Supplier) o;
-
-        if (id != supplier.id) return false;
-        if (warehouseId != supplier.warehouseId) return false;
-        if (isHistory != supplier.isHistory) return false;
-        if (createPersonId != supplier.createPersonId) return false;
-        if (enabled != supplier.enabled) return false;
-        if (no != null ? !no.equals(supplier.no) : supplier.no != null) return false;
-        if (fullName != null ? !fullName.equals(supplier.fullName) : supplier.fullName != null) return false;
-        if (name != null ? !name.equals(supplier.name) : supplier.name != null) return false;
-        if (enterpriseCode != null ? !enterpriseCode.equals(supplier.enterpriseCode) : supplier.enterpriseCode != null)
-            return false;
-        if (contractNo != null ? !contractNo.equals(supplier.contractNo) : supplier.contractNo != null) return false;
-        if (contractStartTime != null ? !contractStartTime.equals(supplier.contractStartTime) : supplier.contractStartTime != null)
-            return false;
-        if (contractEndTime != null ? !contractEndTime.equals(supplier.contractEndTime) : supplier.contractEndTime != null)
-            return false;
-        if (invoiceDelayMonth != null ? !invoiceDelayMonth.equals(supplier.invoiceDelayMonth) : supplier.invoiceDelayMonth != null)
-            return false;
-        if (balanceDelayMonth != null ? !balanceDelayMonth.equals(supplier.balanceDelayMonth) : supplier.balanceDelayMonth != null)
-            return false;
-        if (netArea != null ? !netArea.equals(supplier.netArea) : supplier.netArea != null) return false;
-        if (fixedStorageCost != null ? !fixedStorageCost.equals(supplier.fixedStorageCost) : supplier.fixedStorageCost != null)
-            return false;
-        if (contractStorageArea != null ? !contractStorageArea.equals(supplier.contractStorageArea) : supplier.contractStorageArea != null)
-            return false;
-        if (taxpayerNumber != null ? !taxpayerNumber.equals(supplier.taxpayerNumber) : supplier.taxpayerNumber != null)
-            return false;
-        if (address != null ? !address.equals(supplier.address) : supplier.address != null) return false;
-        if (tel != null ? !tel.equals(supplier.tel) : supplier.tel != null) return false;
-        if (bankName != null ? !bankName.equals(supplier.bankName) : supplier.bankName != null) return false;
-        if (bankAccount != null ? !bankAccount.equals(supplier.bankAccount) : supplier.bankAccount != null)
-            return false;
-        if (bankNo != null ? !bankNo.equals(supplier.bankNo) : supplier.bankNo != null) return false;
-        if (zipCode != null ? !zipCode.equals(supplier.zipCode) : supplier.zipCode != null) return false;
-        if (recipientName != null ? !recipientName.equals(supplier.recipientName) : supplier.recipientName != null)
-            return false;
-        if (contractState != null ? !contractState.equals(supplier.contractState) : supplier.contractState != null)
-            return false;
-        if (newestSupplierId != null ? !newestSupplierId.equals(supplier.newestSupplierId) : supplier.newestSupplierId != null)
-            return false;
-        if (createTime != null ? !createTime.equals(supplier.createTime) : supplier.createTime != null) return false;
-        if (lastUpdatePersonId != null ? !lastUpdatePersonId.equals(supplier.lastUpdatePersonId) : supplier.lastUpdatePersonId != null)
-            return false;
-        if (lastUpdateTime != null ? !lastUpdateTime.equals(supplier.lastUpdateTime) : supplier.lastUpdateTime != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + warehouseId;
-        result = 31 * result + (no != null ? no.hashCode() : 0);
-        result = 31 * result + (fullName != null ? fullName.hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (enterpriseCode != null ? enterpriseCode.hashCode() : 0);
-        result = 31 * result + (contractNo != null ? contractNo.hashCode() : 0);
-        result = 31 * result + (contractStartTime != null ? contractStartTime.hashCode() : 0);
-        result = 31 * result + (contractEndTime != null ? contractEndTime.hashCode() : 0);
-        result = 31 * result + (invoiceDelayMonth != null ? invoiceDelayMonth.hashCode() : 0);
-        result = 31 * result + (balanceDelayMonth != null ? balanceDelayMonth.hashCode() : 0);
-        result = 31 * result + (netArea != null ? netArea.hashCode() : 0);
-        result = 31 * result + (fixedStorageCost != null ? fixedStorageCost.hashCode() : 0);
-        result = 31 * result + (contractStorageArea != null ? contractStorageArea.hashCode() : 0);
-        result = 31 * result + (taxpayerNumber != null ? taxpayerNumber.hashCode() : 0);
-        result = 31 * result + (address != null ? address.hashCode() : 0);
-        result = 31 * result + (tel != null ? tel.hashCode() : 0);
-        result = 31 * result + (bankName != null ? bankName.hashCode() : 0);
-        result = 31 * result + (bankAccount != null ? bankAccount.hashCode() : 0);
-        result = 31 * result + (bankNo != null ? bankNo.hashCode() : 0);
-        result = 31 * result + (zipCode != null ? zipCode.hashCode() : 0);
-        result = 31 * result + (recipientName != null ? recipientName.hashCode() : 0);
-        result = 31 * result + (contractState != null ? contractState.hashCode() : 0);
-        result = 31 * result + isHistory;
-        result = 31 * result + (newestSupplierId != null ? newestSupplierId.hashCode() : 0);
-        result = 31 * result + createPersonId;
-        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
-        result = 31 * result + (lastUpdatePersonId != null ? lastUpdatePersonId.hashCode() : 0);
-        result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
-        result = 31 * result + enabled;
-        return result;
     }
 
     @Basic
@@ -437,5 +348,49 @@ public class Supplier {
 
     public void setSerialNo(String serialNo) {
         this.serialNo = serialNo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Supplier supplier = (Supplier) o;
+        return id == supplier.id &&
+                warehouseId == supplier.warehouseId &&
+                isHistory == supplier.isHistory &&
+                createPersonId == supplier.createPersonId &&
+                enabled == supplier.enabled &&
+                Objects.equals(no, supplier.no) &&
+                Objects.equals(fullName, supplier.fullName) &&
+                Objects.equals(name, supplier.name) &&
+                Objects.equals(enterpriseCode, supplier.enterpriseCode) &&
+                Objects.equals(contractNo, supplier.contractNo) &&
+                Objects.equals(contractStartTime, supplier.contractStartTime) &&
+                Objects.equals(contractEndTime, supplier.contractEndTime) &&
+                Objects.equals(invoiceDelayMonth, supplier.invoiceDelayMonth) &&
+                Objects.equals(balanceDelayMonth, supplier.balanceDelayMonth) &&
+                Objects.equals(netArea, supplier.netArea) &&
+                Objects.equals(fixedStorageCost, supplier.fixedStorageCost) &&
+                Objects.equals(contractStorageArea, supplier.contractStorageArea) &&
+                Objects.equals(taxpayerNumber, supplier.taxpayerNumber) &&
+                Objects.equals(address, supplier.address) &&
+                Objects.equals(tel, supplier.tel) &&
+                Objects.equals(bankName, supplier.bankName) &&
+                Objects.equals(bankAccount, supplier.bankAccount) &&
+                Objects.equals(bankNo, supplier.bankNo) &&
+                Objects.equals(zipCode, supplier.zipCode) &&
+                Objects.equals(recipientName, supplier.recipientName) &&
+                Objects.equals(contractState, supplier.contractState) &&
+                Objects.equals(newestSupplierId, supplier.newestSupplierId) &&
+                Objects.equals(createTime, supplier.createTime) &&
+                Objects.equals(lastUpdatePersonId, supplier.lastUpdatePersonId) &&
+                Objects.equals(lastUpdateTime, supplier.lastUpdateTime) &&
+                Objects.equals(serialNo, supplier.serialNo);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, warehouseId, no, fullName, name, enterpriseCode, contractNo, contractStartTime, contractEndTime, invoiceDelayMonth, balanceDelayMonth, netArea, fixedStorageCost, contractStorageArea, taxpayerNumber, address, tel, bankName, bankAccount, bankNo, zipCode, recipientName, contractState, isHistory, newestSupplierId, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime, enabled, serialNo);
     }
 }
