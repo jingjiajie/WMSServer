@@ -2,13 +2,12 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.utilities.model.WarehouseEntryItem;
-import com.wms.utilities.model.WarehouseEntryItemView;
 import com.wms.services.warehouse.service.WarehouseEntryItemService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.WarehouseEntryItem;
+import com.wms.utilities.model.WarehouseEntryItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -47,7 +46,7 @@ public class WarehouseEntryItemControllerImpl implements WarehouseEntryItemContr
     @RequestMapping(value = "/{cond}",method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public WarehouseEntryItemView[] find(@PathVariable("accountBook") String accountBook,
-                                                         @PathVariable("cond") String strCond) {
+                                         @PathVariable("cond") String strCond) {
         return this.warehouseEntryItemService.find(accountBook, Condition.fromJson(strCond));
     }
 

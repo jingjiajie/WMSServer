@@ -29,34 +29,33 @@ public class WarehouseEntryItemView {
     private Timestamp inventoryDate;
     private Timestamp manufactureDate;
     private Timestamp expiryDate;
+    private Integer qualifiedStorageLocationId;
+    private Integer unqualifiedStorageLocationId;
     private String warehouseEntryNo;
+    private Timestamp warehouseEntryCreateTime;
+    private Integer materialId;
     private String materialNo;
     private String materialName;
+    private String materialProductLine;
+    private Integer supplierId;
     private String supplierNo;
     private String supplierName;
     private String storageLocationNo;
     private String storageLocationName;
     private String personName;
-    private String materialProductLine;
-    private Integer supplierId;
-    private Integer materialId;
-    private BigDecimal defaultInspectionAmount;
-    private String defaultInspectionUnit;
-    private BigDecimal defaultInspectionUnitAmount;
-    private Integer defaultInspectionStorageLocationId;
-    private String defaultInspectionStorageLocationNo;
-    private String defaultInspectionStorageLocationName;
-    private Integer qualifiedStorageLocationId;
-    private Integer unqualifiedStorageLocationId;
+    private String supplySerialNo;
+    private BigDecimal supplyDefaultInspectionAmount;
+    private String supplyDefaultInspectionUnit;
+    private BigDecimal supplyDefaultInspectionUnitAmount;
+    private String supplyDefaultInspectionStorageLocationNo;
     private String qualifiedStorageLocationNo;
     private String qualifiedStorageLocationName;
     private String unqualifiedStorageLocationNo;
     private String unqualifiedStorageLocationName;
-    private Timestamp warehouseEntryCreateTime;
 
     @Id
     @Basic
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -66,7 +65,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "WarehouseEntryID", nullable = false)
+    @Column(name = "WarehouseEntryID")
     public int getWarehouseEntryId() {
         return warehouseEntryId;
     }
@@ -76,7 +75,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "SupplyID", nullable = false)
+    @Column(name = "SupplyID")
     public int getSupplyId() {
         return supplyId;
     }
@@ -86,7 +85,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "StorageLocationID", nullable = false)
+    @Column(name = "StorageLocationID")
     public int getStorageLocationId() {
         return storageLocationId;
     }
@@ -96,7 +95,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "ExpectedAmount", nullable = false, precision = 3)
+    @Column(name = "ExpectedAmount")
     public BigDecimal getExpectedAmount() {
         return expectedAmount;
     }
@@ -106,7 +105,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "RealAmount", nullable = false, precision = 3)
+    @Column(name = "RealAmount")
     public BigDecimal getRealAmount() {
         return realAmount;
     }
@@ -116,7 +115,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "Unit", nullable = false, length = 64)
+    @Column(name = "Unit")
     public String getUnit() {
         return unit;
     }
@@ -126,7 +125,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "UnitAmount", nullable = false, precision = 3)
+    @Column(name = "UnitAmount")
     public BigDecimal getUnitAmount() {
         return unitAmount;
     }
@@ -136,7 +135,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "InspectionAmount", nullable = false, precision = 3)
+    @Column(name = "InspectionAmount")
     public BigDecimal getInspectionAmount() {
         return inspectionAmount;
     }
@@ -146,7 +145,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "State", nullable = false)
+    @Column(name = "State")
     public int getState() {
         return state;
     }
@@ -156,7 +155,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "RefuseAmount", nullable = false, precision = 3)
+    @Column(name = "RefuseAmount")
     public BigDecimal getRefuseAmount() {
         return refuseAmount;
     }
@@ -166,7 +165,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "RefuseUnit", nullable = false, length = 64)
+    @Column(name = "RefuseUnit")
     public String getRefuseUnit() {
         return refuseUnit;
     }
@@ -176,7 +175,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "RefuseUnitAmount", nullable = false, precision = 3)
+    @Column(name = "RefuseUnitAmount")
     public BigDecimal getRefuseUnitAmount() {
         return refuseUnitAmount;
     }
@@ -186,7 +185,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "PersonID", nullable = true)
+    @Column(name = "PersonID")
     public Integer getPersonId() {
         return personId;
     }
@@ -196,7 +195,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "Comment", nullable = true, length = 64)
+    @Column(name = "Comment")
     public String getComment() {
         return comment;
     }
@@ -206,7 +205,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "ManufactureNo", nullable = true, length = 64)
+    @Column(name = "ManufactureNo")
     public String getManufactureNo() {
         return manufactureNo;
     }
@@ -216,7 +215,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "InventoryDate", nullable = true)
+    @Column(name = "InventoryDate")
     public Timestamp getInventoryDate() {
         return inventoryDate;
     }
@@ -226,7 +225,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "ManufactureDate", nullable = true)
+    @Column(name = "ManufactureDate")
     public Timestamp getManufactureDate() {
         return manufactureDate;
     }
@@ -236,7 +235,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "ExpiryDate", nullable = true)
+    @Column(name = "ExpiryDate")
     public Timestamp getExpiryDate() {
         return expiryDate;
     }
@@ -246,7 +245,27 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "WarehouseEntryNo", nullable = true, length = 64)
+    @Column(name = "QualifiedStorageLocationID")
+    public Integer getQualifiedStorageLocationId() {
+        return qualifiedStorageLocationId;
+    }
+
+    public void setQualifiedStorageLocationId(Integer qualifiedStorageLocationId) {
+        this.qualifiedStorageLocationId = qualifiedStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "UnqualifiedStorageLocationID")
+    public Integer getUnqualifiedStorageLocationId() {
+        return unqualifiedStorageLocationId;
+    }
+
+    public void setUnqualifiedStorageLocationId(Integer unqualifiedStorageLocationId) {
+        this.unqualifiedStorageLocationId = unqualifiedStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "WarehouseEntryNo")
     public String getWarehouseEntryNo() {
         return warehouseEntryNo;
     }
@@ -256,7 +275,27 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "MaterialNo", nullable = true, length = 64)
+    @Column(name = "WarehouseEntryCreateTime")
+    public Timestamp getWarehouseEntryCreateTime() {
+        return warehouseEntryCreateTime;
+    }
+
+    public void setWarehouseEntryCreateTime(Timestamp warehouseEntryCreateTime) {
+        this.warehouseEntryCreateTime = warehouseEntryCreateTime;
+    }
+
+    @Basic
+    @Column(name = "MaterialID")
+    public Integer getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(Integer materialId) {
+        this.materialId = materialId;
+    }
+
+    @Basic
+    @Column(name = "MaterialNo")
     public String getMaterialNo() {
         return materialNo;
     }
@@ -266,7 +305,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "MaterialName", nullable = true, length = 64)
+    @Column(name = "MaterialName")
     public String getMaterialName() {
         return materialName;
     }
@@ -276,7 +315,27 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "SupplierNo", nullable = true, length = 64)
+    @Column(name = "MaterialProductLine")
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
+    @Basic
+    @Column(name = "SupplierID")
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    @Basic
+    @Column(name = "SupplierNo")
     public String getSupplierNo() {
         return supplierNo;
     }
@@ -286,7 +345,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "SupplierName", nullable = true, length = 64)
+    @Column(name = "SupplierName")
     public String getSupplierName() {
         return supplierName;
     }
@@ -296,7 +355,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "StorageLocationNo", nullable = true, length = 64)
+    @Column(name = "StorageLocationNo")
     public String getStorageLocationNo() {
         return storageLocationNo;
     }
@@ -306,7 +365,7 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "StorageLocationName", nullable = true, length = 64)
+    @Column(name = "StorageLocationName")
     public String getStorageLocationName() {
         return storageLocationName;
     }
@@ -316,13 +375,103 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
-    @Column(name = "PersonName", nullable = true, length = 64)
+    @Column(name = "PersonName")
     public String getPersonName() {
         return personName;
     }
 
     public void setPersonName(String personName) {
         this.personName = personName;
+    }
+
+    @Basic
+    @Column(name = "SupplySerialNo")
+    public String getSupplySerialNo() {
+        return supplySerialNo;
+    }
+
+    public void setSupplySerialNo(String supplySerialNo) {
+        this.supplySerialNo = supplySerialNo;
+    }
+
+    @Basic
+    @Column(name = "SupplyDefaultInspectionAmount")
+    public BigDecimal getSupplyDefaultInspectionAmount() {
+        return supplyDefaultInspectionAmount;
+    }
+
+    public void setSupplyDefaultInspectionAmount(BigDecimal supplyDefaultInspectionAmount) {
+        this.supplyDefaultInspectionAmount = supplyDefaultInspectionAmount;
+    }
+
+    @Basic
+    @Column(name = "SupplyDefaultInspectionUnit")
+    public String getSupplyDefaultInspectionUnit() {
+        return supplyDefaultInspectionUnit;
+    }
+
+    public void setSupplyDefaultInspectionUnit(String supplyDefaultInspectionUnit) {
+        this.supplyDefaultInspectionUnit = supplyDefaultInspectionUnit;
+    }
+
+    @Basic
+    @Column(name = "SupplyDefaultInspectionUnitAmount")
+    public BigDecimal getSupplyDefaultInspectionUnitAmount() {
+        return supplyDefaultInspectionUnitAmount;
+    }
+
+    public void setSupplyDefaultInspectionUnitAmount(BigDecimal supplyDefaultInspectionUnitAmount) {
+        this.supplyDefaultInspectionUnitAmount = supplyDefaultInspectionUnitAmount;
+    }
+
+    @Basic
+    @Column(name = "SupplyDefaultInspectionStorageLocationNo")
+    public String getSupplyDefaultInspectionStorageLocationNo() {
+        return supplyDefaultInspectionStorageLocationNo;
+    }
+
+    public void setSupplyDefaultInspectionStorageLocationNo(String supplyDefaultInspectionStorageLocationNo) {
+        this.supplyDefaultInspectionStorageLocationNo = supplyDefaultInspectionStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "QualifiedStorageLocationNo")
+    public String getQualifiedStorageLocationNo() {
+        return qualifiedStorageLocationNo;
+    }
+
+    public void setQualifiedStorageLocationNo(String qualifiedStorageLocationNo) {
+        this.qualifiedStorageLocationNo = qualifiedStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "QualifiedStorageLocationName")
+    public String getQualifiedStorageLocationName() {
+        return qualifiedStorageLocationName;
+    }
+
+    public void setQualifiedStorageLocationName(String qualifiedStorageLocationName) {
+        this.qualifiedStorageLocationName = qualifiedStorageLocationName;
+    }
+
+    @Basic
+    @Column(name = "UnqualifiedStorageLocationNo")
+    public String getUnqualifiedStorageLocationNo() {
+        return unqualifiedStorageLocationNo;
+    }
+
+    public void setUnqualifiedStorageLocationNo(String unqualifiedStorageLocationNo) {
+        this.unqualifiedStorageLocationNo = unqualifiedStorageLocationNo;
+    }
+
+    @Basic
+    @Column(name = "UnqualifiedStorageLocationName")
+    public String getUnqualifiedStorageLocationName() {
+        return unqualifiedStorageLocationName;
+    }
+
+    public void setUnqualifiedStorageLocationName(String unqualifiedStorageLocationName) {
+        this.unqualifiedStorageLocationName = unqualifiedStorageLocationName;
     }
 
     @Override
@@ -349,179 +498,34 @@ public class WarehouseEntryItemView {
                 Objects.equals(inventoryDate, that.inventoryDate) &&
                 Objects.equals(manufactureDate, that.manufactureDate) &&
                 Objects.equals(expiryDate, that.expiryDate) &&
+                Objects.equals(qualifiedStorageLocationId, that.qualifiedStorageLocationId) &&
+                Objects.equals(unqualifiedStorageLocationId, that.unqualifiedStorageLocationId) &&
                 Objects.equals(warehouseEntryNo, that.warehouseEntryNo) &&
+                Objects.equals(warehouseEntryCreateTime, that.warehouseEntryCreateTime) &&
+                Objects.equals(materialId, that.materialId) &&
                 Objects.equals(materialNo, that.materialNo) &&
                 Objects.equals(materialName, that.materialName) &&
+                Objects.equals(materialProductLine, that.materialProductLine) &&
+                Objects.equals(supplierId, that.supplierId) &&
                 Objects.equals(supplierNo, that.supplierNo) &&
                 Objects.equals(supplierName, that.supplierName) &&
                 Objects.equals(storageLocationNo, that.storageLocationNo) &&
                 Objects.equals(storageLocationName, that.storageLocationName) &&
-                Objects.equals(personName, that.personName);
+                Objects.equals(personName, that.personName) &&
+                Objects.equals(supplySerialNo, that.supplySerialNo) &&
+                Objects.equals(supplyDefaultInspectionAmount, that.supplyDefaultInspectionAmount) &&
+                Objects.equals(supplyDefaultInspectionUnit, that.supplyDefaultInspectionUnit) &&
+                Objects.equals(supplyDefaultInspectionUnitAmount, that.supplyDefaultInspectionUnitAmount) &&
+                Objects.equals(supplyDefaultInspectionStorageLocationNo, that.supplyDefaultInspectionStorageLocationNo) &&
+                Objects.equals(qualifiedStorageLocationNo, that.qualifiedStorageLocationNo) &&
+                Objects.equals(qualifiedStorageLocationName, that.qualifiedStorageLocationName) &&
+                Objects.equals(unqualifiedStorageLocationNo, that.unqualifiedStorageLocationNo) &&
+                Objects.equals(unqualifiedStorageLocationName, that.unqualifiedStorageLocationName);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, warehouseEntryId, supplyId, storageLocationId, expectedAmount, realAmount, unit, unitAmount, inspectionAmount, state, refuseAmount, refuseUnit, refuseUnitAmount, personId, comment, manufactureNo, inventoryDate, manufactureDate, expiryDate, warehouseEntryNo, materialNo, materialName, supplierNo, supplierName, storageLocationNo, storageLocationName, personName);
-    }
-
-    @Basic
-    @Column(name = "MaterialProductLine", nullable = true, length = 64)
-    public String getMaterialProductLine() {
-        return materialProductLine;
-    }
-
-    public void setMaterialProductLine(String materialProductLine) {
-        this.materialProductLine = materialProductLine;
-    }
-
-    @Basic
-    @Column(name = "SupplierID", nullable = true)
-    public Integer getSupplierId() {
-        return supplierId;
-    }
-
-    public void setSupplierId(Integer supplierId) {
-        this.supplierId = supplierId;
-    }
-
-    @Basic
-    @Column(name = "MaterialID", nullable = true)
-    public Integer getMaterialId() {
-        return materialId;
-    }
-
-    public void setMaterialId(Integer materialId) {
-        this.materialId = materialId;
-    }
-
-    @Basic
-    @Column(name = "DefaultInspectionAmount", nullable = true, precision = 3)
-    public BigDecimal getDefaultInspectionAmount() {
-        return defaultInspectionAmount;
-    }
-
-    public void setDefaultInspectionAmount(BigDecimal defaultInspectionAmount) {
-        this.defaultInspectionAmount = defaultInspectionAmount;
-    }
-
-    @Basic
-    @Column(name = "DefaultInspectionUnit", nullable = true, length = 64)
-    public String getDefaultInspectionUnit() {
-        return defaultInspectionUnit;
-    }
-
-    public void setDefaultInspectionUnit(String defaultInspectionUnit) {
-        this.defaultInspectionUnit = defaultInspectionUnit;
-    }
-
-    @Basic
-    @Column(name = "DefaultInspectionUnitAmount", nullable = true, precision = 3)
-    public BigDecimal getDefaultInspectionUnitAmount() {
-        return defaultInspectionUnitAmount;
-    }
-
-    public void setDefaultInspectionUnitAmount(BigDecimal defaultInspectionUnitAmount) {
-        this.defaultInspectionUnitAmount = defaultInspectionUnitAmount;
-    }
-
-    @Basic
-    @Column(name = "DefaultInspectionStorageLocationID", nullable = true)
-    public Integer getDefaultInspectionStorageLocationId() {
-        return defaultInspectionStorageLocationId;
-    }
-
-    public void setDefaultInspectionStorageLocationId(Integer defaultInspectionStorageLocationId) {
-        this.defaultInspectionStorageLocationId = defaultInspectionStorageLocationId;
-    }
-
-    @Basic
-    @Column(name = "DefaultInspectionStorageLocationNo", nullable = true, length = 64)
-    public String getDefaultInspectionStorageLocationNo() {
-        return defaultInspectionStorageLocationNo;
-    }
-
-    public void setDefaultInspectionStorageLocationNo(String defaultInspectionStorageLocationNo) {
-        this.defaultInspectionStorageLocationNo = defaultInspectionStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "DefaultInspectionStorageLocationName", nullable = true, length = 64)
-    public String getDefaultInspectionStorageLocationName() {
-        return defaultInspectionStorageLocationName;
-    }
-
-    public void setDefaultInspectionStorageLocationName(String defaultInspectionStorageLocationName) {
-        this.defaultInspectionStorageLocationName = defaultInspectionStorageLocationName;
-    }
-
-    @Basic
-    @Column(name = "QualifiedStorageLocationID", nullable = true)
-    public Integer getQualifiedStorageLocationId() {
-        return qualifiedStorageLocationId;
-    }
-
-    public void setQualifiedStorageLocationId(Integer qualifiedStorageLocationId) {
-        this.qualifiedStorageLocationId = qualifiedStorageLocationId;
-    }
-
-    @Basic
-    @Column(name = "UnqualifiedStorageLocationID", nullable = true)
-    public Integer getUnqualifiedStorageLocationId() {
-        return unqualifiedStorageLocationId;
-    }
-
-    public void setUnqualifiedStorageLocationId(Integer unqualifiedStorageLocationId) {
-        this.unqualifiedStorageLocationId = unqualifiedStorageLocationId;
-    }
-
-    @Basic
-    @Column(name = "QualifiedStorageLocationNo", nullable = true, length = 64)
-    public String getQualifiedStorageLocationNo() {
-        return qualifiedStorageLocationNo;
-    }
-
-    public void setQualifiedStorageLocationNo(String qualifiedStorageLocationNo) {
-        this.qualifiedStorageLocationNo = qualifiedStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "QualifiedStorageLocationName", nullable = true, length = 64)
-    public String getQualifiedStorageLocationName() {
-        return qualifiedStorageLocationName;
-    }
-
-    public void setQualifiedStorageLocationName(String qualifiedStorageLocationName) {
-        this.qualifiedStorageLocationName = qualifiedStorageLocationName;
-    }
-
-    @Basic
-    @Column(name = "UnqualifiedStorageLocationNo", nullable = true, length = 64)
-    public String getUnqualifiedStorageLocationNo() {
-        return unqualifiedStorageLocationNo;
-    }
-
-    public void setUnqualifiedStorageLocationNo(String unqualifiedStorageLocationNo) {
-        this.unqualifiedStorageLocationNo = unqualifiedStorageLocationNo;
-    }
-
-    @Basic
-    @Column(name = "UnqualifiedStorageLocationName", nullable = true, length = 64)
-    public String getUnqualifiedStorageLocationName() {
-        return unqualifiedStorageLocationName;
-    }
-
-    public void setUnqualifiedStorageLocationName(String unqualifiedStorageLocationName) {
-        this.unqualifiedStorageLocationName = unqualifiedStorageLocationName;
-    }
-
-    @Basic
-    @Column(name = "WarehouseEntryCreateTime")
-    public Timestamp getWarehouseEntryCreateTime() {
-        return warehouseEntryCreateTime;
-    }
-
-    public void setWarehouseEntryCreateTime(Timestamp warehouseEntryCreateTime) {
-        this.warehouseEntryCreateTime = warehouseEntryCreateTime;
+        return Objects.hash(id, warehouseEntryId, supplyId, storageLocationId, expectedAmount, realAmount, unit, unitAmount, inspectionAmount, state, refuseAmount, refuseUnit, refuseUnitAmount, personId, comment, manufactureNo, inventoryDate, manufactureDate, expiryDate, qualifiedStorageLocationId, unqualifiedStorageLocationId, warehouseEntryNo, warehouseEntryCreateTime, materialId, materialNo, materialName, materialProductLine, supplierId, supplierNo, supplierName, storageLocationNo, storageLocationName, personName, supplySerialNo, supplyDefaultInspectionAmount, supplyDefaultInspectionUnit, supplyDefaultInspectionUnitAmount, supplyDefaultInspectionStorageLocationNo, qualifiedStorageLocationNo, qualifiedStorageLocationName, unqualifiedStorageLocationNo, unqualifiedStorageLocationName);
     }
 }
