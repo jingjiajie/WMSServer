@@ -4,6 +4,7 @@ import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 public class MaterialView {
@@ -16,8 +17,8 @@ public class MaterialView {
     private int enabled;
     private String serialNo;
 
-    @Basic
     @Id
+    @Basic
     @Column(name = "ID")
     public int getId() {
         return id;
@@ -101,32 +102,20 @@ public class MaterialView {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         MaterialView that = (MaterialView) o;
-
-        if (id != that.id) return false;
-        if (warehouseId != that.warehouseId) return false;
-        if (enabled != that.enabled) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (no != null ? !no.equals(that.no) : that.no != null) return false;
-        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
-            return false;
-        if (productLine != null ? !productLine.equals(that.productLine) : that.productLine != null) return false;
-        if (serialNo != null ? !serialNo.equals(that.serialNo) : that.serialNo != null) return false;
-
-        return true;
+        return id == that.id &&
+                warehouseId == that.warehouseId &&
+                enabled == that.enabled &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(no, that.no) &&
+                Objects.equals(warehouseName, that.warehouseName) &&
+                Objects.equals(productLine, that.productLine) &&
+                Objects.equals(serialNo, that.serialNo);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + warehouseId;
-        result = 31 * result + (no != null ? no.hashCode() : 0);
-        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
-        result = 31 * result + (productLine != null ? productLine.hashCode() : 0);
-        result = 31 * result + enabled;
-        result = 31 * result + (serialNo != null ? serialNo.hashCode() : 0);
-        return result;
+
+        return Objects.hash(id, name, warehouseId, no, warehouseName, productLine, enabled, serialNo);
     }
 }

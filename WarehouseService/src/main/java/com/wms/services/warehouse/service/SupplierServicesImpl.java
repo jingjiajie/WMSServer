@@ -78,6 +78,13 @@ public class SupplierServicesImpl implements SupplierServices{
                 throw new WMSServiceException("供应商代号："+supplier.getNo()+"已经存在!");
             }
         });
+        Stream.of(suppliers).forEach((supplier)->{
+            Condition cond = new Condition();
+            cond.addCondition("serialNo",new String[]{supplier.getSerialNo()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
+            if(supplierDAO.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("供应商序号："+supplier.getSerialNo()+"已经存在!");
+            }
+        });
 
         //外键检测
         Stream.of(suppliers).forEach(
@@ -189,6 +196,12 @@ public class SupplierServicesImpl implements SupplierServices{
         supplierList.stream().reduce((last, cur) -> {
             if (last.getNo().equals(cur.getNo())&&last.getNo()!=""&&last.getNo()!=null){
                 throw new WMSServiceException("供应商代号重复:"+cur.getNo());
+            }
+            return cur;
+        });
+        supplierList.stream().reduce((last, cur) -> {
+            if (last.getSerialNo().equals(cur.getSerialNo())){
+                throw new WMSServiceException("供应商序号重复:"+cur.getNo());
             }
             return cur;
         });

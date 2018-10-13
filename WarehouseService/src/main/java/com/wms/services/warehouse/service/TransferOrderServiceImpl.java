@@ -187,10 +187,6 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         transferFinishItemsList.toArray(transferFinishItems);
 
         if (transferFinishItems.length==0) return;
-//        {
-//                throw new WMSServiceException("入库单条目均已经完成移库，请勿重复操作！");
-//        }
-
 
         transferFinishArgs.setTransferFinishItems(transferFinishItems);
 
