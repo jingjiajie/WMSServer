@@ -26,6 +26,10 @@ public class WarehouseEntryView {
     private String createPersonName;
     private String lastUpdatePersonName;
 
+    public void setState(int state) {
+        this.state = state;
+    }
+
     @Id
     @Basic
     @Column(name = "ID", nullable = false)

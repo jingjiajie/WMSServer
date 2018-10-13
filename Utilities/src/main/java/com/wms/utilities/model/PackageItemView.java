@@ -26,7 +26,7 @@ public class PackageItemView {
     private String defaultDeliveryStorageLocationNo;
     private String defaultDeliveryStorageLocationName;
 @Id
-    @Basic
+@Basic
     @Column(name = "ID")
     public int getId() {
         return id;

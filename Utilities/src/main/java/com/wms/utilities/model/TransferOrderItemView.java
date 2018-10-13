@@ -38,6 +38,7 @@ public class TransferOrderItemView {
     private String sourceUnit;
     private BigDecimal sourceUnitAmount;
     private Timestamp transferOrderCreateTime;
+    private String supplySerialNo;
 
     @Basic
     @Id
@@ -408,5 +409,15 @@ public class TransferOrderItemView {
 
     public void setTransferOrderCreateTime(Timestamp transferOrderCreateTime) {
         this.transferOrderCreateTime = transferOrderCreateTime;
+    }
+
+    @Basic
+    @Column(name = "SupplySerialNo")
+    public String getSupplySerialNo() {
+        return supplySerialNo;
+    }
+
+    public void setSupplySerialNo(String supplySerialNo) {
+        this.supplySerialNo = supplySerialNo;
     }
 }

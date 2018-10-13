@@ -8,9 +8,6 @@ import java.util.Objects;
 @Entity
 public class WarehouseEntryItem {
     private int id;
-    private int warehouseEntryId;
-    private int supplyId;
-    private int storageLocationId;
     private BigDecimal expectedAmount;
     private BigDecimal realAmount;
     private String unit;
@@ -20,18 +17,21 @@ public class WarehouseEntryItem {
     private BigDecimal refuseAmount;
     private String refuseUnit;
     private BigDecimal refuseUnitAmount;
-    private Integer personId;
     private String comment;
     private String manufactureNo;
     private Timestamp inventoryDate;
     private Timestamp manufactureDate;
     private Timestamp expiryDate;
+    private int warehouseEntryId;
+    private int supplyId;
+    private int storageLocationId;
+    private Integer personId;
     private Integer qualifiedStorageLocationId;
     private Integer unqualifiedStorageLocationId;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -41,37 +41,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "WarehouseEntryID", nullable = false)
-    public int getWarehouseEntryId() {
-        return warehouseEntryId;
-    }
-
-    public void setWarehouseEntryId(int warehouseEntryId) {
-        this.warehouseEntryId = warehouseEntryId;
-    }
-
-    @Basic
-    @Column(name = "SupplyID", nullable = false)
-    public int getSupplyId() {
-        return supplyId;
-    }
-
-    public void setSupplyId(int supplyId) {
-        this.supplyId = supplyId;
-    }
-
-    @Basic
-    @Column(name = "StorageLocationID", nullable = false)
-    public int getStorageLocationId() {
-        return storageLocationId;
-    }
-
-    public void setStorageLocationId(int storageLocationId) {
-        this.storageLocationId = storageLocationId;
-    }
-
-    @Basic
-    @Column(name = "ExpectedAmount", nullable = false, precision = 3)
+    @Column(name = "ExpectedAmount")
     public BigDecimal getExpectedAmount() {
         return expectedAmount;
     }
@@ -81,7 +51,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "RealAmount", nullable = false, precision = 3)
+    @Column(name = "RealAmount")
     public BigDecimal getRealAmount() {
         return realAmount;
     }
@@ -91,7 +61,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "Unit", nullable = false, length = 64)
+    @Column(name = "Unit")
     public String getUnit() {
         return unit;
     }
@@ -101,7 +71,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "UnitAmount", nullable = false, precision = 3)
+    @Column(name = "UnitAmount")
     public BigDecimal getUnitAmount() {
         return unitAmount;
     }
@@ -111,7 +81,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "InspectionAmount", nullable = false, precision = 3)
+    @Column(name = "InspectionAmount")
     public BigDecimal getInspectionAmount() {
         return inspectionAmount;
     }
@@ -121,7 +91,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "State", nullable = false)
+    @Column(name = "State")
     public int getState() {
         return state;
     }
@@ -131,7 +101,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "RefuseAmount", nullable = false, precision = 3)
+    @Column(name = "RefuseAmount")
     public BigDecimal getRefuseAmount() {
         return refuseAmount;
     }
@@ -141,7 +111,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "RefuseUnit", nullable = false, length = 64)
+    @Column(name = "RefuseUnit")
     public String getRefuseUnit() {
         return refuseUnit;
     }
@@ -151,7 +121,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "RefuseUnitAmount", nullable = false, precision = 3)
+    @Column(name = "RefuseUnitAmount")
     public BigDecimal getRefuseUnitAmount() {
         return refuseUnitAmount;
     }
@@ -161,17 +131,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "PersonID", nullable = true)
-    public Integer getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(Integer personId) {
-        this.personId = personId;
-    }
-
-    @Basic
-    @Column(name = "Comment", nullable = true, length = 64)
+    @Column(name = "Comment")
     public String getComment() {
         return comment;
     }
@@ -181,7 +141,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "ManufactureNo", nullable = true, length = 64)
+    @Column(name = "ManufactureNo")
     public String getManufactureNo() {
         return manufactureNo;
     }
@@ -191,7 +151,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "InventoryDate", nullable = true)
+    @Column(name = "InventoryDate")
     public Timestamp getInventoryDate() {
         return inventoryDate;
     }
@@ -201,7 +161,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "ManufactureDate", nullable = true)
+    @Column(name = "ManufactureDate")
     public Timestamp getManufactureDate() {
         return manufactureDate;
     }
@@ -211,7 +171,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "ExpiryDate", nullable = true)
+    @Column(name = "ExpiryDate")
     public Timestamp getExpiryDate() {
         return expiryDate;
     }
@@ -226,9 +186,6 @@ public class WarehouseEntryItem {
         if (o == null || getClass() != o.getClass()) return false;
         WarehouseEntryItem that = (WarehouseEntryItem) o;
         return id == that.id &&
-                warehouseEntryId == that.warehouseEntryId &&
-                supplyId == that.supplyId &&
-                storageLocationId == that.storageLocationId &&
                 state == that.state &&
                 Objects.equals(expectedAmount, that.expectedAmount) &&
                 Objects.equals(realAmount, that.realAmount) &&
@@ -238,7 +195,6 @@ public class WarehouseEntryItem {
                 Objects.equals(refuseAmount, that.refuseAmount) &&
                 Objects.equals(refuseUnit, that.refuseUnit) &&
                 Objects.equals(refuseUnitAmount, that.refuseUnitAmount) &&
-                Objects.equals(personId, that.personId) &&
                 Objects.equals(comment, that.comment) &&
                 Objects.equals(manufactureNo, that.manufactureNo) &&
                 Objects.equals(inventoryDate, that.inventoryDate) &&
@@ -249,11 +205,51 @@ public class WarehouseEntryItem {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, warehouseEntryId, supplyId, storageLocationId, expectedAmount, realAmount, unit, unitAmount, inspectionAmount, state, refuseAmount, refuseUnit, refuseUnitAmount, personId, comment, manufactureNo, inventoryDate, manufactureDate, expiryDate);
+        return Objects.hash(id, expectedAmount, realAmount, unit, unitAmount, inspectionAmount, state, refuseAmount, refuseUnit, refuseUnitAmount, comment, manufactureNo, inventoryDate, manufactureDate, expiryDate);
     }
 
     @Basic
-    @Column(name = "QualifiedStorageLocationID", nullable = true)
+    @Column(name = "WarehouseEntryID")
+    public int getWarehouseEntryId() {
+        return warehouseEntryId;
+    }
+
+    public void setWarehouseEntryId(int warehouseEntryId) {
+        this.warehouseEntryId = warehouseEntryId;
+    }
+
+    @Basic
+    @Column(name = "SupplyID")
+    public int getSupplyId() {
+        return supplyId;
+    }
+
+    public void setSupplyId(int supplyId) {
+        this.supplyId = supplyId;
+    }
+
+    @Basic
+    @Column(name = "StorageLocationID")
+    public int getStorageLocationId() {
+        return storageLocationId;
+    }
+
+    public void setStorageLocationId(int storageLocationId) {
+        this.storageLocationId = storageLocationId;
+    }
+
+    @Basic
+    @Column(name = "PersonID")
+    public Integer getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(Integer personId) {
+        this.personId = personId;
+    }
+
+    @Basic
+    @Column(name = "QualifiedStorageLocationID")
     public Integer getQualifiedStorageLocationId() {
         return qualifiedStorageLocationId;
     }
@@ -263,7 +259,7 @@ public class WarehouseEntryItem {
     }
 
     @Basic
-    @Column(name = "UnqualifiedStorageLocationID", nullable = true)
+    @Column(name = "UnqualifiedStorageLocationID")
     public Integer getUnqualifiedStorageLocationId() {
         return unqualifiedStorageLocationId;
     }

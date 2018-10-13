@@ -34,6 +34,7 @@ public class DeliveryOrderItemView {
     private Integer supplierId;
     private Integer materialId;
     private Timestamp deliveryOrderCreateTime;
+    private String supplySerialNo;
 
     @Id
     @Basic
@@ -307,5 +308,15 @@ public class DeliveryOrderItemView {
 
     public void setDeliveryOrderCreateTime(Timestamp deliveryOrderCreateTime) {
         this.deliveryOrderCreateTime = deliveryOrderCreateTime;
+    }
+
+    @Basic
+    @Column(name = "SupplySerialNo")
+    public String getSupplySerialNo() {
+        return supplySerialNo;
+    }
+
+    public void setSupplySerialNo(String supplySerialNo) {
+        this.supplySerialNo = supplySerialNo;
     }
 }

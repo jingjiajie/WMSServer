@@ -3,6 +3,7 @@ package com.wms.utilities.model;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity
 public class Supply {
@@ -705,188 +706,75 @@ public class Supply {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Supply supply = (Supply) o;
-
-        if (id != supply.id) return false;
-        if (createPersonId != supply.createPersonId) return false;
-        if (enabled != supply.enabled) return false;
-        if (warehouseId != null ? !warehouseId.equals(supply.warehouseId) : supply.warehouseId != null) return false;
-        if (supplierId != null ? !supplierId.equals(supply.supplierId) : supply.supplierId != null) return false;
-        if (materialId != null ? !materialId.equals(supply.materialId) : supply.materialId != null) return false;
-        if (defaultEntryAmount != null ? !defaultEntryAmount.equals(supply.defaultEntryAmount) : supply.defaultEntryAmount != null)
-            return false;
-        if (defaultEntryUnit != null ? !defaultEntryUnit.equals(supply.defaultEntryUnit) : supply.defaultEntryUnit != null)
-            return false;
-        if (defaultEntryUnitAmount != null ? !defaultEntryUnitAmount.equals(supply.defaultEntryUnitAmount) : supply.defaultEntryUnitAmount != null)
-            return false;
-        if (defaultInspectionAmount != null ? !defaultInspectionAmount.equals(supply.defaultInspectionAmount) : supply.defaultInspectionAmount != null)
-            return false;
-        if (defaultInspectionUnit != null ? !defaultInspectionUnit.equals(supply.defaultInspectionUnit) : supply.defaultInspectionUnit != null)
-            return false;
-        if (defaultInspectionUnitAmount != null ? !defaultInspectionUnitAmount.equals(supply.defaultInspectionUnitAmount) : supply.defaultInspectionUnitAmount != null)
-            return false;
-        if (defaultDeliveryAmount != null ? !defaultDeliveryAmount.equals(supply.defaultDeliveryAmount) : supply.defaultDeliveryAmount != null)
-            return false;
-        if (defaultDeliveryUnit != null ? !defaultDeliveryUnit.equals(supply.defaultDeliveryUnit) : supply.defaultDeliveryUnit != null)
-            return false;
-        if (defaultDeliveryUnitAmount != null ? !defaultDeliveryUnitAmount.equals(supply.defaultDeliveryUnitAmount) : supply.defaultDeliveryUnitAmount != null)
-            return false;
-        if (validPeriod != null ? !validPeriod.equals(supply.validPeriod) : supply.validPeriod != null) return false;
-        if (photoIndex != null ? !photoIndex.equals(supply.photoIndex) : supply.photoIndex != null) return false;
-        if (containerNo != null ? !containerNo.equals(supply.containerNo) : supply.containerNo != null) return false;
-        if (factory != null ? !factory.equals(supply.factory) : supply.factory != null) return false;
-        if (workPosition != null ? !workPosition.equals(supply.workPosition) : supply.workPosition != null)
-            return false;
-        if (supplierType != null ? !supplierType.equals(supply.supplierType) : supply.supplierType != null)
-            return false;
-        if (type != null ? !type.equals(supply.type) : supply.type != null) return false;
-        if (size != null ? !size.equals(supply.size) : supply.size != null) return false;
-        if (groupPrincipal != null ? !groupPrincipal.equals(supply.groupPrincipal) : supply.groupPrincipal != null)
-            return false;
-        if (singleBoxPhotoIndex != null ? !singleBoxPhotoIndex.equals(supply.singleBoxPhotoIndex) : supply.singleBoxPhotoIndex != null)
-            return false;
-        if (singleBoxPackagingBoxType != null ? !singleBoxPackagingBoxType.equals(supply.singleBoxPackagingBoxType) : supply.singleBoxPackagingBoxType != null)
-            return false;
-        if (singleBoxLength != null ? !singleBoxLength.equals(supply.singleBoxLength) : supply.singleBoxLength != null)
-            return false;
-        if (singleBoxWidth != null ? !singleBoxWidth.equals(supply.singleBoxWidth) : supply.singleBoxWidth != null)
-            return false;
-        if (singleBoxHeight != null ? !singleBoxHeight.equals(supply.singleBoxHeight) : supply.singleBoxHeight != null)
-            return false;
-        if (singleBoxSnp != null ? !singleBoxSnp.equals(supply.singleBoxSnp) : supply.singleBoxSnp != null)
-            return false;
-        if (singleBoxRatedMinimumBoxCount != null ? !singleBoxRatedMinimumBoxCount.equals(supply.singleBoxRatedMinimumBoxCount) : supply.singleBoxRatedMinimumBoxCount != null)
-            return false;
-        if (singleBoxWeight != null ? !singleBoxWeight.equals(supply.singleBoxWeight) : supply.singleBoxWeight != null)
-            return false;
-        if (singleBoxLayerCount != null ? !singleBoxLayerCount.equals(supply.singleBoxLayerCount) : supply.singleBoxLayerCount != null)
-            return false;
-        if (singleBoxStorageCount != null ? !singleBoxStorageCount.equals(supply.singleBoxStorageCount) : supply.singleBoxStorageCount != null)
-            return false;
-        if (singleBoxTheoreticalLayerCount != null ? !singleBoxTheoreticalLayerCount.equals(supply.singleBoxTheoreticalLayerCount) : supply.singleBoxTheoreticalLayerCount != null)
-            return false;
-        if (singleBoxTheoreticalStorageHeight != null ? !singleBoxTheoreticalStorageHeight.equals(supply.singleBoxTheoreticalStorageHeight) : supply.singleBoxTheoreticalStorageHeight != null)
-            return false;
-        if (singleBoxThroreticalStorageCount != null ? !singleBoxThroreticalStorageCount.equals(supply.singleBoxThroreticalStorageCount) : supply.singleBoxThroreticalStorageCount != null)
-            return false;
-        if (outerPackingPhotoIndex != null ? !outerPackingPhotoIndex.equals(supply.outerPackingPhotoIndex) : supply.outerPackingPhotoIndex != null)
-            return false;
-        if (outerPackingBoxType != null ? !outerPackingBoxType.equals(supply.outerPackingBoxType) : supply.outerPackingBoxType != null)
-            return false;
-        if (outerPackingLength != null ? !outerPackingLength.equals(supply.outerPackingLength) : supply.outerPackingLength != null)
-            return false;
-        if (outerPackingWidth != null ? !outerPackingWidth.equals(supply.outerPackingWidth) : supply.outerPackingWidth != null)
-            return false;
-        if (outerPackingHeight != null ? !outerPackingHeight.equals(supply.outerPackingHeight) : supply.outerPackingHeight != null)
-            return false;
-        if (outerPackingSnp != null ? !outerPackingSnp.equals(supply.outerPackingSnp) : supply.outerPackingSnp != null)
-            return false;
-        if (outerPackingComment != null ? !outerPackingComment.equals(supply.outerPackingComment) : supply.outerPackingComment != null)
-            return false;
-        if (outerPackingRequiredLayers != null ? !outerPackingRequiredLayers.equals(supply.outerPackingRequiredLayers) : supply.outerPackingRequiredLayers != null)
-            return false;
-        if (deliveryBoxType != null ? !deliveryBoxType.equals(supply.deliveryBoxType) : supply.deliveryBoxType != null)
-            return false;
-        if (deliveryBoxLength != null ? !deliveryBoxLength.equals(supply.deliveryBoxLength) : supply.deliveryBoxLength != null)
-            return false;
-        if (deliveryBoxWidth != null ? !deliveryBoxWidth.equals(supply.deliveryBoxWidth) : supply.deliveryBoxWidth != null)
-            return false;
-        if (deliveryBoxHeight != null ? !deliveryBoxHeight.equals(supply.deliveryBoxHeight) : supply.deliveryBoxHeight != null)
-            return false;
-        if (isHistory != null ? !isHistory.equals(supply.isHistory) : supply.isHistory != null) return false;
-        if (newestSupplyId != null ? !newestSupplyId.equals(supply.newestSupplyId) : supply.newestSupplyId != null)
-            return false;
-        if (createTime != null ? !createTime.equals(supply.createTime) : supply.createTime != null) return false;
-        if (lastUpdatePersonId != null ? !lastUpdatePersonId.equals(supply.lastUpdatePersonId) : supply.lastUpdatePersonId != null)
-            return false;
-        if (lastUpdateTime != null ? !lastUpdateTime.equals(supply.lastUpdateTime) : supply.lastUpdateTime != null)
-            return false;
-        if (defaultEntryStorageLocationNo != null ? !defaultEntryStorageLocationNo.equals(supply.defaultEntryStorageLocationNo) : supply.defaultEntryStorageLocationNo != null)
-            return false;
-        if (defaultInspectionStorageLocationNo != null ? !defaultInspectionStorageLocationNo.equals(supply.defaultInspectionStorageLocationNo) : supply.defaultInspectionStorageLocationNo != null)
-            return false;
-        if (defaultQualifiedStorageLocationNo != null ? !defaultQualifiedStorageLocationNo.equals(supply.defaultQualifiedStorageLocationNo) : supply.defaultQualifiedStorageLocationNo != null)
-            return false;
-        if (defaultUnqualifiedStorageLocationNo != null ? !defaultUnqualifiedStorageLocationNo.equals(supply.defaultUnqualifiedStorageLocationNo) : supply.defaultUnqualifiedStorageLocationNo != null)
-            return false;
-        if (defaultDeliveryStorageLocationNo != null ? !defaultDeliveryStorageLocationNo.equals(supply.defaultDeliveryStorageLocationNo) : supply.defaultDeliveryStorageLocationNo != null)
-            return false;
-        if (defaultPrepareTargetStorageLocationNo != null ? !defaultPrepareTargetStorageLocationNo.equals(supply.defaultPrepareTargetStorageLocationNo) : supply.defaultPrepareTargetStorageLocationNo != null)
-            return false;
-        if (barCodeNo != null ? !barCodeNo.equals(supply.barCodeNo) : supply.barCodeNo != null) return false;
-        if (trayCapacity != null ? !trayCapacity.equals(supply.trayCapacity) : supply.trayCapacity != null)
-            return false;
-        if (serialNo != null ? !serialNo.equals(supply.serialNo) : supply.serialNo != null) return false;
-
-        return true;
+        return id == supply.id &&
+                createPersonId == supply.createPersonId &&
+                enabled == supply.enabled &&
+                Objects.equals(warehouseId, supply.warehouseId) &&
+                Objects.equals(supplierId, supply.supplierId) &&
+                Objects.equals(materialId, supply.materialId) &&
+                Objects.equals(defaultEntryAmount, supply.defaultEntryAmount) &&
+                Objects.equals(defaultEntryUnit, supply.defaultEntryUnit) &&
+                Objects.equals(defaultEntryUnitAmount, supply.defaultEntryUnitAmount) &&
+                Objects.equals(defaultInspectionAmount, supply.defaultInspectionAmount) &&
+                Objects.equals(defaultInspectionUnit, supply.defaultInspectionUnit) &&
+                Objects.equals(defaultInspectionUnitAmount, supply.defaultInspectionUnitAmount) &&
+                Objects.equals(defaultDeliveryAmount, supply.defaultDeliveryAmount) &&
+                Objects.equals(defaultDeliveryUnit, supply.defaultDeliveryUnit) &&
+                Objects.equals(defaultDeliveryUnitAmount, supply.defaultDeliveryUnitAmount) &&
+                Objects.equals(validPeriod, supply.validPeriod) &&
+                Objects.equals(photoIndex, supply.photoIndex) &&
+                Objects.equals(containerNo, supply.containerNo) &&
+                Objects.equals(factory, supply.factory) &&
+                Objects.equals(workPosition, supply.workPosition) &&
+                Objects.equals(supplierType, supply.supplierType) &&
+                Objects.equals(type, supply.type) &&
+                Objects.equals(size, supply.size) &&
+                Objects.equals(groupPrincipal, supply.groupPrincipal) &&
+                Objects.equals(singleBoxPhotoIndex, supply.singleBoxPhotoIndex) &&
+                Objects.equals(singleBoxPackagingBoxType, supply.singleBoxPackagingBoxType) &&
+                Objects.equals(singleBoxLength, supply.singleBoxLength) &&
+                Objects.equals(singleBoxWidth, supply.singleBoxWidth) &&
+                Objects.equals(singleBoxHeight, supply.singleBoxHeight) &&
+                Objects.equals(singleBoxSnp, supply.singleBoxSnp) &&
+                Objects.equals(singleBoxRatedMinimumBoxCount, supply.singleBoxRatedMinimumBoxCount) &&
+                Objects.equals(singleBoxWeight, supply.singleBoxWeight) &&
+                Objects.equals(singleBoxLayerCount, supply.singleBoxLayerCount) &&
+                Objects.equals(singleBoxStorageCount, supply.singleBoxStorageCount) &&
+                Objects.equals(singleBoxTheoreticalLayerCount, supply.singleBoxTheoreticalLayerCount) &&
+                Objects.equals(singleBoxTheoreticalStorageHeight, supply.singleBoxTheoreticalStorageHeight) &&
+                Objects.equals(singleBoxThroreticalStorageCount, supply.singleBoxThroreticalStorageCount) &&
+                Objects.equals(outerPackingPhotoIndex, supply.outerPackingPhotoIndex) &&
+                Objects.equals(outerPackingBoxType, supply.outerPackingBoxType) &&
+                Objects.equals(outerPackingLength, supply.outerPackingLength) &&
+                Objects.equals(outerPackingWidth, supply.outerPackingWidth) &&
+                Objects.equals(outerPackingHeight, supply.outerPackingHeight) &&
+                Objects.equals(outerPackingSnp, supply.outerPackingSnp) &&
+                Objects.equals(outerPackingComment, supply.outerPackingComment) &&
+                Objects.equals(outerPackingRequiredLayers, supply.outerPackingRequiredLayers) &&
+                Objects.equals(deliveryBoxType, supply.deliveryBoxType) &&
+                Objects.equals(deliveryBoxLength, supply.deliveryBoxLength) &&
+                Objects.equals(deliveryBoxWidth, supply.deliveryBoxWidth) &&
+                Objects.equals(deliveryBoxHeight, supply.deliveryBoxHeight) &&
+                Objects.equals(isHistory, supply.isHistory) &&
+                Objects.equals(newestSupplyId, supply.newestSupplyId) &&
+                Objects.equals(createTime, supply.createTime) &&
+                Objects.equals(lastUpdatePersonId, supply.lastUpdatePersonId) &&
+                Objects.equals(lastUpdateTime, supply.lastUpdateTime) &&
+                Objects.equals(defaultEntryStorageLocationNo, supply.defaultEntryStorageLocationNo) &&
+                Objects.equals(defaultInspectionStorageLocationNo, supply.defaultInspectionStorageLocationNo) &&
+                Objects.equals(defaultQualifiedStorageLocationNo, supply.defaultQualifiedStorageLocationNo) &&
+                Objects.equals(defaultUnqualifiedStorageLocationNo, supply.defaultUnqualifiedStorageLocationNo) &&
+                Objects.equals(defaultDeliveryStorageLocationNo, supply.defaultDeliveryStorageLocationNo) &&
+                Objects.equals(defaultPrepareTargetStorageLocationNo, supply.defaultPrepareTargetStorageLocationNo) &&
+                Objects.equals(barCodeNo, supply.barCodeNo) &&
+                Objects.equals(trayCapacity, supply.trayCapacity) &&
+                Objects.equals(serialNo, supply.serialNo);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (warehouseId != null ? warehouseId.hashCode() : 0);
-        result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
-        result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
-        result = 31 * result + (defaultEntryAmount != null ? defaultEntryAmount.hashCode() : 0);
-        result = 31 * result + (defaultEntryUnit != null ? defaultEntryUnit.hashCode() : 0);
-        result = 31 * result + (defaultEntryUnitAmount != null ? defaultEntryUnitAmount.hashCode() : 0);
-        result = 31 * result + (defaultInspectionAmount != null ? defaultInspectionAmount.hashCode() : 0);
-        result = 31 * result + (defaultInspectionUnit != null ? defaultInspectionUnit.hashCode() : 0);
-        result = 31 * result + (defaultInspectionUnitAmount != null ? defaultInspectionUnitAmount.hashCode() : 0);
-        result = 31 * result + (defaultDeliveryAmount != null ? defaultDeliveryAmount.hashCode() : 0);
-        result = 31 * result + (defaultDeliveryUnit != null ? defaultDeliveryUnit.hashCode() : 0);
-        result = 31 * result + (defaultDeliveryUnitAmount != null ? defaultDeliveryUnitAmount.hashCode() : 0);
-        result = 31 * result + (validPeriod != null ? validPeriod.hashCode() : 0);
-        result = 31 * result + (photoIndex != null ? photoIndex.hashCode() : 0);
-        result = 31 * result + (containerNo != null ? containerNo.hashCode() : 0);
-        result = 31 * result + (factory != null ? factory.hashCode() : 0);
-        result = 31 * result + (workPosition != null ? workPosition.hashCode() : 0);
-        result = 31 * result + (supplierType != null ? supplierType.hashCode() : 0);
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (size != null ? size.hashCode() : 0);
-        result = 31 * result + (groupPrincipal != null ? groupPrincipal.hashCode() : 0);
-        result = 31 * result + (singleBoxPhotoIndex != null ? singleBoxPhotoIndex.hashCode() : 0);
-        result = 31 * result + (singleBoxPackagingBoxType != null ? singleBoxPackagingBoxType.hashCode() : 0);
-        result = 31 * result + (singleBoxLength != null ? singleBoxLength.hashCode() : 0);
-        result = 31 * result + (singleBoxWidth != null ? singleBoxWidth.hashCode() : 0);
-        result = 31 * result + (singleBoxHeight != null ? singleBoxHeight.hashCode() : 0);
-        result = 31 * result + (singleBoxSnp != null ? singleBoxSnp.hashCode() : 0);
-        result = 31 * result + (singleBoxRatedMinimumBoxCount != null ? singleBoxRatedMinimumBoxCount.hashCode() : 0);
-        result = 31 * result + (singleBoxWeight != null ? singleBoxWeight.hashCode() : 0);
-        result = 31 * result + (singleBoxLayerCount != null ? singleBoxLayerCount.hashCode() : 0);
-        result = 31 * result + (singleBoxStorageCount != null ? singleBoxStorageCount.hashCode() : 0);
-        result = 31 * result + (singleBoxTheoreticalLayerCount != null ? singleBoxTheoreticalLayerCount.hashCode() : 0);
-        result = 31 * result + (singleBoxTheoreticalStorageHeight != null ? singleBoxTheoreticalStorageHeight.hashCode() : 0);
-        result = 31 * result + (singleBoxThroreticalStorageCount != null ? singleBoxThroreticalStorageCount.hashCode() : 0);
-        result = 31 * result + (outerPackingPhotoIndex != null ? outerPackingPhotoIndex.hashCode() : 0);
-        result = 31 * result + (outerPackingBoxType != null ? outerPackingBoxType.hashCode() : 0);
-        result = 31 * result + (outerPackingLength != null ? outerPackingLength.hashCode() : 0);
-        result = 31 * result + (outerPackingWidth != null ? outerPackingWidth.hashCode() : 0);
-        result = 31 * result + (outerPackingHeight != null ? outerPackingHeight.hashCode() : 0);
-        result = 31 * result + (outerPackingSnp != null ? outerPackingSnp.hashCode() : 0);
-        result = 31 * result + (outerPackingComment != null ? outerPackingComment.hashCode() : 0);
-        result = 31 * result + (outerPackingRequiredLayers != null ? outerPackingRequiredLayers.hashCode() : 0);
-        result = 31 * result + (deliveryBoxType != null ? deliveryBoxType.hashCode() : 0);
-        result = 31 * result + (deliveryBoxLength != null ? deliveryBoxLength.hashCode() : 0);
-        result = 31 * result + (deliveryBoxWidth != null ? deliveryBoxWidth.hashCode() : 0);
-        result = 31 * result + (deliveryBoxHeight != null ? deliveryBoxHeight.hashCode() : 0);
-        result = 31 * result + (isHistory != null ? isHistory.hashCode() : 0);
-        result = 31 * result + (newestSupplyId != null ? newestSupplyId.hashCode() : 0);
-        result = 31 * result + createPersonId;
-        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
-        result = 31 * result + (lastUpdatePersonId != null ? lastUpdatePersonId.hashCode() : 0);
-        result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
-        result = 31 * result + enabled;
-        result = 31 * result + (defaultEntryStorageLocationNo != null ? defaultEntryStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultInspectionStorageLocationNo != null ? defaultInspectionStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultQualifiedStorageLocationNo != null ? defaultQualifiedStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultUnqualifiedStorageLocationNo != null ? defaultUnqualifiedStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultDeliveryStorageLocationNo != null ? defaultDeliveryStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (defaultPrepareTargetStorageLocationNo != null ? defaultPrepareTargetStorageLocationNo.hashCode() : 0);
-        result = 31 * result + (barCodeNo != null ? barCodeNo.hashCode() : 0);
-        result = 31 * result + (trayCapacity != null ? trayCapacity.hashCode() : 0);
-        result = 31 * result + (serialNo != null ? serialNo.hashCode() : 0);
-        return result;
+
+        return Objects.hash(id, warehouseId, supplierId, materialId, defaultEntryAmount, defaultEntryUnit, defaultEntryUnitAmount, defaultInspectionAmount, defaultInspectionUnit, defaultInspectionUnitAmount, defaultDeliveryAmount, defaultDeliveryUnit, defaultDeliveryUnitAmount, validPeriod, photoIndex, containerNo, factory, workPosition, supplierType, type, size, groupPrincipal, singleBoxPhotoIndex, singleBoxPackagingBoxType, singleBoxLength, singleBoxWidth, singleBoxHeight, singleBoxSnp, singleBoxRatedMinimumBoxCount, singleBoxWeight, singleBoxLayerCount, singleBoxStorageCount, singleBoxTheoreticalLayerCount, singleBoxTheoreticalStorageHeight, singleBoxThroreticalStorageCount, outerPackingPhotoIndex, outerPackingBoxType, outerPackingLength, outerPackingWidth, outerPackingHeight, outerPackingSnp, outerPackingComment, outerPackingRequiredLayers, deliveryBoxType, deliveryBoxLength, deliveryBoxWidth, deliveryBoxHeight, isHistory, newestSupplyId, createPersonId, createTime, lastUpdatePersonId, lastUpdateTime, enabled, defaultEntryStorageLocationNo, defaultInspectionStorageLocationNo, defaultQualifiedStorageLocationNo, defaultUnqualifiedStorageLocationNo, defaultDeliveryStorageLocationNo, defaultPrepareTargetStorageLocationNo, barCodeNo, trayCapacity, serialNo);
     }
 }

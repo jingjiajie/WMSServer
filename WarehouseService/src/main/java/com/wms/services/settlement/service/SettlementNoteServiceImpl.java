@@ -209,7 +209,6 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
                 accountRecordList.add(accountRecord1);
 
             });
-
         });
 
         AccountRecord[] accountRecords = (AccountRecord[]) Array.newInstance(AccountRecord.class,accountRecordList.size());
