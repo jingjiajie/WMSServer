@@ -52,10 +52,20 @@ public class SupplyServiceImpl implements SupplyService {
             if(supplyDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMaterial[0].getName());
             }
+
+            if(this.find(accountBook,new Condition().addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 0){
+                throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
+            }
         }
 
 
         int[] ids= supplyDAO.add(accountBook,supplies);
+
+        for(int i=0;i<supplies.length;i++){
+            if(this.supplyDAO.findTable(accountBook,new Condition().addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 1){
+                throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
+            }
+        }
         List<Supply> updateSuppliesDoneList = new ArrayList<>();
         for (int i=0;i<ids.length;i++)
         {
@@ -127,6 +137,12 @@ public class SupplyServiceImpl implements SupplyService {
             if(supplyViews.length > 0){
                 throw new WMSServiceException("供应信息条码号重复！对应供应商-物料关联条目："+curSupplier[0].getName()+curMaterial[0].getName()+"条码号："+supplies[i].getBarCodeNo());
             }
+
+            if(this.find(accountBook,new Condition().addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
+                    .addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 0){
+                throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
+            }
+
         }
         for (int i=0;i<supplies.length;i++)
         {
