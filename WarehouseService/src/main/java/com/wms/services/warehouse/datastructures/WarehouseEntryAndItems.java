@@ -1,7 +1,5 @@
 package com.wms.services.warehouse.datastructures;
 
-import com.wms.utilities.model.WarehouseEntry;
-import com.wms.utilities.model.WarehouseEntryItem;
 import com.wms.utilities.model.WarehouseEntryItemView;
 import com.wms.utilities.model.WarehouseEntryView;
 

@@ -37,7 +37,7 @@ public class CommonDataServiceImpl implements CommonDataService {
             if (this.commonDataDAO.find(accountBook, new Condition()
                     .addCondition("key", obj.getKey())
                     .addCondition("id", obj.getId(), ConditionItem.Relation.NOT_EQUAL)).length > 0) {
-                throw new WMSServiceException(String.format("公共数据Key:%s 已存在，修改失败"));
+                throw new WMSServiceException(String.format("公共数据Key:%s 已存在，修改失败",obj.getKey()));
             }
         });
         this.commonDataDAO.update(accountBook, objs);

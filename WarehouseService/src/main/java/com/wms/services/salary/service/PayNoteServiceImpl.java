@@ -110,7 +110,7 @@ public class PayNoteServiceImpl implements PayNoteService{
         //重复
         Stream.of(payNotes).forEach((payNote)->{
             if (payNote.getNo() == null) {
-                payNote.setNo(this.orderNoGenerator.generateNextNo(accountBook, PayNoteServiceImpl.NO_PREFIX));}
+                payNote.setNo(this.orderNoGenerator.generateNextNo(accountBook, PayNoteServiceImpl.NO_PREFIX,payNote.getWarehouseId()));}
                 else {
             Condition cond = new Condition();
             cond.addCondition("no",new String[]{payNote.getNo()});

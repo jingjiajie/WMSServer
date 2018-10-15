@@ -1,5 +1,8 @@
 package com.wms.utilities.model;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -57,7 +60,7 @@ public class AccountTitleView {
     }
 
     @Basic
-    @Column(name = "Direction", nullable = false)
+    @Column(name = "Direction", nullable = false,updatable =false)
     public int getDirection() {
         return direction;
     }

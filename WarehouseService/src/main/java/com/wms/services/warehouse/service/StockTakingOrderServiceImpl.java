@@ -65,7 +65,7 @@ public class StockTakingOrderServiceImpl implements StockTakingOrderService{
         Stream.of(stockTakingOrders).forEach((stockTakingOrder) -> {
             //如果单号留空则自动生成
             if (stockTakingOrder.getNo() == null) {
-                stockTakingOrder.setNo(this.orderNoGenerator.generateNextNo(accountBook, StockTakingOrderServiceImpl.NO_PREFIX));
+                stockTakingOrder.setNo(this.orderNoGenerator.generateNextNo(accountBook, StockTakingOrderServiceImpl.NO_PREFIX,stockTakingOrder.getWarehouseId()));
             } else { //否则检查单号是否重复
                 Condition cond = new Condition();
                 cond.addCondition("no", new String[]{stockTakingOrder.getNo()});

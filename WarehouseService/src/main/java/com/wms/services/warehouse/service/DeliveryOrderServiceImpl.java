@@ -65,13 +65,13 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         //验证结构
         this.validateEntities(accountBook,deliveryOrders);
         //生成创建时间
-        Stream.of(deliveryOrders).forEach((deliveryOrder) -> deliveryOrder.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
+//        Stream.of(deliveryOrders).forEach((deliveryOrder) -> deliveryOrder.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
 
         //生成/检测单号
         Stream.of(deliveryOrders).forEach((deliveryOrder) -> {
             //如果单号留空则自动生成
             if (deliveryOrder.getNo() == null||deliveryOrder.getNo().isEmpty()) {
-                deliveryOrder.setNo(this.orderNoGenerator.generateNextNo(accountBook, DeliveryOrderServiceImpl.NO_PREFIX));
+                deliveryOrder.setNo(this.orderNoGenerator.generateNextNo(accountBook, DeliveryOrderServiceImpl.NO_PREFIX,deliveryOrder.getWarehouseId()));
             } else { //否则检查单号是否重复
                 Condition cond = new Condition();
                 cond.addCondition("no", new String[]{deliveryOrder.getNo()});

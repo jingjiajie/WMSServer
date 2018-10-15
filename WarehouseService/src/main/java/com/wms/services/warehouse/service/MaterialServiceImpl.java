@@ -112,6 +112,16 @@ public class MaterialServiceImpl implements MaterialService {
             }
         }));
 
+        for(int i=0;i<materials.length;i++){
+            for(int j=i+1;j<materials.length;j++){
+                String serialNo=materials[i].getSerialNo();
+                if(serialNo.equals(materials[j].getSerialNo()))
+                {
+                    throw new WMSServiceException("物料序号在添加的列表中重复!");
+                }
+            }
+        }
+
 
     }
     @Override

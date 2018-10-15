@@ -51,9 +51,9 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         Stream.of(objs).forEach(obj->{
             if(obj.getNo() == null || obj.getNo().isEmpty()) {
                 if(obj.getType()==TransferOrderService.TYPE_PACKAGE){
-                    obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX));
+                    obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX,obj.getWarehouseId()));
                 }else if(obj.getType()==TransferOrderService.TYPE_PUT){
-                    obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX1));
+                    obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX1,obj.getWarehouseId()));
                 }
             }
             obj.setState(TransferOrderItemService.STATE_IN_TRANSFER);//新建移库单记为状态0
@@ -187,10 +187,6 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         transferFinishItemsList.toArray(transferFinishItems);
 
         if (transferFinishItems.length==0) return;
-//        {
-//                throw new WMSServiceException("入库单条目均已经完成移库，请勿重复操作！");
-//        }
-
 
         transferFinishArgs.setTransferFinishItems(transferFinishItems);
 
@@ -204,8 +200,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             new Validator("打印次数").min(0).validate(transferOrder.getPrintTimes());
 
             idChecker.check(WarehouseService.class,accountBook,transferOrder.getWarehouseId(),"仓库")
-                    .check(PersonService.class,accountBook,transferOrder.getCreatePersonId(),"创建人员")
-                    .check(SupplierServices.class,accountBook,transferOrder.getSupplierId(),"创建人员");
+                    .check(PersonService.class,accountBook,transferOrder.getCreatePersonId(),"创建人员");
 
             if (transferOrder.getLastUpdatePersonId() != null && this.personService.find(accountBook,
                     new Condition().addCondition("id", transferOrder.getLastUpdatePersonId())).length == 0) {

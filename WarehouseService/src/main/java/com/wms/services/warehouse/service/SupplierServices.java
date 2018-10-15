@@ -1,8 +1,8 @@
 package com.wms.services.warehouse.service;
-import com.wms.utilities.model.Supplier;
-import com.wms.utilities.model.SupplierView;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.Supplier;
+import com.wms.utilities.model.SupplierView;
 
 public interface SupplierServices {
     int[] add(String accountBook, Supplier suppliers[]) throws WMSServiceException;
