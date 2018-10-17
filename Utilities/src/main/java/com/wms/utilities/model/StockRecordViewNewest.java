@@ -34,6 +34,7 @@ public class StockRecordViewNewest {
     private Integer supplierId;
     private String materialProductLine;
     private int state;
+    private String supplySerialNo;
 
     @Basic
     @Id
@@ -286,18 +287,28 @@ public class StockRecordViewNewest {
         this.state = state;
     }
 
+    @Basic
+    @Column(name = "SupplySerialNo")
+    public String getSupplySerialNo() {
+        return supplySerialNo;
+    }
+
+    public void setSupplySerialNo(String supplySerialNo) {
+        this.supplySerialNo = supplySerialNo;
+    }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        StockRecordViewNewest that = (StockRecordViewNewest) o;
+        StockRecordViewNewest that = (StockRecordViewNewest) object;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
         if (storageLocationId != that.storageLocationId) return false;
         if (supplyId != that.supplyId) return false;
+        if (state != that.state) return false;
         if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
         if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
         if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
@@ -326,7 +337,9 @@ public class StockRecordViewNewest {
         if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
         if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
             return false;
-        if (state != that.state) return false;
+        if (supplySerialNo != null ? !supplySerialNo.equals(that.supplySerialNo) : that.supplySerialNo != null)
+            return false;
+
         return true;
     }
 
@@ -357,6 +370,7 @@ public class StockRecordViewNewest {
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
         result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
         result = 31 * result + state;
+        result = 31 * result + (supplySerialNo != null ? supplySerialNo.hashCode() : 0);
         return result;
     }
 }
