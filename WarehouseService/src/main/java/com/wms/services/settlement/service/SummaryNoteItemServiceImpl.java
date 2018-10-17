@@ -98,7 +98,7 @@ public class SummaryNoteItemServiceImpl
         Stream.of(summaryNoteItems).forEach((summaryNoteItem -> {
             SummaryNoteItemView[] summaryNoteItemViews = this.summaryNoteItemDAO.find(accountBook,
                     new Condition().addCondition("supplierId", summaryNoteItem.getSupplierId()).addCondition("summaryNoteId", summaryNoteItem.getSummaryNoteId()));
-            if (summaryNoteItemViews.length > 0) {
+            if (summaryNoteItemViews.length > 1) {
                 SupplierView[] supplierViews = this.supplierServices.find(accountBook, new Condition().addCondition("id", summaryNoteItemViews[0].getSupplierId()));
                 if (supplierViews.length != 1) {
                     throw new WMSServiceException("数据验证中查询供应商出错,可能已经删除！");
