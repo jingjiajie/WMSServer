@@ -38,7 +38,7 @@ public class WarehouseService {
         //SummaryNote[] summaryNotes = ReflectHelper.createAndCopyFields(summaryNoteViews, SummaryNote.class);
         //summaryNoteService.summaryDelivery("WMS_Template",summaryNotes[0]);
         //summaryNoteService.generateSummaryNotes("WMS_Template",1,1);
-        RefreshGlobalDateService refreshGlobalDateService=applicationContext.getBean(RefreshGlobalDateService.class);
-        refreshGlobalDateService.refreshGlobalDate("WMS_Template",1);
+        //RefreshGlobalDateService refreshGlobalDateService=applicationContext.getBean(RefreshGlobalDateService.class);
+        //refreshGlobalDateService.refreshGlobalDate("WMS_Template",1);
     }
 }

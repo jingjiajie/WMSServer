@@ -1,7 +1,9 @@
 package com.wms.services.warehouse.service;
 
+import com.wms.services.ledger.service.AccountPeriodService;
 import com.wms.services.ledger.service.AccountTitleService;
 import com.wms.services.ledger.service.PersonService;
+import com.wms.services.ledger.service.TaxService;
 import com.wms.services.salary.service.PayNoteService;
 import com.wms.services.salary.service.SalaryItemService;
 import com.wms.services.salary.service.SalaryPeriodService;
@@ -48,7 +50,12 @@ public class RefreshGlobalDateServiceImpl implements RefreshGlobalDateService{
     AccountTitleService accountTitleService;
     @Autowired
     PayNoteService payNoteService;
-    public void refreshGlobalDate(String accountBook, int warehouseId)
+    @Autowired
+    TaxService taxService;
+    @Autowired
+    AccountPeriodService accountPeriodService;
+
+    public Map<String,Object[]>  refreshGlobalDate(String accountBook, int warehouseId)
     {
         Map<String,Object[]> globalDateMap=new HashMap<String, Object[]>();
         globalDateMap.put("AllSuppliers",supplierServices.findNew(accountBook,new Condition().addCondition("warehouseId",warehouseId)));
@@ -59,7 +66,7 @@ public class RefreshGlobalDateServiceImpl implements RefreshGlobalDateService{
         globalDateMap.put("AllStorageArea",storageAreaService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId)));
         globalDateMap.put("AllPersons",personService.find(accountBook,new Condition()));
         globalDateMap.put("AllPackage",packageService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId)));
-        globalDateMap.put("AllSalaryItemService",salaryItemService.find(accountBook,
+        globalDateMap.put("AllSalaryItem",salaryItemService.find(accountBook,
                 new Condition().addCondition("warehouseId",warehouseId)));
         globalDateMap.put("AllSalaryType",salaryTypeService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId)));
         globalDateMap.put("AllSummaryNote",summaryNoteService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId)));
@@ -67,7 +74,11 @@ public class RefreshGlobalDateServiceImpl implements RefreshGlobalDateService{
                 new Condition().addOrder("endTime", OrderItem.Order.DESC)));
         globalDateMap.put("AllAccountTitle",payNoteService.findSonTitleForAssociation(accountBook, new Condition()));
         globalDateMap.put("AllAccountTitleTrue",accountTitleService.find(accountBook,new Condition()));
-
-
+        globalDateMap.put("AllTax",taxService.find(accountBook,new Condition()));
+        globalDateMap.put("AllAccountPeriod",accountPeriodService.find(accountBook,
+                new Condition().addCondition("warehouseId",warehouseId).addOrder("startTime", OrderItem.Order.DESC)));
+        globalDateMap.put("AccountPeriod",accountPeriodService.find(accountBook,
+                new Condition().addCondition("warehouseId",warehouseId).addCondition("ended",0).addOrder("startTime", OrderItem.Order.DESC)));
+    return globalDateMap;
     }
 }
