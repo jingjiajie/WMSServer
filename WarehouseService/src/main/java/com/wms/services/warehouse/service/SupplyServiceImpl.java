@@ -178,8 +178,8 @@ public class SupplyServiceImpl implements SupplyService {
         Stream.of(supplies).forEach((supply -> {
             new Validator("供货商ID").notEmpty().validate(supply.getSupplierId());
             new Validator("物料ID").notEmpty().validate(supply.getMaterialId());
-            new Validator("单托含量").notEmpty().validate(supply.getTrayCapacity());
-
+            //new Validator("单托含量").notEmpty().validate(supply.getTrayCapacity());
+            new Validator("序号").notEmpty().validate(supply.getSerialNo());
         }));
 
         for(int i=0;i<supplies.length;i++){
