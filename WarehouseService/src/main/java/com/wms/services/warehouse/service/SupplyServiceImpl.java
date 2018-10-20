@@ -53,7 +53,8 @@ public class SupplyServiceImpl implements SupplyService {
                 throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMaterial[0].getName());
             }
 
-            if(this.find(accountBook,new Condition().addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 0){
+            if(this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
+                    .addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 0){
                 throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
             }
         }
@@ -139,6 +140,7 @@ public class SupplyServiceImpl implements SupplyService {
             }
 
             if(this.find(accountBook,new Condition().addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
+                    .addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
                     .addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 0){
                 throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
             }
@@ -176,8 +178,8 @@ public class SupplyServiceImpl implements SupplyService {
         Stream.of(supplies).forEach((supply -> {
             new Validator("供货商ID").notEmpty().validate(supply.getSupplierId());
             new Validator("物料ID").notEmpty().validate(supply.getMaterialId());
-            new Validator("单托含量").notEmpty().validate(supply.getTrayCapacity());
-
+            //new Validator("单托含量").notEmpty().validate(supply.getTrayCapacity());
+            new Validator("序号").notEmpty().validate(supply.getSerialNo());
         }));
 
         for(int i=0;i<supplies.length;i++){
