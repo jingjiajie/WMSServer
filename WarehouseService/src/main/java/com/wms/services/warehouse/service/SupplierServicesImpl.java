@@ -36,10 +36,10 @@ public class SupplierServicesImpl implements SupplierServices{
         for (int i=0;i<suppliers.length;i++) {
             Validator validator=new Validator("供应商名称");
             validator.notnull().validate(suppliers[i].getName());
-            /*
-            Validator validator1=new Validator("供应商代号");
-            validator1.notnull().validate(suppliers[i].getNo());
-            */
+
+            Validator validator1=new Validator("供应商序号");
+            validator1.notnull().validate(suppliers[i].getSerialNo());
+
             new Validator("创建时间").validate(suppliers[i].getCreateTime());
             if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
@@ -121,10 +121,10 @@ public class SupplierServicesImpl implements SupplierServices{
     for (int i=0;i<suppliers.length;i++) {
         Validator validator=new Validator("供应商名称");
         validator.notnull().validate(suppliers[i].getName());
-        /*
-        Validator validator1=new Validator("供应商代号");
-        validator1.notnull().validate(suppliers[i].getNo());
-        */
+
+        Validator validator1=new Validator("供应商序号");
+        validator1.notnull().validate(suppliers[i].getSerialNo());
+
         new Validator("创建时间").validate(suppliers[i].getCreateTime());
         if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
             throw new WMSServiceException("是否启用只能为0和1！");
