@@ -2,6 +2,7 @@ package com.wms.services;
 import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.services.salary.service.GetBigDecimal;
 import com.wms.services.settlement.service.SummaryNoteService;
+import com.wms.services.warehouse.service.RefreshGlobalDateService;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.SummaryNote;
@@ -37,5 +38,7 @@ public class WarehouseService {
         //SummaryNote[] summaryNotes = ReflectHelper.createAndCopyFields(summaryNoteViews, SummaryNote.class);
         //summaryNoteService.summaryDelivery("WMS_Template",summaryNotes[0]);
         //summaryNoteService.generateSummaryNotes("WMS_Template",1,1);
+        //RefreshGlobalDateService refreshGlobalDateService=applicationContext.getBean(RefreshGlobalDateService.class);
+        //refreshGlobalDateService.refreshGlobalDate("WMS_Template",1);
     }
 }
