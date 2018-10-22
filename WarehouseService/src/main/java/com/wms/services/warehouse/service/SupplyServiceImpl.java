@@ -63,7 +63,7 @@ public class SupplyServiceImpl implements SupplyService {
         int[] ids= supplyDAO.add(accountBook,supplies);
 
         for(int i=0;i<supplies.length;i++){
-            if(this.supplyDAO.findTable(accountBook,new Condition().addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 1){
+            if(this.supplyDAO.findTable(accountBook,new Condition().addCondition("serialNo",new String[]{supplies[i].getSerialNo()}).addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})).length > 1){
                 throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
             }
         }
