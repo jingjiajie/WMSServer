@@ -32,12 +32,13 @@ public class SafetyStockView {
     private Integer supplierId;
     private String materialProductLine;
 
-    @Id
     @Basic
+    @Id
     @Column(name = "ID")
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
