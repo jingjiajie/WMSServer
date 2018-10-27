@@ -429,7 +429,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     }
 
     private SalaryPeriod findNewestSalaryPeriod(String accountBook, int warehouseId) {
-        SalaryPeriod[] salaryPeriods = salaryPeriodService.findTable(accountBook, new Condition().addCondition("warehouseId", warehouseId).addOrder("startTime", OrderItem.Order.DESC));
+        SalaryPeriod[] salaryPeriods = salaryPeriodService.findTable(accountBook, new Condition().addCondition("warehouseId", warehouseId).addOrder("endTime", OrderItem.Order.DESC));
         if (salaryPeriods.length == 0) {
             throw new WMSServiceException("此仓库中无薪资期间！");
         }
