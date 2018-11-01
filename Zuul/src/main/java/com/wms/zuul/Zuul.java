@@ -27,4 +27,3 @@ public class Zuul {
         System.out.println("服务网关启动...");
     }
 }
-
