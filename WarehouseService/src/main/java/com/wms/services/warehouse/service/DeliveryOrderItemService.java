@@ -13,4 +13,5 @@ extends BaseService<DeliveryOrderItem,DeliveryOrderItemView>{
 
     void loadingSome(String accountBook, List<Integer> ids) throws WMSServiceException;
     void loadingALL(String accountBook, List<Integer> ids) throws WMSServiceException;
+    public void updateSleep();
 }

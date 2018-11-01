@@ -2,11 +2,11 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.Supplier;
 import com.wms.utilities.model.SupplierView;
-import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.datastructures.ConditionItem;
-import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.TaxItem;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,7 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.sql.Timestamp;
 import java.util.stream.Stream;
@@ -37,10 +38,10 @@ public class SupplierServicesImpl implements SupplierServices{
         for (int i=0;i<suppliers.length;i++) {
             Validator validator=new Validator("供应商名称");
             validator.notnull().validate(suppliers[i].getName());
-            /*
-            Validator validator1=new Validator("供应商代号");
-            validator1.notnull().validate(suppliers[i].getNo());
-            */
+
+            Validator validator1=new Validator("供应商序号");
+            validator1.notnull().validate(suppliers[i].getSerialNo());
+
             new Validator("创建时间").validate(suppliers[i].getCreateTime());
             if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
@@ -79,6 +80,13 @@ public class SupplierServicesImpl implements SupplierServices{
                 throw new WMSServiceException("供应商代号："+supplier.getNo()+"已经存在!");
             }
         });
+        Stream.of(suppliers).forEach((supplier)->{
+            Condition cond = new Condition();
+            cond.addCondition("serialNo",new String[]{supplier.getSerialNo()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
+            if(supplierDAO.find(accountBook,cond).length > 0){
+                throw new WMSServiceException("供应商序号："+supplier.getSerialNo()+"已经存在!");
+            }
+        });
 
         //外键检测
         Stream.of(suppliers).forEach(
@@ -111,14 +119,14 @@ public class SupplierServicesImpl implements SupplierServices{
 
     @Override
     public void update(String accountBook, Supplier[] suppliers) throws WMSServiceException{
-
+        if(suppliers.length==0){return;}
     for (int i=0;i<suppliers.length;i++) {
         Validator validator=new Validator("供应商名称");
         validator.notnull().validate(suppliers[i].getName());
-        /*
-        Validator validator1=new Validator("供应商代号");
-        validator1.notnull().validate(suppliers[i].getNo());
-        */
+
+        Validator validator1=new Validator("供应商序号");
+        validator1.notnull().validate(suppliers[i].getSerialNo());
+
         new Validator("创建时间").validate(suppliers[i].getCreateTime());
         if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
             throw new WMSServiceException("是否启用只能为0和1！");
@@ -143,6 +151,12 @@ public class SupplierServicesImpl implements SupplierServices{
                 if(name.equals(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
             }
         }
+        for(int i=0;i<suppliers.length;i++){
+            for(int j=i+1;j<suppliers.length;j++){
+                String name=suppliers[i].getSerialNo();
+                if(name.equals(suppliers[j].getSerialNo())){throw new WMSServiceException("供应商序号"+name+"在添加的列表中重复!");}
+            }
+        }
 
     Stream.of(suppliers).forEach(
             (supplier)->{
@@ -152,31 +166,12 @@ public class SupplierServicesImpl implements SupplierServices{
                 }
             }
     );
-
-
-    for(int i=0;i<suppliers.length;i++){
-        Condition cond = new Condition();
-        cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",suppliers[i].getWarehouseId());
-        cond.addCondition("id",new Integer[]{suppliers[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
-        if(supplierDAO.find(accountBook,cond).length > 0){
-            throw new WMSServiceException("供应商名称重复："+suppliers[i].getName());
-        }
-    }
-    Stream.of(suppliers).forEach((supplier)->{
-        Condition cond = new Condition();
-        cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
-        cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
-        if(supplierDAO.find(accountBook,cond).length > 0){
-            throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
-        }
-    });
         for (int i=0;i<suppliers.length;i++)
         {
                 suppliers[i].setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
                 //TODO
                 suppliers[i].setCreateTime(new Timestamp(System.currentTimeMillis()));
         }
-
       //外键检测
     Stream.of(suppliers).forEach(
             (supplier)->{
@@ -196,7 +191,28 @@ public class SupplierServicesImpl implements SupplierServices{
             }
             );
             supplierDAO.update(accountBook, suppliers);
-
+            Condition cond = new Condition();
+            cond.addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",suppliers[0].getWarehouseId());
+        Supplier[] suppliersCheck=supplierDAO.findTable(accountBook,cond);
+        List<Supplier> supplierListCheck= Arrays.asList(suppliersCheck);
+        supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getName)).reduce((last, cur) -> {
+            if (last.getName().equals(cur.getName())){
+                throw new WMSServiceException("供应商名称重复:"+cur.getName());
+            }
+            return cur;
+        });
+        supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getNo)).reduce((last, cur) -> {
+            if (last.getNo().equals(cur.getNo())&&(!last.getNo().equals(""))&&(!cur.getNo().equals(""))&&last.getNo()!=null){
+                throw new WMSServiceException("供应商代号重复:"+cur.getNo());
+            }
+            return cur;
+        });
+        supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getSerialNo)).reduce((last, cur) -> {
+            if (last.getSerialNo().equals(cur.getSerialNo())&&(!last.getSerialNo().equals(""))&&(!cur.getSerialNo().equals(""))&&last.getSerialNo()!=null){
+                throw new WMSServiceException("供应商序号重复:"+cur.getSerialNo());
+            }
+            return cur;
+        });
     }
 
 
@@ -206,8 +222,8 @@ public class SupplierServicesImpl implements SupplierServices{
         for (int i=0;i<suppliers.length;i++) {
             Validator validator=new Validator("供应商名称");
             validator.notnull().validate(suppliers[i].getName());
-            Validator validator1=new Validator("供应商代号");
-            validator1.notnull().validate(suppliers[i].getNo());
+            Validator validator1=new Validator("供应商序号");
+            validator1.notnull().validate(suppliers[i].getSerialNo());
             if(suppliers[i].getEnabled()!=0&&suppliers[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
@@ -240,24 +256,12 @@ public class SupplierServicesImpl implements SupplierServices{
                 if(name.equals(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
             }
         }
-
-
         for(int i=0;i<suppliers.length;i++){
-            Condition cond = new Condition();
-            cond.addCondition("name",new String[]{suppliers[i].getName()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",suppliers[i].getWarehouseId());
-            cond.addCondition("id",new Integer[]{suppliers[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
-            if(supplierDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("供应商名称重复："+suppliers[i].getName());
+            for(int j=i+1;j<suppliers.length;j++){
+                String name=suppliers[i].getSerialNo();
+                if(name.equals(suppliers[j].getSerialNo())){throw new WMSServiceException("供应商序号"+name+"在添加的列表中重复!");}
             }
         }
-        Stream.of(suppliers).forEach((supplier)->{
-            Condition cond = new Condition();
-            cond.addCondition("no",new String[]{supplier.getNo()}).addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",supplier.getWarehouseId());
-            cond.addCondition("id",new Integer[]{supplier.getId()}, ConditionItem.Relation.NOT_EQUAL);
-            if(supplierDAO.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("供应代号："+supplier.getNo()+"已经存在!");
-            }
-        });
 
         //外键检测
         Stream.of(suppliers).forEach(
@@ -313,6 +317,7 @@ public class SupplierServicesImpl implements SupplierServices{
             supplier.setZipCode(supplierViews[0].getZipCode());
             supplier.setWarehouseId(supplierViews[0].getWarehouseId());
             supplier.setIsHistory(1);
+            supplier.setSerialNo(supplierViews[0].getSerialNo());
             supplier.setNewestSupplierId(suppliers[i].getId());
             supplierList.add(supplier);
         }
@@ -322,6 +327,28 @@ public class SupplierServicesImpl implements SupplierServices{
         supplierList.toArray(resultArray);
         supplierDAO.update(accountBook, suppliers);
         supplierDAO.add(accountBook,resultArray);
+        Condition cond = new Condition();
+        cond.addCondition("isHistory",new Integer[]{new Integer(0)}).addCondition("warehouseId",suppliers[0].getWarehouseId());
+        Supplier[] suppliersCheck=supplierDAO.findTable(accountBook,cond);
+        List<Supplier> supplierListCheck= Arrays.asList(suppliersCheck);
+        supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getName)).reduce((last, cur) -> {
+            if (last.getName().equals(cur.getName())){
+                throw new WMSServiceException("供应商名称重复:"+cur.getName());
+            }
+            return cur;
+        });
+        supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getNo)).reduce((last, cur) -> {
+            if (last.getNo().equals(cur.getNo())&&(!last.getNo().equals(""))&&(!cur.getNo().equals(""))&&last.getNo()!=null){
+                throw new WMSServiceException("供应商代号重复:"+cur.getNo());
+            }
+            return cur;
+        });
+        supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getSerialNo)).reduce((last, cur) -> {
+            if (last.getSerialNo().equals(cur.getSerialNo())&&(!last.getSerialNo().equals(""))&&(!cur.getSerialNo().equals(""))&&last.getSerialNo()!=null){
+                throw new WMSServiceException("供应商序号重复:"+cur.getSerialNo());
+            }
+            return cur;
+        });
     }
 @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException{

@@ -15,10 +15,11 @@ public class MaterialView {
     private String warehouseName;
     private String productLine;
     private int enabled;
+    private String serialNo;
 
     @Id
     @Basic
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -28,7 +29,7 @@ public class MaterialView {
     }
 
     @Basic
-    @Column(name = "Name", nullable = false, length = 64)
+    @Column(name = "Name")
     public String getName() {
         return name;
     }
@@ -38,7 +39,7 @@ public class MaterialView {
     }
 
     @Basic
-    @Column(name = "WarehouseID", nullable = false)
+    @Column(name = "WarehouseID")
     public int getWarehouseId() {
         return warehouseId;
     }
@@ -48,7 +49,7 @@ public class MaterialView {
     }
 
     @Basic
-    @Column(name = "No", nullable = false, length = 64)
+    @Column(name = "No")
     public String getNo() {
         return no;
     }
@@ -58,7 +59,7 @@ public class MaterialView {
     }
 
     @Basic
-    @Column(name = "WarehouseName", nullable = false, length = 64)
+    @Column(name = "WarehouseName")
     public String getWarehouseName() {
         return warehouseName;
     }
@@ -68,7 +69,7 @@ public class MaterialView {
     }
 
     @Basic
-    @Column(name = "ProductLine", nullable = false, length = 64)
+    @Column(name = "ProductLine")
     public String getProductLine() {
         return productLine;
     }
@@ -78,13 +79,23 @@ public class MaterialView {
     }
 
     @Basic
-    @Column(name = "Enabled", nullable = false)
+    @Column(name = "Enabled")
     public int getEnabled() {
         return enabled;
     }
 
     public void setEnabled(int enabled) {
         this.enabled = enabled;
+    }
+
+    @Basic
+    @Column(name = "SerialNo")
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public void setSerialNo(String serialNo) {
+        this.serialNo = serialNo;
     }
 
     @Override
@@ -98,12 +109,13 @@ public class MaterialView {
                 Objects.equals(name, that.name) &&
                 Objects.equals(no, that.no) &&
                 Objects.equals(warehouseName, that.warehouseName) &&
-                Objects.equals(productLine, that.productLine);
+                Objects.equals(productLine, that.productLine) &&
+                Objects.equals(serialNo, that.serialNo);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, name, warehouseId, no, warehouseName, productLine, enabled);
+        return Objects.hash(id, name, warehouseId, no, warehouseName, productLine, enabled, serialNo);
     }
 }

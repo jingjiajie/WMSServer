@@ -94,6 +94,22 @@
                 <value>com.wms.utilities.model.PayNoteItemView</value>
                 <value>com.wms.utilities.model.SalaryTypePerson</value>
                 <value>com.wms.utilities.model.SalaryTypePersonView</value>
+                <value>com.wms.utilities.model.SummaryNote</value>
+                <value>com.wms.utilities.model.SummaryNoteItem</value>
+                <value>com.wms.utilities.model.SettlementNote</value>
+                <value>com.wms.utilities.model.SettlementNoteItem</value>
+                <value>com.wms.utilities.model.Invoice</value>
+                <value>com.wms.utilities.model.SummaryNoteView</value>
+                <value>com.wms.utilities.model.SummaryNoteItemView</value>
+                <value>com.wms.utilities.model.SettlementNoteView</value>
+                <value>com.wms.utilities.model.SettlementNoteItemView</value>
+                <value>com.wms.utilities.model.InvoiceView</value>
+                <value>com.wms.utilities.model.SummaryDetails</value>
+                <value>com.wms.utilities.model.TrayThresholds</value>
+                <value>com.wms.utilities.model.Price</value>
+                <value>com.wms.utilities.model.SummaryDetailsView</value>
+                <value>com.wms.utilities.model.TrayThresholdsView</value>
+                <value>com.wms.utilities.model.PriceView</value>
             </list>
         </property>
     </bean>

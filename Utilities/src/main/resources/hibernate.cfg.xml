@@ -83,6 +83,22 @@
       <mapping class="com.wms.utilities.model.AccountRecordView"/>
       <mapping class="com.wms.utilities.model.SalaryTypePerson"/>
       <mapping class="com.wms.utilities.model.SalaryTypePersonView"/>
+      <mapping class="com.wms.utilities.model.Invoice"/>
+      <mapping class="com.wms.utilities.model.SettlementNote"/>
+      <mapping class="com.wms.utilities.model.SettlementNoteItem"/>
+      <mapping class="com.wms.utilities.model.SummaryNote"/>
+      <mapping class="com.wms.utilities.model.SummaryNoteItem"/>
+      <mapping class="com.wms.utilities.model.InvoiceView"/>
+      <mapping class="com.wms.utilities.model.SettlementNoteItemView"/>
+      <mapping class="com.wms.utilities.model.SettlementNoteView"/>
+      <mapping class="com.wms.utilities.model.SummaryNoteItemView"/>
+      <mapping class="com.wms.utilities.model.SummaryNoteView"/>
+      <mapping class="com.wms.utilities.model.Price"/>
+      <mapping class="com.wms.utilities.model.SummaryDetails"/>
+      <mapping class="com.wms.utilities.model.TrayThresholds"/>
+      <mapping class="com.wms.utilities.model.PriceView"/>
+      <mapping class="com.wms.utilities.model.SummaryDetailsView"/>
+      <mapping class="com.wms.utilities.model.TrayThresholdsView"/>
 
 
       <!-- DB schema will be updated if needed -->

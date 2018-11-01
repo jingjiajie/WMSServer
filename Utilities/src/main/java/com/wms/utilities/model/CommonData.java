@@ -33,7 +33,7 @@ public class CommonData {
     }
 
     @Basic
-    @Column(name = "Value", nullable = true, length = 64)
+    @Column(name = "`Value`", nullable = true, length = 64)
     public String getValue() {
         return value;
     }

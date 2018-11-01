@@ -106,12 +106,12 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                     transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
                 }
             }
-            this.updateTransferOrder(accountBook, transferOrderItem.getTransferOrderId(), transferOrderItem.getPersonId());
+//            this.updateTransferOrder(accountBook, transferOrderItem.getTransferOrderId(), transferOrderItem.getPersonId());
 
         });
 
         int[] ids =this.transferOrderItemDAO.add(accountBook, transferOrderItems);
-        //this.updateTransferOrder(accountBook, transferOrderItems[0].getTransferOrderId(), transferOrderItems[0].getPersonId());
+        this.updateTransferOrder(accountBook, transferOrderItems[0].getTransferOrderId(), transferOrderItems[0].getPersonId());
         return ids;
     }
 
@@ -357,6 +357,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 reTransferStock.setUnitAmount(oriItemView.getUnitAmount());
                 reTransferStock.setNewUnit(oriItemView.getSourceUnit());
                 reTransferStock.setNewUnitAmount(oriItemView.getSourceUnitAmount());
+                this.deliveryOrderItemService.updateSleep();
                 this.stockRecordService.RealTransferStockUnitFlexible(accountBook,reTransferStock);//使用更新单位的库存修改
 
                 //todo 返回的可用数量变化跟上
@@ -366,6 +367,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 fixTransferStock.setSupplyId(oriItemView.getSupplyId());
                 fixTransferStock.setUnit(oriItemView.getSourceUnit());
                 fixTransferStock.setUnitAmount(oriItemView.getSourceUnitAmount());
+                this.deliveryOrderItemService.updateSleep();
                 this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
 
             }
@@ -444,9 +446,6 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
         else{
             transferOrder.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);
         }
-
-
-
         transferOrderService.update(accountBook,new TransferOrder[]{transferOrder});
     }
 

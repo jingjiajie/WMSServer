@@ -31,13 +31,15 @@ public class SafetyStockView {
     private Integer materialId;
     private Integer supplierId;
     private String materialProductLine;
+    private String supplySerialNo;
 
-    @Id
     @Basic
+    @Id
     @Column(name = "ID")
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -262,6 +264,16 @@ public class SafetyStockView {
         this.materialProductLine = materialProductLine;
     }
 
+    @Basic
+    @Column(name = "SupplySerialNo")
+    public String getSupplySerialNo() {
+        return supplySerialNo;
+    }
+
+    public void setSupplySerialNo(String supplySerialNo) {
+        this.supplySerialNo = supplySerialNo;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -299,6 +311,8 @@ public class SafetyStockView {
         if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
         if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
             return false;
+        if (supplySerialNo != null ? !supplySerialNo.equals(that.supplySerialNo) : that.supplySerialNo != null)
+            return false;
 
         return true;
     }
@@ -328,6 +342,7 @@ public class SafetyStockView {
         result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
         result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
+        result = 31 * result + (supplySerialNo != null ? supplySerialNo.hashCode() : 0);
         return result;
     }
 }

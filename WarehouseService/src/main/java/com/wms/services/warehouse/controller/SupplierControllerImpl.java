@@ -1,10 +1,10 @@
 package com.wms.services.warehouse.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.utilities.model.Supplier;
-import com.wms.utilities.model.SupplierView;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.Supplier;
+import com.wms.utilities.model.SupplierView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +55,7 @@ public class SupplierControllerImpl implements SupplierController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping("/{condStr}")
     public ResponseEntity<SupplierView[]> find(@PathVariable("accountBook") String accountBook,
-                                           @PathVariable("condStr") String condStr) {
+                                               @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
         SupplierView[] suppliers = supplierServices.find(accountBook, cond);
         return new ResponseEntity<SupplierView[]>(suppliers, HttpStatus.OK);

@@ -18,11 +18,11 @@ public class OrderNoGenerator {
     CommonDataService commonDataService;
 
     @Transactional
-    public <TOrder> String generateNextNo(String accountBook, String prefix) {
+    public <TOrder> String generateNextNo(String accountBook, String prefix, int warehouseID) {
         if(prefix == null || prefix.isEmpty()){
             throw new WMSServiceException("GenerateNextNo的prefix参数长度必须大于0！");
         }
-        String key = "TodayTable"+prefix + "Count"; //单据数量记录的key
+        String key = "Today_Table_Count_"+prefix + "_" + warehouseID; //单据数量记录的key
         CommonData[] commonData = commonDataService.find(accountBook,
                 new Condition().addCondition("key", key));
         long todayOrderCount = 0; //当日有几单

@@ -3,6 +3,7 @@ package com.wms.services.ledger.service;
 import com.wms.services.ledger.dao.AccountRecordDAO;
 import com.wms.services.ledger.dao.AccountTitleDAO;
 import com.wms.services.ledger.datestructures.TransferAccount;
+import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.ReflectHelper;
@@ -22,10 +23,7 @@ import com.wms.services.ledger.datestructures.AccrualCheck;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -209,79 +207,41 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
     @Transactional
     public void update(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException{
-        int curWarehouseId= accountRecords[0].getWarehouseId();
-        int curAccountPeriodId=accountRecords[0].getAccountPeriodId();
 
         this.validateEntities(accountBook,accountRecords);
-        List<AccountRecord> updateParentRecordList=new ArrayList<>();
         for (int k=0;k<accountRecords.length;k++){
 
             AccountRecordView[] oidAccountTitleViews=this.find(accountBook,new Condition().addCondition("id",accountRecords[k].getId()));
 
-            BigDecimal oldCreditAmount=oidAccountTitleViews[0].getCreditAmount();
-            BigDecimal oldDebitAmount=oidAccountTitleViews[0].getDebitAmount();
-
-            BigDecimal creditAmount=accountRecords[k].getCreditAmount();
-            BigDecimal debitAmount=accountRecords[k].getDebitAmount();
-
-            AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getAccountTitleId()));
-            AccountTitleView accountTitleView=AccountTitleViews[0];
-            AccountTitle[] accountTitles = ReflectHelper.createAndCopyFields(AccountTitleViews,AccountTitle.class);
-
-//            //TODO 找出当前科目的父代科目
-//            List<FindLinkAccountTitle> findLinkAccountTitleList=this.FindParentAccountTitle(accountBook,accountTitles);
-//            FindLinkAccountTitle[] parentAccountTitles=new FindLinkAccountTitle[findLinkAccountTitleList.size()];
-//            findLinkAccountTitleList.toArray(parentAccountTitles);
-//
-//            List<AccountTitleView> accountTitleViewsList= parentAccountTitles[0].getAccountTitleViews();
-//            AccountTitleView[] curParentAccountTitleViews=new AccountTitleView[accountTitleViewsList.size()];
-//            accountTitleViewsList.toArray(curParentAccountTitleViews);
-//
-//            AccountTitle[] curParentAccountTitles = ReflectHelper.createAndCopyFields(curParentAccountTitleViews,AccountTitle.class);
-//
-//            //TODO 对当前科目的父代科目最新的账目记录余额进行更新
-//            Stream.of(curParentAccountTitles).forEach((curParentAccountTitle)->{
-//
-//                AccountRecordView[] accountRecordViews= accountRecordDAO.find(accountBook,new Condition()
-//                        .addCondition("warehouseId",new Integer[]{curWarehouseId})
-//                        .addCondition("accountPeriodId",new Integer[]{curAccountPeriodId})
-//                        .addCondition("accountTitleId",new Integer[]{curParentAccountTitle.getId()}));
-//
-//                AccountRecord[] allParentAccountRecords = ReflectHelper.createAndCopyFields(accountRecordViews,AccountRecord.class);
-//
-//                //TODO 返回上级科目的列表
-//
-//                if (allParentAccountRecords.length>0) {
-//                    AccountRecord newestAccountRecord = allParentAccountRecords[0];
-//                    for (int i = 0; i < allParentAccountRecords.length; i++) {
-//                            if (allParentAccountRecords[i].getTime().after(newestAccountRecord.getTime())) {
-//                                newestAccountRecord = allParentAccountRecords[i];
-//                            }
-//                    }
-//                    BigDecimal curBalance = newestAccountRecord.getBalance();
-//
-//                    //如果科目类型是借方
-//                    if (curParentAccountTitle.getDirection() == AccountTitleService.Debit) {
-//                        newestAccountRecord.setBalance(curBalance.subtract(oldDebitAmount).add(oldCreditAmount).subtract(creditAmount).add(debitAmount));
-//
-//                    } else {
-//                        newestAccountRecord.setBalance(curBalance.subtract(oldCreditAmount).add(oldDebitAmount).subtract(debitAmount).add(creditAmount));
-//                    }
-//                    updateParentRecordList.add(newestAccountRecord);
-//                }
-//            });
-            //如果科目类型是借方
-            if (accountTitleView.getDirection()==AccountTitleService.Debit){
-                accountRecords[k].setBalance(oidAccountTitleViews[0].getBalance().subtract(oldDebitAmount).add(oldCreditAmount).subtract(creditAmount).add(debitAmount));
-
-            }else{
-                accountRecords[k].setBalance(oidAccountTitleViews[0].getBalance().subtract(oldCreditAmount).add(oldDebitAmount).subtract(debitAmount).add(creditAmount));
+            if(oidAccountTitleViews[0].getCreditAmount().compareTo(accountRecords[k].getCreditAmount())!=0
+                    ||oidAccountTitleViews[0].getDebitAmount().compareTo(accountRecords[k].getDebitAmount())!=0
+                    ||oidAccountTitleViews[0].getBalance().compareTo(accountRecords[k].getBalance())!=0
+                    ||oidAccountTitleViews[0].getAccountTitleId()!=accountRecords[k].getAccountTitleId()){
+                throw new WMSServiceException(String.format("无法修改账目记录！发生额/余额/科目名称无法修改！如需订正，请进行冲销操作，原科目名称(%s)", oidAccountTitleViews[0].getAccountTitleName()));
             }
         }
-        AccountRecord[] updateParentRecords=new AccountRecord[updateParentRecordList.size()];
-        updateParentRecordList.toArray(updateParentRecords);
 
-        accountRecordDAO.update(accountBook,updateParentRecords);
+//        for (int k=0;k<accountRecords.length;k++){
+//
+//            AccountRecordView[] oidAccountTitleViews=this.find(accountBook,new Condition().addCondition("id",accountRecords[k].getId()));
+//
+//            BigDecimal oldCreditAmount=oidAccountTitleViews[0].getCreditAmount();
+//            BigDecimal oldDebitAmount=oidAccountTitleViews[0].getDebitAmount();
+//
+//            BigDecimal creditAmount=accountRecords[k].getCreditAmount();
+//            BigDecimal debitAmount=accountRecords[k].getDebitAmount();
+//
+//            AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getAccountTitleId()));
+//            AccountTitleView accountTitleView=AccountTitleViews[0];
+//
+//            //如果科目类型是借方
+//            if (accountTitleView.getDirection()==AccountTitleService.Debit){
+//                accountRecords[k].setBalance(oidAccountTitleViews[0].getBalance().subtract(oldDebitAmount).add(oldCreditAmount).subtract(creditAmount).add(debitAmount));
+//
+//            }else{
+//                accountRecords[k].setBalance(oidAccountTitleViews[0].getBalance().subtract(oldCreditAmount).add(oldDebitAmount).subtract(debitAmount).add(creditAmount));
+//            }
+//        }
 
         accountRecordDAO.update(accountBook,accountRecords);
     }
@@ -318,6 +278,10 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             this.idChecker.check(AccountPeriodService.class, accountBook, accountRecord.getAccountPeriodId(), "会计期间");
             this.idChecker.check(AccountTitleService.class, accountBook, accountRecord.getAccountTitleId(), "科目");
             this.idChecker.check(PersonService.class, accountBook, accountRecord.getPersonId(), "记录人");
+            new Validator("贷方金额").notEmpty().validate(accountRecord.getCreditAmount());
+            new Validator("借方金额").notEmpty().validate(accountRecord.getDebitAmount());
+            new Validator("余额").notEmpty().validate(accountRecord.getBalance());
+
 
             AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecord.getAccountTitleId()));
             if (accountTitleViews[0].getEnabled()!=AccountTitleService.ENABLED_ON){
@@ -335,12 +299,14 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
         }));
 
-
     }
 
     @Deprecated
     public void RealTransferAccount(String accountBook, TransferAccount transferAccount)throws WMSServiceException
     {
+        if (transferAccount.getChangeAmount().compareTo(BigDecimal.ZERO)<0){
+            throw new WMSServiceException(String.format("转账申请发生额不能为负数，请重新检查后提交！凭证号：(%s)", transferAccount.getVoucherInfo()));
+        }
 
         AccountTitleView[] OutAccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",transferAccount.getOutaccountTitleId()));
         AccountTitleView OutAccountTitleView=OutAccountTitleViews[0];
@@ -385,10 +351,6 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             accountRecord1.setBalance(BigDecimal.ZERO);
 
         }
-
-
-
-
         this.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
     }
 
@@ -416,6 +378,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         for (int i=0;i<accountTitles.length;i++){
 
             int curType=accountTitles[i].getType();
+            int curDirection=accountTitles[i].getDirection();
+
             String curAccountTitleName=accountTitles[i].getName();
 
             FindLinkAccountTitle findLinkAccountTitle = new FindLinkAccountTitle();
@@ -432,12 +396,16 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     {
                         throw new WMSServiceException(String.format("科目与上级科目类型不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
                     }
+                    if (curDirection!=accountTitle.getDirection())
+                    {
+                        throw new WMSServiceException(String.format("科目与上级科目余额方向不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
+                    }
                 }
             });
             String[] parentAccountTitleNos=new String[parentAccountTitleNoList.size()];
             parentAccountTitleNoList.toArray(parentAccountTitleNos);
 
-            AccountTitleView[] accountTitleViews=new AccountTitleView[parentAccountTitleNos.length];
+
             for (int j=0;j<parentAccountTitleNos.length;j++) {
                 AccountTitleView[] curAccountTitleView = this.accountTitleService.find(accountBook, new Condition().addCondition("no", parentAccountTitleNos[j]));
                 if (curAccountTitleView.length==0){
@@ -456,6 +424,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         for (int i=0;i<accountTitles.length;i++){
 
             int curType=accountTitles[i].getType();
+            int curDirection=accountTitles[i].getDirection();
             String curAccountTitleName=accountTitles[i].getName();
 
             FindLinkAccountTitle findLinkAccountTitle = new FindLinkAccountTitle();
@@ -472,12 +441,16 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     {
                         throw new WMSServiceException(String.format("科目与上级科目类型不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
                     }
+                    if (curDirection!=accountTitle.getDirection())
+                    {
+                        throw new WMSServiceException(String.format("科目与上级科目余额方向不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
+                    }
                 }
             });
             String[] parentAccountTitleNos=new String[parentAccountTitleNoList.size()];
             parentAccountTitleNoList.toArray(parentAccountTitleNos);
 
-            AccountTitleView[] accountTitleViews=new AccountTitleView[parentAccountTitleNos.length];
+
             for (int j=0;j<parentAccountTitleNos.length;j++) {
                 AccountTitleView[] curAccountTitleView = this.accountTitleService.find(accountBook, new Condition().addCondition("no", parentAccountTitleNos[j]));
                 if (curAccountTitleView.length==0){
@@ -546,7 +519,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             throw new WMSServiceException("当前期间此仓库中无账目记录.");
         }
 
-        //TODO 按供货商分组
+        //按科目分组
         Map<Integer, List<AccountRecordView>> groupByAccountTitleId =
                 Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountTitleId));
 
@@ -574,5 +547,123 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
         return returnAccountRecordViewList;
     }
+
+    @Override
+    public List<AccrualCheck> showBalance(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException{
+
+        int curWarehouseId=accrualCheck.getWarehouseId();
+        int curAccountPeriodId=accrualCheck.getCurAccountPeriodId();
+        int curAccountTitleId= accrualCheck.getCurAccountTitleId();
+        List<AccrualCheck> returnAccrualCheckList=new ArrayList();
+        AccrualCheck accrualCheck1=new AccrualCheck();
+
+
+        AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",new Integer[]{curAccountTitleId}));
+        AccountTitle[] accountTitles = ReflectHelper.createAndCopyFields(accountTitleViews,AccountTitle.class);
+
+        //判断是否存在子级科目
+        List<FindLinkAccountTitle> findSonAccountTitleList=this.FindSonAccountTitle(accountBook,accountTitles);
+        FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
+        findSonAccountTitleList.toArray(sonAccountTitles);
+        List<AccountTitleView> sonAccountTitleViewsList= sonAccountTitles[0].getAccountTitleViews();
+        AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
+        sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
+
+        //没有子代就把自己科目最新的余额返回
+        if (curSonAccountTitleViews.length==0){
+            AccountRecordView[] accountRecordViews= this.find(accountBook,new Condition()
+                    .addCondition("warehouseId",new Integer[]{curWarehouseId})
+                    .addCondition("accountTitleId",new Integer[]{curAccountTitleId})
+                    .addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
+            if(accountRecordViews.length>0) {
+                AccountRecordView newestAccountRecordView = accountRecordViews[0];
+                for (int i = 0; i < accountRecordViews.length; i++) {
+                    if (accountRecordViews[i].getTime().after(newestAccountRecordView.getTime())) {
+                        newestAccountRecordView = accountRecordViews[i];
+                    }
+                }
+                accrualCheck1.setBalance(newestAccountRecordView.getBalance());
+            }
+            else{
+                accrualCheck1.setBalance(BigDecimal.ZERO);
+            }
+        }else{
+            BigDecimal sumBalance=BigDecimal.ZERO;
+            for(int i=0;i<curSonAccountTitleViews.length;i++){
+                AccountRecordView[] accountRecordViews= this.find(accountBook,new Condition()
+                        .addCondition("warehouseId",new Integer[]{curWarehouseId})
+                        .addCondition("accountTitleId",new Integer[]{curSonAccountTitleViews[i].getId()})
+                        .addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
+                if (accountRecordViews.length>0){
+
+                    AccountRecordView newestAccountRecordView=accountRecordViews[0];
+                    for (int j=0;j<accountRecordViews.length;j++){
+                        if (accountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
+                            newestAccountRecordView = accountRecordViews[j];
+                        }
+                    }
+                    sumBalance=sumBalance.add(newestAccountRecordView.getBalance());
+                }
+            }
+            accrualCheck1.setBalance(sumBalance);
+        }
+        returnAccrualCheckList.add(accrualCheck1);
+        return returnAccrualCheckList;
+
+    }
+
+    @Override
+    public List<TreeViewData> buildAccountTitleTreeView(String accountBook) throws WMSServiceException{
+
+        AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("enabled",1));
+
+        for (int i=0;i<accountTitleViews.length;i++){
+            accountTitleViews[i].setDirection(accountTitleViews[i].getNo().length());
+        }
+
+        List<AccountTitleView> accountTitleViewList= Arrays.asList(accountTitleViews);
+        List<AccountTitleView> newAccountTitleViewList =accountTitleViewList.stream().sorted(Comparator.comparing(AccountTitleView::getDirection)).collect(Collectors.toList());
+        AccountTitleView[] newAccountTitleViews =new AccountTitleView[newAccountTitleViewList.size()];
+        newAccountTitleViewList.toArray(newAccountTitleViews);
+
+        //替换成新的数组类型
+        TreeViewData[] treeViewDatas =new TreeViewData[newAccountTitleViews.length+1];
+
+        for (int i=0;i<treeViewDatas.length;i++){
+            if(i==0){
+                TreeViewData treeViewData =new TreeViewData();
+                treeViewData.setAccountTitleNo("全部科目");
+                treeViewData.setAccountTitleName("全部科目");
+                treeViewData.setAccountTitleId(0);
+                treeViewData.setParentAccountTitleId(0);
+                treeViewDatas[i]=treeViewData;
+            }
+            if(i>0){
+                TreeViewData treeViewData =new TreeViewData();
+                treeViewData.setAccountTitleNo(newAccountTitleViews[i-1].getNo());
+                treeViewData.setAccountTitleName(newAccountTitleViews[i-1].getName());
+                treeViewData.setAccountTitleId(i);
+                treeViewData.setParentAccountTitleId(0);
+                treeViewDatas[i]=treeViewData;
+            }
+
+        }
+
+        //合理编码
+        for (int i=0;i<treeViewDatas.length;i++){
+            String theNo=treeViewDatas[i].getAccountTitleNo();
+            for (int j=i;j<treeViewDatas.length;j++){
+                //如果后面有编码是以该编码开头，则替换掉PID
+                if (treeViewDatas[j].getAccountTitleNo().startsWith(theNo)
+                        &&!treeViewDatas[j].getAccountTitleNo().equals(theNo)){
+                    treeViewDatas[j].setParentAccountTitleId(treeViewDatas[i].getAccountTitleId());
+                }
+            }
+        }
+        List<TreeViewData> returnAccountTitleTreeViewList=Arrays.asList(treeViewDatas);
+
+        return returnAccountTitleTreeViewList;
+    }
+
 }
 

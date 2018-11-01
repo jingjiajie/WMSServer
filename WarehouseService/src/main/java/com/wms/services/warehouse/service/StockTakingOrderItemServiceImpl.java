@@ -194,20 +194,21 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
                     stockTakingOrderItem.setStorageLocationId(null);
                     stockTakingOrderItem.setUnitAmount(new BigDecimal(1));
                 }
-            if(comment.equals("在途数量")) {stockTakingOrderItem.setSupplyId((int) objects[2]);
+            if(comment.equals("在途数量"))
+            {   stockTakingOrderItem.setSupplyId((int) objects[2]);
                 stockTakingOrderItem.setAmount((BigDecimal) objects[objects.length-1]);
                 stockTakingOrderItem.setRealAmount((BigDecimal) objects[objects.length-1]);}
             else if(comment.equals("详细数目")||comment.equals("仓库总数")){
                 stockTakingOrderItem.setSupplyId((int) objects[3]);
-                stockTakingOrderItem.setAmount((BigDecimal) objects[25]);
-                stockTakingOrderItem.setRealAmount((BigDecimal) objects[25]);}
+                stockTakingOrderItem.setAmount((BigDecimal) objects[26]);
+                stockTakingOrderItem.setRealAmount((BigDecimal) objects[26]);}
             else if(comment.equals("合格品数量")) {
                 stockTakingOrderItem.setSupplyId((int) objects[3]);
-                if(objects[26]==null){
-                stockTakingOrderItem.setAmount((BigDecimal) objects[25]);
-                stockTakingOrderItem.setRealAmount((BigDecimal) objects[25]);}
-                else{stockTakingOrderItem.setAmount((BigDecimal) objects[26]);
-                    stockTakingOrderItem.setRealAmount((BigDecimal) objects[26]);}
+                if(objects[27]==null){
+                stockTakingOrderItem.setAmount((BigDecimal) objects[26]);
+                stockTakingOrderItem.setRealAmount((BigDecimal) objects[26]);}
+                else{stockTakingOrderItem.setAmount((BigDecimal) objects[27]);
+                    stockTakingOrderItem.setRealAmount((BigDecimal) objects[27]);}
             }
             stockTakingOrderItemList.add(stockTakingOrderItem);
         }

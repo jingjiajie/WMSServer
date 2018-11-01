@@ -15,7 +15,6 @@ public interface TransferOrderService
     int TYPE_PUT = 0;
     int TYPE_PACKAGE = 1;
 
-
     void transferFinish(String accountBook, TransferFinishArgs transferFinishArgs) throws WMSServiceException;
     void transferSome(String accountBook, List<Integer> ids,int personId) throws WMSServiceException;
     void transfer(String accountBook, TransferArgs transferArgs) throws WMSServiceException;
