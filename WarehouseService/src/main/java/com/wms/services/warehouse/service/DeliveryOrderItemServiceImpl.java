@@ -75,8 +75,8 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                 transferStock.setUnit(deliveryOrderItem.getUnit());
                 transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
-                transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
                 transferStock.setState(2);
+                this.updateSleep();
                 this.stockRecordService.addAmount(accountBook, transferStock);//直接改数
 
                 //再改可用数量
@@ -146,7 +146,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setUnit(oriItemView.getUnit());
                     transferStock.setUnitAmount(oriItemView.getUnitAmount());
                     transferStock.setState(2);
-
+                    this.updateSleep();
                     this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);
 
 
@@ -186,6 +186,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setUnit(deliveryOrderItem.getUnit());
                     transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
                     transferStock.setState(2);
+                    this.updateSleep();
                     this.stockRecordService.addAmount(accountBook, transferStock);//直接改数
 
                     //再改可用数量
@@ -200,8 +201,6 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 }
             }
             else{
-
-
 
                 BigDecimal deltaRealAmount = deliveryOrderItem.getRealAmount().subtract(oriItemView.getRealAmount());
                 //修改实收数量，更新库存
@@ -228,9 +227,13 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setState(2);
                     if (deltaRealAmount.compareTo(BigDecimal.ZERO)>0){
                         transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                        this.updateSleep();
                     this.stockRecordService.addAmount(accountBook, transferStock);}
                     else if(deltaRealAmount.compareTo(BigDecimal.ZERO)<0)
-                    {this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);}
+                    {
+                        this.updateSleep();
+                        this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);
+                    }
                 }
                 deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
                 if (deliveryOrderItem.getScheduledAmount().equals(deliveryOrderItem.getRealAmount())){
@@ -289,6 +292,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setUnitAmount(oriItemView.getUnitAmount());
                 transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
                 transferStock.setState(2);
+                this.updateSleep();
                 this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);
 
 
@@ -496,6 +500,15 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
 
 
         deliveryOrderService.update(accountBook,new DeliveryOrder[]{deliveryOrder});
+    }
+
+    public void updateSleep(){
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }
