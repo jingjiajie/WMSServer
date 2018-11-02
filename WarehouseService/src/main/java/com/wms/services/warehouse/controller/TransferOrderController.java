@@ -1,7 +1,9 @@
 package com.wms.services.warehouse.controller;
 
+import com.wms.services.warehouse.datastructures.DeliveryByTransferOrder;
 import com.wms.services.warehouse.datastructures.TransferOrderAndItems;
 import com.wms.services.warehouse.datastructures.TransferFinishArgs;
+import com.wms.utilities.model.DeliveryOrderItemView;
 import com.wms.utilities.model.TransferOrder;
 import com.wms.utilities.model.TransferOrderView;
 import com.wms.utilities.controller.BaseController;
@@ -17,4 +19,5 @@ public interface TransferOrderController
     void transferSome(String accountBook, List<Integer> ids,int personId);
     //long findCount(String accountBook,String condStr);
     List<TransferOrderAndItems> getPreviewData(String accountBook, String strIDs);
+    List<DeliveryOrderItemView> orderToDelivery(String accountBook, DeliveryByTransferOrder deliveryByTransferOrder);
 }

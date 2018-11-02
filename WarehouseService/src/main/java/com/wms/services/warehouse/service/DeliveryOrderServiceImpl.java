@@ -65,7 +65,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         //验证结构
         this.validateEntities(accountBook,deliveryOrders);
         //生成创建时间
-//        Stream.of(deliveryOrders).forEach((deliveryOrder) -> deliveryOrder.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
+        Stream.of(deliveryOrders).forEach((deliveryOrder) -> deliveryOrder.setCreateTime(new java.sql.Timestamp(System.currentTimeMillis())));
 
         //生成/检测单号
         Stream.of(deliveryOrders).forEach((deliveryOrder) -> {
@@ -132,8 +132,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         Stream.of(deliveryOrders).forEach(
                 (deliveryOrder) -> {
                     new Validator("状态").min(0).max(5).validate(deliveryOrder.getState());
-                    new Validator("司机").notEmpty().validate(deliveryOrder.getDriverName());
-                    new Validator("车牌号").notEmpty().validate(deliveryOrder.getLiscensePlateNumber());
+//                    new Validator("司机").notEmpty().validate(deliveryOrder.getDriverName());
+//                    new Validator("车牌号").notEmpty().validate(deliveryOrder.getLiscensePlateNumber());
                 }
         );
 

@@ -2,10 +2,12 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.DeliveryByTransferOrder;
 import com.wms.services.warehouse.datastructures.TransferOrderAndItems;
 import com.wms.services.warehouse.datastructures.TransferFinishArgs;
 import com.wms.services.warehouse.service.TransferOrderService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.DeliveryOrderItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -88,5 +90,13 @@ public class TransferOrderControllerImpl implements  TransferOrderController{
         Gson gson = new Gson();
         List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {}.getType());
         return transferOrderService.getPreviewData(accountBook,ids);
+    }
+
+    @Override
+    @RequestMapping(value = "/order_to_delivery",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<DeliveryOrderItemView> orderToDelivery(@PathVariable("accountBook") String accountBook,
+                                                        @RequestBody DeliveryByTransferOrder deliveryByTransferOrder){
+        return this.transferOrderService.orderToDelivery(accountBook,deliveryByTransferOrder);
     }
 }
