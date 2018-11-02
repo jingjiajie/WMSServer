@@ -26,6 +26,20 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     @Transactional
     public int[] add(String accountBook, StorageLocation[] storageLocations )throws WMSServiceException {
 
+        for(int i=0;i<storageLocations.length;i++) {
+            new Validator("库位名").notnull().validate(storageLocations[i].getName());
+            new Validator("库位代号").notnull().validate(storageLocations[i].getNo());
+            //new Validator("库位长度").notnull().greaterThan(0).validate(storageLocations[i].getLength());
+            //new Validator("库位宽度").notnull().greaterThan(0).validate(storageLocations[i].getWidth());
+            //new Validator("长度内边距").notnull().min(0).validate(storageLocations[i].getLengthPadding());
+            // new Validator("宽度内边距").notnull().min(0).validate(storageLocations[i].getWidthPadding());
+            //new Validator("余留面积").notnull().min(0).validate(storageLocations[i].getReservedArea());
+            //new Validator("最高码放层数").notnull().greaterThan(0).validate(storageLocations[i].getPiles());
+            if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
+                throw new WMSServiceException("是否启用只能为0和1！");
+            }
+        }
+
         String storageAreaNo;
         StorageAreaView[] storageAreaViews=null;
         //外键检测
@@ -42,19 +56,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             }
         }
 
-        for(int i=0;i<storageLocations.length;i++) {
-            new Validator("库位名").notnull().validate(storageLocations[i].getName());
-            new Validator("库位代号").notnull().validate(storageLocations[i].getNo());
-            //new Validator("库位长度").notnull().greaterThan(0).validate(storageLocations[i].getLength());
-            //new Validator("库位宽度").notnull().greaterThan(0).validate(storageLocations[i].getWidth());
-            //new Validator("长度内边距").notnull().min(0).validate(storageLocations[i].getLengthPadding());
-           // new Validator("宽度内边距").notnull().min(0).validate(storageLocations[i].getWidthPadding());
-            //new Validator("余留面积").notnull().min(0).validate(storageLocations[i].getReservedArea());
-            //new Validator("最高码放层数").notnull().greaterThan(0).validate(storageLocations[i].getPiles());
-            if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
-                throw new WMSServiceException("是否启用只能为0和1！");
-            }
-        }
+
             for(int i=0;i<storageLocations.length;i++){
                 Condition cond = new Condition();
                 cond.addCondition("name",new String[]{storageLocations[i].getName()});
