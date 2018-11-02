@@ -210,7 +210,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         int transferType=TransferAuto.getTransferType();
 
         SafetyStockView[] AllSafetyStockViews=safetyStockService.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{TransferAuto.getWarehouseId()}).addCondition("type",new Integer[]{transferType}));
-        if(AllSafetyStockViews.length==0){throw new WMSServiceException("当前仓库无任何安全库存记录，无法自动添加移库作业单单条目！");}
+        if(AllSafetyStockViews.length==0){throw new WMSServiceException("当前仓库无任何安全库存记录，无法自动添加作业单条目！");}
         TransferArgs transferArgs=new TransferArgs();
         TransferItem transferItem=new TransferItem();
 

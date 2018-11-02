@@ -105,6 +105,7 @@ public class MaterialServiceImpl implements MaterialService {
             new Validator("是否启用").min(0).max(1).validate(material.getEnabled());
             new Validator("代号").notEmpty().validate(material.getNo());
             new Validator("物料名称").notEmpty().validate(material.getName());
+            new Validator("物料序号").notEmpty().validate(material.getSerialNo());
 
             if(this.warehouseService.find(accountBook,
                     new Condition().addCondition("id",material.getWarehouseId())).length == 0){
