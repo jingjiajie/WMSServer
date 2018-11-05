@@ -161,7 +161,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                 this.transferOrderItemService.update(accountBook, new TransferOrderItem[]{transferOrderItem});
             });
 
-            this.update(accountBook, transferOrders);
+//            this.update(accountBook, transferOrders);
         }
     }
 
