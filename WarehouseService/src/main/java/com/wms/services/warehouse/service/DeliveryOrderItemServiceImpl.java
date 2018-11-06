@@ -325,7 +325,11 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         Stream.of(deliveryOrderItems).forEach(
                 (deliveryOrderItem)->{
                     new Validator("计划装车数量（个）").greaterThan(0).validate(deliveryOrderItem.getScheduledAmount());
-                    new Validator("实际装车数量（个）").min(0).max(deliveryOrderItem.getScheduledAmount().intValue()).validate(deliveryOrderItem.getRealAmount());
+                    new Validator("实际装车数量（个）").min(0).validate(deliveryOrderItem.getRealAmount());
+                    if (deliveryOrderItem.getRealAmount().compareTo(deliveryOrderItem.getScheduledAmount())>0){
+                        throw new WMSServiceException(String.format("实际装车数量的值(%f)不能大于计划装车数量(%f)",deliveryOrderItem.getRealAmount(),deliveryOrderItem.getScheduledAmount()));
+                    }
+
                     new Validator("单位数量").greaterThan(0).validate(deliveryOrderItem.getUnitAmount());
                     new Validator("单位").notnull().validate(deliveryOrderItem.getUnit());
                     new Validator("状态").min(0).max(5).validate(deliveryOrderItem.getState());
@@ -504,7 +508,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
 
     public void updateSleep(){
         try {
-            Thread.sleep(50);
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

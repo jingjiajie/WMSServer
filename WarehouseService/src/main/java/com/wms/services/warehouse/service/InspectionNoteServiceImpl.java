@@ -165,6 +165,14 @@ public class InspectionNoteServiceImpl
                 return;
             }
             this.inspectionNoteItemService.update(accountBook, ReflectHelper.listToArray(inspectionNoteItemsToUpdate, InspectionNoteItem.class));
+            //更新送检单状态
+            int inspectionNoteId = inspectFinishArgs.getInspectionNoteId();
+            if(inspectionNoteId != -1) {
+                List<Integer> listId = new ArrayList<>();
+                listId.add(inspectionNoteId);
+                this.updateState(accountBook, listId);
+            }
+            //更新入库单条目状态
             if (warehouseEntryIDsToReceive.size() > 0) {
                 this.warehouseEntryItemService.receive(accountBook, warehouseEntryIDsToReceive,warehouseEntryItemAndReturnAmount);
             }

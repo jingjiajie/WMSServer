@@ -1440,7 +1440,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
-                    stockRecord.setTime(stockRecordSource1[i].getTime());
+                    stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setState(state);
                     stockRecordDAO.update(accountBook,new StockRecord[]{stockRecord});
@@ -1457,7 +1457,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
-                    stockRecord.setTime(stockRecordSource1[i].getTime());
+                    stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setState(state);
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAmount().subtract(amountAddAvailable.subtract(transferStock.getModifyAvailableAmount())));//最后一个差几个满
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
@@ -1498,7 +1498,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
-                    stockRecord.setTime(stockRecordSource1[i].getTime());
+                    stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setState(state);
                     stockRecord.setAvailableAmount(BigDecimal.ZERO);
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
@@ -1514,7 +1514,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
-                    stockRecord.setTime(stockRecordSource1[i].getTime());
+                    stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
                     stockRecord.setAvailableAmount(amountAvailableAll.add(transferStock.getModifyAvailableAmount()));
                     stockRecord.setState(state);
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});

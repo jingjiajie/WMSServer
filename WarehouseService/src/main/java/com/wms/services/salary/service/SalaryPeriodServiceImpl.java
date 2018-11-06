@@ -52,7 +52,7 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
         Stream.of(salaryPeriods).forEach((salaryPeriod) -> {
             Condition cond = new Condition();
             cond.addCondition("name", new String[]{salaryPeriod.getName()});
-            cond.addCondition("warehouseId", salaryPeriod.getWarehouseId());
+            //cond.addCondition("warehouseId", salaryPeriod.getWarehouseId());
             if (salaryPeriodDAO.find(accountBook, cond).length > 0) {
                 throw new WMSServiceException("期间名：" + salaryPeriod.getName() + "已经存在!");
             }
@@ -114,7 +114,7 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
             Condition cond = new Condition();
             cond.addCondition("name", new String[]{salaryPeriods[i].getName()});
             cond.addCondition("id", new Integer[]{salaryPeriods[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
-            cond.addCondition("warehouseId", salaryPeriods[i].getWarehouseId());
+            //cond.addCondition("warehouseId", salaryPeriods[i].getWarehouseId());
             if (salaryPeriodDAO.find(accountBook, cond).length > 0) {
                 throw new WMSServiceException("期间名称重复：" + salaryPeriods[i].getName());
             }
@@ -162,7 +162,7 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
     }
 
     private void validateOverlap(String accountBook, int warehouseId) {
-        SalaryPeriod[] salaryPeriods = this.salaryPeriodDAO.findTable(accountBook, new Condition().addCondition("warehouseId", warehouseId));
+        SalaryPeriod[] salaryPeriods = this.salaryPeriodDAO.findTable(accountBook, new Condition());
         List<SalaryPeriod> salaryPeriodList = Arrays.asList(salaryPeriods);
         salaryPeriodList.stream().sorted(Comparator.comparing(SalaryPeriod::getStartTime)).reduce((last, cur) -> {
             if(cur.getStartTime().compareTo(cur.getEndTime())>=0){
@@ -176,7 +176,7 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
     }
 
     private void validateEndTime(String accountBook, SalaryPeriod salaryPeriod) {
-        SalaryPeriod[] salaryPeriods = this.salaryPeriodDAO.findTable(accountBook, new Condition().addCondition("warehouseId", salaryPeriod.getWarehouseId()).addCondition("endTime", salaryPeriod.getStartTime(), ConditionItem.Relation.GREATER_THAN_OR_EQUAL_TO));
+        SalaryPeriod[] salaryPeriods = this.salaryPeriodDAO.findTable(accountBook, new Condition().addCondition("endTime", salaryPeriod.getStartTime(), ConditionItem.Relation.GREATER_THAN_OR_EQUAL_TO));
         if (salaryPeriods.length != 0) {
             throw new WMSServiceException("期间:" + salaryPeriod.getName() + "的起始时间必须大于所有期间的截至时间:" + salaryPeriods[0].getEndTime());
         }

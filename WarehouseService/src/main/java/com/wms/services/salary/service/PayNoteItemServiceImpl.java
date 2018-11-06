@@ -163,7 +163,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
         BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
         List<Integer> state=new ArrayList<>();
         state.add(PayNoteItemState.CALCULATED_PAY);
-        state.add(PayNoteState.WAITING_FOR_CONFIRM);
+        state.add(PayNoteItemState.WAITING_FOR_CALCULATE_PAY);
         payNoteItems= this.getStateItem(payNoteItemViews, state);
         //计算税费
         TaxCalculation taxCalculation=new TaxCalculation();
