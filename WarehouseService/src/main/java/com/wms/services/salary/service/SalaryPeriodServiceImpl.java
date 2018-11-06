@@ -72,13 +72,13 @@ public class SalaryPeriodServiceImpl implements SalaryPeriodService {
                 }
         );
         int[] ids = salaryPeriodDAO.add(accountBook, salaryPeriods);
-        this.validateOverlap(accountBook, salaryPeriods[0].getWarehouseId());
-        for (int i = 0; i < ids.length; i++) {
-            AddPersonSalary addPersonSalary = new AddPersonSalary();
-            addPersonSalary.setWarehouseId(salaryPeriods[0].getWarehouseId());
-            addPersonSalary.setSalaryPeriodId(ids[i]);
-            this.personSalaryService.addForNewPeriod(accountBook, addPersonSalary);
-        }
+       this.validateOverlap(accountBook, salaryPeriods[0].getWarehouseId());
+//        for (int i = 0; i < ids.length; i++) {
+//            AddPersonSalary addPersonSalary = new AddPersonSalary();
+//            addPersonSalary.setWarehouseId(salaryPeriods[0].getWarehouseId());
+//            addPersonSalary.setSalaryPeriodId(ids[i]);
+//            this.personSalaryService.addForNewPeriod(accountBook, addPersonSalary);
+//        }
         return ids;
     }
 

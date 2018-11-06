@@ -61,18 +61,18 @@ public class SalaryTypePersonServiceImpl implements SalaryTypePersonService {
             }
         });
         int[] ids = salaryTypePersonDAO.add(accountBook, salaryTypePeople);
-        List<Integer> salaryTypeId = new ArrayList<>();
-        for (int i = 0; i < salaryTypePeople.length; i++) {
-            if (!salaryTypeId.contains(salaryTypePeople[i].getSalaryTypeId())) {
-                salaryTypeId.add(salaryTypePeople[i].getSalaryTypeId());
-            }
-        }
-        for (int i = 0; i < salaryTypeId.size(); i++) {
-            AddPersonSalary addPersonSalary = new AddPersonSalary();
-            addPersonSalary.setWarehouseId(this.findWarehouseId(accountBook,salaryTypeId.get(i)));
-            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
-            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook, addPersonSalary);
-        }
+//        List<Integer> salaryTypeId = new ArrayList<>();
+//        for (int i = 0; i < salaryTypePeople.length; i++) {
+//            if (!salaryTypeId.contains(salaryTypePeople[i].getSalaryTypeId())) {
+//                salaryTypeId.add(salaryTypePeople[i].getSalaryTypeId());
+//            }
+//        }
+//        for (int i = 0; i < salaryTypeId.size(); i++) {
+//            AddPersonSalary addPersonSalary = new AddPersonSalary();
+//            addPersonSalary.setWarehouseId(this.findWarehouseId(accountBook,salaryTypeId.get(i)));
+//            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
+//            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook, addPersonSalary);
+//        }
         return ids;
     }
 
@@ -103,18 +103,18 @@ public class SalaryTypePersonServiceImpl implements SalaryTypePersonService {
             }
         });
         salaryTypePersonDAO.update(accountBook, salaryTypePeople);
-        List<Integer> salaryTypeId = new ArrayList<>();
-        for (int i = 0; i < salaryTypePeople.length; i++) {
-            if (!salaryTypeId.contains(salaryTypePeople[i].getSalaryTypeId())) {
-                salaryTypeId.add(salaryTypePeople[i].getSalaryTypeId());
-            }
-        }
-        for (int i = 0; i < salaryTypeId.size(); i++) {
-            AddPersonSalary addPersonSalary = new AddPersonSalary();
-            addPersonSalary.setWarehouseId(this.findWarehouseId(accountBook,salaryTypeId.get(i)));
-            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
-            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook, addPersonSalary);
-        }
+//        List<Integer> salaryTypeId = new ArrayList<>();
+//        for (int i = 0; i < salaryTypePeople.length; i++) {
+//            if (!salaryTypeId.contains(salaryTypePeople[i].getSalaryTypeId())) {
+//                salaryTypeId.add(salaryTypePeople[i].getSalaryTypeId());
+//            }
+//        }
+//        for (int i = 0; i < salaryTypeId.size(); i++) {
+//            AddPersonSalary addPersonSalary = new AddPersonSalary();
+//            addPersonSalary.setWarehouseId(this.findWarehouseId(accountBook,salaryTypeId.get(i)));
+//            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
+//            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook, addPersonSalary);
+//        }
     }
 
     @Transactional
@@ -135,20 +135,20 @@ public class SalaryTypePersonServiceImpl implements SalaryTypePersonService {
         } catch (Exception e) {
             throw new WMSServiceException("删除供薪金类型人员失败，如果薪金类型人员已经被引用，需要先删除引用的内容，才能删除新薪金类型人员！");
         }
-        List<Integer> salaryTypeId = new ArrayList<>();
-        List<Integer> personRemoveId=new ArrayList<>();
-        for (int i = 0; i < salaryTypePeople.length; i++) {
-            personRemoveId.add(salaryTypePeople[i].getPersonId());
-            if (!salaryTypeId.contains(salaryTypePeople[i].getSalaryTypeId())) {
-                salaryTypeId.add(salaryTypePeople[i].getSalaryTypeId());
-            }
-        }
-        for (int i = 0; i < salaryTypeId.size(); i++) {
-            AddPersonSalary addPersonSalary = new AddPersonSalary();
-            addPersonSalary.setWarehouseId(this.findWarehouseId(accountBook,salaryTypeId.get(i)));
-            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
-            this.personSalaryService.updateNewestPeriodPersonSalaryDelete(accountBook, addPersonSalary,personRemoveId);
-        }
+//        List<Integer> salaryTypeId = new ArrayList<>();
+//        List<Integer> personRemoveId=new ArrayList<>();
+//        for (int i = 0; i < salaryTypePeople.length; i++) {
+//            personRemoveId.add(salaryTypePeople[i].getPersonId());
+//            if (!salaryTypeId.contains(salaryTypePeople[i].getSalaryTypeId())) {
+//                salaryTypeId.add(salaryTypePeople[i].getSalaryTypeId());
+//            }
+//        }
+//        for (int i = 0; i < salaryTypeId.size(); i++) {
+//            AddPersonSalary addPersonSalary = new AddPersonSalary();
+//            addPersonSalary.setWarehouseId(this.findWarehouseId(accountBook,salaryTypeId.get(i)));
+//            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
+//            this.personSalaryService.updateNewestPeriodPersonSalaryDelete(accountBook, addPersonSalary,personRemoveId);
+//        }
     }
 
     public SalaryTypePersonView[] find(String accountBook, Condition cond) throws WMSServiceException {

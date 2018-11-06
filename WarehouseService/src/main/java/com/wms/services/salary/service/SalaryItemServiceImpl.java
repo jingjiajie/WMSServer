@@ -97,19 +97,19 @@ public class SalaryItemServiceImpl implements SalaryItemService {
                     }
                 }
         );
-        int[] ids = salaryItemDAO.add(accountBook, salaryItems);
-        List<Integer> salaryTypeId = new ArrayList<>();
-        for (int i = 0; i < salaryItems.length; i++) {
-            if (!salaryTypeId.contains(salaryItems[i].getSalaryTypeId())) {
-                salaryTypeId.add(salaryItems[i].getSalaryTypeId());
-            }
-        }
-        for (int i = 0; i < salaryTypeId.size(); i++) {
-            AddPersonSalary addPersonSalary = new AddPersonSalary();
-            addPersonSalary.setWarehouseId(salaryItems[0].getWarehouseId());
-            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
-            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook, addPersonSalary);
-        }
+          int[] ids = salaryItemDAO.add(accountBook, salaryItems);
+//        List<Integer> salaryTypeId = new ArrayList<>();
+//        for (int i = 0; i < salaryItems.length; i++) {
+//            if (!salaryTypeId.contains(salaryItems[i].getSalaryTypeId())) {
+//                salaryTypeId.add(salaryItems[i].getSalaryTypeId());
+//            }
+//        }
+//        for (int i = 0; i < salaryTypeId.size(); i++) {
+//            AddPersonSalary addPersonSalary = new AddPersonSalary();
+//            addPersonSalary.setWarehouseId(salaryItems[0].getWarehouseId());
+//            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
+//            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook, addPersonSalary);
+//        }
         return ids;
     }
 
@@ -182,18 +182,18 @@ public class SalaryItemServiceImpl implements SalaryItemService {
                 }
         );
         salaryItemDAO.update(accountBook, salaryItems);
-        List<Integer> salaryTypeId = new ArrayList<>();
-        for (int i = 0; i < salaryItems.length; i++) {
-            if (!salaryTypeId.contains(salaryItems[i].getSalaryTypeId())) {
-                salaryTypeId.add(salaryItems[i].getSalaryTypeId());
-            }
-        }
-        for (int i = 0; i < salaryTypeId.size(); i++) {
-            AddPersonSalary addPersonSalary = new AddPersonSalary();
-            addPersonSalary.setWarehouseId(salaryItems[0].getWarehouseId());
-            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
-            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook, addPersonSalary);
-        }
+//        List<Integer> salaryTypeId = new ArrayList<>();
+//        for (int i = 0; i < salaryItems.length; i++) {
+//            if (!salaryTypeId.contains(salaryItems[i].getSalaryTypeId())) {
+//                salaryTypeId.add(salaryItems[i].getSalaryTypeId());
+//            }
+//        }
+//        for (int i = 0; i < salaryTypeId.size(); i++) {
+//            AddPersonSalary addPersonSalary = new AddPersonSalary();
+//            addPersonSalary.setWarehouseId(salaryItems[0].getWarehouseId());
+//            addPersonSalary.setSalaryTypeId(salaryTypeId.get(i));
+//            this.personSalaryService.updateNewestPeriodPersonSalary(accountBook, addPersonSalary);
+//        }
     }
 
     @Transactional
