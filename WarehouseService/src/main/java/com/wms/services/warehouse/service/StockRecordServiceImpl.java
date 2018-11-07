@@ -10,6 +10,7 @@ import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
+import javafx.util.converter.TimeStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import javax.rmi.CORBA.Tie;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -79,7 +81,7 @@ public class StockRecordServiceImpl implements StockRecordService {
 
         for (int i=0;i<stockRecords.length;i++)
         {
-            stockRecords[i].setTime(new Timestamp(System.currentTimeMillis()));
+            stockRecords[i].setTime(this.getTime());
             stockRecords[i].setBatchNo(this.batchTransfer(stockRecords[i].getInventoryDate()));
         }
         for(int i=0;i<stockRecords.length;i++) {
@@ -133,9 +135,9 @@ public class StockRecordServiceImpl implements StockRecordService {
         );
         for (int i=0;i<stockRecords.length;i++)
         {
-            stockRecords[i].setTime(new Timestamp(System.currentTimeMillis()));
-            stockRecords[i].setBatchNo(this.batchTransfer(new Timestamp(System.currentTimeMillis())));
-            stockRecords[i].setInventoryDate(new Timestamp(System.currentTimeMillis()));
+            stockRecords[i].setTime(this.getTime());
+            stockRecords[i].setBatchNo(this.batchTransfer(this.getTime()));
+            stockRecords[i].setInventoryDate(this.getTime());
         }
         for(int i=0;i<stockRecords.length;i++){
             int StorageLocationId=stockRecords[i].getStorageLocationId();
@@ -164,7 +166,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecord.setInventoryDate(stockRecords[i].getInventoryDate());
                 stockRecord.setStorageLocationId(StorageLocationId);
                 stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setTime(this.getTime());
                 stockRecord.setAmount(stockRecords[i].getAmount());
                 stockRecord.setAvailableAmount(stockRecords[i].getAvailableAmount());
                 stockRecord.setState(stockRecords[i].getState());
@@ -195,7 +197,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecord.setInventoryDate(stockRecords[i].getInventoryDate());
                 stockRecord.setStorageLocationId(StorageLocationId);
                 stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setTime(this.getTime());
                 stockRecord.setAmount(stockRecords1[0].getAmount().add(stockRecords[i].getAmount()));
                 stockRecord.setAvailableAmount(stockRecords1[0].getAvailableAmount().add(stockRecords[i].getAvailableAmount()));
                 stockRecord.setState(stockRecords[i].getState());
@@ -324,7 +326,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     @Override
     public void RealTransformStock(String accountBook, TransferStock transferStock1)
     {
-        this.sleep();
         TransferStock transferStock=this.transferStockConverse(transferStock1);
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
@@ -423,7 +424,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setInventoryDate(stockRecordSource1[i].getInventoryDate());
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
-                    stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecord.setTime(this.getTime());
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount());
                     stockRecord.setState(stockRecordSource1[i].getState());
@@ -440,7 +441,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     //transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
                     transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
                     transferRecord.setSupplyId(supplyId);
-                    transferRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                    transferRecord.setTime(this.getTime());
                     transferRecord.setSourceStorageLocationId(sourceStorageLocationId);
                     transferRecord.setSourceStorageLocationNewAmount(sourceStorageNewAmount);
                     transferRecord.setSourceStorageLocationUnitAmount(sourceStorageLocationUnitAmount);
@@ -474,7 +475,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setInventoryDate(stockRecordSource1[i].getInventoryDate());
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setTime(this.getTime());
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount()));
                 stockRecord.setAvailableAmount(BigDecimal.ZERO);
                 stockRecord.setState(oldState);
@@ -502,7 +503,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setWarehouseId(stockRecordSource1[i].getWarehouseId());
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
-                    stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setTime(this.getTime());
                     stockRecordNewSave.setState(newState);
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
@@ -523,7 +524,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setWarehouseId(stockRecordSource1[i].getWarehouseId());
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
-                    stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setTime(this.getTime());
                     stockRecordNewSave.setState(newState);
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=new BigDecimal(0);
@@ -541,7 +542,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setInventoryDate(stockRecordSource1[i].getInventoryDate());
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setTime(this.getTime());
                 stockRecordNewSave.setState(newState);
                 //stockRecord.setAmount(amountAvailableAll.subtract(transferStock.getAmount()));
                 //stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount().subtract(stockRecordSource1[i].getAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
@@ -577,7 +578,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setState(newState);
-                    stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setTime(this.getTime());
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
                     targetStorageLocationUnit=stockRecordViews[0].getUnit();
@@ -599,7 +600,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setWarehouseId(stockRecordSource1[i].getWarehouseId());
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
-                    stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setTime(this.getTime());
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=new BigDecimal(0);
                     stockRecordNewSave.setState(newState);
@@ -640,7 +641,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     @Override
     public void addAmount(String accountBook,TransferStock transferStock )
     {
-        this.sleep();
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
@@ -692,7 +692,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setInventoryDate(transferStock.getInventoryDate());
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setTime(this.getTime());
                 stockRecord.setAmount(amount);
                 stockRecord.setAvailableAmount(amount);
                 stockRecord.setState(state);
@@ -722,7 +722,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setInventoryDate(transferStock.getInventoryDate());
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setTime(this.getTime());
                 stockRecord.setAmount(stockRecordSource[0].getAmount().add(amount));
                 stockRecord.setAvailableAmount(stockRecordSource[0].getAvailableAmount().add(amount));
                 stockRecord.setState(state);
@@ -797,7 +797,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setInventoryDate(stockRecordSource[i].getInventoryDate());
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
-                    stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecord.setTime(this.getTime());
                     stockRecord.setAmount(stockRecordSource[i].getAmount().subtract(stockRecordSource[i].getAvailableAmount()));
                     stockRecord.setAvailableAmount(new BigDecimal(0));
                     stockRecord.setState(state);
@@ -826,7 +826,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord1.setInventoryDate(stockRecordSource[i].getInventoryDate());
                     stockRecord1.setStorageLocationId(sourceStorageLocationId);
                     stockRecord1.setSupplyId(supplyId);
-                    stockRecord1.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecord1.setTime(this.getTime());
                     stockRecord1.setState(state);
                     //stockRecord.setAmount(amountAvailableAll.add(transferStock.getAmount()));
                     //stockRecord.setAvailableAmount(stockRecordSource[i].getAvailableAmount().subtract(stockRecordSource[i].getAmount().subtract(amountAvailableAll.add(transferStock.getAmount()))));
@@ -910,7 +910,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setInventoryDate(transferStock.getInventoryDate());
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setTime(this.getTime());
                 stockRecord.setAmount(amount);
                 stockRecord.setAvailableAmount(amount);
                 stockRecord.setState(state);
@@ -939,7 +939,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setInventoryDate(stockRecordSource[0].getInventoryDate());
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setTime(this.getTime());
                 stockRecord.setAmount(stockRecordSource[0].getAmount().add(amount));
                 stockRecord.setAvailableAmount(stockRecordSource[0].getAvailableAmount().add(amount));
                 stockRecord.setState(state);
@@ -1044,7 +1044,6 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
     public void RealTransferStockUnitFlexible(String accountBook,TransferStock transferStock1)
     {
-        this.sleep();
         TransferStock transferStock=this.transferStockConverse(transferStock1);
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
@@ -1143,7 +1142,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                         stockRecord.setInventoryDate(stockRecordSource1[i].getInventoryDate());
                         stockRecord.setStorageLocationId(sourceStorageLocationId);
                         stockRecord.setSupplyId(supplyId);
-                        stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                        stockRecord.setTime(this.getTime());
                         stockRecord.setAmount(stockRecordSource1[i].getAmount());
                         stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount());
                         stockRecord.setState(oldState);
@@ -1160,7 +1159,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                         TransferRecord transferRecord=new TransferRecord();
                         transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
                         transferRecord.setSupplyId(supplyId);
-                        transferRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                        transferRecord.setTime(this.getTime());
                         transferRecord.setSourceStorageLocationId(sourceStorageLocationId);
                         transferRecord.setSourceStorageLocationNewAmount(sourceStorageNewAmount);
                         transferRecord.setSourceStorageLocationUnitAmount(sourceStorageLocationUnitAmount);
@@ -1195,7 +1194,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setInventoryDate(stockRecordSource1[i].getInventoryDate());
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setTime(this.getTime());
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount()));
                 stockRecord.setAvailableAmount(BigDecimal.ZERO);
                 stockRecord.setState(oldState);
@@ -1225,7 +1224,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setWarehouseId(stockRecordSource1[i].getWarehouseId());
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
-                    stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setTime(this.getTime());
                     stockRecordNewSave.setState(newState);
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
@@ -1246,7 +1245,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setWarehouseId(stockRecordSource1[i].getWarehouseId());
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
-                    stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setTime(this.getTime());
                     stockRecordNewSave.setState(newState);
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=new BigDecimal(0);
@@ -1264,7 +1263,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setInventoryDate(stockRecordSource1[i].getInventoryDate());
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
-                stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                stockRecord.setTime(this.getTime());
                 stockRecord.setState(oldState);
                 //stockRecord.setAmount(amountAvailableAll.subtract(transferStock.getAmount()));
                 //stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount().subtract(stockRecordSource1[i].getAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
@@ -1298,7 +1297,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setState(newState);
-                    stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setTime(this.getTime());
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
                     targetStorageLocationUnit=stockRecordViews[0].getUnit();
@@ -1321,7 +1320,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setWarehouseId(stockRecordSource1[i].getWarehouseId());
                     stockRecordNewSave.setSupplyId(supplyId);
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
-                    stockRecordNewSave.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecordNewSave.setTime(this.getTime());
                     stockRecordNewSave.setState(newState);
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=new BigDecimal(0);
@@ -1369,7 +1368,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     public void modifyAvailableAmount(String accountBook,TransferStock transferStock){
-        this.sleep();
+
         if(transferStock.getModifyAvailableAmount().compareTo(BigDecimal.ZERO)==0){
             return;
         }
@@ -1444,7 +1443,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
-                    stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecord.setTime(this.getTime());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setState(state);
                     stockRecordDAO.update(accountBook,new StockRecord[]{stockRecord});
@@ -1461,7 +1460,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
-                    stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecord.setTime(this.getTime());
                     stockRecord.setState(state);
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAmount().subtract(amountAddAvailable.subtract(transferStock.getModifyAvailableAmount())));//最后一个差几个满
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
@@ -1502,7 +1501,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
-                    stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecord.setTime(this.getTime());
                     stockRecord.setState(state);
                     stockRecord.setAvailableAmount(BigDecimal.ZERO);
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
@@ -1518,7 +1517,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setStorageLocationId(sourceStorageLocationId);
                     stockRecord.setSupplyId(supplyId);
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
-                    stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+                    stockRecord.setTime(this.getTime());
                     stockRecord.setAvailableAmount(amountAvailableAll.add(transferStock.getModifyAvailableAmount()));
                     stockRecord.setState(state);
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
@@ -1994,10 +1993,15 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
     public void sleep(){
         try {
-            Thread.sleep(4);
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private Timestamp getTime(){
+        this.sleep();
+        return new Timestamp(System.currentTimeMillis());
     }
 }
