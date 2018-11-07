@@ -1994,7 +1994,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
     public void sleep(){
         try {
-            Thread.sleep(1);
+            Thread.sleep(4);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
