@@ -324,6 +324,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     @Override
     public void RealTransformStock(String accountBook, TransferStock transferStock1)
     {
+        this.sleep();
         TransferStock transferStock=this.transferStockConverse(transferStock1);
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
@@ -639,6 +640,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     @Override
     public void addAmount(String accountBook,TransferStock transferStock )
     {
+        this.sleep();
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
@@ -1042,6 +1044,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
 
     public void RealTransferStockUnitFlexible(String accountBook,TransferStock transferStock1)
     {
+        this.sleep();
         TransferStock transferStock=this.transferStockConverse(transferStock1);
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
@@ -1366,6 +1369,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
     }
 
     public void modifyAvailableAmount(String accountBook,TransferStock transferStock){
+        this.sleep();
         if(transferStock.getModifyAvailableAmount().compareTo(BigDecimal.ZERO)==0){
             return;
         }
@@ -1986,6 +1990,14 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
             return transferStock1;
         }
         return transferStock;
+    }
 
+    public void sleep(){
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
