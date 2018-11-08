@@ -57,13 +57,13 @@ public class SupplierServicesImpl implements SupplierServices{
        for(int i=0;i<suppliers.length;i++){
             for(int j=i+1;j<suppliers.length;j++){
                 String no=suppliers[i].getNo();
-                if(no.equals(suppliers[j].getNo())){throw new WMSServiceException("供应商代号"+no+"在添加的列表中重复!");}
+                if(no.equalsIgnoreCase(suppliers[j].getNo())){throw new WMSServiceException("供应商代号"+no+"在添加的列表中重复!");}
             }
        }
         for(int i=0;i<suppliers.length;i++){
             for(int j=i+1;j<suppliers.length;j++){
                 String name=suppliers[i].getName();
-                if(name.equals(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
             }
         }
         Stream.of(suppliers).forEach((supplier)->{
@@ -142,19 +142,19 @@ public class SupplierServicesImpl implements SupplierServices{
         for(int i=0;i<suppliers.length;i++){
             for(int j=i+1;j<suppliers.length;j++){
                 String no=suppliers[i].getNo();
-                if(no.equals(suppliers[j].getNo())){throw new WMSServiceException("供应商代号"+no+"在添加的列表中重复!");}
+                if(no.equalsIgnoreCase(suppliers[j].getNo())){throw new WMSServiceException("供应商代号"+no+"在添加的列表中重复!");}
             }
         }
         for(int i=0;i<suppliers.length;i++){
             for(int j=i+1;j<suppliers.length;j++){
                 String name=suppliers[i].getName();
-                if(name.equals(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
             }
         }
         for(int i=0;i<suppliers.length;i++){
             for(int j=i+1;j<suppliers.length;j++){
                 String name=suppliers[i].getSerialNo();
-                if(name.equals(suppliers[j].getSerialNo())){throw new WMSServiceException("供应商序号"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(suppliers[j].getSerialNo())){throw new WMSServiceException("供应商序号"+name+"在添加的列表中重复!");}
             }
         }
 
@@ -196,19 +196,19 @@ public class SupplierServicesImpl implements SupplierServices{
         Supplier[] suppliersCheck=supplierDAO.findTable(accountBook,cond);
         List<Supplier> supplierListCheck= Arrays.asList(suppliersCheck);
         supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getName)).reduce((last, cur) -> {
-            if (last.getName().equals(cur.getName())){
+            if (last.getName().equalsIgnoreCase(cur.getName())){
                 throw new WMSServiceException("供应商名称重复:"+cur.getName());
             }
             return cur;
         });
         supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getNo)).reduce((last, cur) -> {
-            if (last.getNo().equals(cur.getNo())&&(!last.getNo().equals(""))&&(!cur.getNo().equals(""))&&last.getNo()!=null){
+            if (last.getNo().equalsIgnoreCase(cur.getNo())&&(!last.getNo().equalsIgnoreCase(""))&&(!cur.getNo().equalsIgnoreCase(""))&&last.getNo()!=null){
                 throw new WMSServiceException("供应商代号重复:"+cur.getNo());
             }
             return cur;
         });
         supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getSerialNo)).reduce((last, cur) -> {
-            if (last.getSerialNo().equals(cur.getSerialNo())&&(!last.getSerialNo().equals(""))&&(!cur.getSerialNo().equals(""))&&last.getSerialNo()!=null){
+            if (last.getSerialNo().equalsIgnoreCase(cur.getSerialNo())&&(!last.getSerialNo().equalsIgnoreCase(""))&&(!cur.getSerialNo().equalsIgnoreCase(""))&&last.getSerialNo()!=null){
                 throw new WMSServiceException("供应商序号重复:"+cur.getSerialNo());
             }
             return cur;
@@ -247,19 +247,19 @@ public class SupplierServicesImpl implements SupplierServices{
         for(int i=0;i<suppliers.length;i++){
             for(int j=i+1;j<suppliers.length;j++){
                 String no=suppliers[i].getNo();
-                if(no.equals(suppliers[j].getNo())){throw new WMSServiceException("供应商代号"+no+"在添加的列表中重复!");}
+                if(no.equalsIgnoreCase(suppliers[j].getNo())){throw new WMSServiceException("供应商代号"+no+"在添加的列表中重复!");}
             }
         }
         for(int i=0;i<suppliers.length;i++){
             for(int j=i+1;j<suppliers.length;j++){
                 String name=suppliers[i].getName();
-                if(name.equals(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(suppliers[j].getName())){throw new WMSServiceException("供应商名称"+name+"在添加的列表中重复!");}
             }
         }
         for(int i=0;i<suppliers.length;i++){
             for(int j=i+1;j<suppliers.length;j++){
                 String name=suppliers[i].getSerialNo();
-                if(name.equals(suppliers[j].getSerialNo())){throw new WMSServiceException("供应商序号"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(suppliers[j].getSerialNo())){throw new WMSServiceException("供应商序号"+name+"在添加的列表中重复!");}
             }
         }
 
@@ -332,19 +332,19 @@ public class SupplierServicesImpl implements SupplierServices{
         Supplier[] suppliersCheck=supplierDAO.findTable(accountBook,cond);
         List<Supplier> supplierListCheck= Arrays.asList(suppliersCheck);
         supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getName)).reduce((last, cur) -> {
-            if (last.getName().equals(cur.getName())){
+            if (last.getName().equalsIgnoreCase(cur.getName())){
                 throw new WMSServiceException("供应商名称重复:"+cur.getName());
             }
             return cur;
         });
         supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getNo)).reduce((last, cur) -> {
-            if (last.getNo().equals(cur.getNo())&&(!last.getNo().equals(""))&&(!cur.getNo().equals(""))&&last.getNo()!=null){
+            if (last.getNo().equalsIgnoreCase(cur.getNo())&&(!last.getNo().equalsIgnoreCase(""))&&(!cur.getNo().equalsIgnoreCase(""))&&last.getNo()!=null){
                 throw new WMSServiceException("供应商代号重复:"+cur.getNo());
             }
             return cur;
         });
         supplierListCheck.stream().sorted(Comparator.comparing(Supplier::getSerialNo)).reduce((last, cur) -> {
-            if (last.getSerialNo().equals(cur.getSerialNo())&&(!last.getSerialNo().equals(""))&&(!cur.getSerialNo().equals(""))&&last.getSerialNo()!=null){
+            if (last.getSerialNo().equalsIgnoreCase(cur.getSerialNo())&&(!last.getSerialNo().equalsIgnoreCase(""))&&(!cur.getSerialNo().equalsIgnoreCase(""))&&last.getSerialNo()!=null){
                 throw new WMSServiceException("供应商序号重复:"+cur.getSerialNo());
             }
             return cur;
