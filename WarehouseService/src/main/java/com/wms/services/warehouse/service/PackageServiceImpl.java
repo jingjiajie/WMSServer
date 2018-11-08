@@ -28,7 +28,7 @@ public class PackageServiceImpl implements PackageService {
         for(int i=0;i<packages.length;i++){
             for(int j=i+1;j<packages.length;j++){
                 String name=packages[i].getName();
-                if(name.equals(packages[j].getName())){throw new WMSServiceException("套餐名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(packages[j].getName())){throw new WMSServiceException("套餐名称"+name+"在添加的列表中重复!");}
             }
         }
         //外键检测
@@ -60,7 +60,7 @@ public class PackageServiceImpl implements PackageService {
         for(int i=0;i<packages.length;i++){
             for(int j=i+1;j<packages.length;j++){
                 String name=packages[i].getName();
-                if(name.equals(packages[j].getName())){throw new WMSServiceException("套餐名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(packages[j].getName())){throw new WMSServiceException("套餐名称"+name+"在添加的列表中重复!");}
             }
         }
         //数据验证

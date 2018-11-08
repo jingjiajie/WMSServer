@@ -38,7 +38,7 @@ public class PackageItemServiceImpl implements PackageItemService  {
                 int locationId=packageItems[i].getDefaultDeliveryStorageLocationId();
                 String unit=packageItems[i].getDefaultDeliveryUnit();
                 BigDecimal unitAmount=packageItems[i].getDefaultDeliveryUnitAmount();
-                if(unit.equals(packageItems[j].getDefaultDeliveryUnit())&&unitAmount.equals(packageItems[j].getDefaultDeliveryUnitAmount())
+                if(unit.equalsIgnoreCase(packageItems[j].getDefaultDeliveryUnit())&&unitAmount.equals(packageItems[j].getDefaultDeliveryUnitAmount())
                         &&supplyId==packageItems[j].getSupplyId()&&locationId==packageItems[j].getDefaultDeliveryStorageLocationId()){throw new WMSServiceException("套餐条目在添加的列表中重复!");}
             }
         }
@@ -55,7 +55,7 @@ public class PackageItemServiceImpl implements PackageItemService  {
                 int locationId=packageItems[i].getDefaultDeliveryStorageLocationId();
                 String unit=packageItems[i].getDefaultDeliveryUnit();
                 BigDecimal unitAmount=packageItems[i].getDefaultDeliveryUnitAmount();
-                if(unit.equals(packageItems[j].getDefaultDeliveryUnit())&&unitAmount.equals(packageItems[j].getDefaultDeliveryUnitAmount())
+                if(unit.equalsIgnoreCase(packageItems[j].getDefaultDeliveryUnit())&&unitAmount.equals(packageItems[j].getDefaultDeliveryUnitAmount())
                         &&supplyId==packageItems[j].getSupplyId()&&locationId==packageItems[j].getDefaultDeliveryStorageLocationId()){throw new WMSServiceException("套餐条目在添加的列表中重复!");}
             }
         }

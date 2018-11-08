@@ -71,25 +71,25 @@ public class SupplyServiceImpl implements SupplyService {
         for (int i=0;i<ids.length;i++)
         {
             Supply[] suppliesDone= supplyDAO.findTable(accountBook,new Condition().addCondition("id",ids[i], ConditionItem.Relation.IN));
-            if (suppliesDone[0].getBarCodeNo()==null){
-                int noLength=7;
-                String thNo= String.valueOf(suppliesDone[0].getId());
-                int curLength=noLength-(thNo.length());
-                StringBuffer sb = new StringBuffer();
-                for (int j = 0; j < curLength;j++) {
-                    sb.append('0');
-                }
-                sb.append(thNo);
-                suppliesDone[0].setBarCodeNo(sb.toString());
-                updateSuppliesDoneList.add(suppliesDone[0]);
-            }else{
-                new Validator("条码号长度").min(7).validate(suppliesDone[i].getBarCodeNo().length());
-                String barCarNo=suppliesDone[i].getBarCodeNo();
-                for (int j = barCarNo.length();--j>=0;){
-                    if (!Character.isDigit(barCarNo.charAt(j))){
-                        throw new WMSServiceException("供货条码号必须为纯数字！出错条码号："+barCarNo);
+                if (suppliesDone[0].getBarCodeNo()==null){
+                    int noLength=7;
+                    String thNo= String.valueOf(suppliesDone[0].getId());
+                    int curLength=noLength-(thNo.length());
+                    StringBuffer sb = new StringBuffer();
+                    for (int j = 0; j < curLength;j++) {
+                        sb.append('0');
                     }
-                }
+                    sb.append(thNo);
+                    suppliesDone[0].setBarCodeNo(sb.toString());
+                    updateSuppliesDoneList.add(suppliesDone[0]);
+                }else{
+                    new Validator("条码号长度").min(7).validate(suppliesDone[i].getBarCodeNo().length());
+                    String barCarNo=suppliesDone[i].getBarCodeNo();
+                    for (int j = barCarNo.length();--j>=0;){
+                        if (!Character.isDigit(barCarNo.charAt(j))){
+                            throw new WMSServiceException("供货条码号必须为纯数字！出错条码号："+barCarNo);
+                        }
+                    }
             }
         }
 
@@ -189,7 +189,7 @@ public class SupplyServiceImpl implements SupplyService {
                 //String barCodeNo=supplies[i].getBarCodeNo();
                 String serialNo=supplies[i].getSerialNo();
 
-                if(serialNo.equals(supplies[j].getSerialNo()))
+                if(serialNo.equalsIgnoreCase(supplies[j].getSerialNo()))
                 {
                     throw new WMSServiceException("供货信息序号在添加的列表中重复!对应供货序号："+supplies[i].getSerialNo());
                 }

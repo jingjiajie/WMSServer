@@ -34,7 +34,7 @@ public class MaterialServiceImpl implements MaterialService {
                 String no=materials[i].getNo();
                 String name=materials[i].getName();
                 String productLine=materials[i].getProductLine();
-                if(no.equals(materials[j].getNo()) && name.equals(materials[j].getName()) &&productLine.equals(materials[j].getProductLine()))
+                if(no.equalsIgnoreCase(materials[j].getNo()) && name.equalsIgnoreCase(materials[j].getName()) &&productLine.equalsIgnoreCase(materials[j].getProductLine()))
                 {
                     throw new WMSServiceException("物料名：" +name +"物料代号：" +no+ "系列："+productLine+"在添加的列表中重复!");
                 }
@@ -57,7 +57,7 @@ public class MaterialServiceImpl implements MaterialService {
                 String no=materials[i].getNo();
                 String name=materials[i].getName();
                 String productLine=materials[i].getProductLine();
-                if(no.equals(materials[j].getNo()) && name.equals(materials[j].getName()) &&productLine.equals(materials[j].getProductLine()))
+                if(no.equalsIgnoreCase(materials[j].getNo()) && name.equalsIgnoreCase(materials[j].getName()) &&productLine.equalsIgnoreCase(materials[j].getProductLine()))
                 {
                     throw new WMSServiceException("物料名：" +name +"物料代号：" +no+ "系列："+productLine+"在添加的列表中重复!");
                 }
@@ -116,7 +116,7 @@ public class MaterialServiceImpl implements MaterialService {
         for(int i=0;i<materials.length;i++){
             for(int j=i+1;j<materials.length;j++){
                 String serialNo=materials[i].getSerialNo();
-                if(serialNo.equals(materials[j].getSerialNo()))
+                if(serialNo.equalsIgnoreCase(materials[j].getSerialNo()))
                 {
                     throw new WMSServiceException("物料序号在添加的列表中重复!");
                 }
