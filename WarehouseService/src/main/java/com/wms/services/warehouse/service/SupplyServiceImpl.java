@@ -48,7 +48,6 @@ public class SupplyServiceImpl implements SupplyService {
             cond.addCondition("materialId",new Integer[]{supplies[i].getMaterialId()});
             cond.addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()});
 
-
             if(supplyDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMaterial[0].getName());
             }
@@ -57,8 +56,12 @@ public class SupplyServiceImpl implements SupplyService {
                     .addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 0){
                 throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
             }
-        }
 
+            if(this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
+                    .addCondition("barCodeNo",new String[]{supplies[i].getBarCodeNo()})).length > 0){
+                throw new WMSServiceException("供应信息条码号重复！对应供货序号："+supplies[i].getSerialNo());
+            }
+        }
 
         int[] ids= supplyDAO.add(accountBook,supplies);
 
@@ -103,18 +106,9 @@ public class SupplyServiceImpl implements SupplyService {
 
         this.validateEntities(accountBook,supplies);
         for(int i=0;i<supplies.length;i++){
+
             String barCarNo=supplies[i].getBarCodeNo();
-            if (supplies[i].getBarCodeNo()==null){
-                int noLength=7;
-                String thNo= String.valueOf(supplies[i].getId());
-                int curLength=noLength-(thNo.length());
-                StringBuffer sb = new StringBuffer();
-                for (int j = 0; j < curLength;j++) {
-                    sb.append('0');
-                }
-                sb.append(thNo);
-                supplies[i].setBarCodeNo(sb.toString());
-            }else {
+            if (supplies[i].getBarCodeNo()!=null){
                 new Validator("条码号长度").min(7).validate(supplies[i].getBarCodeNo().length());
                 for (int j = barCarNo.length(); --j >= 0; ) {
                     if (!Character.isDigit(barCarNo.charAt(j))) {
@@ -122,6 +116,7 @@ public class SupplyServiceImpl implements SupplyService {
                     }
                 }
             }
+
             MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
             SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getSupplierId()}));
             Condition cond = new Condition();
@@ -138,13 +133,6 @@ public class SupplyServiceImpl implements SupplyService {
             if(supplyViews.length > 0){
                 throw new WMSServiceException("供应信息条码号重复！对应供应商-物料关联条目："+curSupplier[0].getName()+curMaterial[0].getName()+"条码号："+supplies[i].getBarCodeNo());
             }
-
-            if(this.find(accountBook,new Condition().addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
-                    .addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
-                    .addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 0){
-                throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
-            }
-
         }
         for (int i=0;i<supplies.length;i++)
         {
@@ -152,6 +140,19 @@ public class SupplyServiceImpl implements SupplyService {
         }
         supplyDAO.update(accountBook, supplies);
 
+        for(int i=0;i<supplies.length;i++){
+            if(this.find(accountBook,new Condition().addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
+                    .addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
+                    .addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 0){
+                throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
+            }
+
+            SupplyView[] supplyViews= this.find(accountBook,new Condition().addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
+                    .addCondition("barCodeNo",new String[]{supplies[i].getBarCodeNo()}));
+            if(supplyViews.length > 0){
+                throw new WMSServiceException("供应信息条码号重复！对应条码号："+supplies[i].getBarCodeNo());
+            }
+        }
     }
 
     @Override
@@ -178,7 +179,7 @@ public class SupplyServiceImpl implements SupplyService {
         Stream.of(supplies).forEach((supply -> {
             new Validator("供货商ID").notEmpty().validate(supply.getSupplierId());
             new Validator("物料ID").notEmpty().validate(supply.getMaterialId());
-            //new Validator("单托含量").notEmpty().validate(supply.getTrayCapacity());
+//            new Validator("单托含量").notEmpty().validate(supply.getBarCodeNo());
             new Validator("序号").notEmpty().validate(supply.getSerialNo());
         }));
 
@@ -186,7 +187,6 @@ public class SupplyServiceImpl implements SupplyService {
             for(int j=i+1;j<supplies.length;j++){
                 int materialId=supplies[i].getMaterialId();
                 int supplierId=supplies[i].getSupplierId();
-                //String barCodeNo=supplies[i].getBarCodeNo();
                 String serialNo=supplies[i].getSerialNo();
 
                 if(serialNo.equalsIgnoreCase(supplies[j].getSerialNo()))
@@ -196,11 +196,12 @@ public class SupplyServiceImpl implements SupplyService {
                 if(materialId==supplies[j].getMaterialId()&&supplierId==supplies[j].getSupplierId())
                 {
                     throw new WMSServiceException("供应商-物料关联条目在添加的列表中重复!对应供货序号："+supplies[i].getSerialNo());
-                }/*
-                if(barCodeNo.equals(supplies[j].getBarCodeNo()))
+                }
+                if(supplies[i].getBarCodeNo().equals(supplies[j].getBarCodeNo())
+                        &&!supplies[i].getBarCodeNo().equals("")&&supplies[i].getBarCodeNo()!=null)
                 {
                     throw new WMSServiceException("供货信息条码号在添加的列表中重复!");
-                }*/
+                }
             }
         }
         //外键检测
