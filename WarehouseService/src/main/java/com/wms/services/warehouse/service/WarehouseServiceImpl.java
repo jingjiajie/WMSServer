@@ -49,7 +49,7 @@ public class WarehouseServiceImpl implements WarehouseService{
         for(int i=0;i<warehouses.length;i++){
             for(int j=i+1;j<warehouses.length;j++){
                 String name=warehouses[i].getName();
-                if(name.equals(warehouses[j].getName())){throw new WMSServiceException("仓库 名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(warehouses[j].getName())){throw new WMSServiceException("仓库 名称"+name+"在添加的列表中重复!");}
             }
         }
         //重复
@@ -90,7 +90,7 @@ public class WarehouseServiceImpl implements WarehouseService{
         for(int i=0;i<warehouses.length;i++){
             for(int j=i+1;j<warehouses.length;j++){
                 String name=warehouses[i].getName();
-                if(name.equals(warehouses[j].getName())){throw new WMSServiceException("仓库 名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(warehouses[j].getName())){throw new WMSServiceException("仓库 名称"+name+"在添加的列表中重复!");}
             }
         }
         Stream.of(warehouses).forEach(
