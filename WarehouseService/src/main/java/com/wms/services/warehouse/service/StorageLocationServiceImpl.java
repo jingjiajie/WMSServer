@@ -51,7 +51,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             }
             storageAreaNo=storageAreaViews[0].getNo();
             if(storageLocations[i].getNo().length()<=storageAreaNo.length()){throw new WMSServiceException("库位编码"+storageLocations[i].getNo()+"不符合要求，必须以库区编码为开头!");}
-            if(!storageLocations[i].getNo().substring(0,storageAreaNo.length()).equals(storageAreaNo)) {
+            if(!storageLocations[i].getNo().substring(0,storageAreaNo.length()).equalsIgnoreCase(storageAreaNo)) {
                 throw new WMSServiceException("库位编码"+storageLocations[i].getNo()+"不符合要求，必须以库区编码"+storageAreaNo+"为开头");
             }
         }
@@ -81,13 +81,13 @@ public class StorageLocationServiceImpl implements StorageLocationService{
         for(int i=0;i<storageLocations.length;i++){
             for(int j=i+1;j<storageLocations.length;j++){
                 String no=storageLocations[i].getNo();
-                if(no.equals(storageLocations[j].getNo())){throw new WMSServiceException("库位代号"+no+"在添加的列表中重复!");}
+                if(no.equalsIgnoreCase(storageLocations[j].getNo())){throw new WMSServiceException("库位代号"+no+"在添加的列表中重复!");}
             }
         }
         for(int i=0;i<storageLocations.length;i++){
             for(int j=i+1;j<storageLocations.length;j++){
                 String name=storageLocations[i].getName();
-                if(name.equals(storageLocations[j].getName())){throw new WMSServiceException("库位名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(storageLocations[j].getName())){throw new WMSServiceException("库位名称"+name+"在添加的列表中重复!");}
             }
         }
 
@@ -117,13 +117,13 @@ public class StorageLocationServiceImpl implements StorageLocationService{
         for(int i=0;i<storageLocations.length;i++){
             for(int j=i+1;j<storageLocations.length;j++){
                 String no=storageLocations[i].getNo();
-                if(no.equals(storageLocations[j].getNo())){throw new WMSServiceException("库位代号"+no+"在添加的列表中重复!");}
+                if(no.equalsIgnoreCase(storageLocations[j].getNo())){throw new WMSServiceException("库位代号"+no+"在添加的列表中重复!");}
             }
         }
         for(int i=0;i<storageLocations.length;i++){
             for(int j=i+1;j<storageLocations.length;j++){
                 String name=storageLocations[i].getName();
-                if(name.equals(storageLocations[j].getName())){throw new WMSServiceException("库位名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(storageLocations[j].getName())){throw new WMSServiceException("库位名称"+name+"在添加的列表中重复!");}
             }
         }
         String storageAreaNo;
@@ -136,7 +136,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             }
             storageAreaNo=storageAreaViews[0].getNo();
             if(storageLocations[i].getNo().length()<=storageAreaNo.length()){throw new WMSServiceException("库位编码"+storageLocations[i].getNo()+"不符合要求，必须以库区编码为开头!");}
-            if(!storageLocations[i].getNo().substring(0,storageAreaNo.length()).equals(storageAreaNo)) {
+            if(!storageLocations[i].getNo().substring(0,storageAreaNo.length()).equalsIgnoreCase(storageAreaNo)) {
                 throw new WMSServiceException("库位编码"+storageLocations[i].getNo()+"不符合要求，必须以库区编码"+storageAreaNo+"为开头");
             }
         }

@@ -32,13 +32,13 @@ public class StorageAreaServiceImpl implements StorageAreaService{
         for(int i=0;i<storageAreas.length;i++){
             for(int j=i+1;j<storageAreas.length;j++){
                 String no=storageAreas[i].getNo();
-                if(no.equals(storageAreas[j].getNo())){throw new WMSServiceException("库区代号"+no+"在添加的列表中重复!");}
+                if(no.equalsIgnoreCase(storageAreas[j].getNo())){throw new WMSServiceException("库区代号"+no+"在添加的列表中重复!");}
             }
         }
         for(int i=0;i<storageAreas.length;i++){
             for(int j=i+1;j<storageAreas.length;j++){
                 String name=storageAreas[i].getName();
-                if(name.equals(storageAreas[j].getName())){throw new WMSServiceException("库区名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(storageAreas[j].getName())){throw new WMSServiceException("库区名称"+name+"在添加的列表中重复!");}
             }
         }
 
@@ -82,13 +82,13 @@ public class StorageAreaServiceImpl implements StorageAreaService{
         for(int i=0;i<storageAreas.length;i++){
             for(int j=i+1;j<storageAreas.length;j++){
                 String no=storageAreas[i].getNo();
-                if(no.equals(storageAreas[j].getNo())){throw new WMSServiceException("库区代号"+no+"在添加的列表中重复!");}
+                if(no.equalsIgnoreCase(storageAreas[j].getNo())){throw new WMSServiceException("库区代号"+no+"在添加的列表中重复!");}
             }
         }
         for(int i=0;i<storageAreas.length;i++){
             for(int j=i+1;j<storageAreas.length;j++){
                 String name=storageAreas[i].getName();
-                if(name.equals(storageAreas[j].getName())){throw new WMSServiceException("库区名称"+name+"在添加的列表中重复!");}
+                if(name.equalsIgnoreCase(storageAreas[j].getName())){throw new WMSServiceException("库区名称"+name+"在添加的列表中重复!");}
             }
         }
 
