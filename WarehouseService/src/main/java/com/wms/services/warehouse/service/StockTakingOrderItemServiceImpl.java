@@ -161,6 +161,9 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         this.addItemToDatabase(accountBook,stockRecordService.findLoadingWarehouse(accountBook,stockRecordFind,stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"在途数量");
         stockTakingOrderItemAdd.setStockTakingOrderId(this.addStockTakingOrder(accountBook,stockTakingOrderItemAdd.getPersonId(),stockTakingOrderItemAdd.getWarehouseId(),"合格品数量"));
         this.addItemToDatabase(accountBook,stockRecordService.findQualifiedWarehouse(accountBook,stockRecordFind,stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"合格品数量");
+        stockTakingOrderItemAdd.setStockTakingOrderId(this.addStockTakingOrder(accountBook,stockTakingOrderItemAdd.getPersonId(),stockTakingOrderItemAdd.getWarehouseId(),"不合格品数量"));
+        this.addItemToDatabase(accountBook,stockRecordService.findUnqualifiedWarehouse(accountBook,stockRecordFind,stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"不合格品数量");
+
         //this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 
@@ -228,6 +231,11 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
                 stockTakingOrderItem.setRealAmount((BigDecimal) objects[26]);}
                 else{stockTakingOrderItem.setAmount((BigDecimal) objects[27]);
                     stockTakingOrderItem.setRealAmount((BigDecimal) objects[27]);}
+            }
+            else if(comment.equals("不合格品数量")){
+                stockTakingOrderItem.setAmount((BigDecimal) objects[1]);
+                stockTakingOrderItem.setRealAmount((BigDecimal)objects[1]);
+                stockTakingOrderItem.setSupplyId((int)objects[0]);
             }
             stockTakingOrderItemList.add(stockTakingOrderItem);
         }
