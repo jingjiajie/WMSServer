@@ -22,7 +22,9 @@ import com.wms.utilities.model.StockTakingOrderItemView;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.hibernate.SessionFactory;
 
@@ -135,7 +137,8 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         stockTakingOrder.setWarehouseId(warehouseId);
         stockTakingOrder.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
         stockTakingOrder.setLastUpdatePersonId(personId);
-        stockTakingOrder.setDescription(comment);
+        SimpleDateFormat tempDate = new SimpleDateFormat("yyyy-MM-dd");
+        stockTakingOrder.setDescription(tempDate.format(new Date(System.currentTimeMillis()))+"-"+comment);
         int[] ids=stockTakingOrderService.add(accountBook,new StockTakingOrder[]{stockTakingOrder});
         if(ids.length!=1){
             throw new WMSServiceException("添加盘点单出错！");
