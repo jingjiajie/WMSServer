@@ -194,6 +194,7 @@ public class StockTakingOrderItemServiceImpl implements StockTakingOrderItemServ
         this.addItemToDatabase(accountBook,stockRecordService.findCheckSupplyAmountAll(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"仓库总数");
         this.addItemToDatabase(accountBook,stockRecordService.findLoadingSupply(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"在途数量");
         this.addItemToDatabase(accountBook,stockRecordService.findQualifiedSupply(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"合格品数量");
+        this.addItemToDatabase(accountBook,stockRecordService.findUnqualifiedSupply(accountBook,stockRecordFind,stringBuffer.toString(),stockTakingOrderItemAdd.getStockTakingOrderId()),stockTakingOrderItemAdd,"不合格品数量");
         this.updateStockTakingOrder(accountBook,stockTakingOrderItemAdd.getStockTakingOrderId(),stockTakingOrderItemAdd.getPersonId());
     }
 
