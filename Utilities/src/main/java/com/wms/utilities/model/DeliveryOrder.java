@@ -19,6 +19,7 @@ public class DeliveryOrder {
     private Timestamp lastUpdateTime;
     private String driverName;
     private String liscensePlateNumber;
+    private int type;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -161,17 +162,28 @@ public class DeliveryOrder {
         this.liscensePlateNumber = liscensePlateNumber;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "Type")
+    public int getType() {
+        return type;
+    }
 
-        DeliveryOrder that = (DeliveryOrder) o;
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        DeliveryOrder that = (DeliveryOrder) object;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
         if (state != that.state) return false;
         if (createPersonId != that.createPersonId) return false;
+        if (type != that.type) return false;
         if (no != null ? !no.equals(that.no) : that.no != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (deliverTime != null ? !deliverTime.equals(that.deliverTime) : that.deliverTime != null) return false;
@@ -206,6 +218,7 @@ public class DeliveryOrder {
         result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
         result = 31 * result + (driverName != null ? driverName.hashCode() : 0);
         result = 31 * result + (liscensePlateNumber != null ? liscensePlateNumber.hashCode() : 0);
+        result = 31 * result + type;
         return result;
     }
 }
