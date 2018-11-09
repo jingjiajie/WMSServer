@@ -15,6 +15,9 @@ public interface DeliveryOrderService
     int STATE_ALL_LOADING = 2;
     int STATE_IN_DELIVER = 3;
     int STATE_DELIVER_FINNISH = 4;
+
+    int DELIVERY_TYPE_Unqualified=1;
+    int DELIVERY_TYPE_Qualified=0;
     public void transferPakage(String accountBook, TransferArgs transferArgs);
     public List<TransferOrderItemView> transferAuto(String accountBook, TransferAuto TransferAuto);
     public void deliveryFinish(String accountBook,DeliveryFinish deliveryFinish);

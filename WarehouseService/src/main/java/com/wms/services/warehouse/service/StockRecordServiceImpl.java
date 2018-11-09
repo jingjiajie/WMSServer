@@ -695,6 +695,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setTime(this.getTime());
                 stockRecord.setAmount(amount);
                 stockRecord.setAvailableAmount(amount);
+                stockRecord.setManufactureDate(transferStock.getManufactureDate());
                 stockRecord.setState(state);
                 addId=stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
@@ -726,6 +727,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setAmount(stockRecordSource[0].getAmount().add(amount));
                 stockRecord.setAvailableAmount(stockRecordSource[0].getAvailableAmount().add(amount));
                 stockRecord.setState(state);
+                stockRecord.setManufactureDate(transferStock.getManufactureDate());
                 addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -801,6 +803,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setAmount(stockRecordSource[i].getAmount().subtract(stockRecordSource[i].getAvailableAmount()));
                     stockRecord.setAvailableAmount(new BigDecimal(0));
                     stockRecord.setState(state);
+                    stockRecord.setManufactureDate(transferStock.getManufactureDate());
                     addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                     TransferRecord transferRecord=new TransferRecord();
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -832,6 +835,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     //stockRecord.setAvailableAmount(stockRecordSource[i].getAvailableAmount().subtract(stockRecordSource[i].getAmount().subtract(amountAvailableAll.add(transferStock.getAmount()))));
                     stockRecord1.setAmount(stockRecordSource[i].getAmount().subtract(stockRecordSource[i].getAvailableAmount().subtract(amountAvailableAll.add(transferStock.getAmount()))));
                     stockRecord1.setAvailableAmount(amountAvailableAll.add(transferStock.getAmount()));
+                    stockRecord1.setManufactureDate(transferStock.getManufactureDate());
                     addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord1});
                     TransferRecord transferRecord=new TransferRecord();
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -914,6 +918,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setAmount(amount);
                 stockRecord.setAvailableAmount(amount);
                 stockRecord.setState(state);
+                stockRecord.setManufactureDate(transferStock.getManufactureDate());
                 stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -943,6 +948,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setAmount(stockRecordSource[0].getAmount().add(amount));
                 stockRecord.setAvailableAmount(stockRecordSource[0].getAvailableAmount().add(amount));
                 stockRecord.setState(state);
+                stockRecord.setManufactureDate(transferStock.getManufactureDate());
                 stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 TransferRecord transferRecord=new TransferRecord();
                 transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -1145,6 +1151,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                         stockRecord.setTime(this.getTime());
                         stockRecord.setAmount(stockRecordSource1[i].getAmount());
                         stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount());
+                        stockRecord.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                         stockRecord.setState(oldState);
                         int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecord});
                         sourceStorageNewAmount=stockRecord.getAmount();
@@ -1198,6 +1205,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount()));
                 stockRecord.setAvailableAmount(BigDecimal.ZERO);
                 stockRecord.setState(oldState);
+                stockRecord.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                 sourceStorageNewAmount=stockRecord.getAmount();
                 sourceStorageLocationUnit=stockRecordSource1[i].getUnit();
                 sourceStorageLocationUnitAmount=stockRecordSource1[i].getUnitAmount();
@@ -1226,6 +1234,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(this.getTime());
                     stockRecordNewSave.setState(newState);
+                    stockRecordNewSave.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
                     targetStorageLocationUnit=stockRecordViews[0].getUnit();
@@ -1247,6 +1256,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(this.getTime());
                     stockRecordNewSave.setState(newState);
+                    stockRecordNewSave.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=new BigDecimal(0);
                     targetStorageLocationUnit=unit;
@@ -1265,6 +1275,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setSupplyId(supplyId);
                 stockRecord.setTime(this.getTime());
                 stockRecord.setState(oldState);
+                stockRecord.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                 //stockRecord.setAmount(amountAvailableAll.subtract(transferStock.getAmount()));
                 //stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount().subtract(stockRecordSource1[i].getAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));
@@ -1298,6 +1309,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setState(newState);
                     stockRecordNewSave.setTime(this.getTime());
+                    stockRecordNewSave.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=stockRecordViews[0].getAmount();
                     targetStorageLocationUnit=stockRecordViews[0].getUnit();
@@ -1322,6 +1334,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                     stockRecordNewSave.setTime(this.getTime());
                     stockRecordNewSave.setState(newState);
+                    stockRecordNewSave.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     targetStorageLocationNewAmount=stockRecordNewSave.getAmount();
                     targetStorageLocationOriginalAmount=new BigDecimal(0);
                     targetStorageLocationUnit=newUnit;
@@ -1446,6 +1459,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setTime(this.getTime());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setState(state);
+                    stockRecord.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     stockRecordDAO.update(accountBook,new StockRecord[]{stockRecord});
                 }
                 else if(i==iNeed) {
@@ -1462,6 +1476,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setTime(this.getTime());
                     stockRecord.setState(state);
+                    stockRecord.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAmount().subtract(amountAddAvailable.subtract(transferStock.getModifyAvailableAmount())));//最后一个差几个满
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
                 }
@@ -1503,6 +1518,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setTime(this.getTime());
                     stockRecord.setState(state);
+                    stockRecord.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     stockRecord.setAvailableAmount(BigDecimal.ZERO);
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
                 } else if (i == iNeed) {
@@ -1520,6 +1536,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setTime(this.getTime());
                     stockRecord.setAvailableAmount(amountAvailableAll.add(transferStock.getModifyAvailableAmount()));
                     stockRecord.setState(state);
+                    stockRecord.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     stockRecordDAO.update(accountBook, new StockRecord[]{stockRecord});
                 }
             }
@@ -1842,6 +1859,68 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 "on warehouseAmount.supplyId=loadingAmount.supplyId";
         String sqlCheckNewSuffix="\n ) as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId   and item.supplyId=q.supplyid  and item.comment=\"合格品数量\")=0";
         query=session.createNativeQuery(sqlCheckNewPerfix+sqlCheckNew2+sqlCheckNewSuffix);
+        query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
+        query.setParameter("endTime",stockRecordFind.getTimeEnd());
+        query.setParameter("stockTakingOrderId",stockTakingOrderId);
+        Object[] resultArray=null;
+        List list = query.list();
+        resultArray=list.toArray();
+        return resultArray;
+    }
+
+    //盘点仓库不合格品
+    public Object[] findUnqualifiedWarehouse(String accountBook, StockRecordFind stockRecordFind,int stockTakingOrderId){
+        Session session= sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query=null;
+        String sql= "SELECT q.supplyId,q.sumAmount from (\n" +
+                "SELECT s_all.*,sum(s_all.Amount) as sumAmount FROM \n" +
+                "(SELECT s1.* FROM StockRecordView AS s1\n" +
+                "INNER JOIN\n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID,s2.State  FROM StockRecordView As s2 \n" +
+                "where s2.WarehouseID=:warehouseId AND s2.TIME<:endTime and s2.State =1\n" +
+                "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID,s2.SupplyID) as s3\n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo and s1.State=s3.State) \n" +
+                "as s_all GROUP BY s_all.supplyid\n" +
+                ")\n" +
+                "as q \n" +
+                "WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId  and item.supplyId=q.supplyid  and item.comment='不合格品数量')=0";
+        query=session.createNativeQuery(sql);
+        query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
+        query.setParameter("endTime",stockRecordFind.getTimeEnd());
+        query.setParameter("stockTakingOrderId",stockTakingOrderId);
+        Object[] resultArray=null;
+        List list = query.list();
+        resultArray=list.toArray();
+        return resultArray;
+    }
+
+    //盘点供货不合格品
+    public Object[] findUnqualifiedSupply(String accountBook, StockRecordFind stockRecordFind,String ids,int stockTakingOrderId){
+        Session session= sessionFactory.getCurrentSession();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query=null;
+
+        String sql="SELECT q.supplyId from (\n" +
+                "SELECT s_all.*,sum(s_all.Amount) as sumAmount FROM \n" +
+                "(SELECT s1.* FROM StockRecordView AS s1\n" +
+                "INNER JOIN\n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.WarehouseID,s2.SupplyID,s2.StorageLocationID,s2.State  FROM StockRecordView As s2\n" +
+                "where s2.WarehouseID=:warehouseId AND s2.TIME<:endTime and s2.State =1 and supplyId IN "+ids+"\n" +
+                "GROUP BY s2.Unit,s2.UnitAmount,s2.BatchNo,s2.StorageLocationID,s2.SupplyID) as s3\n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time AND s1.WarehouseID=s3.WarehouseID AND s1.SupplyID=s3.SupplyID AND s1.StorageLocationID=s3.StorageLocationID AND s1.BatchNo=s3.BatchNo and s1.State=s3.State)\n" +
+                "as s_all\n" +
+                "GROUP BY s_all.supplyid\n" +
+                ") as q WHERE (SELECT count(*)from StockTakingOrderItem as item where item.stockTakingOrderId=:stockTakingOrderId   and item.supplyId=q.supplyid  and item.comment=\"不合格品数量\")=0\n";
+        query=session.createNativeQuery(sql);
         query.setParameter("warehouseId",stockRecordFind.getWarehouseId());
         query.setParameter("endTime",stockRecordFind.getTimeEnd());
         query.setParameter("stockTakingOrderId",stockTakingOrderId);

@@ -49,10 +49,16 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         }
         //验证字段
         this.validateEntities(accountBook,deliveryOrderItems);
+
+
+
         //修改库存
         Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
             if (deliveryOrderItem.getRealAmount().compareTo(new BigDecimal(0))==0) {
-
+                int deliveryType=2;
+                if(deliveryOrderView.getType()==DeliveryOrderService.DELIVERY_TYPE_Unqualified){
+                    deliveryType=1;
+                }
                 //没有实际数输入就只改变可用数量
                 TransferStock transferStock = new TransferStock();
                 BigDecimal amount = new BigDecimal(0);
@@ -63,10 +69,16 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                 transferStock.setUnit(deliveryOrderItem.getUnit());
                 transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                transferStock.setState(deliveryType);
                 this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);//仅修改可用数量
                 deliveryOrderItem.setState(DeliveryOrderService.STATE_IN_LOADING);
             }
             else{
+
+                int deliveryType=2;
+                if(deliveryOrderView.getType()==DeliveryOrderService.DELIVERY_TYPE_Unqualified){
+                    deliveryType=1;
+                }
                 //先移动
                 TransferStock transferStock = new TransferStock();
                 transferStock.setAmount(new BigDecimal(0).subtract(deliveryOrderItem.getRealAmount()));
@@ -75,8 +87,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                 transferStock.setUnit(deliveryOrderItem.getUnit());
                 transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
-                transferStock.setState(2);
-                this.updateSleep();
+                transferStock.setState(deliveryType);
                 this.stockRecordService.addAmount(accountBook, transferStock);//直接改数
 
                 //再改可用数量
@@ -86,6 +97,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 rdTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                 rdTransferStock.setUnit(deliveryOrderItem.getUnit());
                 rdTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                rdTransferStock.setState(deliveryType);
                 this.stockRecordService.modifyAvailableAmount(accountBook, rdTransferStock);//直接改可用数量
                 deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
             }
@@ -112,6 +124,11 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         this.validateEntities(accountBook,deliveryOrderItems);
 
         Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
+
+            int deliveryType=2;
+            if(deliveryOrderView.getType()==DeliveryOrderService.DELIVERY_TYPE_Unqualified){
+                deliveryType=1;
+            }
             DeliveryOrderItemView[] foundOriItems = this.deliveryOrderItemDAO.find(accountBook,new Condition().addCondition("id",new Integer[]{deliveryOrderItem.getId()}));
             if(foundOriItems.length == 0) throw new WMSServiceException(String.format("出库单条目不存在，请重新提交！",deliveryOrderItem.getId()));//排除异常
             DeliveryOrderItemView oriItemView = foundOriItems[0];
@@ -134,6 +151,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setSupplyId(oriItemView.getSupplyId());
                     transferStock.setUnitAmount(oriItemView.getUnitAmount());
                     transferStock.setUnit(oriItemView.getUnit());
+                    transferStock.setState(deliveryType);
                     this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
 
                 }else{
@@ -145,8 +163,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setSupplyId(oriItemView.getSupplyId());
                     transferStock.setUnit(oriItemView.getUnit());
                     transferStock.setUnitAmount(oriItemView.getUnitAmount());
-                    transferStock.setState(2);
-                    this.updateSleep();
+                    transferStock.setState(deliveryType);
                     this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);
 
 
@@ -156,6 +173,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     thefixTransferStock.setSupplyId(oriItemView.getSupplyId());
                     thefixTransferStock.setUnit(oriItemView.getUnit());
                     thefixTransferStock.setUnitAmount(oriItemView.getUnitAmount());
+                    thefixTransferStock.setState(deliveryType);
                     this.stockRecordService.modifyAvailableAmount(accountBook, thefixTransferStock);
 
 
@@ -172,6 +190,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                     transferStock.setUnit(deliveryOrderItem.getUnit());
                     transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    transferStock.setState(deliveryType);
                     this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);//仅修改可用数量
                     deliveryOrderItem.setState(DeliveryOrderService.STATE_IN_LOADING);
                 }
@@ -185,8 +204,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
                     transferStock.setUnit(deliveryOrderItem.getUnit());
                     transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
-                    transferStock.setState(2);
-                    this.updateSleep();
+                    transferStock.setState(deliveryType);
                     this.stockRecordService.addAmount(accountBook, transferStock);//直接改数
 
                     //再改可用数量
@@ -196,6 +214,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     rdTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                     rdTransferStock.setUnit(deliveryOrderItem.getUnit());
                     rdTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    rdTransferStock.setState(deliveryType);
                     this.stockRecordService.modifyAvailableAmount(accountBook, rdTransferStock);//直接改可用数量
                     deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
                 }
@@ -214,6 +233,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     fixTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                     fixTransferStock.setUnit(deliveryOrderItem.getUnit());
                     fixTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    fixTransferStock.setState(deliveryType);
                     this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
 
                     TransferStock transferStock=new TransferStock();
@@ -224,14 +244,12 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     transferStock.setUnit(deliveryOrderItem.getUnit());
                     transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
 
-                    transferStock.setState(2);
+                    transferStock.setState(deliveryType);
                     if (deltaRealAmount.compareTo(BigDecimal.ZERO)>0){
                         transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
-                        this.updateSleep();
                     this.stockRecordService.addAmount(accountBook, transferStock);}
                     else if(deltaRealAmount.compareTo(BigDecimal.ZERO)<0)
                     {
-                        this.updateSleep();
                         this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);
                     }
                 }
@@ -250,6 +268,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     fixTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
                     fixTransferStock.setUnit(deliveryOrderItem.getUnit());
                     fixTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    fixTransferStock.setState(deliveryType);
                     this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
                 }
             }
@@ -262,11 +281,14 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
         int curdeliveryOrderId=-1;
         for (int i=0;i<ids.length;i++) {
-            //idChecker.check(this.getClass(), accountBook, id, "删除的移库单条目");
 
             DeliveryOrderItemView[] oriItemViews = this.find(accountBook, new Condition().addCondition("id", new Integer[]{ids[i]}));
             if (oriItemViews.length == 0) {
                 throw new WMSServiceException(String.format("出库单条目不存在，删除失败(%d)", ids[i]));
+            }
+            int deliveryType=2;
+            if(oriItemViews[0].getDeliveryOrderType()==DeliveryOrderService.DELIVERY_TYPE_Unqualified){
+                deliveryType=1;
             }
             DeliveryOrderItemView oriItemView=oriItemViews[0];
             curdeliveryOrderId=oriItemView.getDeliveryOrderId();
@@ -279,6 +301,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setSupplyId(oriItemView.getSupplyId());
                 transferStock.setUnit(oriItemView.getUnit());
                 transferStock.setUnitAmount(oriItemView.getUnitAmount());
+                transferStock.setState(deliveryType);
                 this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
 
             }else{
@@ -291,8 +314,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStock.setUnit(oriItemView.getUnit());
                 transferStock.setUnitAmount(oriItemView.getUnitAmount());
                 transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
-                transferStock.setState(2);
-                this.updateSleep();
+                transferStock.setState(deliveryType);
                 this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);
 
 
@@ -302,6 +324,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 fixTransferStock.setSupplyId(oriItemView.getSupplyId());
                 fixTransferStock.setUnit(oriItemView.getUnit());
                 fixTransferStock.setUnitAmount(oriItemView.getUnitAmount());
+                fixTransferStock.setState(deliveryType);
                 this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
 
 
@@ -333,6 +356,8 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     new Validator("单位数量").greaterThan(0).validate(deliveryOrderItem.getUnitAmount());
                     new Validator("单位").notnull().validate(deliveryOrderItem.getUnit());
                     new Validator("状态").min(0).max(5).validate(deliveryOrderItem.getState());
+
+
                 }
         );
 

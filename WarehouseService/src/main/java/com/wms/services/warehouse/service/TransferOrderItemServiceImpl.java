@@ -1,5 +1,6 @@
 package com.wms.services.warehouse.service;
 
+import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.TransferOrderItemDAO;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
@@ -400,11 +401,8 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             this.idChecker.check(StorageLocationService.class, accountBook, transferOrderItem.getTargetStorageLocationId(), "目标库位");
             this.idChecker.check(StorageLocationService.class, accountBook, transferOrderItem.getSourceStorageLocationId(), "源库位");
             this.idChecker.check(SupplyService.class, accountBook, transferOrderItem.getSupplyId(), "关联供货信息");
+            this.idChecker.check(PersonService.class, accountBook, transferOrderItem.getPersonId(), "作业人员");
 
-
-            //if (transferOrderItem.getPersonId() != null) {
-             //   this.idChecker.check(PersonService.class, accountBook, transferOrderItem.getPersonId(), "作业人员");
-            //}
         }));
     }
 
