@@ -5,6 +5,7 @@ import com.wms.services.salary.dao.PersonSalaryDAO;
 import com.wms.services.salary.datestructures.AddPersonSalary;
 import com.wms.services.salary.datestructures.SalaryItemTypeState;
 import com.wms.services.warehouse.service.*;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.datastructures.OrderItem;
@@ -627,35 +628,16 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         personSalaryDAO.add(accountBook, personSalaries);
     }
 
-//    private PersonSalary[] findExistPersonSalary(String accountBook, AddPersonSalary addPersonSalary) {
-//        PersonSalary[] resultArray = null;
-//        Session session = this.sessionFactory.getCurrentSession();
-//        session.flush();
-//        try {
-//            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
-//        } catch (Throwable ex) {
-//            throw new DatabaseNotFoundException(accountBook);
-//        }
-//        try {
-//            Query query = null;
-//            String sql = "SELECT  p.* FROM PersonSalary as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId and p.personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) and p.salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) and (SELECT s.type from SalaryItem as s where s.id=p.salaryItemId )!=2";
-//            query = session.createNativeQuery(sql, PersonSalary.class);
-//            query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
-//            query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
-//            query.setParameter("salaryTypeId", addPersonSalary.getSalaryTypeId());
-//            List<PersonSalary> resultList = query.list();
-//            resultArray = (PersonSalary[]) Array.newInstance(PersonSalary.class, resultList.size());
-//            resultList.toArray(resultArray);
-//        } catch (Exception e) {
-//            throw new WMSServiceException("查询人员薪资出错！");
-//        }
-//        return resultArray;
-//    }
 
     //先刷新公式 再刷新其他
     public void refreshPersonSalary(String accountBook, AddPersonSalary addPersonSalary)
     {
-        this.refreshFormula(accountBook, addPersonSalary);
+        int[] ids  =  (int[]) Array.newInstance(int.class,addPersonSalary.getPersonSalaryIds().size());
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = addPersonSalary.getPersonSalaryIds().get(i);
+        }
+        personSalaryDAO.remove(accountBook,ids);
+        this.addFormula(accountBook, addPersonSalary);
         this.updatePersonSalary(accountBook,addPersonSalary);
     }
 
