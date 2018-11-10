@@ -637,8 +637,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             ids[i] = addPersonSalary.getPersonSalaryIds().get(i);
         }
         personSalaryDAO.remove(accountBook,ids);
-        this.addFormula(accountBook, addPersonSalary);
         this.updatePersonSalary(accountBook,addPersonSalary);
+        this.addFormula(accountBook, addPersonSalary);
     }
 
     //刷新一个区间的非公式条目
