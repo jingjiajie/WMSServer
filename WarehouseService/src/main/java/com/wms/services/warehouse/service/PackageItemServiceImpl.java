@@ -93,7 +93,7 @@ public class PackageItemServiceImpl implements PackageItemService  {
                     StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", packageItem.getDefaultDeliveryStorageLocationId()));
                     if (this.packageService.find(accountBook,
                             new Condition().addCondition("id", packageItem.getPackageId())).length == 0) {
-                        throw new WMSServiceException(String.format("供货套餐不存在，请重新提交！(%d)", packageItem.getPackageId()));
+                        throw new WMSServiceException(String.format("发货套餐不存在，请重新提交！(%d)", packageItem.getPackageId()));
                     } else if (supplyService.find(accountBook,
                             new Condition().addCondition("id", packageItem.getSupplyId())).length == 0) {
                         throw new WMSServiceException(String.format("供货信息不存在，请重新提交！(%d)", packageItem.getSupplyId()));
