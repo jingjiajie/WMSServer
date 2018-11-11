@@ -803,7 +803,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setAmount(stockRecordSource[i].getAmount().subtract(stockRecordSource[i].getAvailableAmount()));
                     stockRecord.setAvailableAmount(new BigDecimal(0));
                     stockRecord.setState(state);
-                    stockRecord.setManufactureDate(transferStock.getManufactureDate());
+                    stockRecord.setManufactureDate(stockRecordSource[i].getManufactureDate());
                     addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                     TransferRecord transferRecord=new TransferRecord();
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
@@ -835,7 +835,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     //stockRecord.setAvailableAmount(stockRecordSource[i].getAvailableAmount().subtract(stockRecordSource[i].getAmount().subtract(amountAvailableAll.add(transferStock.getAmount()))));
                     stockRecord1.setAmount(stockRecordSource[i].getAmount().subtract(stockRecordSource[i].getAvailableAmount().subtract(amountAvailableAll.add(transferStock.getAmount()))));
                     stockRecord1.setAvailableAmount(amountAvailableAll.add(transferStock.getAmount()));
-                    stockRecord1.setManufactureDate(transferStock.getManufactureDate());
+                    stockRecord1.setManufactureDate(stockRecordSource[i].getManufactureDate());
                     addId= stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord1});
                     TransferRecord transferRecord=new TransferRecord();
                     transferRecord.setWarehouseId(warehouseId[0].intValue());
