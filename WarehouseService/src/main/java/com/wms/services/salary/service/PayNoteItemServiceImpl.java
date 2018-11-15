@@ -277,6 +277,7 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
         List<Integer> state=new ArrayList<>();
         state.add(PayNoteItemState.CALCULATED_PAY);
+        state.add(PayNoteItemState.PAYED);
         PayNoteItem[] payNoteItems= this.getStateItem(payNoteItemViews,state);
         for(int i=0;i<payNoteItems.length;i++){
             payNoteItems[i].setState(PayNoteItemState.PAYED);
