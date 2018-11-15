@@ -147,6 +147,16 @@ public class TransferStock {
 
     private int newState=-1;
 
+    public Timestamp getManufactureDate() {
+        return ManufactureDate;
+    }
+
+    public void setManufactureDate(Timestamp manufactureDate) {
+        ManufactureDate = manufactureDate;
+    }
+
+    private Timestamp ManufactureDate;
+
     private final int STATE_DEFAULT_DEPENDENT=-1;
 
     public static final int WAITING_FOR_INSPECTION =0;
