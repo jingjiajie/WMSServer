@@ -85,15 +85,16 @@ public class SupplyServiceImpl implements SupplyService {
                     sb.append(thNo);
                     suppliesDone[0].setBarCodeNo(sb.toString());
                     updateSuppliesDoneList.add(suppliesDone[0]);
-                }else{
-                    new Validator("条码号长度").min(7).validate(suppliesDone[i].getBarCodeNo().length());
-                    String barCarNo=suppliesDone[i].getBarCodeNo();
-                    for (int j = barCarNo.length();--j>=0;){
-                        if (!Character.isDigit(barCarNo.charAt(j))){
-                            throw new WMSServiceException("供货条码号必须为纯数字！出错条码号："+barCarNo);
-                        }
-                    }
-            }
+                }
+//                else{
+//                    new Validator("条码号长度").min(7).validate(suppliesDone[i].getBarCodeNo().length());
+//                    String barCarNo=suppliesDone[i].getBarCodeNo();
+//                    for (int j = barCarNo.length();--j>=0;){
+//                        if (!Character.isDigit(barCarNo.charAt(j))){
+//                            throw new WMSServiceException("供货条码号必须为纯数字！出错条码号："+barCarNo);
+//                        }
+//                    }
+//                }
         }
 
         this.update(accountBook,updateSuppliesDoneList.toArray(new Supply[updateSuppliesDoneList.size()]));
@@ -107,15 +108,15 @@ public class SupplyServiceImpl implements SupplyService {
         this.validateEntities(accountBook,supplies);
         for(int i=0;i<supplies.length;i++){
 
-            String barCarNo=supplies[i].getBarCodeNo();
-            if (supplies[i].getBarCodeNo()!=null){
-                new Validator("条码号长度").min(7).validate(supplies[i].getBarCodeNo().length());
-                for (int j = barCarNo.length(); --j >= 0; ) {
-                    if (!Character.isDigit(barCarNo.charAt(j))) {
-                        throw new WMSServiceException("供货条码号必须为纯数字！出错条码号：" + barCarNo);
-                    }
-                }
-            }
+//            String barCarNo=supplies[i].getBarCodeNo();
+//            if (supplies[i].getBarCodeNo()!=null){
+//                new Validator("条码号长度").min(7).validate(supplies[i].getBarCodeNo().length());
+//                for (int j = barCarNo.length(); --j >= 0; ) {
+//                    if (!Character.isDigit(barCarNo.charAt(j))) {
+//                        throw new WMSServiceException("供货条码号必须为纯数字！出错条码号：" + barCarNo);
+//                    }
+//                }
+//            }
 
             MaterialView[] curMaterial =this.materialService.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getMaterialId()}));
             SupplierView[] curSupplier =this.supplierServices.find(accountBook, new Condition().addCondition("id",new Integer[]{supplies[i].getSupplierId()}));
