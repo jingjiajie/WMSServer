@@ -52,12 +52,14 @@ public class SupplyServiceImpl implements SupplyService {
                 throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMaterial[0].getName());
             }
 
-            if(this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
+            if(this.find(accountBook,new Condition()
+                    .addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
                     .addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 0){
                 throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
             }
 
-            if(this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
+            if(this.find(accountBook,new Condition()
+                    .addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
                     .addCondition("barCodeNo",new String[]{supplies[i].getBarCodeNo()})).length > 0){
                 throw new WMSServiceException("供应信息条码号重复！对应供货序号："+supplies[i].getSerialNo());
             }
@@ -66,7 +68,9 @@ public class SupplyServiceImpl implements SupplyService {
         int[] ids= supplyDAO.add(accountBook,supplies);
 
         for(int i=0;i<supplies.length;i++){
-            if(this.supplyDAO.findTable(accountBook,new Condition().addCondition("serialNo",new String[]{supplies[i].getSerialNo()}).addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})).length > 1){
+            if(this.supplyDAO.findTable(accountBook,new Condition()
+                    .addCondition("serialNo",new String[]{supplies[i].getSerialNo()})
+                    .addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})).length > 1){
                 throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
             }
         }
@@ -129,7 +133,9 @@ public class SupplyServiceImpl implements SupplyService {
             if(supplyDAO.find(accountBook,cond).length > 0){
                 throw new WMSServiceException("供应商-物料关联条目重复："+curSupplier[0].getName()+curMaterial[0].getName());
             }
-            SupplyView[] supplyViews= this.find(accountBook,new Condition().addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
+            SupplyView[] supplyViews= this.find(accountBook,new Condition()
+                    .addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
+                    .addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
                     .addCondition("barCodeNo",new String[]{supplies[i].getBarCodeNo()}));
             if(supplyViews.length > 0){
                 throw new WMSServiceException("供应信息条码号重复！对应供应商-物料关联条目："+curSupplier[0].getName()+curMaterial[0].getName()+"条码号："+supplies[i].getBarCodeNo());
@@ -142,13 +148,16 @@ public class SupplyServiceImpl implements SupplyService {
         supplyDAO.update(accountBook, supplies);
 
         for(int i=0;i<supplies.length;i++){
-            if(this.find(accountBook,new Condition().addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
+            if(this.find(accountBook,new Condition()
+                    .addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
                     .addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
                     .addCondition("serialNo",new String[]{supplies[i].getSerialNo()})).length > 0){
                 throw new WMSServiceException("供应信息序号重复！对应供货序号："+supplies[i].getSerialNo());
             }
 
-            SupplyView[] supplyViews= this.find(accountBook,new Condition().addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
+            SupplyView[] supplyViews= this.find(accountBook,new Condition()
+                    .addCondition("id",new Integer[]{supplies[i].getId()}, ConditionItem.Relation.NOT_EQUAL)
+                    .addCondition("warehouseId",new Integer[]{supplies[i].getWarehouseId()})
                     .addCondition("barCodeNo",new String[]{supplies[i].getBarCodeNo()}));
             if(supplyViews.length > 0){
                 throw new WMSServiceException("供应信息条码号重复！对应条码号："+supplies[i].getBarCodeNo());
