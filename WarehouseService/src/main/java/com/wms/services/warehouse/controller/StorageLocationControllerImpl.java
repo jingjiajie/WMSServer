@@ -53,7 +53,7 @@ public class StorageLocationControllerImpl implements StorageLocationController{
         return this.storageLocationService.findCount(accountBook, Condition.fromJson(condStr));
     }
 
-    @RequestMapping("/{condStr}/less")
+    @RequestMapping("less/{condStr}")
     public ResponseEntity<Object[]> findLess(@PathVariable("accountBook") String accountBook,
                                                       @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
