@@ -182,7 +182,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     public void updateState(String accountBook, List<Integer> ids) {
         List<WarehouseEntry> warehouseEntriesToUpdate = new ArrayList<>();
         for (int id : ids) {
-            //this.idChecker.check(WarehouseEntryService.class, accountBook, id, "入库单");
+            this.idChecker.check(WarehouseEntryService.class, accountBook, id, "入库单");
             WarehouseEntry warehouseEntry = this.warehouseEntryDAO.get(accountBook, id);
             warehouseEntriesToUpdate.add(warehouseEntry);
             WarehouseEntryItemView[] warehouseEntryItemViews = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("warehouseEntryId", id));

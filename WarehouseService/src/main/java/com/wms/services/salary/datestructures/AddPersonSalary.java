@@ -32,13 +32,13 @@ public class AddPersonSalary {
 
     private int warehouseId;
 
-    public int[] getPersonSalaryIds() {
+    public List<Integer> getPersonSalaryIds() {
         return personSalaryIds;
     }
 
-    public void setPersonSalaryIds(int[] personSalaryIds) {
+    public void setPersonSalaryIds(List<Integer> personSalaryIds) {
         this.personSalaryIds = personSalaryIds;
     }
 
-    private int[] personSalaryIds;
+    private List<Integer> personSalaryIds;
 }

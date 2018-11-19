@@ -439,11 +439,11 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     parentAccountTitleNoList.add(accountTitle.getNo());
                     if (curType!=accountTitle.getType())
                     {
-                        throw new WMSServiceException(String.format("科目与上级科目类型不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
+                        throw new WMSServiceException(String.format("科目与子级科目类型不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
                     }
                     if (curDirection!=accountTitle.getDirection())
                     {
-                        throw new WMSServiceException(String.format("科目与上级科目余额方向不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
+                        throw new WMSServiceException(String.format("科目与子级科目余额方向不一致，请重新检查后提交！科目名称：(%s)", curAccountTitleName));
                     }
                 }
             });

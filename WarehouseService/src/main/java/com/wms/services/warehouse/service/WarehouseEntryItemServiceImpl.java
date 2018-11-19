@@ -57,6 +57,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setRelatedOrderNo(warehouseEntryView.getNo());
             transferStock.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId());
             transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
+            transferStock.setManufactureDate(warehouseEntryItem.getManufactureDate());
             this.stockRecordService.addAmount(accountBook, transferStock);
         });
         //添加到数据库中
@@ -106,6 +107,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                 transferStockAgainst.setRelatedOrderNo(oriItemView.getWarehouseEntryNo());
                 transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
                 transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
+                transferStockAgainst.setManufactureDate(oriItemView.getManufactureDate());
                 this.stockRecordService.addAmount(accountBook, transferStockAgainst);
 
                 //增加新库存
@@ -117,6 +119,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                 transferStockNew.setRelatedOrderNo(oriItemView.getWarehouseEntryNo());
                 transferStockNew.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId());
                 transferStockNew.setSupplyId(warehouseEntryItem.getSupplyId());
+                transferStockNew.setManufactureDate(warehouseEntryItem.getManufactureDate());
                 this.stockRecordService.addAmount(accountBook, transferStockNew);
             }
         });
@@ -150,6 +153,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStockAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
             transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
             transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
+            transferStockAgainst.setManufactureDate(oriItemView.getManufactureDate());
             this.stockRecordService.addAmount(accountBook, transferStockAgainst);
         }
         try {

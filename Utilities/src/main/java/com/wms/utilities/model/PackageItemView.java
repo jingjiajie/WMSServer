@@ -25,8 +25,10 @@ public class PackageItemView {
     private int defaultDeliveryStorageLocationId;
     private String defaultDeliveryStorageLocationNo;
     private String defaultDeliveryStorageLocationName;
-@Id
-@Basic
+    private String supplySerialNo;
+
+    @Basic
+    @Id
     @Column(name = "ID")
     public int getId() {
         return id;
@@ -196,12 +198,22 @@ public class PackageItemView {
         this.defaultDeliveryStorageLocationName = defaultDeliveryStorageLocationName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "SupplySerialNo")
+    public String getSupplySerialNo() {
+        return supplySerialNo;
+    }
 
-        PackageItemView that = (PackageItemView) o;
+    public void setSupplySerialNo(String supplySerialNo) {
+        this.supplySerialNo = supplySerialNo;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        PackageItemView that = (PackageItemView) object;
 
         if (id != that.id) return false;
         if (packageId != that.packageId) return false;
@@ -226,6 +238,8 @@ public class PackageItemView {
             return false;
         if (defaultDeliveryStorageLocationName != null ? !defaultDeliveryStorageLocationName.equals(that.defaultDeliveryStorageLocationName) : that.defaultDeliveryStorageLocationName != null)
             return false;
+        if (supplySerialNo != null ? !supplySerialNo.equals(that.supplySerialNo) : that.supplySerialNo != null)
+            return false;
 
         return true;
     }
@@ -249,6 +263,7 @@ public class PackageItemView {
         result = 31 * result + defaultDeliveryStorageLocationId;
         result = 31 * result + (defaultDeliveryStorageLocationNo != null ? defaultDeliveryStorageLocationNo.hashCode() : 0);
         result = 31 * result + (defaultDeliveryStorageLocationName != null ? defaultDeliveryStorageLocationName.hashCode() : 0);
+        result = 31 * result + (supplySerialNo != null ? supplySerialNo.hashCode() : 0);
         return result;
     }
 }
