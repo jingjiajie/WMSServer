@@ -36,6 +36,7 @@ public class StorageLocationControllerImpl implements StorageLocationController{
         int ids[] = gson.fromJson(strIDs,new TypeToken<int[]>(){}.getType());
        storageLocationService.remove(accountBook,ids);
     }
+
     @RequestMapping("/{condStr}")
     public ResponseEntity<StorageLocationView[]> find(@PathVariable("accountBook") String accountBook,
                                                       @PathVariable("condStr") String condStr) {
@@ -50,6 +51,14 @@ public class StorageLocationControllerImpl implements StorageLocationController{
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.storageLocationService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @RequestMapping("/{condStr}/less")
+    public ResponseEntity<Object[]> findLess(@PathVariable("accountBook") String accountBook,
+                                                      @PathVariable("condStr") String condStr) {
+        Condition cond = Condition.fromJson(condStr);
+        Object[] storageLocations = storageLocationService.findLess(accountBook, cond);
+        return new ResponseEntity<Object[]>(storageLocations, HttpStatus.OK);
     }
 }
 

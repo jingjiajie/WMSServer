@@ -428,6 +428,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                     stockRecord.setAmount(stockRecordSource1[i].getAmount());
                     stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount());
                     stockRecord.setState(stockRecordSource1[i].getState());
+                    stockRecord.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     sourceStorageNewAmount=stockRecord.getAmount();
                     int[] newStockRecordId =stockRecordDAO.add(accountBook,new StockRecord[]{stockRecord});
                     if(newStockRecordId.length!=1)
@@ -479,6 +480,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setAmount(stockRecordSource1[i].getAmount().subtract(stockRecordSource1[i].getAvailableAmount()));
                 stockRecord.setAvailableAmount(BigDecimal.ZERO);
                 stockRecord.setState(oldState);
+                stockRecord.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                 stockRecordDAO.add(accountBook, new StockRecord[]{stockRecord});
                 sourceStorageLocationUnit=stockRecordSource1[i].getUnit();
                 sourceStorageLocationUnitAmount=stockRecordSource1[i].getUnitAmount();
@@ -543,6 +545,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
                 stockRecord.setStorageLocationId(sourceStorageLocationId);
                 stockRecord.setSupplyId(supplyId);
                 stockRecord.setTime(this.getTime());
+                stockRecord.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                 stockRecordNewSave.setState(newState);
                 //stockRecord.setAmount(amountAvailableAll.subtract(transferStock.getAmount()));
                 //stockRecord.setAvailableAmount(stockRecordSource1[i].getAvailableAmount().subtract(stockRecordSource1[i].getAmount().subtract(amountAvailableAll.subtract(transferStock.getAmount()))));

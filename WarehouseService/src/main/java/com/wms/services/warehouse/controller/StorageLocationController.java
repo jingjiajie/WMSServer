@@ -10,4 +10,5 @@ public interface StorageLocationController {
     void remove(String accountBook,String strIDs);
     ResponseEntity<StorageLocationView[]> find(String accountBook, String condStr);
     long findCount(String accountBook,String condStr);
+    ResponseEntity<Object[]> findLess(String accountBook, String condStr);
 }
