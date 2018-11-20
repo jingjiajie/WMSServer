@@ -657,7 +657,7 @@ public  void update(String accountBook,StockRecord[] stockRecords) throws WMSSer
         idChecker.check(StorageLocationService.class,accountBook,sourceStorageLocationId,"库位");
         idChecker.check(SupplyService.class,accountBook,supplyId,"供货");
         if(transferStock.getAmount().compareTo(new BigDecimal(0)) >=0){
-            new Validator("存货日期").notnull().validate(transferStock.getInventoryDate());
+            new Validator("生产日期").notnull().validate(transferStock.getInventoryDate());
             batchNo=this.batchTransfer(transferStock.getInventoryDate());}
         BigDecimal amount=transferStock.getAmount();
         String unit=transferStock.getUnit();
