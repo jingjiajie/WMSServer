@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.StorageLocationDAO;
+import com.wms.services.warehouse.datastructures.StorageLocationLess;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.utilities.model.StorageLocation;
 import com.wms.utilities.model.StorageAreaView;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 import com.wms.utilities.model.StorageLocationView;
 
@@ -215,5 +219,21 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     @Transactional
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.storageLocationDAO.findCount(database,cond);
+    }
+
+    @Transactional
+    public Object[] findLess(String accountBook, Condition cond) throws WMSServiceException{
+        StorageLocationView[] storageLocationViews= this.storageLocationDAO.find(accountBook,cond);
+        List<StorageLocationLess> list=new ArrayList<>();
+        for(int i=0;i<storageLocationViews.length;i++){
+            StorageLocationLess storageLocationLess=new StorageLocationLess();
+            storageLocationLess.setId(storageLocationViews[i].getId());
+            storageLocationLess.setName(storageLocationViews[i].getName());
+            storageLocationLess.setNo(storageLocationViews[i].getNo());
+            storageLocationLess.setWarehouseId(storageLocationViews[i].getWarehouseId());
+            list.add(storageLocationLess);
+        }
+        StorageLocationLess[] storageLocationLesses=null;
+        return list.toArray();
     }
 }
