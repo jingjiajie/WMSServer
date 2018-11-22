@@ -594,7 +594,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                         targetStorageLocationUnit = unit;
                         targetStorageLocationUnitAmount = unitAmount;
                     }
-
+                }
                     int[] newStockRecordId = stockRecordDAO.add(accountBook, new StockRecord[]{stockRecordNewSave});
                     if (newStockRecordId.length != 1) {
                         throw new WMSServiceException("添加新库存记录失败！");
@@ -620,7 +620,6 @@ public class StockRecordServiceImpl implements StockRecordService {
                     transferRecord.setTransferAmount(amount.abs());
                     transformRecordService.add(accountBook, new TransferRecord[]{transferRecord});
                 }
-            }
         }
     }
 
