@@ -277,14 +277,14 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 transferOrderItem.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
                 transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
                 //预设计划数量
-                transferOrderItem.setScheduledAmount(safetyStockViews[i].getAmount().subtract(sourceAmount));
+                //transferOrderItem.setScheduledAmount(safetyStockViews[i].getAmount().subtract(sourceAmount));
                 transferOrderItem.setPersonId(TransferAuto.getPersonId());
                 transferOrderItem.setRealAmount(new BigDecimal(0));
                 transferOrderItem.setOperateTime(new Timestamp(System.currentTimeMillis()));
                 transferOrderItem.setTransferOrderId(newTransferOrderID);
                 transferOrderItem.setState(0);
 
-                if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmount()) <0&& sourceAmount1.compareTo(safetyStockViews[i].getAmount())>=0) {
+                if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmountMin()) <0&& sourceAmount1.compareTo(safetyStockViews[i].getAmountMin())>=0) {
                     transferOrderItem.setComment("成功一键移库");
                     succeedOrder=true;
                     transferOrderItemsList.add(transferOrderItem);
@@ -305,7 +305,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
 
                     falseTransferOrderItemsList.add(transferOrderItemView);
-                }else if (sourceAmount.compareTo(safetyStockViews[i].getAmount()) >=0){
+                }else if (sourceAmount.compareTo(safetyStockViews[i].getAmountMin()) >=0){
                     transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
                     transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
 
@@ -319,7 +319,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     transferOrderItem.setComment("库存充足！");
 
                     falseTransferOrderItemsList.add(transferOrderItemView);
-                }else if (sourceAmount1.compareTo(safetyStockViews[i].getAmount())<0){
+                }else if (sourceAmount1.compareTo(safetyStockViews[i].getAmountMin())<0){
                     transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
                     transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
 
@@ -329,12 +329,12 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
                     transferOrderItemView.setMaterialNo(safetyStockViews[i].getMaterialNo());
 
-                    transferOrderItemView.setScheduledAmount(safetyStockViews[i].getAmount());
+                    transferOrderItemView.setScheduledAmount(safetyStockViews[i].getAmountMin());
                     transferOrderItemView.setRealAmount(sourceAmount1);
 
                     transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
                     transferOrderItemView.setState(2);
-                    transferOrderItem.setComment(safetyStockViews[i].getAmount().subtract(sourceAmount1).toString());
+                    transferOrderItem.setComment(safetyStockViews[i].getAmountMin().subtract(sourceAmount1).toString());
                     falseTransferOrderItemsList.add(transferOrderItemView);
                 }
 

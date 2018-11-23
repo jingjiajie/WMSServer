@@ -9,7 +9,8 @@ public class SafetyStock {
     private int warehouseId;
     private int supplyId;
     private int sourceStorageLocationId;
-    private BigDecimal amount;
+    private BigDecimal amountMax;
+    private BigDecimal amountMin;
     private String unit;
     private BigDecimal unitAmount;
     private int type;
@@ -59,13 +60,23 @@ public class SafetyStock {
     }
 
     @Basic
-    @Column(name = "Amount")
-    public BigDecimal getAmount() {
-        return amount;
+    @Column(name = "AmountMax")
+    public BigDecimal getAmountMax() {
+        return amountMax;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setAmountMax(BigDecimal amountMax) {
+        this.amountMax = amountMax;
+    }
+
+    @Basic
+    @Column(name = "AmountMin")
+    public BigDecimal getAmountMin() {
+        return amountMin;
+    }
+
+    public void setAmountMin(BigDecimal amountMin) {
+        this.amountMin = amountMin;
     }
 
     @Basic
@@ -129,11 +140,11 @@ public class SafetyStock {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        SafetyStock that = (SafetyStock) o;
+        SafetyStock that = (SafetyStock) object;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
@@ -141,7 +152,8 @@ public class SafetyStock {
         if (sourceStorageLocationId != that.sourceStorageLocationId) return false;
         if (type != that.type) return false;
         if (targetStorageLocationId != that.targetStorageLocationId) return false;
-        if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
+        if (amountMax != null ? !amountMax.equals(that.amountMax) : that.amountMax != null) return false;
+        if (amountMin != null ? !amountMin.equals(that.amountMin) : that.amountMin != null) return false;
         if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
         if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
         if (sourceUnit != null ? !sourceUnit.equals(that.sourceUnit) : that.sourceUnit != null) return false;
@@ -157,7 +169,8 @@ public class SafetyStock {
         result = 31 * result + warehouseId;
         result = 31 * result + supplyId;
         result = 31 * result + sourceStorageLocationId;
-        result = 31 * result + (amount != null ? amount.hashCode() : 0);
+        result = 31 * result + (amountMax != null ? amountMax.hashCode() : 0);
+        result = 31 * result + (amountMin != null ? amountMin.hashCode() : 0);
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
         result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
         result = 31 * result + type;
