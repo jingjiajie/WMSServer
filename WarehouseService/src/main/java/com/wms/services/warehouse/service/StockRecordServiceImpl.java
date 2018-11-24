@@ -2126,26 +2126,27 @@ public class StockRecordServiceImpl implements StockRecordService {
         } catch (Throwable ex) {
             throw new DatabaseNotFoundException(accountBook);
         }
-        String sql="select * from StockRecordViewNewest where SupplyID=:supplyId and state=:state and unit=:unit " +
-                "and unitAmount=:unitAmount and warehoudeId=:warehouseId and amount>0 ORDER BY InventoryDate";
+        String sql="select batchNo from StockRecordViewNewest where SupplyID=:supplyId and state=:state and unit=:unit " +
+                "and unitAmount=:unitAmount and warehouseId=:warehouseId and amount>0 ORDER BY InventoryDate limit 1";
         Query query = null;
         query = session.createNativeQuery(sql);
         query.setParameter("supplyId",judgeOldestBatch.getSupplyId());
-        query.setParameter("state",judgeOldestBatch.getBatchNo());
+        query.setParameter("state",judgeOldestBatch.getState());
         query.setParameter("unit",judgeOldestBatch.getUnit());
         query.setParameter("unitAmount",judgeOldestBatch.getUnitAmount());
         query.setParameter("warehouseId",judgeOldestBatch.getWarehouseId());
-        StockRecordViewNewest[] resultArray = null;
-        List<StockRecordViewNewest> resultList = query.list();
-        resultArray = (StockRecordViewNewest[]) Array.newInstance(StockRecordViewNewest.class, resultList.size());
-        resultList.toArray(resultArray);
-        if(resultArray.length==0){return;}
-        StockRecordViewNewest stockRecordViewNewest=resultArray[0];
-        String batchNo=stockRecordViewNewest.getBatchNo();
+        //StockRecordViewNewest[] resultArray = null;
+        //List<StockRecordViewNewest> resultList = query.list();
+        //resultArray = (StockRecordViewNewest[]) Array.newInstance(StockRecordViewNewest.class, resultList.size());
+        //resultList.toArray(resultArray);
+        List<Object> objects=query.list();
+        if(objects.size()==0){return;}
+        //StockRecordViewNewest stockRecordViewNewest=resultArray[0];
+        String batchNo=objects.toString();
         Integer batchNoInt;
         Integer batchNoIntCurrent;
         try{
-        batchNoInt=Integer.parseInt(batchNo);}
+        batchNoInt=Integer.parseInt(batchNo.substring(1,9));}
         catch (Exception e){
             throw new WMSServiceException("请检查批号"+batchNo+"是否正确!");
 
@@ -2156,7 +2157,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             throw new WMSServiceException("请检查批号"+judgeOldestBatch.getBatchNo());
         }
         if(batchNoInt.compareTo(batchNoIntCurrent)<0){
-            throw new WMSServiceException("当前货物不是最旧生产日期，无法出库！");
+            throw new WMSServiceException("当前货物生产日期"+batchNoIntCurrent+"不符合出库要求！");
         }
     }
 }
