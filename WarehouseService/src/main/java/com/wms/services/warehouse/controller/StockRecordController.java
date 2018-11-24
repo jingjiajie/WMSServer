@@ -1,9 +1,6 @@
 package com.wms.services.warehouse.controller;
 
-import com.wms.services.warehouse.datastructures.StockRecordFind;
-import com.wms.services.warehouse.datastructures.StockRecordFindByTime;
-import com.wms.services.warehouse.datastructures.StockRecordViewAndSumGroupBySupplyId;
-import com.wms.services.warehouse.datastructures.TransferStock;
+import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.StockRecordView;
@@ -22,4 +19,5 @@ extends BaseController<StockRecord,StockRecordView> {
   StockRecordViewAndSumGroupBySupplyId[] findByTime(String accountbook, StockRecordFindByTime[] stockRecordFindByTimes);
   long findCount(String accountBook,String condStr);
   void remove(String accountBook,String strIDs);
+  void judgeOldestBatch(String accountBook, JudgeOldestBatch judgeOldestBatch);
 }

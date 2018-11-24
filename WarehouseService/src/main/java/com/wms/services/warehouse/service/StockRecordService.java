@@ -1,9 +1,6 @@
 package com.wms.services.warehouse.service;
 
-import com.wms.services.warehouse.datastructures.StockRecordFind;
-import com.wms.services.warehouse.datastructures.StockRecordFindByTime;
-import com.wms.services.warehouse.datastructures.StockRecordViewAndSumGroupBySupplyId;
-import com.wms.services.warehouse.datastructures.TransferStock;
+import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
@@ -56,4 +53,6 @@ public interface StockRecordService
     String batchTransfer(Timestamp timestamp);
 
     long findCount(String database,Condition cond) throws WMSServiceException;
+
+    void judgeOldestBatch(String accountBook, JudgeOldestBatch judgeOldestBatch);
 }

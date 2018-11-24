@@ -32,6 +32,11 @@ public class WarehouseService {
     public static void main(String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
+        Integer batchNoInt=Integer.parseInt("20180109");
+        Integer batchNoInt1=Integer.parseInt("201801222");
+        if(batchNoInt.compareTo(batchNoInt1)<0){}
+        Integer a=Integer.parseInt("adas");
+
 
         SummaryNoteService summaryNoteService=applicationContext.getBean(SummaryNoteService.class);
         //SummaryNoteView[] summaryNoteViews=summaryNoteService.find("WMS_Template",new Condition().addCondition("id",4));

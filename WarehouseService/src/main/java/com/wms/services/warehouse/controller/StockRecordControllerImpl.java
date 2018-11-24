@@ -2,10 +2,7 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wms.services.warehouse.datastructures.StockRecordFind;
-import com.wms.services.warehouse.datastructures.StockRecordFindByTime;
-import com.wms.services.warehouse.datastructures.StockRecordViewAndSumGroupBySupplyId;
-import com.wms.services.warehouse.datastructures.TransferStock;
+import com.wms.services.warehouse.datastructures.*;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -129,5 +126,14 @@ public class StockRecordControllerImpl implements StockRecordController {
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.stockRecordService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/judgeBatch",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void judgeOldestBatch(@PathVariable("accountBook") String accountBook,
+                          @RequestBody JudgeOldestBatch judgeOldestBatch)
+    {
+        this.stockRecordService.judgeOldestBatch(accountBook,judgeOldestBatch);
     }
 }

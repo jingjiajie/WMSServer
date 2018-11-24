@@ -2113,4 +2113,50 @@ public class StockRecordServiceImpl implements StockRecordService {
         this.sleep();
         return new Timestamp(System.currentTimeMillis());
     }
+
+    @Override
+    public void judgeOldestBatch(String accountBook,JudgeOldestBatch judgeOldestBatch) {
+        if(judgeOldestBatch.getState()==this.STATE_DEFAULT_DEPENDENT){
+            judgeOldestBatch.setState(TransferStock.QUALIFIED);
+        }
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        String sql="select * from StockRecordViewNewest where SupplyID=:supplyId and state=:state and unit=:unit " +
+                "and unitAmount=:unitAmount and warehoudeId=:warehouseId and amount>0 ORDER BY InventoryDate";
+        Query query = null;
+        query = session.createNativeQuery(sql);
+        query.setParameter("supplyId",judgeOldestBatch.getSupplyId());
+        query.setParameter("state",judgeOldestBatch.getBatchNo());
+        query.setParameter("unit",judgeOldestBatch.getUnit());
+        query.setParameter("unitAmount",judgeOldestBatch.getUnitAmount());
+        query.setParameter("warehouseId",judgeOldestBatch.getWarehouseId());
+        StockRecordViewNewest[] resultArray = null;
+        List<StockRecordViewNewest> resultList = query.list();
+        resultArray = (StockRecordViewNewest[]) Array.newInstance(StockRecordViewNewest.class, resultList.size());
+        resultList.toArray(resultArray);
+        if(resultArray.length==0){return;}
+        StockRecordViewNewest stockRecordViewNewest=resultArray[0];
+        String batchNo=stockRecordViewNewest.getBatchNo();
+        Integer batchNoInt;
+        Integer batchNoIntCurrent;
+        try{
+        batchNoInt=Integer.parseInt(batchNo);}
+        catch (Exception e){
+            throw new WMSServiceException("请检查批号"+batchNo+"是否正确!");
+
+        }
+        try{
+        batchNoIntCurrent=Integer.parseInt(judgeOldestBatch.getBatchNo());}
+        catch (Exception e){
+            throw new WMSServiceException("请检查批号"+judgeOldestBatch.getBatchNo());
+        }
+        if(batchNoInt.compareTo(batchNoIntCurrent)<0){
+            throw new WMSServiceException("当前货物不是最旧生产日期，无法出库！");
+        }
+    }
 }
