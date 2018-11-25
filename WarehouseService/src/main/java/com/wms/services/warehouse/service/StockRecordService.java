@@ -20,6 +20,8 @@ public interface StockRecordService
 
     StockRecord[] find(String accountBook, StockRecordFind stockRecordFind);
 
+    StockRecord[] findTableNewest(String accountBook,StockRecordFind stockRecordFind);
+
     StockRecordViewAndSumGroupBySupplyId[] findByTime(String accountBook, StockRecordFindByTime[] stockRecordFindByTimes);
 
     StockRecordViewNewest[] findNewest(String accountBook, Condition condition);
