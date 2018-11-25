@@ -1604,6 +1604,42 @@ public class StockRecordServiceImpl implements StockRecordService {
         return resultArray;
     }
 
+    public StockRecord[] findTableNewest(String accountBook, StockRecordFind stockRecordFind) {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query = null;
+            //库存查询最新一条用
+            String sqlNew = "SELECT s1.* FROM StockRecord AS s1 \n" +
+                    "INNER JOIN \n" +
+                    "\n" +
+                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME , s2.state   FROM StockRecordView As s2 \n" +
+                    "\n" +
+                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount and s2.state=:state \n" +
+                    "\n" +
+                    "GROUP BY s2.BatchNo) AS s3 \n" +
+                    "\n" +
+                    "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
+                    "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo \n";
+            session.flush();
+            query = session.createNativeQuery(sqlNew, StockRecord.class);
+            query.setParameter("warehouseId", stockRecordFind.getWarehouseId());
+            query.setParameter("storageLocationId", stockRecordFind.getStorageLocationId());
+            query.setParameter("supplyId", stockRecordFind.getSupplyId());
+            query.setParameter("unit", stockRecordFind.getUnit());
+            query.setParameter("unitAmount", stockRecordFind.getUnitAmount());
+            query.setParameter("state", stockRecordFind.getState());
+        StockRecord[] resultArray = null;
+        List<StockRecord> resultList = query.list();
+        resultArray = (StockRecord[]) Array.newInstance(StockRecord.class, resultList.size());
+        resultList.toArray(resultArray);
+        return resultArray;
+    }
+
     //盘点单一用
     public Object[] findCheckSupply(String accountBook, StockRecordFind stockRecordFind, String ids, int stockTakingOrderId) {
         Session session = sessionFactory.getCurrentSession();
