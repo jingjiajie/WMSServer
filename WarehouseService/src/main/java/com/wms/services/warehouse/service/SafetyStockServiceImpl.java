@@ -9,6 +9,7 @@ import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.SafetyStock;
 import com.wms.utilities.model.SafetyStockView;
+import com.wms.utilities.model.SupplyView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -156,6 +157,10 @@ public class SafetyStockServiceImpl implements SafetyStockService{
             new Validator("源单位").notnull().validate(safetyStock.getSourceUnit());
             new Validator("源单位数量").greaterThan(0).validate(safetyStock.getSourceUnitAmount());
 
+            if(safetyStock.getAmountMax().compareTo(safetyStock.getAmountMin())<0){
+                SafetyStockView safetyStockView= this.find(accountBook,new Condition().addCondition("id",safetyStock.getId()))[0];
+                throw new WMSServiceException("供货商名称:" + safetyStockView.getSupplierName() + "，物料名称：" + safetyStockView.getMaterialName()+"目标库位："+safetyStockView.getTargetStorageLocationName()+"设置安全库存数小于上架峰值！");
+            }
             //验证外键
             this.idChecker.check(StorageLocationService.class, accountBook, safetyStock.getTargetStorageLocationId(), "目标库位");
             this.idChecker.check(StorageLocationService.class, accountBook, safetyStock.getSourceStorageLocationId(), "源库位");
