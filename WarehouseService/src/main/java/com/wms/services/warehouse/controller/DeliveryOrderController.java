@@ -12,6 +12,8 @@ public interface DeliveryOrderController
     void transferPakage(String accountBook, TransferArgs transferArgs);
     List<TransferOrderItemView> transferAuto(String accountBook, TransferAuto transferAuto);
 
+    List<TransferOrderItemView> transferAutoNew(String accountBook, TransferAuto TransferAuto);
+    List<TransferOrderItemView> putAwayAuto(String accountBook, TransferAuto TransferAuto);
     List<DeliveryOrderItemView> deliveryByPakage(String accountBook, DeliveryByPakage deliveryByPakage);
     void deliveryFinish(String accountBook,DeliveryFinish deliveryFinish);
     void decreaseInAccounting(String accountBook,List<Integer> ids);

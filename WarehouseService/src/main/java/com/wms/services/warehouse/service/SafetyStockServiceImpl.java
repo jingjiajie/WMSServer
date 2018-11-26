@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 
 
@@ -48,11 +51,34 @@ public class SafetyStockServiceImpl implements SafetyStockService{
             cond.addCondition("unit",new String[]{safetyStocks[i].getUnit()});
             cond.addCondition("unitAmount",new BigDecimal[]{safetyStocks[i].getUnitAmount()});
             cond.addCondition("type",new Integer[]{safetyStocks[i].getType()});
-            if(this.find(accountBook,cond).length > 0){
-                throw new WMSServiceException("已存在相同安全库存信息！");
+            SafetyStockView[] safetyStockViews=this.find(accountBook,cond);
+            if(safetyStockViews.length > 0){
+                throw new WMSServiceException("供货商名称:"+safetyStockViews[0].getSupplierName()+"，物料名称："+safetyStockViews[0].getMaterialName()+"已存在相同安全库存信息！");
             }
         }
-        return safetyStockDAO.add(accountBook, safetyStocks);
+
+        int[]ids= safetyStockDAO.add(accountBook, safetyStocks);
+        if (safetyStocks[0].getType()==SafetyStockService.TYPE_READY) {
+            for (int i = 0; i < safetyStocks.length; i++) {
+                Condition cond = new Condition();
+                cond.addCondition("warehouseId", new Integer[]{safetyStocks[i].getWarehouseId()});
+                cond.addCondition("supplyId", new Integer[]{safetyStocks[i].getSupplyId()});
+                cond.addCondition("targetStorageLocationId", new Integer[]{safetyStocks[i].getTargetStorageLocationId()});
+                cond.addCondition("unit", new String[]{safetyStocks[i].getUnit()});
+                cond.addCondition("unitAmount", new BigDecimal[]{safetyStocks[i].getUnitAmount()});
+                cond.addCondition("type", new Integer[]{safetyStocks[i].getType()});
+                SafetyStockView[] safetyStockViews = this.find(accountBook, cond);
+
+                List<SafetyStockView> taxItemList = Arrays.asList(safetyStockViews);
+                taxItemList.stream().sorted(Comparator.comparing(SafetyStockView::getAmountMin)).reduce((last, cur) -> {
+                    if (last.getAmountMin().compareTo(cur.getAmountMin()) != 0) {
+                        throw new WMSServiceException("供货商名称:" + last.getSupplierName() + "，物料名称：" + last.getMaterialName() + "在目标库位：" + last.getTargetStorageLocationName() + "上设置了不一致的安全库存数量！");
+                    }
+                    return cur;
+                });
+            }
+        }
+        return ids;
     }
 
     @Override
@@ -72,9 +98,27 @@ public class SafetyStockServiceImpl implements SafetyStockService{
                 throw new WMSServiceException("已存在相同安全库存信息！");
             }
         }
-
-
         safetyStockDAO.update(accountBook, safetyStocks);
+        if (safetyStocks[0].getType()==SafetyStockService.TYPE_READY) {
+            for (int i = 0; i < safetyStocks.length; i++) {
+                Condition cond = new Condition();
+                cond.addCondition("warehouseId", new Integer[]{safetyStocks[i].getWarehouseId()});
+                cond.addCondition("supplyId", new Integer[]{safetyStocks[i].getSupplyId()});
+                cond.addCondition("targetStorageLocationId", new Integer[]{safetyStocks[i].getTargetStorageLocationId()});
+                cond.addCondition("unit", new String[]{safetyStocks[i].getUnit()});
+                cond.addCondition("unitAmount", new BigDecimal[]{safetyStocks[i].getUnitAmount()});
+                cond.addCondition("type", new Integer[]{safetyStocks[i].getType()});
+                SafetyStockView[] safetyStockViews = this.find(accountBook, cond);
+
+                List<SafetyStockView> taxItemList = Arrays.asList(safetyStockViews);
+                taxItemList.stream().sorted(Comparator.comparing(SafetyStockView::getAmountMin)).reduce((last, cur) -> {
+                    if (last.getAmountMin().compareTo(cur.getAmountMin()) != 0) {
+                        throw new WMSServiceException("供货商名称:" + last.getSupplierName() + "，物料名称：" + last.getMaterialName() + "在目标库位：" + last.getTargetStorageLocationName() + "上设置了不一致的安全库存数量！");
+                    }
+                    return cur;
+                });
+            }
+        }
     }
 
     @Override
