@@ -362,7 +362,7 @@ public class StockRecordServiceImpl implements StockRecordService {
 
             StorageLocationView[] storageLocationViews1 = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews1 = supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getSupplyId()}));
-            throw new WMSServiceException("物料“" + supplyViews1[0].getMaterialName() + "”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(oldState) + "”）在库位:“" + storageLocationViews1[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：0");
+            throw new WMSServiceException("物料“" + supplyViews1[0].getMaterialName() +"  "+supplyViews1[0].getMaterialNo()+"”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(oldState) + "”）在库位:“" + storageLocationViews1[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：0");
         }
 
         //按批次（存货时间）进行排序
@@ -389,7 +389,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         if (iNeed == -1) {
             StorageLocationView[] storageLocationViews1 = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews1 = supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getSupplyId()}));
-            throw new WMSServiceException("物料“" + supplyViews1[0].getMaterialName() + "”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(oldState) + "”）在库位:“" + storageLocationViews1[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：" + amountAvailableAll);
+            throw new WMSServiceException("物料“" + supplyViews1[0].getMaterialName()+"  "+supplyViews1[0].getMaterialNo() +"”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(oldState) + "”）在库位:“" + storageLocationViews1[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：" + amountAvailableAll);
         }
 
         //判断新库位和源库位是否相同
@@ -740,7 +740,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getSupplyId()}));
             if (stockRecordSource.length == 0) {
-                throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(state) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount().negate() + "，现有库存：0");
+                throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName()+"  "+supplyViews[0].getMaterialNo()+"”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(state) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount().negate() + "，现有库存：0");
             }
             //首先找到最久的库存记录
             for (int i = 0; i < stockRecordSource.length; i++) {
@@ -766,7 +766,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             if (iNeed == -1) {
                 StorageLocationView[] storageLocationViews1 = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getStorageLocationId()}));
                 SupplyView[] supplyViews1 = supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getSupplyId()}));
-                throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(state) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount().negate() + "，现有库存：" + amountAvailableAll);
+                throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() +"  "+supplyViews[0].getMaterialNo()+"”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(state) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount().negate() + "，现有库存：" + amountAvailableAll);
             }
             for (int i = stockRecordSource.length - 1; i >= iNeed; i--) {
                 if (stockRecordSource[i].getAvailableAmount().compareTo(new BigDecimal(0)) == 0) {
@@ -1084,7 +1084,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getSupplyId()}));
             //throw new WMSServiceException("没查到符合要求的源库存记录，请检查相关信息！");
-            throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(oldState) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：0");
+            throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName()  +"  "+supplyViews[0].getMaterialNo()+"”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(oldState) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：0");
         }
 
         //进行排序
@@ -1111,7 +1111,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getStorageLocationId()}));
         SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getSupplyId()}));
         if (iNeed == -1) {
-            throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(oldState) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：" + amountAvailableAll);
+            throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName()+"  "+supplyViews[0].getMaterialNo() +"”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(oldState) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：" + amountAvailableAll);
         }
 
         //相同的情况
@@ -1441,7 +1441,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getSupplyId()}));
             if (iNeed == -1) {
-                throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(state) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量过多，无法增加到超过实际数量。");
+                throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() +"  "+supplyViews[0].getMaterialNo()+"”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(state) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量过多，无法增加到超过实际数量。");
             }
             for (int i = stockRecordSource1.length - 1; i >= iNeed; i--) {
                 StockRecord stockRecordNewSave = new StockRecord();
@@ -1500,7 +1500,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getStorageLocationId()}));
             SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{stockRecordFind.getSupplyId()}));
             if (iNeed == -1) {
-                throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(state) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getModifyAvailableAmount().negate() + "，现有库存：" + amountAvailableAll);
+                throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() +"  "+supplyViews[0].getMaterialNo()+"”(单位：“" + stockRecordFind.getUnit() + "”单位数量：“" + stockRecordFind.getUnitAmount() + "”检测状态：“" + this.stateTransfer(state) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getModifyAvailableAmount().negate() + "，现有库存：" + amountAvailableAll);
             }
             for (int i = stockRecordSource1.length - 1; i >= iNeed; i--) {
                 StockRecord stockRecordNewSave = new StockRecord();
@@ -1597,6 +1597,42 @@ public class StockRecordServiceImpl implements StockRecordService {
             query.setParameter("batchNo1", this.batchTransfer(stockRecordFind.getInventoryDate()));
             query.setParameter("state", stockRecordFind.getState());
         }
+        StockRecord[] resultArray = null;
+        List<StockRecord> resultList = query.list();
+        resultArray = (StockRecord[]) Array.newInstance(StockRecord.class, resultList.size());
+        resultList.toArray(resultArray);
+        return resultArray;
+    }
+
+    public StockRecord[] findTableNewest(String accountBook, StockRecordFind stockRecordFind) {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query = null;
+            //库存查询最新一条用
+            String sqlNew = "SELECT s1.* FROM StockRecord AS s1 \n" +
+                    "INNER JOIN \n" +
+                    "\n" +
+                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME , s2.state   FROM StockRecordView As s2 \n" +
+                    "\n" +
+                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount and s2.state=:state \n" +
+                    "\n" +
+                    "GROUP BY s2.BatchNo) AS s3 \n" +
+                    "\n" +
+                    "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
+                    "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo \n";
+            session.flush();
+            query = session.createNativeQuery(sqlNew, StockRecord.class);
+            query.setParameter("warehouseId", stockRecordFind.getWarehouseId());
+            query.setParameter("storageLocationId", stockRecordFind.getStorageLocationId());
+            query.setParameter("supplyId", stockRecordFind.getSupplyId());
+            query.setParameter("unit", stockRecordFind.getUnit());
+            query.setParameter("unitAmount", stockRecordFind.getUnitAmount());
+            query.setParameter("state", stockRecordFind.getState());
         StockRecord[] resultArray = null;
         List<StockRecord> resultList = query.list();
         resultArray = (StockRecord[]) Array.newInstance(StockRecord.class, resultList.size());
@@ -2112,5 +2148,52 @@ public class StockRecordServiceImpl implements StockRecordService {
     private Timestamp getTime() {
         this.sleep();
         return new Timestamp(System.currentTimeMillis());
+    }
+
+    @Override
+    public void judgeOldestBatch(String accountBook,JudgeOldestBatch judgeOldestBatch) {
+        if(judgeOldestBatch.getState()==this.STATE_DEFAULT_DEPENDENT){
+            judgeOldestBatch.setState(TransferStock.QUALIFIED);
+        }
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        String sql="select batchNo from StockRecordViewNewest where SupplyID=:supplyId and state=:state and unit=:unit " +
+                "and unitAmount=:unitAmount and warehouseId=:warehouseId and amount>0 ORDER BY InventoryDate limit 1";
+        Query query = null;
+        query = session.createNativeQuery(sql);
+        query.setParameter("supplyId",judgeOldestBatch.getSupplyId());
+        query.setParameter("state",judgeOldestBatch.getState());
+        query.setParameter("unit",judgeOldestBatch.getUnit());
+        query.setParameter("unitAmount",judgeOldestBatch.getUnitAmount());
+        query.setParameter("warehouseId",judgeOldestBatch.getWarehouseId());
+        //StockRecordViewNewest[] resultArray = null;
+        //List<StockRecordViewNewest> resultList = query.list();
+        //resultArray = (StockRecordViewNewest[]) Array.newInstance(StockRecordViewNewest.class, resultList.size());
+        //resultList.toArray(resultArray);
+        List<Object> objects=query.list();
+        if(objects.size()==0){return;}
+        //StockRecordViewNewest stockRecordViewNewest=resultArray[0];
+        String batchNo=objects.toString();
+        Integer batchNoInt;
+        Integer batchNoIntCurrent;
+        try{
+        batchNoInt=Integer.parseInt(batchNo.substring(1,9));}
+        catch (Exception e){
+            throw new WMSServiceException("请检查批号"+batchNo+"是否正确!");
+
+        }
+        try{
+        batchNoIntCurrent=Integer.parseInt(judgeOldestBatch.getBatchNo());}
+        catch (Exception e){
+            throw new WMSServiceException("请检查批号"+judgeOldestBatch.getBatchNo());
+        }
+        if(batchNoInt.compareTo(batchNoIntCurrent)<0){
+            throw new WMSServiceException("当前货物生产日期"+batchNoIntCurrent+"不符合出库要求！");
+        }
     }
 }

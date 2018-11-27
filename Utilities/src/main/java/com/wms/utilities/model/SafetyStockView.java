@@ -11,7 +11,6 @@ public class SafetyStockView {
     private int id;
     private int warehouseId;
     private int supplyId;
-    private BigDecimal amount;
     private String unit;
     private BigDecimal unitAmount;
     private String warehouseName;
@@ -32,6 +31,8 @@ public class SafetyStockView {
     private Integer supplierId;
     private String materialProductLine;
     private String supplySerialNo;
+    private BigDecimal amountMax;
+    private BigDecimal amountMin;
 
     @Basic
     @Id
@@ -62,16 +63,6 @@ public class SafetyStockView {
 
     public void setSupplyId(int supplyId) {
         this.supplyId = supplyId;
-    }
-
-    @Basic
-    @Column(name = "Amount")
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
     }
 
     @Basic
@@ -274,12 +265,32 @@ public class SafetyStockView {
         this.supplySerialNo = supplySerialNo;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "AmountMax")
+    public BigDecimal getAmountMax() {
+        return amountMax;
+    }
 
-        SafetyStockView that = (SafetyStockView) o;
+    public void setAmountMax(BigDecimal amountMax) {
+        this.amountMax = amountMax;
+    }
+
+    @Basic
+    @Column(name = "AmountMin")
+    public BigDecimal getAmountMin() {
+        return amountMin;
+    }
+
+    public void setAmountMin(BigDecimal amountMin) {
+        this.amountMin = amountMin;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        SafetyStockView that = (SafetyStockView) object;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
@@ -287,7 +298,6 @@ public class SafetyStockView {
         if (type != that.type) return false;
         if (targetStorageLocationId != that.targetStorageLocationId) return false;
         if (sourceStorageLocationId != that.sourceStorageLocationId) return false;
-        if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
         if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
         if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
         if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
@@ -313,6 +323,8 @@ public class SafetyStockView {
             return false;
         if (supplySerialNo != null ? !supplySerialNo.equals(that.supplySerialNo) : that.supplySerialNo != null)
             return false;
+        if (amountMax != null ? !amountMax.equals(that.amountMax) : that.amountMax != null) return false;
+        if (amountMin != null ? !amountMin.equals(that.amountMin) : that.amountMin != null) return false;
 
         return true;
     }
@@ -322,7 +334,6 @@ public class SafetyStockView {
         int result = id;
         result = 31 * result + warehouseId;
         result = 31 * result + supplyId;
-        result = 31 * result + (amount != null ? amount.hashCode() : 0);
         result = 31 * result + (unit != null ? unit.hashCode() : 0);
         result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
         result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
@@ -343,6 +354,8 @@ public class SafetyStockView {
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
         result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
         result = 31 * result + (supplySerialNo != null ? supplySerialNo.hashCode() : 0);
+        result = 31 * result + (amountMax != null ? amountMax.hashCode() : 0);
+        result = 31 * result + (amountMin != null ? amountMin.hashCode() : 0);
         return result;
     }
 }

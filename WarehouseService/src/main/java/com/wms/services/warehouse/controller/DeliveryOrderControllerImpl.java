@@ -71,6 +71,22 @@ public class DeliveryOrderControllerImpl implements DeliveryOrderController {
     }
 
     @Override
+    @RequestMapping(value = "/put_away_auto",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<TransferOrderItemView> putAwayAuto(@PathVariable("accountBook") String accountBook,
+                                                    @RequestBody TransferAuto transferAuto){
+        return this.deliveryOrderService.putAwayAuto(accountBook,transferAuto);
+    }
+
+    @Override
+    @RequestMapping(value = "/transfer_auto_new",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<TransferOrderItemView> transferAutoNew(@PathVariable("accountBook") String accountBook,
+                                                    @RequestBody TransferAuto transferAuto){
+        return this.deliveryOrderService.transferAutoNew(accountBook,transferAuto);
+    }
+
+    @Override
     @RequestMapping(value = "/delivery_finish",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void deliveryFinish(@PathVariable("accountBook") String accountBook,

@@ -20,6 +20,8 @@ public interface DeliveryOrderService
     int DELIVERY_TYPE_Qualified=0;
     public void transferPakage(String accountBook, TransferArgs transferArgs);
     public List<TransferOrderItemView> transferAuto(String accountBook, TransferAuto TransferAuto);
+    public List<TransferOrderItemView> transferAutoNew(String accountBook, TransferAuto TransferAuto);
+    public List<TransferOrderItemView> putAwayAuto(String accountBook, TransferAuto TransferAuto);
     public void deliveryFinish(String accountBook,DeliveryFinish deliveryFinish);
     public void decreaseInAccounting(String accountBook,List<Integer> ids);
     public List<DeliveryOrderItemView> deliveryByPakage(String accountBook, DeliveryByPakage deliveryByPakage);
