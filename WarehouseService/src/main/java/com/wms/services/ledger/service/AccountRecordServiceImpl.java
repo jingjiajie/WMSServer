@@ -51,6 +51,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         //获取当前仓库和期间
         int curWarehouseId= accountRecords[0].getWarehouseId();
         int curAccountPeriodId=accountRecords[0].getAccountPeriodId();
+        int[] ids=new int[accountRecords.length];
         //数据验证
         this.validateEntities(accountBook,accountRecords);
         //设置时间
@@ -80,13 +81,13 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                 throw new WMSServiceException(String.format("无法添加明细记录！当前账目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", accountTitles[0].getName()));
             }
 
-            AccountRecordView[] accountRecordViews= accountRecordDAO.find(accountBook,new Condition()
+            AccountRecord[] oldAccountRecords= accountRecordDAO.findTable(accountBook,new Condition()
                     .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
                     .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
                     .addCondition("accountTitleId",new Integer[]{accountRecords[k].getAccountTitleId()}));
 
             //TODO 如果有就存上，没有就看是不是有实际发生额，有的话要提示还没有录入期初余额
-            if (accountRecordViews.length>0){
+            if (oldAccountRecords.length>0){
 
                 if (creditAmount.compareTo(new BigDecimal(0))==0
                         &&debitAmount.compareTo(new BigDecimal(0))==0){
@@ -95,13 +96,13 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                 if (accountRecords[k].getBalance().compareTo(BigDecimal.ZERO)!=0){
                     throw new WMSServiceException(String.format("业务记录无需输入余额，当前科目名称(%s)，", accountTitles[0].getName()));
                 }
-                AccountRecordView newestAccountRecordView=accountRecordViews[0];
-                for (int i=0;i<accountRecordViews.length;i++){
-                    if (accountRecordViews[i].getTime().after(newestAccountRecordView.getTime())) {
-                        newestAccountRecordView = accountRecordViews[i];
+                AccountRecord newestAccountRecord=oldAccountRecords[0];
+                for (int i=0;i<oldAccountRecords.length;i++){
+                    if (oldAccountRecords[i].getTime().after(newestAccountRecord.getTime())) {
+                        newestAccountRecord = oldAccountRecords[i];
                     }
                 }
-                BigDecimal curBalance=newestAccountRecordView.getBalance();
+                BigDecimal curBalance=newestAccountRecord.getBalance();
                 //如果科目类型是借方
                 if (accountTitleView.getDirection()==AccountTitleService.Debit){
                     accountRecords[k].setBalance(curBalance.subtract(creditAmount).add(debitAmount));
@@ -182,7 +183,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 //                }
 //            });
 
-
+            ids[k]= accountRecordDAO.add(accountBook,new AccountRecord[]{accountRecords[k]})[0];
         }
         AccountRecord[] updateParentRecords=new AccountRecord[updateParentRecordList.size()];
         updateParentRecordList.toArray(updateParentRecords);
@@ -190,7 +191,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         {
             this.accountRecordDAO.update(accountBook,updateParentRecords);
         }
-        return accountRecordDAO.add(accountBook,accountRecords);
+        return ids;
     }
 
     public int[] simpleAdd(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException
