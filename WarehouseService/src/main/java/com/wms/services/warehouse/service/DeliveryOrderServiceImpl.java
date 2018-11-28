@@ -388,9 +388,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         //将每组最新的加到一个列表中
         while (entries.hasNext()) {
             Map.Entry<Integer, List<SafetyStockView>> entry = entries.next();
-            Integer supplierId=entry.getKey();
+            Integer supplierId = entry.getKey();
 
-            TransferOrder transferOrder=new TransferOrder();
+            TransferOrder transferOrder = new TransferOrder();
             transferOrder.setType(transferType);
             transferOrder.setWarehouseId(TransferAuto.getWarehouseId());
             transferOrder.setDescription("自动移库");
@@ -398,119 +398,102 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             transferOrder.setSupplierId(supplierId);
             int newTransferOrderID = this.transferOrderService.add(accountBook, new TransferOrder[]{transferOrder})[0];
 
-            List<SafetyStockView> safetyStockViewsListFirst=entry.getValue();
-            SafetyStockView[] safetyStockFirstViews=null;
-            safetyStockFirstViews = (SafetyStockView[]) Array.newInstance(SafetyStockView.class,safetyStockViewsListFirst.size());
+            List<SafetyStockView> safetyStockViewsListFirst = entry.getValue();
+            SafetyStockView[] safetyStockFirstViews = null;
+            safetyStockFirstViews = (SafetyStockView[]) Array.newInstance(SafetyStockView.class, safetyStockViewsListFirst.size());
             safetyStockViewsListFirst.toArray(safetyStockFirstViews);
+            boolean succeedOrder = false;
+            //TODO 按供货分组
+            Map<Integer, List<SafetyStockView>> groupBySupplyIdMap =
+                    Stream.of(safetyStockFirstViews).collect(Collectors.groupingBy(SafetyStockView::getSupplyId));
 
-            //TODO 按目标库位分组
-            Map<Integer, List<SafetyStockView>> groupByTargetStorageLocationIdMap =
-                    Stream.of(safetyStockFirstViews).collect(Collectors.groupingBy(SafetyStockView::getTargetStorageLocationId));
+            Iterator<Map.Entry<Integer, List<SafetyStockView>>> middleItems = groupBySupplyIdMap.entrySet().iterator();
+            while (middleItems.hasNext()) {
+                Map.Entry<Integer, List<SafetyStockView>> middleItem = middleItems.next();
+                Integer supplyId = entry.getKey();
 
-            Iterator<Map.Entry<Integer,List<SafetyStockView>>> setItems = groupByTargetStorageLocationIdMap.entrySet().iterator();
-            boolean succeedOrder=false;
-            while (setItems.hasNext()) {
-                Map.Entry<Integer, List<SafetyStockView>> setItem = setItems.next();
-                Integer targetStorageLocationId = entry.getKey();
+                List<SafetyStockView> safetyStockViewsListSecond = middleItem.getValue();
+                SafetyStockView[] safetyStockSecondViews = null;
+                safetyStockSecondViews = (SafetyStockView[]) Array.newInstance(SafetyStockView.class, safetyStockViewsListSecond.size());
+                safetyStockViewsListSecond.toArray(safetyStockSecondViews);
 
-                List<SafetyStockView> safetyStockViewsList=setItem.getValue();
-                SafetyStockView[] safetyStockViews=null;
-                safetyStockViews = (SafetyStockView[]) Array.newInstance(SafetyStockView.class,safetyStockViewsList.size());
-                safetyStockViewsList.toArray(safetyStockViews);
-                BigDecimal needAmount=safetyStockViews[0].getAmountMin();
+                //TODO 按目标库位分组
+                Map<Integer, List<SafetyStockView>> groupByTargetStorageLocationIdMap =
+                        Stream.of(safetyStockSecondViews).collect(Collectors.groupingBy(SafetyStockView::getTargetStorageLocationId));
 
-                for(int i=0;i<safetyStockViews.length;i++){
-                    if (needAmount.compareTo(BigDecimal.ZERO)>0) {
-                        StockRecordFind stockRecordFindTarget = new StockRecordFind();
-                        stockRecordFindTarget.setSupplyId(safetyStockViews[i].getSupplyId());
-                        stockRecordFindTarget.setStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
-                        stockRecordFindTarget.setUnit(safetyStockViews[i].getUnit());
-                        stockRecordFindTarget.setUnitAmount(safetyStockViews[i].getUnitAmount());
-                        stockRecordFindTarget.setState(TransferOrderItemService.STATE_ALL_FINISH);
-                        stockRecordFindTarget.setWarehouseId(safetyStockViews[i].getWarehouseId());
-                        StockRecord[] stockRecordViews3 = stockRecordService.findTableNewest(accountBook, stockRecordFindTarget);
+                Iterator<Map.Entry<Integer, List<SafetyStockView>>> setItems = groupByTargetStorageLocationIdMap.entrySet().iterator();
 
-                        StockRecordFind stockRecordFindSource = new StockRecordFind();
-                        stockRecordFindSource.setSupplyId(safetyStockViews[i].getSupplyId());
-                        stockRecordFindSource.setStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
-                        stockRecordFindSource.setUnit(safetyStockViews[i].getSourceUnit());
-                        stockRecordFindSource.setUnitAmount(safetyStockViews[i].getSourceUnitAmount());
-                        stockRecordFindSource.setState(TransferOrderItemService.STATE_ALL_FINISH);
-                        stockRecordFindSource.setWarehouseId(safetyStockViews[i].getWarehouseId());
-                        StockRecord[] stockRecordViews4 = stockRecordService.findTableNewest(accountBook, stockRecordFindSource);
+                while (setItems.hasNext()) {
+                    Map.Entry<Integer, List<SafetyStockView>> setItem = setItems.next();
+                    Integer targetStorageLocationId = entry.getKey();
 
-                        BigDecimal sourceAmount = new BigDecimal(0);
-                        for (int j = 0; j < stockRecordViews3.length; j++) {
-                            sourceAmount = sourceAmount.add(stockRecordViews3[j].getAvailableAmount());
-                        }
-                        //需要的数量为安全库存的数目减去目标库位的总数,仅在第一次进行初始化，后面的needAmount继承
-                        if (i == 0) {
-                            needAmount = needAmount.subtract(sourceAmount);
-                        }
+                    List<SafetyStockView> safetyStockViewsList = setItem.getValue();
+                    SafetyStockView[] safetyStockViews = null;
+                    safetyStockViews = (SafetyStockView[]) Array.newInstance(SafetyStockView.class, safetyStockViewsList.size());
+                    safetyStockViewsList.toArray(safetyStockViews);
+                    BigDecimal needAmount = safetyStockViews[0].getAmountMin();
 
-                        BigDecimal sourceAmount1 = new BigDecimal(0);
-                        for (int l = 0; l < stockRecordViews4.length; l++) {
-                            sourceAmount1 = sourceAmount1.add(stockRecordViews4[l].getAvailableAmount());
-                        }
+                    for (int i = 0; i < safetyStockViews.length; i++) {
+                        if (needAmount.compareTo(BigDecimal.ZERO) > 0) {
+                            StockRecordFind stockRecordFindTarget = new StockRecordFind();
+                            stockRecordFindTarget.setSupplyId(safetyStockViews[i].getSupplyId());
+                            stockRecordFindTarget.setStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
+                            stockRecordFindTarget.setUnit(safetyStockViews[i].getUnit());
+                            stockRecordFindTarget.setUnitAmount(safetyStockViews[i].getUnitAmount());
+                            stockRecordFindTarget.setState(TransferOrderItemService.STATE_ALL_FINISH);
+                            stockRecordFindTarget.setWarehouseId(safetyStockViews[i].getWarehouseId());
+                            StockRecord[] stockRecordViews3 = stockRecordService.findTableNewest(accountBook, stockRecordFindTarget);
 
-                        TransferOrderItem transferOrderItem = new TransferOrderItem();
-                        TransferOrderItemView transferOrderItemView = new TransferOrderItemView();
-                        transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
-                        transferOrderItem.setUnit(safetyStockViews[i].getUnit());
-                        transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
-                        transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
-                        transferOrderItem.setSourceUnit(safetyStockViews[i].getSourceUnit());
-                        transferOrderItem.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
-                        transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
-                        //预设计划数量
-                        transferOrderItem.setScheduledAmount(needAmount);
-                        transferOrderItem.setPersonId(TransferAuto.getPersonId());
-                        transferOrderItem.setRealAmount(new BigDecimal(0));
-                        transferOrderItem.setOperateTime(new Timestamp(System.currentTimeMillis()));
-                        transferOrderItem.setTransferOrderId(newTransferOrderID);
-                        transferOrderItem.setState(0);
-                        //有源库存，目标库位的数小于安全库存数，源库位库存数大于安全库存数
-                        if (stockRecordViews4.length > 0
-                                && needAmount.compareTo(BigDecimal.ZERO) > 0
-                                && sourceAmount1.compareTo(needAmount) >= 0) {
-                            transferOrderItem.setComment("成功一键移库");
-                            succeedOrder = true;
-                            transferOrderItemsList.add(transferOrderItem);
-                            this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
-                            needAmount = needAmount.subtract(needAmount);
-                        } else if (stockRecordViews4.length == 0) {
-                            transferOrderItemView.setComment("源库位库存条目不存在！");
-                            transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
-                            transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
+                            StockRecordFind stockRecordFindSource = new StockRecordFind();
+                            stockRecordFindSource.setSupplyId(safetyStockViews[i].getSupplyId());
+                            stockRecordFindSource.setStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
+                            stockRecordFindSource.setUnit(safetyStockViews[i].getSourceUnit());
+                            stockRecordFindSource.setUnitAmount(safetyStockViews[i].getSourceUnitAmount());
+                            stockRecordFindSource.setState(TransferOrderItemService.STATE_ALL_FINISH);
+                            stockRecordFindSource.setWarehouseId(safetyStockViews[i].getWarehouseId());
+                            StockRecord[] stockRecordViews4 = stockRecordService.findTableNewest(accountBook, stockRecordFindSource);
 
-                            transferOrderItemView.setSourceStorageLocationName(safetyStockViews[i].getSourceStorageLocationName());
-                            transferOrderItemView.setSourceUnit(safetyStockViews[i].getSourceUnit());
-                            transferOrderItemView.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
-                            transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
-                            transferOrderItemView.setMaterialNo(safetyStockViews[i].getMaterialNo());
-                            transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
-                            transferOrderItemView.setState(0);
+                            BigDecimal sourceAmount = new BigDecimal(0);
+                            for (int j = 0; j < stockRecordViews3.length; j++) {
+                                sourceAmount = sourceAmount.add(stockRecordViews3[j].getAvailableAmount());
+                            }
+                            //需要的数量为安全库存的数目减去目标库位的总数,仅在第一次进行初始化，后面的needAmount继承
+                            if (i == 0) {
+                                needAmount = needAmount.subtract(sourceAmount);
+                            }
 
-                            falseTransferOrderItemsList.add(transferOrderItemView);
-                        } else if (needAmount.compareTo(BigDecimal.ZERO) <= 0) {
-                            //需要的数目比0小，说明库存充足
-                            transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
-                            transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
+                            BigDecimal sourceAmount1 = new BigDecimal(0);
+                            for (int l = 0; l < stockRecordViews4.length; l++) {
+                                sourceAmount1 = sourceAmount1.add(stockRecordViews4[l].getAvailableAmount());
+                            }
 
-                            transferOrderItemView.setTargetStorageLocationName(safetyStockViews[i].getTargetStorageLocationName());
-                            transferOrderItemView.setUnit(safetyStockViews[i].getUnit());
-                            transferOrderItemView.setUnitAmount(safetyStockViews[i].getUnitAmount());
-                            transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
-                            transferOrderItemView.setMaterialNo(safetyStockViews[i].getMaterialNo());
-                            transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
-                            transferOrderItemView.setState(1);
-                            transferOrderItem.setComment("库存充足或已备货！");
-
-                            falseTransferOrderItemsList.add(transferOrderItemView);
-                        } else if (sourceAmount1.compareTo(needAmount) < 0) {
-                            //源库存比需要的数目小
-                            //如果源库存为0或者已经是该目标库位最后一条安全库存
-                            if (sourceAmount1.compareTo(BigDecimal.ZERO) == 0) {
+                            TransferOrderItem transferOrderItem = new TransferOrderItem();
+                            TransferOrderItemView transferOrderItemView = new TransferOrderItemView();
+                            transferOrderItem.setTargetStorageLocationId(safetyStockViews[i].getTargetStorageLocationId());
+                            transferOrderItem.setUnit(safetyStockViews[i].getUnit());
+                            transferOrderItem.setUnitAmount(safetyStockViews[i].getUnitAmount());
+                            transferOrderItem.setSourceStorageLocationId(safetyStockViews[i].getSourceStorageLocationId());
+                            transferOrderItem.setSourceUnit(safetyStockViews[i].getSourceUnit());
+                            transferOrderItem.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
+                            transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
+                            //预设计划数量
+                            transferOrderItem.setScheduledAmount(needAmount);
+                            transferOrderItem.setPersonId(TransferAuto.getPersonId());
+                            transferOrderItem.setRealAmount(new BigDecimal(0));
+                            transferOrderItem.setOperateTime(new Timestamp(System.currentTimeMillis()));
+                            transferOrderItem.setTransferOrderId(newTransferOrderID);
+                            transferOrderItem.setState(0);
+                            //有源库存，目标库位的数小于安全库存数，源库位库存数大于安全库存数
+                            if (stockRecordViews4.length > 0
+                                    && needAmount.compareTo(BigDecimal.ZERO) > 0
+                                    && sourceAmount1.compareTo(needAmount) >= 0) {
+                                transferOrderItem.setComment("成功一键移库");
+                                succeedOrder = true;
+                                transferOrderItemsList.add(transferOrderItem);
+                                this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
+                                needAmount = needAmount.subtract(needAmount);
+                            } else if (stockRecordViews4.length == 0) {
+                                transferOrderItemView.setComment("源库位库存条目不存在！");
                                 transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
                                 transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
 
@@ -519,21 +502,29 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                                 transferOrderItemView.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
                                 transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
                                 transferOrderItemView.setMaterialNo(safetyStockViews[i].getMaterialNo());
-                                transferOrderItemView.setScheduledAmount(needAmount);
-                                transferOrderItemView.setRealAmount(sourceAmount1);
                                 transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
-                                transferOrderItemView.setState(2);
-                                transferOrderItem.setComment(needAmount.subtract(sourceAmount1).toString());
-                                falseTransferOrderItemsList.add(transferOrderItemView);
-                            } else {
-                                transferOrderItem.setComment("部分一键备货");
-                                transferOrderItem.setScheduledAmount(sourceAmount1);
-                                succeedOrder = true;
-                                transferOrderItemsList.add(transferOrderItem);
-                                this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
-                                needAmount = needAmount.subtract(sourceAmount1);
+                                transferOrderItemView.setState(0);
 
-                                if (i == safetyStockViews.length - 1) {
+                                falseTransferOrderItemsList.add(transferOrderItemView);
+                            } else if (needAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                                //需要的数目比0小，说明库存充足
+                                transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
+                                transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
+
+                                transferOrderItemView.setTargetStorageLocationName(safetyStockViews[i].getTargetStorageLocationName());
+                                transferOrderItemView.setUnit(safetyStockViews[i].getUnit());
+                                transferOrderItemView.setUnitAmount(safetyStockViews[i].getUnitAmount());
+                                transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
+                                transferOrderItemView.setMaterialNo(safetyStockViews[i].getMaterialNo());
+                                transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
+                                transferOrderItemView.setState(1);
+                                transferOrderItem.setComment("库存充足或已备货！");
+
+                                falseTransferOrderItemsList.add(transferOrderItemView);
+                            } else if (sourceAmount1.compareTo(needAmount) < 0) {
+                                //源库存比需要的数目小
+                                //如果源库存为0或者已经是该目标库位最后一条安全库存
+                                if (sourceAmount1.compareTo(BigDecimal.ZERO) == 0) {
                                     transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
                                     transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
 
@@ -543,19 +534,45 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                                     transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
                                     transferOrderItemView.setMaterialNo(safetyStockViews[i].getMaterialNo());
                                     transferOrderItemView.setScheduledAmount(needAmount);
-                                    transferOrderItemView.setRealAmount(BigDecimal.ZERO);
+                                    transferOrderItemView.setRealAmount(sourceAmount1);
                                     transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
                                     transferOrderItemView.setState(2);
                                     transferOrderItem.setComment(needAmount.subtract(sourceAmount1).toString());
                                     falseTransferOrderItemsList.add(transferOrderItemView);
+                                } else {
+                                    transferOrderItem.setComment("部分一键备货");
+                                    transferOrderItem.setScheduledAmount(sourceAmount1);
+                                    succeedOrder = true;
+                                    transferOrderItemsList.add(transferOrderItem);
+                                    this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
+                                    needAmount = needAmount.subtract(sourceAmount1);
+
+                                    if (i == safetyStockViews.length - 1) {
+                                        transferOrderItemView.setSupplierName(safetyStockViews[i].getSupplierName());
+                                        transferOrderItemView.setSupplierNo(safetyStockViews[i].getSupplierNo());
+
+                                        transferOrderItemView.setSourceStorageLocationName(safetyStockViews[i].getSourceStorageLocationName());
+                                        transferOrderItemView.setSourceUnit(safetyStockViews[i].getSourceUnit());
+                                        transferOrderItemView.setSourceUnitAmount(safetyStockViews[i].getSourceUnitAmount());
+                                        transferOrderItemView.setMaterialName(safetyStockViews[i].getMaterialName());
+                                        transferOrderItemView.setMaterialNo(safetyStockViews[i].getMaterialNo());
+                                        transferOrderItemView.setScheduledAmount(needAmount);
+                                        transferOrderItemView.setRealAmount(BigDecimal.ZERO);
+                                        transferOrderItemView.setMaterialProductLine(safetyStockViews[i].getMaterialProductLine());
+                                        transferOrderItemView.setState(2);
+                                        transferOrderItem.setComment(needAmount.subtract(sourceAmount1).toString());
+                                        falseTransferOrderItemsList.add(transferOrderItemView);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
+
             }
-            if (!succeedOrder){
-                this.transferOrderService.remove(accountBook,new int[]{newTransferOrderID});
+            if (!succeedOrder) {
+                this.transferOrderService.remove(accountBook, new int[]{newTransferOrderID});
             }
         }
 
