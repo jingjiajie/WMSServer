@@ -874,7 +874,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         //首先找到最久的库存记录
         for (int i = 0; i < stockRecordSource.length; i++) {
             for (int j = i + 1; j < stockRecordSource.length; j++) {
-                if (stockRecordSource[i].getInventoryDate().compareTo(stockRecordSource[j].getInventoryDate()) >= 0) {
+                if (stockRecordSource[i].getInventoryDate().compareTo(stockRecordSource[j].getInventoryDate()) <= 0) {
                     StockRecord temp = stockRecordSource[i];
                     stockRecordSource[i] = stockRecordSource[j];
                     stockRecordSource[j] = temp;
