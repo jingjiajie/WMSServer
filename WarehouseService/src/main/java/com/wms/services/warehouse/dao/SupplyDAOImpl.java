@@ -1,5 +1,7 @@
 package com.wms.services.warehouse.dao;
 import com.wms.utilities.dao.BaseDAOImpl;
+import com.wms.utilities.model.Supply;
+import com.wms.utilities.model.SupplyView;
 import org.springframework.stereotype.Repository;
 
 @Repository
