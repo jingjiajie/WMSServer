@@ -400,6 +400,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 if (stockRecordSource1[i].getAvailableAmount().compareTo(new BigDecimal(0)) == 0) {
                     continue;
                 }
+                if(transferStock.getState()==transferStock.getNewState())
                 {
                     sourceStorageLocationUnit = stockRecordSource1[i].getUnit();
                     sourceStorageLocationUnitAmount = stockRecordSource1[i].getUnitAmount();
@@ -445,6 +446,76 @@ public class StockRecordServiceImpl implements StockRecordService {
                     transferRecord.setTransferUnitAmount(unitAmount);
                     transferRecord.setTransferAmount(amount.abs());
                     transformRecordService.add(accountBook, new TransferRecord[]{transferRecord});
+                }
+                //状态变化需要增加两条库存记录
+                else{
+                    //查到新库位上最新的相同供货的记录
+                    StockRecordView[] stockRecordViews = stockRecordDAO.find(accountBook, new Condition().addCondition("storageLocationId", new Integer[]{newStorageLocationId}).
+                            addCondition("supplyId", new Integer[]{supplyId}).addCondition("unit", new String[]{unit}).addCondition("unitAmount", new BigDecimal[]{unitAmount}).
+                            addCondition("batchNo", new String[]{stockRecordSource1[i].getBatchNo()}).addCondition("state", newState).addOrder("time", OrderItem.Order.DESC)
+                    );
+                    sourceStorageLocationUnit = stockRecordSource1[i].getUnit();
+                    sourceStorageLocationUnitAmount = stockRecordSource1[i].getUnitAmount();
+                    sourceStorageOriginalAmount = stockRecordSource1[i].getAmount();
+                    //旧状态的变化
+                    StockRecord stockRecordOld = new StockRecord();
+                    stockRecordOld.setUnit(unit);
+                    stockRecordOld.setUnitAmount(unitAmount);
+                    stockRecordOld.setRelatedOrderNo(transferStock.getRelatedOrderNo());
+                    stockRecordOld.setWarehouseId(stockRecordSource1[i].getWarehouseId());
+                    stockRecordOld.setBatchNo(stockRecordSource1[i].getBatchNo());
+                    stockRecordOld.setInventoryDate(stockRecordSource1[i].getInventoryDate());
+                    stockRecordOld.setStorageLocationId(sourceStorageLocationId);
+                    stockRecordOld.setSupplyId(supplyId);
+                    stockRecordOld.setTime(this.getTime());
+                    stockRecordOld.setAmount(stockRecordSource1[i].getAmount().add(transferStock.getAmount().negate()));
+                    stockRecordOld.setAvailableAmount(stockRecordSource1[i].getAvailableAmount().add(transferStock.getAmount().negate()));
+                    stockRecordOld.setState(stockRecordSource1[i].getState());
+                    stockRecordOld.setManufactureDate(stockRecordSource1[i].getManufactureDate());
+                    sourceStorageNewAmount = stockRecordOld.getAmount();
+                    //第二条
+                    StockRecord stockRecordNew = new StockRecord();
+                    stockRecordNew.setUnit(unit);
+                    stockRecordNew.setUnitAmount(unitAmount);
+                    stockRecordNew.setRelatedOrderNo(transferStock.getRelatedOrderNo());
+                    stockRecordNew.setWarehouseId(stockRecordSource1[i].getWarehouseId());
+                    stockRecordNew.setBatchNo(stockRecordSource1[i].getBatchNo());
+                    stockRecordNew.setInventoryDate(stockRecordSource1[i].getInventoryDate());
+                    stockRecordNew.setStorageLocationId(sourceStorageLocationId);
+                    stockRecordNew.setSupplyId(supplyId);
+                    stockRecordNew.setTime(this.getTime());
+                    stockRecordNew.setAmount(stockRecordViews[0].getAmount().add(transferStock.getAmount()));
+                    stockRecordNew.setAvailableAmount(stockRecordViews[0].getAvailableAmount().add(transferStock.getAmount()));
+                    stockRecordNew.setState(stockRecordViews[0].getState());
+                    stockRecordNew.setManufactureDate(stockRecordSource1[i].getManufactureDate());
+                    sourceStorageNewAmount = stockRecordNew.getAmount();
+                    int[] oldStockRecordId = stockRecordDAO.add(accountBook, new StockRecord[]{stockRecordOld});
+                    if (oldStockRecordId.length != 1) {
+                        throw new WMSServiceException("添加新库存记录失败！");
+                    }
+                    //TODO 移位记录还没改
+                    //添加一条移位记录
+                    TransferRecord transferRecord = new TransferRecord();
+                    //transferRecord.setNewStockRecordId(newStockRecordId[0]);
+                    //transferRecord.setSourceStockRecordId(stockRecordSource1[i].getId());
+                    transferRecord.setWarehouseId(stockRecordSource1[0].getWarehouseId());
+                    transferRecord.setSupplyId(supplyId);
+                    transferRecord.setTime(this.getTime());
+                    transferRecord.setSourceStorageLocationId(sourceStorageLocationId);
+                    transferRecord.setSourceStorageLocationNewAmount(sourceStorageNewAmount);
+                    transferRecord.setSourceStorageLocationUnitAmount(sourceStorageLocationUnitAmount);
+                    transferRecord.setSourceStorageLocationUnit(sourceStorageLocationUnit);
+                    transferRecord.setSourceStorageLocationOriginalAmount(sourceStorageOriginalAmount);
+                    transferRecord.setTargetStorageLocationId(newStorageLocationId);
+                    transferRecord.setTargetStorageLocationAmount(sourceStorageLocationUnitAmount);
+                    transferRecord.setTargetStorageLocationNewAmount(sourceStorageNewAmount);
+                    transferRecord.setTargetStorageLocationOriginalAmount(sourceStorageOriginalAmount);
+                    transferRecord.setTargetStorageLocationUnit(sourceStorageLocationUnit);
+                    transferRecord.setTransferUnit(unit);
+                    transferRecord.setTransferUnitAmount(unitAmount);
+                    transferRecord.setTransferAmount(amount.abs());
+                    transformRecordService.add(accountBook, new TransferRecord[]{transferRecord});
+
                 }
             }
         }
