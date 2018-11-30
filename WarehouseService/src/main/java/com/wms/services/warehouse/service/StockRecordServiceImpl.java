@@ -58,9 +58,18 @@ public class StockRecordServiceImpl implements StockRecordService {
             new Validator("单位").notnull().notEmpty().validate(stockRecords[i].getUnit());
             new Validator("单位数量").notnull().notEmpty().greaterThan(0).validate(stockRecords[i].getUnitAmount());
             new Validator("存货日期").notnull().validate(stockRecords[i].getInventoryDate());
+            SupplyView[] supplyViews = this.supplyService.find(accountBook, new Condition().addCondition("id", stockRecords[i].getSupplyId()));
+            if (supplyViews.length == 0) {
+                throw new WMSServiceException("查询的供货不存在！");
+            }
+
+            if(stockRecords[i].getAmount().compareTo(stockRecords[i].getAvailableAmount())<0){
+                throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "”(单位：“" + stockRecords[i]
+                        .getUnit() + "”单位数量：“" + stockRecords[i].getUnitAmount() + "”批号：“" + stockRecords[i].getBatchNo() +
+                        "”检测状态：“" + this.stateTransfer(stockRecords[i].getState()) + "“）数量不能小于" +
+                        "可用数量！");
+            }
         }
-
-
         //外键检测
         Stream.of(stockRecords).forEach(
                 (stockRecord) -> {
