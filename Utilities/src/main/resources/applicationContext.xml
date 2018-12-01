@@ -110,6 +110,7 @@
                 <value>com.wms.utilities.model.SummaryDetailsView</value>
                 <value>com.wms.utilities.model.TrayThresholdsView</value>
                 <value>com.wms.utilities.model.PriceView</value>
+                <value>com.wms.utilities.model.ItemRelatedRecord</value>
             </list>
         </property>
     </bean>
