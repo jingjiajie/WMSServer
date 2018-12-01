@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.stream.Stream;
 
@@ -24,12 +25,14 @@ public class ItemRelatedRecordServiceImpl
 
     @Override
     public int[] add(String accountBook, ItemRelatedRecord[] itemRelatedRecords) throws WMSServiceException {
+        this.setAmount(itemRelatedRecords);
         this.validateEntities(accountBook, itemRelatedRecords);
         return itemRelatedRecordDAO.add(accountBook, itemRelatedRecords);
     }
 
     @Override
     public void update(String accountBook, ItemRelatedRecord[] itemRelatedRecords) throws WMSServiceException {
+        this.setAmount(itemRelatedRecords);
         this.validateEntities(accountBook, itemRelatedRecords);
         this.itemRelatedRecordDAO.update(accountBook, itemRelatedRecords);
     }
@@ -50,8 +53,8 @@ public class ItemRelatedRecordServiceImpl
     }
 
     @Override
-    public long findCount(String accountBook, Condition cond) throws WMSServiceException{
-        return this.itemRelatedRecordDAO.findCount(accountBook,cond);
+    public long findCount(String accountBook, Condition cond) throws WMSServiceException {
+        return this.itemRelatedRecordDAO.findCount(accountBook, cond);
     }
 
     @Override
@@ -59,11 +62,23 @@ public class ItemRelatedRecordServiceImpl
         return this.itemRelatedRecordDAO.find(accountBook, cond);
     }
 
-    private void validateEntities(String accountBook,ItemRelatedRecord[] itemRelatedRecords) throws WMSServiceException{
+    private void validateEntities(String accountBook, ItemRelatedRecord[] itemRelatedRecords) throws WMSServiceException {
         Stream.of(itemRelatedRecords).forEach((itemRelatedRecord -> {
             new Validator("库存记录批次号").notnull().notEmpty().validate(itemRelatedRecord.getStockRecordBatchNo());
             new Validator("相关条目ID").notnull().notEmpty().validate(itemRelatedRecord.getRelatedItemId());
             new Validator("条目类型").notnull().notEmpty().validate(itemRelatedRecord.getItemType());
         }));
+    }
+
+    private void setAmount(ItemRelatedRecord[] itemRelatedRecords) throws WMSServiceException {
+        Stream.of(itemRelatedRecords).forEach((itemRelatedRecord -> {
+            if (itemRelatedRecord.getBatchAmount() == null) {
+                itemRelatedRecord.setBatchAmount(new BigDecimal(0));
+            }
+            if (itemRelatedRecord.getBatchAvailableAmount() == null) {
+                itemRelatedRecord.setBatchAvailableAmount(new BigDecimal(0));
+            }
+        }
+        ));
     }
 }
