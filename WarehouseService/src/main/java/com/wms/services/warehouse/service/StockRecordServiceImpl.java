@@ -2276,4 +2276,17 @@ public class StockRecordServiceImpl implements StockRecordService {
             throw new WMSServiceException("当前货物生产日期"+batchNoIntCurrent+"不符合出库要求！");
         }
     }
+
+    public void modifyAvailableAmountAutoMatchBatch(String accountBook, TransferStock transferStock){ }
+
+    public  void modifyAvailableAmountByBatch(String accountBook, TransferStock transferStock){}
+
+    public void transferStockAutoMatchBatch(String accountBook, TransferStock transferStock){}
+
+    public void transferStockByBatch(String accountBook, TransferStock transferStock){}
+
+    public void addAmountAutoMatchBatch(String accountBook,TransferStock transferStock){}
+
+    public void addAmountByBatch(String accountBook,TransferStock transferStock){}
+
 }

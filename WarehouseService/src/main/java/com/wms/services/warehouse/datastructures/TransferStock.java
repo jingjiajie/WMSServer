@@ -135,7 +135,7 @@ public class TransferStock {
         this.State = State;
     }
 
-    private  int State=-1;
+    private int State = -1;
 
     public int getNewState() {
         return newState;
@@ -145,7 +145,7 @@ public class TransferStock {
         this.newState = newState;
     }
 
-    private int newState=-1;
+    private int newState = -1;
 
     public Timestamp getManufactureDate() {
         return ManufactureDate;
@@ -157,11 +157,31 @@ public class TransferStock {
 
     private Timestamp ManufactureDate;
 
-    private final int STATE_DEFAULT_DEPENDENT=-1;
+    public int getItemId() {
+        return ItemId;
+    }
 
-    public static final int WAITING_FOR_INSPECTION =0;
+    public int getItemType() {
+        return ItemType;
+    }
 
-    public static final int UNQUALIFIED=1;
+    public void setItemId(int itemId) {
+        ItemId = itemId;
+    }
 
-    public static final int QUALIFIED=2;
+    public void setItemType(int itemType) {
+        ItemType = itemType;
+    }
+
+    private int ItemId;
+
+    private int ItemType;
+
+    private final int STATE_DEFAULT_DEPENDENT = -1;
+
+    public static final int WAITING_FOR_INSPECTION = 0;
+
+    public static final int UNQUALIFIED = 1;
+
+    public static final int QUALIFIED = 2;
 }
