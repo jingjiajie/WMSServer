@@ -433,7 +433,6 @@ public class StockRecordServiceImpl implements StockRecordService {
                     if (newStockRecordId.length != 1) {
                         throw new WMSServiceException("添加新库存记录失败！");
                     }
-
                     //添加一条移位记录
                     TransferRecord transferRecord = new TransferRecord();
                     //transferRecord.setNewStockRecordId(newStockRecordId[0]);
@@ -493,12 +492,21 @@ public class StockRecordServiceImpl implements StockRecordService {
                     stockRecordNew.setStorageLocationId(sourceStorageLocationId);
                     stockRecordNew.setSupplyId(supplyId);
                     stockRecordNew.setTime(this.getTime());
+                    if(stockRecordViews.length!=0)
+                    {
                     stockRecordNew.setAmount(stockRecordViews[0].getAmount().add(transferStock.getAmount()));
                     stockRecordNew.setAvailableAmount(stockRecordViews[0].getAvailableAmount().add(transferStock.getAmount()));
                     stockRecordNew.setState(stockRecordViews[0].getState());
+                    }
+                    else
+                    {
+                        stockRecordNew.setAmount(transferStock.getAmount());
+                        stockRecordNew.setAvailableAmount(transferStock.getAmount());
+                        stockRecordNew.setState(newState);
+                    }
                     stockRecordNew.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     sourceStorageNewAmount = stockRecordNew.getAmount();
-                    int[] oldStockRecordId = stockRecordDAO.add(accountBook, new StockRecord[]{stockRecordOld});
+                    int[] oldStockRecordId = stockRecordDAO.add(accountBook, new StockRecord[]{stockRecordOld,stockRecordNew});
                     if (oldStockRecordId.length != 1) {
                         throw new WMSServiceException("添加新库存记录失败！");
                     }
