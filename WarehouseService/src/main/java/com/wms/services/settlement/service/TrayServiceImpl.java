@@ -5,10 +5,8 @@ import com.wms.services.warehouse.service.StorageLocationService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.CommonData;
-import com.wms.utilities.model.StorageLocation;
 import com.wms.utilities.model.StorageLocationView;
 import com.wms.utilities.service.CommonDataService;
-import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,14 +88,14 @@ public class TrayServiceImpl implements TrayService{
                 }
             }
             //进行比较
-        if(validateTray.getWidth().compareTo(widthAvailableMin)<0){
-                throw new WMSServiceException("托位宽度："+validateTray.getWidth()+" 不能小于所有库位宽度最小值");
+        if(validateTray.getWidth().compareTo(widthAvailableMin)>0){
+                throw new WMSServiceException("托位宽度："+validateTray.getWidth()+" 不能大于所有库位宽度最小值");
         }
-        if(validateTray.getLentgth().compareTo(lengthAvailableMin)<0){
-            throw new WMSServiceException("托位长度："+validateTray.getWidth()+" 不能小于所有库位长度最小值");
+        if(validateTray.getLength().compareTo(lengthAvailableMin)>0){
+            throw new WMSServiceException("托位长度："+validateTray.getWidth()+" 不能大于所有库位长度最小值");
         }
-        if(validateTray.getLentgth().multiply(validateTray.getWidth()).compareTo(areaMin)<0){
-            throw new WMSServiceException("托位面积："+validateTray.getWidth()+" 不能小于所有库位面积最小值");
+        if(validateTray.getLength().multiply(validateTray.getWidth()).compareTo(areaMin)>0){
+            throw new WMSServiceException("托位面积："+validateTray.getWidth()+" 不能大于所有库位面积最小值");
         }
     }
 }

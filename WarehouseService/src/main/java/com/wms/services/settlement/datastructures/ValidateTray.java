@@ -3,8 +3,8 @@ package com.wms.services.settlement.datastructures;
 import java.math.BigDecimal;
 
 public class ValidateTray {
-    public BigDecimal getLentgth() {
-        return lentgth;
+    public BigDecimal getLength() {
+        return length;
     }
 
     public BigDecimal getWidth() {
@@ -15,15 +15,15 @@ public class ValidateTray {
         return warehouseId;
     }
 
-    public void setLentgth(BigDecimal lentgth) {
-        this.lentgth = lentgth;
+    public void setLength(BigDecimal length) {
+        this.length = length;
     }
 
     public void setWarehouseId(int warehouseId) {
         this.warehouseId = warehouseId;
     }
 
-    BigDecimal lentgth;
+    BigDecimal length;
     BigDecimal width;
 
     public void setWidth(BigDecimal width) {

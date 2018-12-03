@@ -64,8 +64,7 @@ public class TrayControllerImpl implements TrayController{
     @ResponseStatus(HttpStatus.OK)
     @Override
     public void validateEntities(@PathVariable("accountBook") String accountBook,
-                     @RequestBody ValidateTray validateTray) {
+                                      @RequestBody ValidateTray validateTray) {
         trayService.validateEntities(accountBook, validateTray);
     }
-
 }
