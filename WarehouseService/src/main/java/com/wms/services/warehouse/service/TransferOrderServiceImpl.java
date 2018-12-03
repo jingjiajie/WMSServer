@@ -284,7 +284,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         deliveryOrder.setCreatePersonId(deliveryByTransferOrder.getPersonId());
         deliveryOrder.setWarehouseId(deliveryByTransferOrder.getWarehouseId());
         deliveryOrder.setState(DeliveryOrderService.STATE_IN_LOADING);
-        deliveryOrder.setDescription(itemViews[0].getComment());
+        deliveryOrder.setDescription(transferOrderViews[0].getDescription());
         int curDeliveryOrderId = this.deliveryOrderService.add(accountBook, new DeliveryOrder[]{deliveryOrder})[0];
 
         List<DeliveryOrderItem> deliveryOrderItemList=new ArrayList();
