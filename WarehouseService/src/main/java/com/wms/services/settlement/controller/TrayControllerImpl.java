@@ -2,6 +2,7 @@ package com.wms.services.settlement.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.settlement.datastructures.ValidateTray;
 import com.wms.services.settlement.service.TrayService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.CommonData;
@@ -57,6 +58,14 @@ public class TrayControllerImpl implements TrayController{
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.trayService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @RequestMapping(value = "/validate_tray", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    @Override
+    public void validateEntities(@PathVariable("accountBook") String accountBook,
+                     @RequestBody ValidateTray validateTray) {
+        trayService.validateEntities(accountBook, validateTray);
     }
 
 }

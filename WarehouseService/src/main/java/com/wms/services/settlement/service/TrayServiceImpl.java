@@ -1,5 +1,6 @@
 package com.wms.services.settlement.service;
 
+import com.wms.services.settlement.datastructures.ValidateTray;
 import com.wms.services.warehouse.service.StorageLocationService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -7,6 +8,7 @@ import com.wms.utilities.model.CommonData;
 import com.wms.utilities.model.StorageLocation;
 import com.wms.utilities.model.StorageLocationView;
 import com.wms.utilities.service.CommonDataService;
+import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,6 @@ public class TrayServiceImpl implements TrayService{
     @Override
     public int[] add(String accountBook, CommonData[] commonData) throws WMSServiceException
     {
-        this.validateEntities(accountBook,commonData);
         int[] ids= commonDataService.add(accountBook,commonData);
         return ids;
     }
@@ -32,7 +33,6 @@ public class TrayServiceImpl implements TrayService{
     @Override
     public void update(String accountBook, CommonData[] commonData) throws WMSServiceException
     {
-        this.validateEntities(accountBook,commonData);
         commonDataService.update(accountBook, commonData);
         //this.validateDuplication(accountBook,summaryNotes);
     }
@@ -63,12 +63,9 @@ public class TrayServiceImpl implements TrayService{
         return this.commonDataService.findCount(database,cond);
     }
 
-    private void validateEntities(String accountBook,CommonData[] commonData){
+    public void validateEntities(String accountBook, ValidateTray validateTray){
         //Tray_Length_WarehouseId
-        for (CommonData commonDataEach:commonData
-             ) {
-            String warehouseIdStr=commonDataEach.getKey().substring(12,commonDataEach.getKey().length()-1);
-            int warehouseId=Integer.parseInt(warehouseIdStr);
+            int warehouseId=validateTray.getWarehouseId();
             StorageLocationView[] storageLocationViews=storageLocationService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId));
             if(storageLocationViews.length==0){return;}
             BigDecimal lengthAvailableMin=new BigDecimal(-1);
@@ -92,17 +89,15 @@ public class TrayServiceImpl implements TrayService{
                     { widthAvailableMin=storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate());}
                 }
             }
-            BigDecimal length=new BigDecimal(-1);
-            BigDecimal width=new BigDecimal(-1);
-            if(commonDataEach.getKey().substring(0,5).compareTo("Tray_L")==0)
-            {
-
-            }
-           else{
-
-
-            }
+            //进行比较
+        if(validateTray.getWidth().compareTo(widthAvailableMin)<0){
+                throw new WMSServiceException("托位宽度："+validateTray.getWidth()+" 不能小于所有库位宽度最小值");
         }
-
+        if(validateTray.getLentgth().compareTo(lengthAvailableMin)<0){
+            throw new WMSServiceException("托位长度："+validateTray.getWidth()+" 不能小于所有库位长度最小值");
+        }
+        if(validateTray.getLentgth().multiply(validateTray.getWidth()).compareTo(areaMin)<0){
+            throw new WMSServiceException("托位面积："+validateTray.getWidth()+" 不能小于所有库位面积最小值");
+        }
     }
 }
