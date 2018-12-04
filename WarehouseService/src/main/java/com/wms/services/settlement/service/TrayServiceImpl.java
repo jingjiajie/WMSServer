@@ -63,39 +63,39 @@ public class TrayServiceImpl implements TrayService{
 
     public void validateEntities(String accountBook, ValidateTray validateTray){
         //Tray_Length_WarehouseId
-            int warehouseId=validateTray.getWarehouseId();
-            StorageLocationView[] storageLocationViews=storageLocationService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId));
-            if(storageLocationViews.length==0){return;}
-            BigDecimal lengthAvailableMin=new BigDecimal(-1);
-            BigDecimal widthAvailableMin=new BigDecimal(-1);;
-            BigDecimal areaMin=new BigDecimal(-1);;
-            for(StorageLocationView storageLocationView:storageLocationViews){
-                if(storageLocationView.getLength()!=null&&storageLocationView.getLengthPadding()!=null
-                        &&storageLocationView.getWidth()!=null&&storageLocationView.getWidthPadding()!=null
-                        &&storageLocationView.getReservedArea()!=null)
-                {
-                    //记录下最小的长度
-                    if(lengthAvailableMin.compareTo(new BigDecimal(-1))==0||lengthAvailableMin.compareTo(storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate()))>0)
-                    {lengthAvailableMin=storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate());}
-                    //宽度
-                    if(widthAvailableMin.compareTo(new BigDecimal(-1))==0||widthAvailableMin.compareTo(storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate()))>0)
-                    { widthAvailableMin=storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate());}
-                    //面积
-                    BigDecimal area=(storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate()).multiply(storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate()))).
-                            add(storageLocationView.getReservedArea().negate());
-                    if(areaMin.compareTo(new BigDecimal(-1))==0||areaMin.compareTo(area)>0)
-                    { widthAvailableMin=storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate());}
-                }
-            }
-            //进行比较
-        if(validateTray.getWidth().compareTo(widthAvailableMin)>0){
-                throw new WMSServiceException("托位宽度："+validateTray.getWidth()+" 不能大于所有库位宽度最小值");
-        }
-        if(validateTray.getLength().compareTo(lengthAvailableMin)>0){
-            throw new WMSServiceException("托位长度："+validateTray.getWidth()+" 不能大于所有库位长度最小值");
-        }
-        if(validateTray.getLength().multiply(validateTray.getWidth()).compareTo(areaMin)>0){
-            throw new WMSServiceException("托位面积："+validateTray.getWidth()+" 不能大于所有库位面积最小值");
-        }
+//        int warehouseId=validateTray.getWarehouseId();
+//        StorageLocationView[] storageLocationViews=storageLocationService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId));
+//        if(storageLocationViews.length==0){return;}
+//        BigDecimal lengthAvailableMin=new BigDecimal(-1);
+//        BigDecimal widthAvailableMin=new BigDecimal(-1);;
+//        BigDecimal areaMin=new BigDecimal(-1);;
+//        for(StorageLocationView storageLocationView:storageLocationViews){
+//            if(storageLocationView.getLength()!=null&&storageLocationView.getLengthPadding()!=null
+//                    &&storageLocationView.getWidth()!=null&&storageLocationView.getWidthPadding()!=null
+//                    &&storageLocationView.getReservedArea()!=null)
+//            {
+//                //记录下最小的长度
+//                if(lengthAvailableMin.compareTo(new BigDecimal(-1))==0||lengthAvailableMin.compareTo(storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate()))>0)
+//                {lengthAvailableMin=storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate());}
+//                //宽度
+//                if(widthAvailableMin.compareTo(new BigDecimal(-1))==0||widthAvailableMin.compareTo(storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate()))>0)
+//                { widthAvailableMin=storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate());}
+//                //面积
+//                BigDecimal area=(storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate())).multiply((storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate()))).
+//                        add(storageLocationView.getReservedArea().negate());
+//                if(areaMin.compareTo(new BigDecimal(-1))==0||areaMin.compareTo(area)>0)
+//                { areaMin=area;}
+//            }
+//        }
+//        //进行比较
+//        if(validateTray.getWidth().compareTo(widthAvailableMin)>0){
+//            throw new WMSServiceException("托位宽度："+validateTray.getWidth()+" 不能大于所有库位宽度最小值"+widthAvailableMin);
+//        }
+//        if(validateTray.getLength().compareTo(lengthAvailableMin)>0){
+//            throw new WMSServiceException("托位长度："+validateTray.getWidth()+" 不能大于所有库位长度最小值"+lengthAvailableMin);
+//        }
+//        if(validateTray.getLength().multiply(validateTray.getWidth()).compareTo(areaMin)>0){
+//            throw new WMSServiceException("托位面积："+validateTray.getWidth()+" 不能大于所有库位面积最小值"+areaMin);
+//        }
     }
 }
