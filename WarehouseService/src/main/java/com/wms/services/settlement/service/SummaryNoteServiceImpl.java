@@ -248,8 +248,8 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         //判断库位大小是否符合要求
         ValidateTray validateTray=new ValidateTray();
         validateTray.setWarehouseId(warehouseId);
-        validateTray.setLength(new BigDecimal(commonData[0].getValue().substring(12,commonData[0].getValue().length()-1)));
-        validateTray.setWidth(new BigDecimal(commonData1[0].getValue().substring(12,commonData1[0].getValue().length()-1)));
+        validateTray.setLength(new BigDecimal(commonData[0].getValue()));
+        validateTray.setWidth(new BigDecimal(commonData1[0].getValue()));
         this.validateStorageLocation(accountBook,validateTray);
         //判断单拖含量
         SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId));
