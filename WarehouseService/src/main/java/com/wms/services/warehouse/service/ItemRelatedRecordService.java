@@ -10,3 +10,4 @@ public interface ItemRelatedRecordService
 extends BaseService<ItemRelatedRecord,ItemRelatedRecord>{
     ItemRelatedRecord[] findTable(String accountBook, Condition cond) throws WMSServiceException;
 }
+

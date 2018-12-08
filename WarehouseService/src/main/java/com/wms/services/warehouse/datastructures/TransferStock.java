@@ -177,6 +177,16 @@ public class TransferStock {
 
     private int ItemType;
 
+    public BigDecimal getAvailableAmount() {
+        return availableAmount;
+    }
+
+    public void setAvailableAmount(BigDecimal availableAmount) {
+        this.availableAmount = availableAmount;
+    }
+
+    private BigDecimal availableAmount;
+
     private final int STATE_DEFAULT_DEPENDENT = -1;
 
     public static final int WAITING_FOR_INSPECTION = 0;

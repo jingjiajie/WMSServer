@@ -58,15 +58,6 @@ public interface StockRecordService
 
     void judgeOldestBatch(String accountBook, JudgeOldestBatch judgeOldestBatch);
 
-    void modifyAvailableAmountAutoMatchBatch(String accountBook, TransferStock transferStock);
 
-    void modifyAvailableAmountByBatch(String accountBook, TransferStock transferStock);
 
-    void transferStockAutoMatchBatch(String accountBook, TransferStock transferStock);
-
-    void transferStockByBatch(String accountBook, TransferStock transferStock);
-
-    void addAmountAutoMatchBatch(String accountBook,TransferStock transferStock);
-
-    void addAmountByBatch(String accountBook,TransferStock transferStock);
 }
