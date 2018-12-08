@@ -13,6 +13,7 @@ import com.wms.utilities.vaildator.Validator;
 import javafx.util.converter.TimeStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionTimedOutException;
 import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -705,21 +706,26 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
     }
 
-    private void validateTransferStock(String accountBook,TransferStock transferStock){
+    private void validateTransferStock(String accountBook,TransferStock transferStock,boolean transfer){
         new Validator("相关单号").notEmpty().notnull().validate(transferStock.relatedOrderNo);
         new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
         new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
+        new Validator("状态").notEmpty().notEmpty().validate(transferStock.getState());
         new Validator("数量").notnull().validate(transferStock.getAmount());
         new Validator("可用数量").notnull().validate(transferStock.getAvailableAmount());
         new Validator("条目id").notnull().validate(transferStock.getItemId());
         new Validator("条目类型").notnull().validate(transferStock.getItemType());
         new Validator("数量").min(0).validate(transferStock.getAmount());
         new Validator("可用数量").min(0).validate(transferStock.getAvailableAmount());
+        if(transfer){
+            new Validator("新单位数量").notnull().min(0).validate(transferStock.getNewUnitAmount());
+            new Validator("新单位").notnull().notEmpty().validate(transferStock.getNewUnit());
+            new Validator("新状态").notEmpty().notEmpty().validate(transferStock.getNewState());
+        }
     }
 
     private ItemRelatedRecord[] findItem(String accountBook,TransferStock transferStock){
       return   itemRelatedRecordService.findTable(accountBook,new Condition().addCondition("relatedItemId",transferStock.getItemId()).addCondition("itemType",transferStock.getItemType()));
-
     }
 
     private StockRecord[] findInterface(String accountBook,StockRecordFind stockRecordFind){
@@ -820,7 +826,7 @@ public class StockRecordServiceImpl implements StockRecordService {
 
     @Override
     public void addAmount(String accountBook, TransferStock transferStock) {
-        this.validateTransferStock(accountBook,transferStock);
+        this.validateTransferStock(accountBook,transferStock,false);
         ItemRelatedRecord[] itemRelatedRecords=this.findItem(accountBook,transferStock);
         StockRecordFind stockRecordFind=new StockRecordFind();
         stockRecordFind.setStorageLocationId(transferStock.getSourceStorageLocationId());
@@ -854,6 +860,83 @@ public class StockRecordServiceImpl implements StockRecordService {
 
 
         }
+    }
+
+    @Override
+    public void reduceAmount(String accountBook, TransferStock transferStock) {
+        this.validateTransferStock(accountBook,transferStock,false);
+        ItemRelatedRecord[] itemRelatedRecords=this.findItem(accountBook,transferStock);
+        StockRecordFind stockRecordFind=new StockRecordFind();
+        stockRecordFind.setStorageLocationId(transferStock.getSourceStorageLocationId());
+        stockRecordFind.setUnitAmount(transferStock.getUnitAmount());
+        stockRecordFind.setUnit(transferStock.getUnit());
+        stockRecordFind.setSupplyId(transferStock.getSupplyId());
+        stockRecordFind.setState(transferStock.getState());
+        stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook,transferStock.getSourceStorageLocationId())[0]);
+        //没有则说明没有相关记录 找所有批次进行移动
+        if(itemRelatedRecords.length==0){
+            StockRecord[] stockRecordsSource=this.findInterface(accountBook,stockRecordFind);
+
+
+
+
+
+
+
+
+
+
+
+        }
+        //有则需要先反向移动，然后记录相关批次
+        if(itemRelatedRecords.length!=0){
+
+
+
+
+
+
+
+        }
+    }
+
+    public void transferStock(String accountBook, TransferStock transferStock){
+        this.validateTransferStock(accountBook,transferStock,true);
+        ItemRelatedRecord[] itemRelatedRecords=this.findItem(accountBook,transferStock);
+        StockRecordFind stockRecordFind=new StockRecordFind();
+        stockRecordFind.setStorageLocationId(transferStock.getSourceStorageLocationId());
+        stockRecordFind.setUnitAmount(transferStock.getUnitAmount());
+        stockRecordFind.setUnit(transferStock.getUnit());
+        stockRecordFind.setSupplyId(transferStock.getSupplyId());
+        stockRecordFind.setState(transferStock.getState());
+        stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook,transferStock.getSourceStorageLocationId())[0]);
+        //没有则说明没有相关记录 找所有批次进行移动
+        if(itemRelatedRecords.length==0){
+            StockRecord[] stockRecordsSource=this.findInterface(accountBook,stockRecordFind);
+
+
+
+
+
+
+
+
+
+
+
+        }
+        //有则需要先反向移动，然后记录相关批次
+        if(itemRelatedRecords.length!=0){
+
+
+
+
+
+
+
+        }
+
+
     }
 
 //    @Override
