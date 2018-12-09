@@ -920,11 +920,20 @@ public class StockRecordServiceImpl implements StockRecordService {
     }
 
     //反向移动
-    private void restoreAmount(String accountBook,ItemRelatedRecord[] itemRelatedRecords,TransferStock transferStockRestore){
-        for(int i=0;i<itemRelatedRecords.length;i++){
+    private void restoreAmount(String accountBook,ItemRelatedRecord[] itemRelatedRecords,TransferStock transferStockRestore,int type){
+        if(type==ItemType.entryItem){
+            //数量扣下去
 
+        }
+        else if(type==ItemType.transferItem){
+            //在源库位把数量加回去，目标库位把数量减了
 
-
+        }
+        else if(type==ItemType.delierItem){
+            //把数量加回去
+        }
+        else{
+            throw new WMSServiceException("反向移动时出错，类型不符合要求！");
         }
     }
 
@@ -954,21 +963,37 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordNew.setAvailableAmount(stockRecordsSource[0].getAvailableAmount().add(transferStock.getAvailableAmount()));
                 transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[0].getAmount());
                 transferRecord.setSourceStorageLocationNewAmount(stockRecordsSource[0].getAmount().add(transferStock.getAmount()));
+
             }
             else{
                 stockRecordNew.setAmount(transferStock.getAmount());
                 stockRecordNew.setAvailableAmount(transferStock.getAvailableAmount());
                 transferRecord.setSourceStorageLocationOriginalAmount(new BigDecimal(0));
                 transferRecord.setSourceStorageLocationNewAmount(transferStock.getAmount());
+
             }
 
         }
         //有则需要先反向移动，然后记录相关批次
         if(itemRelatedRecords.length!=0){
-           this.restoreAmount(accountBook,itemRelatedRecords,transferStockRestore);
-            stockRecordNew.setAmount(transferStock.getAmount());
-            stockRecordNew.setAvailableAmount(transferStock.getAvailableAmount());
+           this.restoreAmount(accountBook,itemRelatedRecords,transferStockRestore,ItemType.entryItem);
+           //必须在退回之后查找
+            StockRecord[] stockRecordsSource=this.findInterface(accountBook,stockRecordFind);
+            //只有一条
+            if(stockRecordsSource.length==1){
+                stockRecordNew.setAmount(stockRecordsSource[0].getAmount().add(transferStock.getAmount()));
+                stockRecordNew.setAvailableAmount(stockRecordsSource[0].getAvailableAmount().add(transferStock.getAvailableAmount()));
+                transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[0].getAmount());
+                transferRecord.setSourceStorageLocationNewAmount(stockRecordsSource[0].getAmount().add(transferStock.getAmount()));
 
+            }
+            else{
+                stockRecordNew.setAmount(transferStock.getAmount());
+                stockRecordNew.setAvailableAmount(transferStock.getAvailableAmount());
+                transferRecord.setSourceStorageLocationOriginalAmount(new BigDecimal(0));
+                transferRecord.setSourceStorageLocationNewAmount(transferStock.getAmount());
+
+            }
 
         }
     }
