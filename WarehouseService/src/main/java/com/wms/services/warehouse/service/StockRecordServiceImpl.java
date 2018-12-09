@@ -4,6 +4,7 @@ package com.wms.services.warehouse.service;
 import com.wms.services.warehouse.dao.StockRecordDAO;
 import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.IDChecker;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.OrderItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
@@ -725,11 +726,12 @@ public class StockRecordServiceImpl implements StockRecordService {
     }
 
     private ItemRelatedRecord[] findItem(String accountBook,TransferStock transferStock){
-      return   itemRelatedRecordService.findTable(accountBook,new Condition().addCondition("relatedItemId",transferStock.getItemId()).addCondition("itemType",transferStock.getItemType()));
+      ItemRelatedRecord[] itemRelatedRecords=itemRelatedRecordService.findTable(accountBook,new Condition().addCondition("relatedItemId",transferStock.getItemId()).addCondition("itemType",transferStock.getItemType()));
+      return itemRelatedRecords;
     }
 
     private StockRecord[] findInterface(String accountBook,StockRecordFind stockRecordFind){
-        if(stockRecordFind.getInventoryDate()==null){
+        if(stockRecordFind.getBatchNo()==null){
             return this.findWithoutBatch(accountBook,stockRecordFind);
         }
         else {
@@ -793,16 +795,12 @@ public class StockRecordServiceImpl implements StockRecordService {
             throw new DatabaseNotFoundException(accountBook);
         }
         Query query = null;
-
             //库存查询最新一条用
             String sqlNew = "SELECT s1.* FROM StockRecordView AS s1 \n" +
                     "INNER JOIN \n" +
                     "\n" +
-                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME ,s2.state  FROM StockRecordView As s2 \n" +
-                    "\n" +
-                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount AND  s2.BatchNo=:batchNo1 and s2.state=:state" +
-                    "\n" +
-                    "GROUP BY s2.BatchNo) AS s3 \n" +
+                    "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME ,s2.state  FROM StockRecordView As s2  \n" +
+                    "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount AND  s2.BatchNo in "+ReflectHelper.ArrayToStringForSqlQuery(stockRecordFind.getBatchNo())+ "  and s2.state=:state "+" GROUP BY s2.BatchNo) AS s3 \n" +
                     "\n" +
                     "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
                     "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo \n";
@@ -812,7 +810,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             query.setParameter("supplyId", stockRecordFind.getSupplyId());
             query.setParameter("unit", stockRecordFind.getUnit());
             query.setParameter("unitAmount", stockRecordFind.getUnitAmount());
-            query.setParameter("batchNo1", this.batchTransfer(stockRecordFind.getInventoryDate()));
+            //query.setParameter("batchNo1", this.batchTransfer(stockRecordFind.getInventoryDate()));
             query.setParameter("state", stockRecordFind.getState());
 
         StockRecord[] resultArray = null;
@@ -824,9 +822,31 @@ public class StockRecordServiceImpl implements StockRecordService {
         return resultArray;
     }
 
+    private boolean judgeAmount(StockRecord[] stockRecords,TransferStock transferStock){
+        //排序之后最后一条为最久的
+        BigDecimal amountAvailableAll = BigDecimal.ZERO;
+        int iNeed = -1;
+        for (int i = stockRecords.length - 1; i >= 0; i--) {
+            amountAvailableAll = amountAvailableAll.add(stockRecords[i].getAvailableAmount());
+            //如果加到某个记录够移出数量 则跳出并记录下i
+            if (amountAvailableAll.subtract(transferStock.getAvailableAmount()).compareTo(BigDecimal.ZERO) >= 0) {
+                iNeed = i;
+                return true;
+            }
+        }
+       return false;
+    }
+
+    private void restoreAmount(String accountBook,TransferStock transferStock){
+
+
+    }
+
     @Override
     public void addAmount(String accountBook, TransferStock transferStock) {
         this.validateTransferStock(accountBook,transferStock,false);
+        //增加数量需要验证批次
+        new Validator("存货日期").notEmpty().notnull().validate(transferStock.getInventoryDate());
         ItemRelatedRecord[] itemRelatedRecords=this.findItem(accountBook,transferStock);
         StockRecordFind stockRecordFind=new StockRecordFind();
         stockRecordFind.setStorageLocationId(transferStock.getSourceStorageLocationId());
@@ -837,24 +857,16 @@ public class StockRecordServiceImpl implements StockRecordService {
         stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook,transferStock.getSourceStorageLocationId())[0]);
         //没有则说明没有相关记录 找所有批次进行移动
         if(itemRelatedRecords.length==0){
+            //这种情况下条目可能是多条，按批次自动排序
             StockRecord[] stockRecordsSource=this.findInterface(accountBook,stockRecordFind);
-
-
-
-
-
-
-
-
-
-
+            //排序之后最后一条为最久的
+           if(!this.judgeAmount(stockRecordsSource,transferStock));
+            {//数量不足
+            }
 
         }
         //有则需要先反向移动，然后记录相关批次
         if(itemRelatedRecords.length!=0){
-
-
-
 
 
 

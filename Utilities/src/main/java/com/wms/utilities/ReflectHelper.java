@@ -78,4 +78,14 @@ public class ReflectHelper {
         }
         return result;
     }
+
+    public static String   ArrayToStringForSqlQuery (Object[] o){
+        StringBuilder stringBuilder=new StringBuilder("");
+        stringBuilder=stringBuilder.append("(");
+        for(int i=0;i<o.length;i++){
+            stringBuilder.append(o[i]);
+            if(i!=o.length-1) { stringBuilder.append(","); }
+        }
+        return stringBuilder.append(")").toString();
+    }
 }
