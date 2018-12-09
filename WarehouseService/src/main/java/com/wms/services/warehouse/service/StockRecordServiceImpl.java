@@ -23,6 +23,7 @@ import org.hibernate.SessionFactory;
 import javax.rmi.CORBA.Tie;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.net.StandardProtocolFamily;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -828,7 +829,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         return resultArray;
     }
 
-    private boolean judgeAmount(StockRecord[] stockRecords,TransferStock transferStock){
+    private int judgeAvailableAmount(StockRecord[] stockRecords,TransferStock transferStock){
         //排序之后最后一条为最久的
         BigDecimal amountAvailableAll = BigDecimal.ZERO;
         int iNeed = -1;
@@ -836,11 +837,10 @@ public class StockRecordServiceImpl implements StockRecordService {
             amountAvailableAll = amountAvailableAll.add(stockRecords[i].getAvailableAmount());
             //如果加到某个记录够移出数量 则跳出并记录下i
             if (amountAvailableAll.subtract(transferStock.getAvailableAmount()).compareTo(BigDecimal.ZERO) >= 0) {
-                iNeed = i;
-                return true;
+                return i;
             }
         }
-       return false;
+       return iNeed;
     }
 
     private TransferStock getItemImfor(String accountBook,ItemRelatedRecord itemRelatedRecord){
@@ -867,6 +867,29 @@ public class StockRecordServiceImpl implements StockRecordService {
         else{ throw new WMSServiceException("相关条目表中类型出错！"); }
     }
 
+    //创建记录
+    private StockRecord creatStockRecardHelper(String accountBook,TransferStock transferStock,boolean old){
+        StockRecord stockRecord=new StockRecord();
+        stockRecord.setSupplyId(transferStock.getSupplyId());
+        stockRecord.setWarehouseId(this.warehouseIdFind(accountBook,transferStock.getNewStorageLocationId())[0]);
+        stockRecord.setTime(this.getTime());
+        stockRecord.setRelatedOrderNo(transferStock.getRelatedOrderNo());
+        if(old)
+        {
+            stockRecord.setState(transferStock.getState());
+            stockRecord.setUnitAmount(transferStock.getUnitAmount());
+            stockRecord.setUnit(transferStock.getUnit());
+            stockRecord.setStorageLocationId(transferStock.getSourceStorageLocationId());
+        }
+        else{
+            stockRecord.setState(transferStock.getNewState());
+            stockRecord.setUnitAmount(transferStock.getNewUnitAmount());
+            stockRecord.setUnit(transferStock.getNewUnit());
+            stockRecord.setStorageLocationId(transferStock.getNewStorageLocationId());
+        }
+        return stockRecord;
+    }
+
     //反向移动
     private void restoreAmount(String accountBook,ItemRelatedRecord[] itemRelatedRecords,TransferStock transferStockRestore){
         for(int i=0;i<itemRelatedRecords.length;i++){
@@ -889,17 +912,47 @@ public class StockRecordServiceImpl implements StockRecordService {
         stockRecordFind.setSupplyId(transferStock.getSupplyId());
         stockRecordFind.setState(transferStock.getState());
         stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook,transferStock.getSourceStorageLocationId())[0]);
+        StockRecordFind stockRecordFindNew=new StockRecordFind();
+        stockRecordFindNew.setStorageLocationId(transferStock.getNewStorageLocationId());
+        stockRecordFindNew.setUnitAmount(transferStock.getNewUnitAmount());
+        stockRecordFindNew.setUnit(transferStock.getNewUnit());
+        stockRecordFindNew.setSupplyId(transferStock.getSupplyId());
+        stockRecordFindNew.setState(transferStock.getNewState());
+        stockRecordFindNew.setWarehouseId(this.warehouseIdFind(accountBook,transferStock.getNewStorageLocationId())[0]);
         //没有则说明没有相关记录 找所有批次进行移动
         if(itemRelatedRecords.length==0){
             //这种情况下条目可能是多条，按批次自动排序
             StockRecord[] stockRecordsSource=this.findInterface(accountBook,stockRecordFind);
             //排序之后最后一条为最久的
-           if(!this.judgeAmount(stockRecordsSource,transferStock));
+            int iNeed=this.judgeAvailableAmount(stockRecordsSource,transferStock);
+            if(iNeed==-1)
             {
                 //数量不足
-
             }
+            //数量够 正常移动
+            //判断新库位和源库位是否相同 如果相同新建一条完全相同的 然后增加移位记录
+            if (transferStock.getSourceStorageLocationId() == transferStock.getNewStorageLocationId())
+            {
+                for(int i=stockRecordsSource.length-1;i>=iNeed;i--)
+                {
+                    stockRecordFindNew.setBatchNo(new String[]{stockRecordsSource[i].getBatchNo()});
+                    //查找能合并的记录
+                    StockRecord[] stockRecordsNewFind=this.findInterface(accountBook, stockRecordFindNew);
+                    StockRecord stockRecordNew=this.creatStockRecardHelper(accountBook,transferStock,false);
+                    StockRecord stockRecordOld=this.creatStockRecardHelper(accountBook,transferStock,true);
+                    //先移动可用数量
+                    if(i>iNeed){
+                        //这种情况可用数量全都为0
+                        if(stockRecordsNewFind.length==0){
 
+                        }
+
+
+
+
+                    }
+                }
+            }
         }
         //有则需要先反向移动，然后记录相关批次
         if(itemRelatedRecords.length!=0){
