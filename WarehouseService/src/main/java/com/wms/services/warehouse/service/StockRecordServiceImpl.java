@@ -52,6 +52,12 @@ public class StockRecordServiceImpl implements StockRecordService {
     private SessionFactory sessionFactory;
     @Autowired
     ItemRelatedRecordService itemRelatedRecordService;
+    @Autowired
+    WarehouseEntryItemService warehouseEntryItemService;
+    @Autowired
+    TransferOrderItemService transferOrderItemService;
+    @Autowired
+    DeliveryOrderItemService deliveryOrderItemService;
 
     private final int STATE_DEFAULT_DEPENDENT = -1;
 
@@ -837,13 +843,41 @@ public class StockRecordServiceImpl implements StockRecordService {
        return false;
     }
 
-    private void restoreAmount(String accountBook,TransferStock transferStock){
+    private TransferStock getItemImfor(String accountBook,ItemRelatedRecord itemRelatedRecord){
+        TransferStock transferStockRestore=new TransferStock();
+        Condition condition=new Condition().addCondition("id",itemRelatedRecord.getId());
+        if(itemRelatedRecord.getItemType()==ItemType.entryItem)
+        {
+            WarehouseEntryItemView[] warehouseEntryItemViews=warehouseEntryItemService.find(accountBook,condition);
+            transferStockRestore.setState(warehouseEntryItemViews[0].getState());
+            return transferStockRestore;
+        }
+        else if(itemRelatedRecord.getItemType()==ItemType.transferItem)
+        {
+            TransferOrderItemView[] transferOrderItemViews=transferOrderItemService.find(accountBook,condition);
+
+            return transferStockRestore;
+        }
+        else if(itemRelatedRecord.getItemType()==ItemType.delierItem)
+        {
+            DeliveryOrderItemView[] deliveryOrderItemViews=deliveryOrderItemService.find(accountBook,condition);
+
+            return transferStockRestore;
+        }
+        else{ throw new WMSServiceException("相关条目表中类型出错！"); }
+    }
+
+    //反向移动
+    private void restoreAmount(String accountBook,ItemRelatedRecord[] itemRelatedRecords,TransferStock transferStockRestore){
+        for(int i=0;i<itemRelatedRecords.length;i++){
 
 
+
+        }
     }
 
     @Override
-    public void addAmount(String accountBook, TransferStock transferStock) {
+    public void addAmount(String accountBook, TransferStock transferStock,TransferStock transferStockRestore) {
         this.validateTransferStock(accountBook,transferStock,false);
         //增加数量需要验证批次
         new Validator("存货日期").notEmpty().notnull().validate(transferStock.getInventoryDate());
@@ -861,13 +895,15 @@ public class StockRecordServiceImpl implements StockRecordService {
             StockRecord[] stockRecordsSource=this.findInterface(accountBook,stockRecordFind);
             //排序之后最后一条为最久的
            if(!this.judgeAmount(stockRecordsSource,transferStock));
-            {//数量不足
+            {
+                //数量不足
+
             }
 
         }
         //有则需要先反向移动，然后记录相关批次
         if(itemRelatedRecords.length!=0){
-
+           this.restoreAmount(accountBook,itemRelatedRecords,transferStockRestore);
 
 
 
@@ -2524,7 +2560,4 @@ public class StockRecordServiceImpl implements StockRecordService {
             throw new WMSServiceException("当前货物生产日期"+batchNoIntCurrent+"不符合出库要求！");
         }
     }
-
-
-
 }

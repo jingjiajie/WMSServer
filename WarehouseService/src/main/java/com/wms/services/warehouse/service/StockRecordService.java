@@ -12,7 +12,7 @@ public interface StockRecordService
         extends   BaseService<StockRecord,StockRecordView> {
     void RealTransformStock(String accountBook, TransferStock transferStock);
 
-    void addAmount(String accountBook, TransferStock transferStock);
+    void addAmount(String accountBook, TransferStock transferStock,TransferStock transferStockRestore);
 
     void reduceAmount(String accountBook, TransferStock transferStock);
 
