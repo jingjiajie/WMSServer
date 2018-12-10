@@ -829,18 +829,19 @@ public class StockRecordServiceImpl implements StockRecordService {
         return resultArray;
     }
 
-    private int judgeAvailableAmount(StockRecord[] stockRecords,TransferStock transferStock){
+    private JudgeAmount judgeAvailableAmount(StockRecord[] stockRecords,TransferStock transferStock){
         //排序之后最后一条为最久的
+        JudgeAmount judgeAmount=new JudgeAmount();
         BigDecimal amountAvailableAll = BigDecimal.ZERO;
-        int iNeed = -1;
         for (int i = stockRecords.length - 1; i >= 0; i--) {
             amountAvailableAll = amountAvailableAll.add(stockRecords[i].getAvailableAmount());
             //如果加到某个记录够移出数量 则跳出并记录下i
             if (amountAvailableAll.subtract(transferStock.getAvailableAmount()).compareTo(BigDecimal.ZERO) >= 0) {
-                return i;
+                judgeAmount.setI(i);
+                judgeAmount.setLastIRemainAmount(stockRecords[i].getAvailableAmount().subtract(amountAvailableAll.subtract(transferStock.getAvailableAmount())));
             }
         }
-       return iNeed;
+       return judgeAmount;
     }
 
     private TransferStock getItemImfor(String accountBook,ItemRelatedRecord itemRelatedRecord){
@@ -1081,8 +1082,9 @@ public class StockRecordServiceImpl implements StockRecordService {
     }
 
     @Override
-    public void reduceAmount(String accountBook, TransferStock transferStock) {
+    public void reduceAmount(String accountBook, TransferStock transferStock,TransferStock transferStockRestore) {
         this.validateTransferStock(accountBook,transferStock,false);
+        BigDecimal amountNeed=transferStock.getAmount();
         ItemRelatedRecord[] itemRelatedRecords=this.findItem(accountBook,transferStock);
         StockRecordFind stockRecordFind=new StockRecordFind();
         stockRecordFind.setStorageLocationId(transferStock.getSourceStorageLocationId());
@@ -1091,30 +1093,110 @@ public class StockRecordServiceImpl implements StockRecordService {
         stockRecordFind.setSupplyId(transferStock.getSupplyId());
         stockRecordFind.setState(transferStock.getState());
         stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook,transferStock.getSourceStorageLocationId())[0]);
+        StockRecordFind stockRecordFindNew=new StockRecordFind();
+        stockRecordFindNew.setStorageLocationId(transferStock.getNewStorageLocationId());
+        stockRecordFindNew.setUnitAmount(transferStock.getNewUnitAmount());
+        stockRecordFindNew.setUnit(transferStock.getNewUnit());
+        stockRecordFindNew.setSupplyId(transferStock.getSupplyId());
+        stockRecordFindNew.setState(transferStock.getNewState());
+        stockRecordFindNew.setWarehouseId(this.warehouseIdFind(accountBook,transferStock.getNewStorageLocationId())[0]);
+        //移位记录 未包含数量
+        TransferRecord transferRecord=this.createTransferRecord(accountBook,transferStock,ItemType.delierItem);
         //没有则说明没有相关记录 找所有批次进行移动
         if(itemRelatedRecords.length==0){
+            //这种情况下条目应该为多条 最后一条是最久批次的
             StockRecord[] stockRecordsSource=this.findInterface(accountBook,stockRecordFind);
-
-
-
-
-
-
-
-
-
-
-
+            JudgeAmount judgeAmount=this.judgeAvailableAmount(stockRecordsSource,transferStock);
+            if(judgeAmount.getI()==-1)
+            {//数量不够
+                throw new WMSServiceException("");
+            }
+            for(int i=stockRecordsSource.length-1;i>=judgeAmount.getI();i--)
+            {
+                stockRecordFindNew.setBatchNo(new String[]{stockRecordsSource[i].getBatchNo()});
+                StockRecord stockRecordNew=this.createStockRecord(accountBook,transferStock,true);
+                //先移动可用数量
+                if(i>judgeAmount.getI()){
+                    //全都为0
+                    stockRecordNew.setAvailableAmount(new BigDecimal(0));
+                    //对于数量 如果本次移动的可用数量大于数量 则数量也减少可用数量变化的值
+                    if(stockRecordsSource[i].getAvailableAmount().compareTo(amountNeed)>=0)
+                    {
+                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordsSource[i].getAvailableAmount()));
+                        //数量需要的值也跟着减少
+                        amountNeed=amountNeed.subtract(stockRecordsSource[i].getAvailableAmount());
+                    }
+                    else
+                    {//否则 数量只减少需要的值（amountNeed）
+                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                    }
+                }
+                else{
+                    //不一定为0
+                    stockRecordNew.setAvailableAmount(judgeAmount.getLastIRemainAmount());
+                    if(stockRecordsSource[i].getAvailableAmount().compareTo(amountNeed)>=0)
+                    {
+                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordsSource[i].getAvailableAmount()));
+                        //数量需要的值也跟着减少
+                        amountNeed=amountNeed.subtract(stockRecordsSource[i].getAvailableAmount());
+                    }
+                    else
+                    {//否则 数量只减少需要的值（amountNeed）
+                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                    }
+                }
+                //生成移位记录
+                transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[i].getAmount());
+                transferRecord.setSourceStorageLocationNewAmount(stockRecordNew.getAmount());
+            }
         }
         //有则需要先反向移动，然后记录相关批次
         if(itemRelatedRecords.length!=0){
-
-
-
-
-
-
-
+           this.restoreAmount(accountBook,itemRelatedRecords,transferStockRestore,ItemType.delierItem);
+            //这种情况下条目应该为多条 最后一条是最久批次的
+            StockRecord[] stockRecordsSource=this.findInterface(accountBook,stockRecordFind);
+            JudgeAmount judgeAmount=this.judgeAvailableAmount(stockRecordsSource,transferStock);
+            if(judgeAmount.getI()==-1)
+            {//数量不够
+                throw new WMSServiceException("");
+            }
+            for(int i=stockRecordsSource.length-1;i>=judgeAmount.getI();i--) {
+                stockRecordFindNew.setBatchNo(new String[]{stockRecordsSource[i].getBatchNo()});
+                StockRecord stockRecordNew = this.createStockRecord(accountBook, transferStock, true);
+                //先移动可用数量
+                if (i > judgeAmount.getI()) {
+                    //全都为0
+                    stockRecordNew.setAvailableAmount(new BigDecimal(0));
+                    //对于数量 如果本次移动的可用数量大于数量 则数量也减少可用数量变化的值
+                    if(stockRecordsSource[i].getAvailableAmount().compareTo(amountNeed)>=0)
+                    {
+                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordsSource[i].getAvailableAmount()));
+                        //数量需要的值也跟着减少
+                        amountNeed=amountNeed.subtract(stockRecordsSource[i].getAvailableAmount());
+                    }
+                    else
+                    {//否则 数量只减少需要的值（amountNeed）
+                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                    }
+                } else {
+                    //不一定为0
+                    stockRecordNew.setAvailableAmount(judgeAmount.getLastIRemainAmount());
+                    //对于数量 如果本次移动的可用数量大于数量 则数量也减少可用数量变化的值
+                    if(stockRecordsSource[i].getAvailableAmount().compareTo(amountNeed)>=0)
+                    {
+                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordsSource[i].getAvailableAmount()));
+                        //数量需要的值也跟着减少
+                        amountNeed=amountNeed.subtract(stockRecordsSource[i].getAvailableAmount());
+                    }
+                    else
+                    {//否则 数量只减少需要的值（amountNeed）
+                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                    }
+                }
+                //生成移位记录
+                transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[i].getAmount());
+                transferRecord.setSourceStorageLocationNewAmount(stockRecordNew.getAmount());
+            }
         }
     }
 

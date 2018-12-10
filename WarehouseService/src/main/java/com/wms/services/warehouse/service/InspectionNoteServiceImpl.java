@@ -147,7 +147,7 @@ public class InspectionNoteServiceImpl
                     transferStock.setSupplyId(warehouseEntryItemView.getSupplyId());
                     transferStock.setSourceStorageLocationId(warehouseEntryItemView.getStorageLocationId());
                     transferStock.setRelatedOrderNo(warehouseEntryItemView.getWarehouseEntryNo());
-                    this.stockRecordService.addAmount(accountBook, transferStock);
+                    //this.stockRecordService.addAmount(accountBook, transferStock);
                 }
                 if (inspectFinishItem.getPersonId() != null) {
                     inspectionNoteItem.setPersonId(inspectFinishItem.getPersonId());
