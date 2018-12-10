@@ -906,11 +906,28 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
         else if(type==ItemType.transferItem)
         {
+            //源
+            transferRecord.setSourceStorageLocationUnit(transferStock.getUnit());
+            transferRecord.setSourceStorageLocationId(transferStock.getSourceStorageLocationId());
+            transferRecord.setTransferUnit(transferStock.getUnit());
+            transferRecord.setTransferUnitAmount(transferStock.getUnitAmount());
+            transferRecord.setTransferAmount(transferStock.getAmount());
+            //目标
+            transferRecord.setTargetStorageLocationUnit(transferStock.getNewUnit());
+            transferRecord.setTargetStorageLocationId(transferStock.getNewStorageLocationId());
+            transferRecord.setTransferUnit(transferStock.getNewUnit());
+            transferRecord.setTransferUnitAmount(transferStock.getUnitAmount());
+            transferRecord.setTransferAmount(transferStock.getAmount());
             return transferRecord;
         }
         else if(type==ItemType.delierItem)
         {
-
+            //移出记录在源库位上
+            transferRecord.setSourceStorageLocationUnit(transferStock.getUnit());
+            transferRecord.setSourceStorageLocationId(transferStock.getSourceStorageLocationId());
+            transferRecord.setTransferUnit(transferStock.getUnit());
+            transferRecord.setTransferUnitAmount(transferStock.getUnitAmount());
+            transferRecord.setTransferAmount(transferStock.getAmount());
             return transferRecord;
         }
         else{
@@ -940,14 +957,59 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordsList.add(stockRecordNew);
             }
-
         }
         else if(type==ItemType.transferItem){
             //在源库位把数量加回去，目标库位把数量减了
+            for(int i=0;i<itemRelatedRecords.length;i++){
+                StockRecordFind stockRecordFind=new StockRecordFind();
+                stockRecordFind.setSupplyId(transferStockRestore.getSupplyId());
+                stockRecordFind.setUnitAmount(transferStockRestore.getUnitAmount());
+                stockRecordFind.setUnit(transferStockRestore.getUnit());
+                stockRecordFind.setStorageLocationId(transferStockRestore.getSourceStorageLocationId());
+                stockRecordFind.setState(transferStockRestore.getState());
+                stockRecordFind.setBatchNo(new String[]{itemRelatedRecords[i].getStockRecordBatchNo()});
+                stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook,transferStockRestore.getSourceStorageLocationId())[0]);
+                StockRecord[] stockRecordsSource=this.findInterface(accountBook,stockRecordFind);
+                if(stockRecordsSource.length!=1){throw new WMSServiceException("退回数量查询库存记录出错！");}
+                StockRecord stockRecordSourceNew=stockRecordsSource[0];
+                stockRecordSourceNew.setAvailableAmount(stockRecordSourceNew.getAvailableAmount().add(itemRelatedRecords[i].getBatchAvailableAmount()));
+                stockRecordSourceNew.setAmount(stockRecordSourceNew.getAmount().add(itemRelatedRecords[i].getBatchAmount()));
+                stockRecordsList.add(stockRecordSourceNew);
 
+                StockRecordFind stockRecordFindNew=new StockRecordFind();
+                stockRecordFindNew.setSupplyId(transferStockRestore.getSupplyId());
+                stockRecordFindNew.setUnitAmount(transferStockRestore.getNewUnitAmount());
+                stockRecordFindNew.setUnit(transferStockRestore.getNewUnit());
+                stockRecordFindNew.setStorageLocationId(transferStockRestore.getNewStorageLocationId());
+                stockRecordFindNew.setState(transferStockRestore.getNewState());
+                stockRecordFindNew.setBatchNo(new String[]{itemRelatedRecords[i].getStockRecordBatchNo()});
+                stockRecordFindNew.setWarehouseId(this.warehouseIdFind(accountBook,transferStockRestore.getNewStorageLocationId())[0]);
+                StockRecord[] stockRecordsNew=this.findInterface(accountBook,stockRecordFind);
+                if(stockRecordsNew.length!=1){throw new WMSServiceException("退回数量查询库存记录出错！");}
+                StockRecord stockRecordNewNew=stockRecordsSource[0];
+                stockRecordNewNew.setAvailableAmount(stockRecordNewNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAvailableAmount()));
+                stockRecordNewNew.setAmount(stockRecordNewNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
+                stockRecordsList.add(stockRecordSourceNew);
+            }
         }
         else if(type==ItemType.delierItem){
             //把数量加回去
+            for(int i=0;i<itemRelatedRecords.length;i++){
+                StockRecordFind stockRecordFind=new StockRecordFind();
+                stockRecordFind.setSupplyId(transferStockRestore.getSupplyId());
+                stockRecordFind.setUnitAmount(transferStockRestore.getUnitAmount());
+                stockRecordFind.setUnit(transferStockRestore.getUnit());
+                stockRecordFind.setStorageLocationId(transferStockRestore.getSourceStorageLocationId());
+                stockRecordFind.setState(transferStockRestore.getState());
+                stockRecordFind.setBatchNo(new String[]{itemRelatedRecords[i].getStockRecordBatchNo()});
+                stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook,transferStockRestore.getSourceStorageLocationId())[0]);
+                StockRecord[] stockRecordsOld=this.findInterface(accountBook,stockRecordFind);
+                if(stockRecordsOld.length!=1){throw new WMSServiceException("退回数量查询库存记录出错！");}
+                StockRecord stockRecordNew=stockRecordsOld[0];
+                stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().add(itemRelatedRecords[i].getBatchAvailableAmount()));
+                stockRecordNew.setAmount(stockRecordNew.getAmount().add(itemRelatedRecords[i].getBatchAmount()));
+                stockRecordsList.add(stockRecordNew);
+            }
         }
         else{
             throw new WMSServiceException("反向移动时出错，类型不符合要求！");
