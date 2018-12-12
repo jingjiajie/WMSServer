@@ -730,6 +730,16 @@ public class StockRecordServiceImpl implements StockRecordService {
             new Validator("新状态").notEmpty().notEmpty().validate(transferStock.getNewState());
         }
     }
+    private void validateTransferStockRestore(TransferStock transferStock, boolean transfer) {
+        new Validator("单位数量").notnull().min(0).validate(transferStock.getUnitAmount());
+        new Validator("单位").notnull().notEmpty().validate(transferStock.getUnit());
+        new Validator("状态").notEmpty().notEmpty().validate(transferStock.getState());
+        if (transfer) {
+            new Validator("新单位数量").notnull().min(0).validate(transferStock.getNewUnitAmount());
+            new Validator("新单位").notnull().notEmpty().validate(transferStock.getNewUnit());
+            new Validator("新状态").notEmpty().notEmpty().validate(transferStock.getNewState());
+        }
+    }
 
     private ItemRelatedRecord[] findItem(String accountBook, TransferStock transferStock) {
         ItemRelatedRecord[] itemRelatedRecords = itemRelatedRecordService.findTable(accountBook, new Condition().addCondition("relatedItemId", transferStock.getItemId()).addCondition("itemType", transferStock.getItemType()));
@@ -1016,9 +1026,24 @@ public class StockRecordServiceImpl implements StockRecordService {
         this.stockRecordDAO.add(accountBook, stockRecordSave);
     }
 
+    private TransferStock stateDefaultValueDeal(TransferStock transferStock){
+        //默认找合格品
+        if (transferStock.getState() == this.STATE_DEFAULT_DEPENDENT) {
+            transferStock.setState(TransferStock.QUALIFIED);
+        }
+        //默认移动后状态不变
+        int newState = transferStock.getState();
+        if (transferStock.getNewState() == this.STATE_DEFAULT_DEPENDENT) {
+            transferStock.setNewState(newState);
+        }
+        return transferStock;
+    }
+
     @Override
     public void addAmount(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
+        transferStock=this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, false);
+        this.validateTransferStockRestore(transferStock,false);
         //增加数量需要验证批次
         new Validator("存货日期").notEmpty().notnull().validate(transferStock.getInventoryDate());
         ItemRelatedRecord[] itemRelatedRecords = this.findItem(accountBook, transferStock);
@@ -1034,27 +1059,27 @@ public class StockRecordServiceImpl implements StockRecordService {
         //移位记录 未包含数量
         TransferRecord transferRecord = this.createTransferRecord(accountBook, transferStock, ItemType.entryItem);
         //没有则说明没有相关记录 找所有批次进行移动
-        if (itemRelatedRecords.length == 0) {
-            //这种情况下条目只有一条
-            StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
-            if (stockRecordsSource.length == 1) {
-                stockRecordNew.setAmount(stockRecordsSource[0].getAmount().add(transferStock.getAmount()));
-                stockRecordNew.setAvailableAmount(stockRecordsSource[0].getAvailableAmount().add(transferStock.getAvailableAmount()));
-                transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[0].getAmount());
-                transferRecord.setSourceStorageLocationNewAmount(stockRecordsSource[0].getAmount().add(transferStock.getAmount()));
-
-            } else {
-                stockRecordNew.setAmount(transferStock.getAmount());
-                stockRecordNew.setAvailableAmount(transferStock.getAvailableAmount());
-                transferRecord.setSourceStorageLocationOriginalAmount(new BigDecimal(0));
-                transferRecord.setSourceStorageLocationNewAmount(transferStock.getAmount());
-
-            }
-
-        }
+//        if (itemRelatedRecords.length == 0) {
+//            //这种情况下条目只有一条
+//            StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
+//            if (stockRecordsSource.length == 1) {
+//                stockRecordNew.setAmount(stockRecordsSource[0].getAmount().add(transferStock.getAmount()));
+//                stockRecordNew.setAvailableAmount(stockRecordsSource[0].getAvailableAmount().add(transferStock.getAvailableAmount()));
+//                transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[0].getAmount());
+//                transferRecord.setSourceStorageLocationNewAmount(stockRecordsSource[0].getAmount().add(transferStock.getAmount()));
+//
+//            } else {
+//                stockRecordNew.setAmount(transferStock.getAmount());
+//                stockRecordNew.setAvailableAmount(transferStock.getAvailableAmount());
+//                transferRecord.setSourceStorageLocationOriginalAmount(new BigDecimal(0));
+//                transferRecord.setSourceStorageLocationNewAmount(transferStock.getAmount());
+//            }
+//        }
         //有则需要先反向移动，然后记录相关批次
         if (itemRelatedRecords.length != 0) {
+            if(transferStockRestore.getItemId()==-1){throw new WMSServiceException("退回数量出错，未提供正确的移库信息！");}
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.entryItem);
+        }
             //必须在退回之后查找
             StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
             //只有一条
@@ -1063,21 +1088,20 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordNew.setAvailableAmount(stockRecordsSource[0].getAvailableAmount().add(transferStock.getAvailableAmount()));
                 transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[0].getAmount());
                 transferRecord.setSourceStorageLocationNewAmount(stockRecordsSource[0].getAmount().add(transferStock.getAmount()));
-
             } else {
                 stockRecordNew.setAmount(transferStock.getAmount());
                 stockRecordNew.setAvailableAmount(transferStock.getAvailableAmount());
                 transferRecord.setSourceStorageLocationOriginalAmount(new BigDecimal(0));
                 transferRecord.setSourceStorageLocationNewAmount(transferStock.getAmount());
-
             }
 
-        }
     }
 
     @Override
     public void reduceAmount(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
+        transferStock=this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, false);
+        this.validateTransferStockRestore(transferStockRestore,false);
         BigDecimal amountNeed = transferStock.getAmount();
         ItemRelatedRecord[] itemRelatedRecords = this.findItem(accountBook, transferStock);
         StockRecordFind stockRecordFind = new StockRecordFind();
@@ -1145,6 +1169,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
         //有则需要先反向移动，然后记录相关批次
         if (itemRelatedRecords.length != 0) {
+            if(transferStockRestore.getItemId()==-1){throw new WMSServiceException("退回数量出错，未提供正确的移库信息！");}
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.delierItem);
             //这种情况下条目应该为多条 最后一条是最久批次的
             StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
@@ -1187,8 +1212,9 @@ public class StockRecordServiceImpl implements StockRecordService {
     }
 
     public void transferStock(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
+        transferStock=this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, true);
-        this.validateTransferStock(accountBook, transferStockRestore, true);
+        this.validateTransferStockRestore(transferStock,true);
         BigDecimal amountNeed = transferStock.getAmount();
         ItemRelatedRecord[] itemRelatedRecords = this.findItem(accountBook, transferStock);
         StockRecordFind stockRecordFind = new StockRecordFind();

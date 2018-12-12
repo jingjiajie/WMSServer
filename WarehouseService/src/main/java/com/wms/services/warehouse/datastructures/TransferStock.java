@@ -173,7 +173,7 @@ public class TransferStock {
         ItemType = itemType;
     }
 
-    private int ItemId;
+    private int ItemId=-1;
 
     private int ItemType;
 
