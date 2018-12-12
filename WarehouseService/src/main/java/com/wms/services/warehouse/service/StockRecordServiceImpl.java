@@ -1138,6 +1138,9 @@ public class StockRecordServiceImpl implements StockRecordService {
         if (itemRelatedRecords.length == 0) {
             //这种情况下条目应该为多条 最后一条是最久批次的
             StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
+            if(stockRecordsSource.length==0)
+            {//TODO 数量不够
+            }
             JudgeAmount judgeAmount = this.judgeAvailableAmount(stockRecordsSource, transferStock);
             if (judgeAmount.getI() == -1) {//数量不够
                 throw new WMSServiceException("");
@@ -1196,6 +1199,9 @@ public class StockRecordServiceImpl implements StockRecordService {
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.delierItem);
             //这种情况下条目应该为多条 最后一条是最久批次的
             StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
+            if(stockRecordsSource.length==0)
+            {//TODO 数量不够
+            }
             JudgeAmount judgeAmount = this.judgeAvailableAmount(stockRecordsSource, transferStock);
             if (judgeAmount.getI() == -1) {//数量不够
                 throw new WMSServiceException("");
@@ -1272,6 +1278,9 @@ public class StockRecordServiceImpl implements StockRecordService {
         //查找源库存
         StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
         JudgeAmount judgeAmount = this.judgeAvailableAmount(stockRecordsSource, transferStock);
+        if(stockRecordsSource.length==0)
+        {//TODO 数量不够
+        }
         for (int i = stockRecordsSource.length - 1; i >= judgeAmount.getI(); i--) {
             stockRecordFindNew.setBatchNo(new String[]{stockRecordsSource[i].getBatchNo()});
             //查找能合并的记录
