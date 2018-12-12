@@ -1205,7 +1205,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         stockRecordFindNew.setSupplyId(transferStock.getSupplyId());
         stockRecordFindNew.setState(transferStock.getNewState());
         stockRecordFindNew.setWarehouseId(this.warehouseIdFind(accountBook, transferStock.getNewStorageLocationId())[0]);
-        TransferRecord transferRecord=this.createTransferRecord(accountBook,transferStock,ItemType.transferItem)
+        TransferRecord transferRecord=this.createTransferRecord(accountBook,transferStock,ItemType.transferItem);
         //数量移回去
         if (itemRelatedRecords.length != 0) {
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.transferItem);
