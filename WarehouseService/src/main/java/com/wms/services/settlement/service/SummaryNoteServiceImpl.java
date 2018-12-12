@@ -4,6 +4,7 @@ import com.wms.services.ledger.service.PersonService;
 import com.wms.services.settlement.dao.SummaryDetailsDAO;
 import com.wms.services.settlement.dao.SummaryNoteDAO;
 import com.wms.services.settlement.datastructures.StockRecordAmount;
+import com.wms.services.settlement.datastructures.ValidateTray;
 import com.wms.services.warehouse.service.*;
 import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.ReflectHelper;
@@ -58,6 +59,8 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     TrayThresholdsService trayThresholdsService;
     @Autowired
     TrayService trayService;
+    @Autowired
+    StorageLocationService storageLocationService;
 
     private static final String NO_PREFIX = "H";
 
@@ -242,6 +245,24 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         if (commonData.length != 1 || commonData1.length != 1) {
             throw new WMSServiceException("请设置当前仓库的标准托位大小！");
         }
+        //判断库位大小是否符合要求
+        ValidateTray validateTray=new ValidateTray();
+        validateTray.setWarehouseId(warehouseId);
+        validateTray.setLength(new BigDecimal(commonData[0].getValue()));
+        validateTray.setWidth(new BigDecimal(commonData1[0].getValue()));
+        this.validateStorageLocation(accountBook,validateTray);
+        //判断单拖含量
+        SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId));
+        for(int i=0;i<supplyViews.length;i++){
+            if (supplyViews[i].getTrayCapacity() == null) {
+            throw new WMSServiceException("供货序号"+supplyViews[i].getSerialNo()+"的单拖含量未填写！");
+            }
+            if(supplyViews[i].getTrayCapacity().compareTo(new BigDecimal(0))<=0)
+            {
+                throw new WMSServiceException("供货序号"+supplyViews[i].getSerialNo()+"的单拖含量不能小于0！");
+            }
+
+        }
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
         int[] ids = null;
@@ -317,6 +338,54 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
             throw new WMSServiceException("查询汇总单出错！");
         }
         this.summaryDelivery(accountBook,summaryNotes[0]);
+    }
+
+    private void validateStorageLocation(String accountBook, ValidateTray validateTray){
+        //Tray_Length_WarehouseId
+        int warehouseId=validateTray.getWarehouseId();
+        StorageLocationView[] storageLocationViews=storageLocationService.find(accountBook,new Condition().addCondition("warehouseId",warehouseId));
+        if(storageLocationViews.length==0){return;}
+        //BigDecimal lengthAvailableMin=new BigDecimal(-1);
+        //BigDecimal widthAvailableMin=new BigDecimal(-1);;
+        BigDecimal areaMin=new BigDecimal(-1);;
+        for(StorageLocationView storageLocationView:storageLocationViews){
+            if(storageLocationView.getLength()==null&&storageLocationView.getLengthPadding()==null
+                    &&storageLocationView.getWidth()==null&&storageLocationView.getWidthPadding()==null
+                    &&storageLocationView.getReservedArea()==null&&storageLocationView.getPiles()==null)
+            {
+                throw new WMSServiceException("请检查库位:"+storageLocationView.getName()+"的长度、宽度、长度内边距、宽度内边距、余留面积和层数是否填写！");
+            }
+            //层数
+            if(storageLocationView.getPiles().compareTo(new BigDecimal(0))<=0)
+            {
+                throw new WMSServiceException("库位:"+storageLocationView.getName()+"的层数必须大于0！");
+            }
+                //记录下最小的长度
+//                if(lengthAvailableMin.compareTo(new BigDecimal(-1))==0||lengthAvailableMin.compareTo(storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate()))>0)
+//                {lengthAvailableMin=storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate());}
+//                //宽度
+//                if(widthAvailableMin.compareTo(new BigDecimal(-1))==0||widthAvailableMin.compareTo(storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate()))>0)
+//                { widthAvailableMin=storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate());}
+                //面积
+                BigDecimal area=(storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate())).multiply((storageLocationView.getWidth().add(storageLocationView.getWidthPadding().negate()))).
+                        add(storageLocationView.getReservedArea().negate());
+                if(area.compareTo(new BigDecimal(0))<=0)
+                {
+                    throw new WMSServiceException("库位实际面积必须大于0,库位名："+storageLocationView.getName());
+                }
+                if(areaMin.compareTo(new BigDecimal(-1))==0||areaMin.compareTo(area)>0)
+                { areaMin=area;}
+        }
+        //进行比较
+//        if(validateTray.getWidth().compareTo(widthAvailableMin)>0){
+//            throw new WMSServiceException("托位宽度："+validateTray.getWidth()+" 不能大于所有库位宽度最小值"+widthAvailableMin);
+//        }
+//        if(validateTray.getLength().compareTo(lengthAvailableMin)>0){
+//            throw new WMSServiceException("托位长度："+validateTray.getWidth()+" 不能大于所有库位长度最小值"+lengthAvailableMin);
+//        }
+        if(validateTray.getLength().multiply(validateTray.getWidth()).compareTo(areaMin)>0){
+            throw new WMSServiceException("托位面积："+validateTray.getWidth()+" 不能大于所有库位面积最小值"+areaMin);
+        }
     }
 }
 

@@ -99,6 +99,7 @@
       <mapping class="com.wms.utilities.model.PriceView"/>
       <mapping class="com.wms.utilities.model.SummaryDetailsView"/>
       <mapping class="com.wms.utilities.model.TrayThresholdsView"/>
+      <mapping class="com.wms.utilities.model.ItemRelatedRecord"/>
 
 
       <!-- DB schema will be updated if needed -->

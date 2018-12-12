@@ -224,7 +224,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 BigDecimal deltaRealAmount = deliveryOrderItem.getRealAmount().subtract(oriItemView.getRealAmount());
                 //修改实收数量，更新库存
                 //TODO 如果输入有实际数量变化
-                if(deltaRealAmount.compareTo(BigDecimal.ZERO)!=0){
+                if(deltaRealAmount.compareTo(BigDecimal.ZERO)>0){
 
                     //todo 是移库前先把当前一步实际数量加回去可用数量
                     TransferStock fixTransferStock = new TransferStock();
@@ -252,7 +252,36 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     {
                         this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);
                     }
+                }else if(deltaRealAmount.compareTo(BigDecimal.ZERO)<0){
+
+                    //todo 是移库前先把当前一步实际数量加回去,再调整可用数量
+                    TransferStock transferStock=new TransferStock();
+                    transferStock.setAmount(new BigDecimal(0).subtract(deltaRealAmount));//TODO 待定
+                    transferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
+                    transferStock.setRelatedOrderNo(deliveryOrderView.getNo());
+                    transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
+                    transferStock.setUnit(deliveryOrderItem.getUnit());
+                    transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+
+                    transferStock.setState(deliveryType);
+                    if (deltaRealAmount.compareTo(BigDecimal.ZERO)>0){
+                        transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                        this.stockRecordService.addAmount(accountBook, transferStock);}
+                    else if(deltaRealAmount.compareTo(BigDecimal.ZERO)<0)
+                    {
+                        this.stockRecordService.addAmountToNewestBatchNo(accountBook, transferStock);
+                    }
+
+                    TransferStock fixTransferStock = new TransferStock();
+                    fixTransferStock.setModifyAvailableAmount(deltaRealAmount);//实际要移动的数量加回到可用数量
+                    fixTransferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());//修改源库位
+                    fixTransferStock.setSupplyId(deliveryOrderItem.getSupplyId());
+                    fixTransferStock.setUnit(deliveryOrderItem.getUnit());
+                    fixTransferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                    fixTransferStock.setState(deliveryType);
+                    this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
                 }
+
                 deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
                 if (deliveryOrderItem.getScheduledAmount().equals(deliveryOrderItem.getRealAmount())){
                     deliveryOrderItem.setState(DeliveryOrderService.STATE_ALL_LOADING);
