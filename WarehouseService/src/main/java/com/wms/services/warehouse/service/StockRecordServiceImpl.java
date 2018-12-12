@@ -765,7 +765,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
         Query query = null;
         //库存查询最新一条用
-        String sqlNew = "SELECT s1.* FROM StockRecordView AS s1 \n" +
+        String sqlNew = "SELECT s1.* FROM StockRecord AS s1 \n" +
                 "INNER JOIN \n" +
                 "\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME , s2.state   FROM StockRecordView As s2 \n" +
@@ -812,7 +812,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
         Query query = null;
         //库存查询最新一条用
-        String sqlNew = "SELECT s1.* FROM StockRecordView AS s1 \n" +
+        String sqlNew = "SELECT s1.* FROM StockRecord AS s1 \n" +
                 "INNER JOIN \n" +
                 "\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME ,s2.state  FROM StockRecordView As s2  \n" +
@@ -1105,11 +1105,14 @@ public class StockRecordServiceImpl implements StockRecordService {
             transferRecord.setSourceStorageLocationOriginalAmount(new BigDecimal(0));
             transferRecord.setSourceStorageLocationNewAmount(transferStock.getAmount());
         }
-
+        stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNew});
+        this.transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
     }
 
     @Override
     public void reduceAmount(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
+        List<StockRecord> stockRecordsList = new ArrayList();
+        List<TransferRecord> transferRecordList=new ArrayList<>();
         transferStock = this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, false);
         this.validateTransferStockRestore(transferStockRestore, false);
@@ -1181,6 +1184,8 @@ public class StockRecordServiceImpl implements StockRecordService {
                 //生成移位记录
                 transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[i].getAmount());
                 transferRecord.setSourceStorageLocationNewAmount(stockRecordNew.getAmount());
+                stockRecordsList.add(stockRecordNew);
+                transferRecordList.add(transferRecord);
             }
         }
         //有则需要先反向移动，然后记录相关批次
@@ -1225,11 +1230,21 @@ public class StockRecordServiceImpl implements StockRecordService {
                 //生成移位记录
                 transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[i].getAmount());
                 transferRecord.setSourceStorageLocationNewAmount(stockRecordNew.getAmount());
+                stockRecordsList.add(stockRecordNew);
+                transferRecordList.add(transferRecord);
             }
         }
+        StockRecord[] stockRecordsArraySave = (StockRecord[]) Array.newInstance(StockRecord.class, stockRecordsList.size());
+        stockRecordsArraySave=stockRecordsList.toArray(stockRecordsArraySave);
+        TransferRecord[] transferRecordsArraySave = (TransferRecord[]) Array.newInstance(TransferRecord.class, transferRecordList.size());
+        transferRecordsArraySave=transferRecordList.toArray(transferRecordsArraySave);
+        this.stockRecordDAO.add(accountBook,stockRecordsArraySave);
+        transformRecordService.add(accountBook,transferRecordsArraySave);
     }
 
     public void transferStock(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
+        List<StockRecord> stockRecordsList = new ArrayList();
+        List<TransferRecord> transferRecordList=new ArrayList<>();
         transferStock = this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, true);
         this.validateTransferStockRestore(transferStock, true);
@@ -1337,6 +1352,8 @@ public class StockRecordServiceImpl implements StockRecordService {
                     stockRecordNew.setAmount(stockRecordNew.getAmount().add(stockRecordsNewFind[0].getAmount()));
                 }
             }
+            stockRecordsList.add(stockRecordNew);
+            stockRecordsList.add(stockRecordOld);
             //移位记录
             transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[i].getAmount());
             transferRecord.setSourceStorageLocationNewAmount(stockRecordOld.getAmount());
@@ -1346,7 +1363,14 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setTargetStorageLocationAmount(stockRecordsNewFind[0].getAmount());
             }
             transferRecord.setTargetStorageLocationNewAmount(stockRecordNew.getAmount());
+            transferRecordList.add(transferRecord);
         }
+        StockRecord[] stockRecordsArraySave = (StockRecord[]) Array.newInstance(StockRecord.class, stockRecordsList.size());
+        stockRecordsArraySave=stockRecordsList.toArray(stockRecordsArraySave);
+        TransferRecord[] transferRecordsArraySave = (TransferRecord[]) Array.newInstance(TransferRecord.class, transferRecordList.size());
+        transferRecordsArraySave=transferRecordList.toArray(transferRecordsArraySave);
+        this.stockRecordDAO.add(accountBook,stockRecordsArraySave);
+        transformRecordService.add(accountBook,transferRecordsArraySave);
     }
 
 //    @Override
