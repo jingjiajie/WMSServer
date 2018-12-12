@@ -583,6 +583,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                         stockRecordNewSave.setSupplyId(supplyId);
                         stockRecordNewSave.setBatchNo(stockRecordSource1[i].getBatchNo());
                         stockRecordNewSave.setTime(this.getTime());
+                        stockRecordNewSave.setUnit(unit);
                         stockRecordNewSave.setState(newState);
                         targetStorageLocationNewAmount = stockRecordNewSave.getAmount();
                         targetStorageLocationOriginalAmount = stockRecordViews[0].getAmount();
