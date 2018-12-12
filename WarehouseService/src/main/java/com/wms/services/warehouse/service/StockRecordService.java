@@ -10,6 +10,8 @@ import java.sql.Timestamp;
 
 public interface StockRecordService
         extends   BaseService<StockRecord,StockRecordView> {
+
+    //transferStockRestore需要的是条目上当前的单位、单位数量，移库还需包括新单位、新单位数量等，用于反向移动
     void RealTransformStock(String accountBook, TransferStock transferStock);
 
     void addAmount(String accountBook, TransferStock transferStock,TransferStock transferStockRestore);
