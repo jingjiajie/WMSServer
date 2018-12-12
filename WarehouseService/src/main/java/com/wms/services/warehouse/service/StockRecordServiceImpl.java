@@ -1112,22 +1112,30 @@ public class StockRecordServiceImpl implements StockRecordService {
                     //全都为0
                     stockRecordNew.setAvailableAmount(new BigDecimal(0));
                     //对于数量 如果本次移动的可用数量大于数量 则数量也减少可用数量变化的值
-                    if (stockRecordsSource[i].getAvailableAmount().compareTo(amountNeed) >= 0) {
-                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordsSource[i].getAvailableAmount()));
-                        //数量需要的值也跟着减少
-                        amountNeed = amountNeed.subtract(stockRecordsSource[i].getAvailableAmount());
-                    } else {//否则 数量只减少需要的值（amountNeed）
-                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                    if (amountNeed.compareTo(BigDecimal.ZERO) > 0) {//TODO
+                        if (stockRecordsSource[i].getAvailableAmount().compareTo(amountNeed) >= 0) {
+                            stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordsSource[i].getAvailableAmount()));
+                            //数量需要的值也跟着减少
+                            amountNeed = amountNeed.subtract(stockRecordsSource[i].getAvailableAmount());
+                        } else {//否则 数量只减少需要的值（amountNeed）
+                            stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                        }
+                    } else {
+                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount());
                     }
                 } else {
                     //不一定为0
                     stockRecordNew.setAvailableAmount(judgeAmount.getLastIRemainAmount());
-                    if (stockRecordsSource[i].getAvailableAmount().compareTo(amountNeed) >= 0) {
-                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordsSource[i].getAvailableAmount()));
-                        //数量需要的值也跟着减少
-                        amountNeed = amountNeed.subtract(stockRecordsSource[i].getAvailableAmount());
-                    } else {//否则 数量只减少需要的值（amountNeed）
-                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                    if (amountNeed.compareTo(BigDecimal.ZERO) > 0) {//TODO
+                        if (stockRecordsSource[i].getAvailableAmount().compareTo(amountNeed) >= 0) {
+                            stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordsSource[i].getAvailableAmount()));
+                            //数量需要的值也跟着减少
+                            amountNeed = amountNeed.subtract(stockRecordsSource[i].getAvailableAmount());
+                        } else {//否则 数量只减少需要的值（amountNeed）
+                            stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                        }
+                    } else {
+                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount());
                     }
                 }
                 //生成移位记录
@@ -1197,6 +1205,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         stockRecordFindNew.setSupplyId(transferStock.getSupplyId());
         stockRecordFindNew.setState(transferStock.getNewState());
         stockRecordFindNew.setWarehouseId(this.warehouseIdFind(accountBook, transferStock.getNewStorageLocationId())[0]);
+        TransferRecord transferRecord=this.createTransferRecord(accountBook,transferStock,ItemType.transferItem)
         //数量移回去
         if (itemRelatedRecords.length != 0) {
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.transferItem);
@@ -1216,12 +1225,16 @@ public class StockRecordServiceImpl implements StockRecordService {
                     //这种情况可用数量全都为0
                     stockRecordOld.setAvailableAmount(new BigDecimal(0));
                     //对于数量 如果本次移动的可用数量大于数量 则数量也减少可用数量变化的值
-                    if (stockRecordsSource[i].getAvailableAmount().compareTo(amountNeed) >= 0) {
-                        stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordsSource[i].getAvailableAmount()));
-                        //数量需要的值也跟着减少
-                        amountNeed = amountNeed.subtract(stockRecordsSource[i].getAvailableAmount());
-                    } else {//否则 数量只减少需要的值（amountNeed）
-                        stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                    if (amountNeed.compareTo(BigDecimal.ZERO) > 0) {
+                        if (stockRecordsSource[i].getAvailableAmount().compareTo(amountNeed) >= 0) {
+                            stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordsSource[i].getAvailableAmount()));
+                            //数量需要的值也跟着减少
+                            amountNeed = amountNeed.subtract(stockRecordsSource[i].getAvailableAmount());
+                        } else {//否则 数量只减少需要的值（amountNeed）
+                            stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                        }
+                    } else {
+                        stockRecordOld.setAmount(stockRecordsSource[i].getAmount());
                     }
                     //这是新条目的变化
                     if (stockRecordsNewFind.length == 0) {
@@ -1251,8 +1264,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                         } else {//否则 数量只减少需要的值（amountNeed）
                             stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
                         }
-                    }
-                    else{//TODO 再想一下是否说明数量已经移动完了
+                    } else {//TODO 再想一下是否需要判断数量是否已经移动完了
                         stockRecordOld.setAmount(stockRecordsSource[i].getAmount());
                     }
                     //这是新条目的变化
@@ -1269,9 +1281,18 @@ public class StockRecordServiceImpl implements StockRecordService {
                         //数量直接为旧条目的数量变化即可
                         stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordOld.getAmount()));
                         stockRecordNew.setAmount(stockRecordNew.getAmount().add(stockRecordsNewFind[0].getAmount()));
-
                     }
                 }
+                //移位记录
+                transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[i].getAmount());
+                transferRecord.setSourceStorageLocationNewAmount(stockRecordOld.getAmount());
+                if (stockRecordsNewFind.length == 0) {
+                    transferRecord.setTargetStorageLocationAmount(BigDecimal.ZERO);
+                }
+                else {
+                    transferRecord.setTargetStorageLocationAmount(stockRecordsNewFind[0].getAmount());
+                }
+                transferRecord.setTargetStorageLocationNewAmount(stockRecordNew.getAmount());
             }
         }
     }
