@@ -8,8 +8,10 @@ import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.SettlementNote;
 import com.wms.utilities.model.SettlementNoteItem;
 import com.wms.utilities.model.SettlementNoteItemView;
+import com.wms.utilities.model.SettlementNoteView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,8 @@ public class SettlementNoteItemServiceImpl
     WarehouseService warehouseService;
     @Autowired
     IDChecker idChecker;
+    @Autowired
+    SettlementNoteService settlementNoteService;
 
     @Override
     public int[] add(String accountBook, SettlementNoteItem[] settlementNoteItems) throws WMSServiceException
@@ -106,4 +110,32 @@ public class SettlementNoteItemServiceImpl
 
         this.update(accountBook,settlementNoteItems);
     }
+
+//    public void updateSettlementNote( String accountBook,int SettlementNoteId){
+//        SettlementNoteView[] settlementNoteViews= settlementNoteService.find(accountBook,new Condition().addCondition("id",new Integer[]{SettlementNoteId}));
+//        SettlementNote[] settlementNotes = ReflectHelper.createAndCopyFields(settlementNoteViews,SettlementNote.class);
+//        if(settlementNotes.length==0){
+//            throw new WMSServiceException("没有找到要更新的结算单！");
+//        }
+//        SettlementNote settlementNote=settlementNotes[0];
+//        SettlementNoteItem[] allItems = this.settlementNoteItemDAO.findTable(accountBook,new Condition().addCondition("settlementNoteId",settlementNote.getId(), ConditionItem.Relation.IN));
+//
+//        SettlementNoteItem[] allFinishItems = this.settlementNoteItemDAO.findTable(accountBook,new Condition()
+//                .addCondition("settlementNoteId",settlementNote.getId(), ConditionItem.Relation.IN)
+//                .addCondition("state",SettlementNoteItemService.Confirmed, ConditionItem.Relation.IN));
+//
+//        SettlementNoteItem[] zeroItems = this.settlementNoteItemDAO.findTable(accountBook,new Condition()
+//                .addCondition("settlementNoteId",settlementNote.getId(), ConditionItem.Relation.IN).
+//                        addCondition("state",SettlementNoteItemService.To_be_confirmed, ConditionItem.Relation.IN));
+//
+//        if (allItems.length>0&&allFinishItems.length==allItems.length){
+//            settlementNote.setState(SettlementNoteService.To_be_confirmed);
+//        }else if (allItems.length==0||zeroItems.length==allItems.length){
+//            settlementNote.setState(SettlementNoteItemService.To_be_confirmed);
+//        }
+//        else{
+//            settlementNote.setState(SettlementNoteItemService.To_be_confirmed);
+//        }
+//        settlementNoteService.update(accountBook,new SettlementNote[]{settlementNote});
+//    }
 }

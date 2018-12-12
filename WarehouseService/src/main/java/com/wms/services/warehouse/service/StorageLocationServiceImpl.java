@@ -1,18 +1,18 @@
 package com.wms.services.warehouse.service;
 
+import com.wms.services.settlement.service.TrayService;
 import com.wms.services.warehouse.dao.StorageLocationDAO;
 import com.wms.services.warehouse.datastructures.StorageLocationLess;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.StorageLocationView;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.wms.utilities.model.StorageLocation;
-import com.wms.utilities.model.StorageAreaView;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -27,6 +27,8 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     StorageLocationDAO storageLocationDAO;
     @Autowired
     StorageAreaService storageAreaService;
+    @Autowired
+    TrayService trayService;
     @Transactional
     public int[] add(String accountBook, StorageLocation[] storageLocations )throws WMSServiceException {
 
@@ -39,6 +41,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             // new Validator("宽度内边距").notnull().min(0).validate(storageLocations[i].getWidthPadding());
             //new Validator("余留面积").notnull().min(0).validate(storageLocations[i].getReservedArea());
             //new Validator("最高码放层数").notnull().greaterThan(0).validate(storageLocations[i].getPiles());
+            this.validate(accountBook,storageLocations[i]);
             if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
@@ -112,6 +115,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             //new Validator("宽度内边距").notnull().min(0).validate(storageLocations[i].getWidthPadding());
            // new Validator("余留面积").notnull().min(0).validate(storageLocations[i].getReservedArea());
            // new Validator("最高码放层数").notnull().greaterThan(0).validate(storageLocations[i].getPiles());
+            this.validate(accountBook,storageLocations[i]);
             validator.notnull().validate(storageLocations[i].getNo());
             if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
@@ -219,6 +223,26 @@ public class StorageLocationServiceImpl implements StorageLocationService{
     @Transactional
     public long findCount(String database,Condition cond) throws WMSServiceException{
         return this.storageLocationDAO.findCount(database,cond);
+    }
+
+    private void validate(String accountBook,StorageLocation storageLocation){
+        StorageAreaView[] storageAreaViews1=storageAreaService.find(accountBook,new Condition().addCondition("id",storageLocation.getStorageAreaId()));
+        int warehouseId=storageAreaViews1[0].getWarehouseId();
+        CommonData[] commonDataLength=trayService.find(accountBook,new Condition().addCondition("key","Tray_Length"+String.valueOf(warehouseId)));
+        CommonData[] commonDataWidth=trayService.find(accountBook,new Condition().addCondition("key","Tray_Width"+String.valueOf(warehouseId)));
+        if(storageLocation.getWidth()==null||storageLocation.getWidthPadding()==null&&storageLocation.getLength()==null&&storageLocation.getLength()==null){return;}
+        if(commonDataLength.length==1){
+            String lengthStr=commonDataLength[0].getValue().substring(11,commonDataLength[0].getValue().length()-1);
+            if(storageLocation.getLength().add(storageLocation.getLengthPadding().negate()).compareTo(new BigDecimal(lengthStr))<0){
+                throw new WMSServiceException("库位："+storageLocation.getName()+"长度-长度边距不能小于本仓库托位长度！");
+            }
+        }
+        if(commonDataWidth.length==1){
+            String widthStr=commonDataWidth[0].getValue().substring(11,commonDataWidth[0].getValue().length()-1);
+            if(storageLocation.getWidth().add(storageLocation.getWidthPadding().negate()).compareTo(new BigDecimal(widthStr))<0){
+                throw new WMSServiceException("库位："+storageLocation.getName()+"宽度-宽度边距不能小于本仓库托位宽度！");
+            }
+        }
     }
 
     @Transactional
