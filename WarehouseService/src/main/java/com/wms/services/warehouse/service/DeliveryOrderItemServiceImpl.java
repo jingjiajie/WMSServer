@@ -413,7 +413,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
     private DeliveryOrderView getDeliveryOrderView(String accountBook,DeliveryOrderItem[] deliveryOrderItems){
         //验证各出库单条目，出库单号必须全部相同
         Stream.of(deliveryOrderItems).reduce((last, cur) -> {
-            if (last.getDeliveryOrderId().equals(cur.getDeliveryOrderId()))
+            if (!last.getDeliveryOrderId().equals(cur.getDeliveryOrderId()))
                 throw new WMSServiceException("出库单条目所属的出库单必须相同！");
             return cur;
         });
