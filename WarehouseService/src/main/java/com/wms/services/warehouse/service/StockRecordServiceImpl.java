@@ -11,19 +11,15 @@ import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
-import javafx.util.converter.TimeStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionTimedOutException;
 import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import javax.rmi.CORBA.Tie;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.net.StandardProtocolFamily;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -742,8 +738,13 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
     }
 
-    private ItemRelatedRecord[] findItem(String accountBook, TransferStock transferStock) {
+    private ItemRelatedRecord[] findItemAndRemove(String accountBook, TransferStock transferStock) {
         ItemRelatedRecord[] itemRelatedRecords = itemRelatedRecordService.findTable(accountBook, new Condition().addCondition("relatedItemId", transferStock.getItemId()).addCondition("itemType", transferStock.getItemType()));
+        int[] ids=new int[itemRelatedRecords.length];
+        for(int i=0;i<itemRelatedRecords.length;i++){
+            ids[i]=itemRelatedRecords[i].getId();
+        }
+        itemRelatedRecordService.remove(accountBook,ids);
         return itemRelatedRecords;
     }
 
@@ -1066,7 +1067,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         this.validateTransferStockRestore(transferStock, false);
         //增加数量需要验证批次
         new Validator("存货日期").notEmpty().notnull().validate(transferStock.getInventoryDate());
-        ItemRelatedRecord[] itemRelatedRecords = this.findItem(accountBook, transferStock);
+        ItemRelatedRecord[] itemRelatedRecords = this.findItemAndRemove(accountBook, transferStock);
         StockRecordFind stockRecordFind = new StockRecordFind();
         stockRecordFind.setStorageLocationId(transferStock.getSourceStorageLocationId());
         stockRecordFind.setUnitAmount(transferStock.getUnitAmount());
@@ -1134,7 +1135,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         this.validateTransferStock(accountBook, transferStock, false);
         this.validateTransferStockRestore(transferStockRestore, false);
         BigDecimal amountNeed = transferStock.getAmount();
-        ItemRelatedRecord[] itemRelatedRecords = this.findItem(accountBook, transferStock);
+        ItemRelatedRecord[] itemRelatedRecords = this.findItemAndRemove(accountBook, transferStock);
         StockRecordFind stockRecordFind = new StockRecordFind();
         stockRecordFind.setStorageLocationId(transferStock.getSourceStorageLocationId());
         stockRecordFind.setUnitAmount(transferStock.getUnitAmount());
@@ -1260,7 +1261,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         this.validateTransferStock(accountBook, transferStock, true);
         this.validateTransferStockRestore(transferStock, true);
         BigDecimal amountNeed = transferStock.getAmount();
-        ItemRelatedRecord[] itemRelatedRecords = this.findItem(accountBook, transferStock);
+        ItemRelatedRecord[] itemRelatedRecords = this.findItemAndRemove(accountBook, transferStock);
         StockRecordFind stockRecordFind = new StockRecordFind();
         stockRecordFind.setStorageLocationId(transferStock.getSourceStorageLocationId());
         stockRecordFind.setUnitAmount(transferStock.getUnitAmount());
