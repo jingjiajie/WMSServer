@@ -840,7 +840,20 @@ public class StockRecordServiceImpl implements StockRecordService {
         return resultArray;
     }
 
-    private JudgeAmount judgeAvailableAmount(StockRecord[] stockRecords, TransferStock transferStock) {
+    private JudgeAmount judgeAvailableAmount(String accountBook, StockRecord[] stockRecords, TransferStock transferStock) {
+        //为提示用
+        StorageLocationView[] storageLocationViews = storageLocationService.find(accountBook, new Condition().addCondition("id", new Integer[]{transferStock.getSourceStorageLocationId()}));
+        if(storageLocationViews.length!=1){
+            throw new WMSServiceException("查找源库位失败！可能已经不存在！");
+        }
+        SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("id", new Integer[]{transferStock.getSupplyId()}));
+        if(supplyViews.length!=1){
+            throw new WMSServiceException("查找供货失败！可能已经不存在！");
+        }
+        //没有记录则数量为0
+        if (stockRecords.length == 0) {
+            throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "  " + supplyViews[0].getMaterialNo() + "”(单位：“" + transferStock.getUnit() + "”单位数量：“" + transferStock.getUnitAmount() + "”检测状态：“" + this.stateTransfer(transferStock.getState()) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：0");
+        }
         //排序之后最后一条为最久的
         JudgeAmount judgeAmount = new JudgeAmount();
         BigDecimal amountAvailableAll = BigDecimal.ZERO;
@@ -851,6 +864,10 @@ public class StockRecordServiceImpl implements StockRecordService {
                 judgeAmount.setI(i);
                 judgeAmount.setLastIRemainAmount(stockRecords[i].getAvailableAmount().subtract(amountAvailableAll.subtract(transferStock.getAvailableAmount())));
             }
+        }
+        //数量不足
+        if(judgeAmount.getI()==-1){
+            throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "  " + supplyViews[0].getMaterialNo() + "”(单位：“" + transferStock.getUnit() + "”单位数量：“" + transferStock.getUnitAmount() + "”检测状态：“" + this.stateTransfer(transferStock.getState()) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存："+amountAvailableAll);
         }
         return judgeAmount;
     }
@@ -1105,14 +1122,14 @@ public class StockRecordServiceImpl implements StockRecordService {
             transferRecord.setSourceStorageLocationOriginalAmount(new BigDecimal(0));
             transferRecord.setSourceStorageLocationNewAmount(transferStock.getAmount());
         }
-        stockRecordDAO.add(accountBook,new StockRecord[]{stockRecordNew});
-        this.transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
+        stockRecordDAO.add(accountBook, new StockRecord[]{stockRecordNew});
+        this.transformRecordService.add(accountBook, new TransferRecord[]{transferRecord});
     }
 
     @Override
     public void reduceAmount(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
         List<StockRecord> stockRecordsList = new ArrayList();
-        List<TransferRecord> transferRecordList=new ArrayList<>();
+        List<TransferRecord> transferRecordList = new ArrayList<>();
         transferStock = this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, false);
         this.validateTransferStockRestore(transferStockRestore, false);
@@ -1138,13 +1155,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         if (itemRelatedRecords.length == 0) {
             //这种情况下条目应该为多条 最后一条是最久批次的
             StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
-            if(stockRecordsSource.length==0)
-            {//TODO 数量不够
-            }
-            JudgeAmount judgeAmount = this.judgeAvailableAmount(stockRecordsSource, transferStock);
-            if (judgeAmount.getI() == -1) {//数量不够
-                throw new WMSServiceException("");
-            }
+            JudgeAmount judgeAmount = this.judgeAvailableAmount(accountBook, stockRecordsSource, transferStock);
             for (int i = stockRecordsSource.length - 1; i >= judgeAmount.getI(); i--) {
                 stockRecordFindNew.setBatchNo(new String[]{stockRecordsSource[i].getBatchNo()});
                 StockRecord stockRecordNew = this.createStockRecord(accountBook, transferStock, true);
@@ -1199,13 +1210,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.delierItem);
             //这种情况下条目应该为多条 最后一条是最久批次的
             StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
-            if(stockRecordsSource.length==0)
-            {//TODO 数量不够
-            }
-            JudgeAmount judgeAmount = this.judgeAvailableAmount(stockRecordsSource, transferStock);
-            if (judgeAmount.getI() == -1) {//数量不够
-                throw new WMSServiceException("");
-            }
+            JudgeAmount judgeAmount = this.judgeAvailableAmount(accountBook,stockRecordsSource, transferStock);
             for (int i = stockRecordsSource.length - 1; i >= judgeAmount.getI(); i--) {
                 stockRecordFindNew.setBatchNo(new String[]{stockRecordsSource[i].getBatchNo()});
                 StockRecord stockRecordNew = this.createStockRecord(accountBook, transferStock, true);
@@ -1241,16 +1246,16 @@ public class StockRecordServiceImpl implements StockRecordService {
             }
         }
         StockRecord[] stockRecordsArraySave = (StockRecord[]) Array.newInstance(StockRecord.class, stockRecordsList.size());
-        stockRecordsArraySave=stockRecordsList.toArray(stockRecordsArraySave);
+        stockRecordsArraySave = stockRecordsList.toArray(stockRecordsArraySave);
         TransferRecord[] transferRecordsArraySave = (TransferRecord[]) Array.newInstance(TransferRecord.class, transferRecordList.size());
-        transferRecordsArraySave=transferRecordList.toArray(transferRecordsArraySave);
-        this.stockRecordDAO.add(accountBook,stockRecordsArraySave);
-        transformRecordService.add(accountBook,transferRecordsArraySave);
+        transferRecordsArraySave = transferRecordList.toArray(transferRecordsArraySave);
+        this.stockRecordDAO.add(accountBook, stockRecordsArraySave);
+        transformRecordService.add(accountBook, transferRecordsArraySave);
     }
 
     public void transferStock(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
         List<StockRecord> stockRecordsList = new ArrayList();
-        List<TransferRecord> transferRecordList=new ArrayList<>();
+        List<TransferRecord> transferRecordList = new ArrayList<>();
         transferStock = this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, true);
         this.validateTransferStockRestore(transferStock, true);
@@ -1277,10 +1282,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
         //查找源库存
         StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
-        JudgeAmount judgeAmount = this.judgeAvailableAmount(stockRecordsSource, transferStock);
-        if(stockRecordsSource.length==0)
-        {//TODO 数量不够
-        }
+        JudgeAmount judgeAmount = this.judgeAvailableAmount(accountBook, stockRecordsSource, transferStock);
         for (int i = stockRecordsSource.length - 1; i >= judgeAmount.getI(); i--) {
             stockRecordFindNew.setBatchNo(new String[]{stockRecordsSource[i].getBatchNo()});
             //查找能合并的记录
@@ -1296,8 +1298,6 @@ public class StockRecordServiceImpl implements StockRecordService {
             stockRecordNew.setManufactureDate(stockRecordsSource[i].getManufactureDate());
             stockRecordNew.setInventoryDate(stockRecordsSource[i].getInventoryDate());
             stockRecordNew.setBatchNo(stockRecordsSource[i].getBatchNo());
-            if (judgeAmount.getI() == -1) {//数量不够
-            }
             if (i > judgeAmount.getI()) {
                 // 这是旧条目的变化
                 //这种情况可用数量全都为0
@@ -1375,11 +1375,11 @@ public class StockRecordServiceImpl implements StockRecordService {
             transferRecordList.add(transferRecord);
         }
         StockRecord[] stockRecordsArraySave = (StockRecord[]) Array.newInstance(StockRecord.class, stockRecordsList.size());
-        stockRecordsArraySave=stockRecordsList.toArray(stockRecordsArraySave);
+        stockRecordsArraySave = stockRecordsList.toArray(stockRecordsArraySave);
         TransferRecord[] transferRecordsArraySave = (TransferRecord[]) Array.newInstance(TransferRecord.class, transferRecordList.size());
-        transferRecordsArraySave=transferRecordList.toArray(transferRecordsArraySave);
-        this.stockRecordDAO.add(accountBook,stockRecordsArraySave);
-        transformRecordService.add(accountBook,transferRecordsArraySave);
+        transferRecordsArraySave = transferRecordList.toArray(transferRecordsArraySave);
+        this.stockRecordDAO.add(accountBook, stockRecordsArraySave);
+        transformRecordService.add(accountBook, transferRecordsArraySave);
     }
 
 //    @Override
