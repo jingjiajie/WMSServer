@@ -1060,6 +1060,13 @@ public class StockRecordServiceImpl implements StockRecordService {
         return transferStock;
     }
 
+    private ItemRelatedRecord createItemRelateRecord(TransferStock transferStock){
+        ItemRelatedRecord itemRelatedRecord=new ItemRelatedRecord();
+        itemRelatedRecord.setItemType(transferStock.getItemType());
+        itemRelatedRecord.setRelatedItemId(transferStock.getItemId());
+        return itemRelatedRecord;
+    }
+
     @Override
     public void addAmount(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
         transferStock = this.stateDefaultValueDeal(transferStock);
@@ -1103,6 +1110,11 @@ public class StockRecordServiceImpl implements StockRecordService {
             }
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.entryItem);
         }
+        //相关信息
+        ItemRelatedRecord itemRelatedRecord=this.createItemRelateRecord(transferStock);
+        itemRelatedRecord.setStockRecordBatchNo(this.batchTransfer(transferStock.getInventoryDate()));
+        itemRelatedRecord.setBatchAmount(transferStock.getAmount());
+        itemRelatedRecord.setBatchAvailableAmount(transferStock.getAvailableAmount());
         //必须在退回之后查找
         StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
         //只有一条
@@ -1122,15 +1134,17 @@ public class StockRecordServiceImpl implements StockRecordService {
             stockRecordNew.setAvailableAmount(transferStock.getAvailableAmount());
             transferRecord.setSourceStorageLocationOriginalAmount(new BigDecimal(0));
             transferRecord.setSourceStorageLocationNewAmount(transferStock.getAmount());
-        }
+        };
         stockRecordDAO.add(accountBook, new StockRecord[]{stockRecordNew});
         this.transformRecordService.add(accountBook, new TransferRecord[]{transferRecord});
+        itemRelatedRecordService.add(accountBook,new ItemRelatedRecord[]{itemRelatedRecord});
     }
 
     @Override
     public void reduceAmount(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
         List<StockRecord> stockRecordsList = new ArrayList();
         List<TransferRecord> transferRecordList = new ArrayList<>();
+        List<ItemRelatedRecord> itemRelatedRecordList=new ArrayList<>();
         transferStock = this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, false);
         this.validateTransferStockRestore(transferStockRestore, false);
@@ -1158,6 +1172,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
             JudgeAmount judgeAmount = this.judgeAvailableAmount(accountBook, stockRecordsSource, transferStock);
             for (int i = stockRecordsSource.length - 1; i >= judgeAmount.getI(); i--) {
+                ItemRelatedRecord itemRelatedRecord=new ItemRelatedRecord();
                 stockRecordFindNew.setBatchNo(new String[]{stockRecordsSource[i].getBatchNo()});
                 StockRecord stockRecordNew = this.createStockRecord(accountBook, transferStock, true);
                 //其他信息不变
@@ -1201,6 +1216,11 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setSourceStorageLocationNewAmount(stockRecordNew.getAmount());
                 stockRecordsList.add(stockRecordNew);
                 transferRecordList.add(transferRecord);
+                //相关信息
+                itemRelatedRecord.setStockRecordBatchNo(stockRecordsSource[i].getBatchNo());
+                itemRelatedRecord.setBatchAvailableAmount(stockRecordsSource[i].getAvailableAmount().subtract(stockRecordNew.getAvailableAmount()));
+                itemRelatedRecord.setBatchAmount(stockRecordsSource[i].getAmount().subtract(stockRecordNew.getAmount()));
+                itemRelatedRecordList.add(itemRelatedRecord);
             }
         }
         //有则需要先反向移动，然后记录相关批次
@@ -1213,6 +1233,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
             JudgeAmount judgeAmount = this.judgeAvailableAmount(accountBook,stockRecordsSource, transferStock);
             for (int i = stockRecordsSource.length - 1; i >= judgeAmount.getI(); i--) {
+                ItemRelatedRecord itemRelatedRecord=new ItemRelatedRecord();
                 stockRecordFindNew.setBatchNo(new String[]{stockRecordsSource[i].getBatchNo()});
                 StockRecord stockRecordNew = this.createStockRecord(accountBook, transferStock, true);
                 //先移动可用数量
@@ -1244,19 +1265,28 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setSourceStorageLocationNewAmount(stockRecordNew.getAmount());
                 stockRecordsList.add(stockRecordNew);
                 transferRecordList.add(transferRecord);
+                //相关信息
+                itemRelatedRecord.setStockRecordBatchNo(stockRecordsSource[i].getBatchNo());
+                itemRelatedRecord.setBatchAvailableAmount(stockRecordsSource[i].getAvailableAmount().subtract(stockRecordNew.getAvailableAmount()));
+                itemRelatedRecord.setBatchAmount(stockRecordsSource[i].getAmount().subtract(stockRecordNew.getAmount()));
+                itemRelatedRecordList.add(itemRelatedRecord);
             }
         }
         StockRecord[] stockRecordsArraySave = (StockRecord[]) Array.newInstance(StockRecord.class, stockRecordsList.size());
         stockRecordsArraySave = stockRecordsList.toArray(stockRecordsArraySave);
         TransferRecord[] transferRecordsArraySave = (TransferRecord[]) Array.newInstance(TransferRecord.class, transferRecordList.size());
         transferRecordsArraySave = transferRecordList.toArray(transferRecordsArraySave);
+        ItemRelatedRecord[] itemRelatedRecordsArraySave = (ItemRelatedRecord[]) Array.newInstance(ItemRelatedRecord.class, itemRelatedRecordList.size());
+        itemRelatedRecordsArraySave = itemRelatedRecordList.toArray(itemRelatedRecords);
         this.stockRecordDAO.add(accountBook, stockRecordsArraySave);
         transformRecordService.add(accountBook, transferRecordsArraySave);
+        itemRelatedRecordService.add(accountBook,itemRelatedRecordsArraySave);
     }
 
     public void transferStock(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
         List<StockRecord> stockRecordsList = new ArrayList();
         List<TransferRecord> transferRecordList = new ArrayList<>();
+        List<ItemRelatedRecord> itemRelatedRecordList=new ArrayList<>();
         transferStock = this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, true);
         this.validateTransferStockRestore(transferStock, true);
@@ -1286,6 +1316,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         JudgeAmount judgeAmount = this.judgeAvailableAmount(accountBook, stockRecordsSource, transferStock);
         for (int i = stockRecordsSource.length - 1; i >= judgeAmount.getI(); i--) {
             stockRecordFindNew.setBatchNo(new String[]{stockRecordsSource[i].getBatchNo()});
+            ItemRelatedRecord itemRelatedRecord=this.createItemRelateRecord(transferStock);
             //查找能合并的记录
             StockRecord[] stockRecordsNewFind = this.findInterface(accountBook, stockRecordFindNew);
             StockRecord stockRecordNew = this.createStockRecord(accountBook, transferStock, false);
@@ -1374,6 +1405,11 @@ public class StockRecordServiceImpl implements StockRecordService {
             }
             transferRecord.setTargetStorageLocationNewAmount(stockRecordNew.getAmount());
             transferRecordList.add(transferRecord);
+            //相关信息 用旧条目的变化代表批次数量和可用数量
+            itemRelatedRecord.setStockRecordBatchNo(stockRecordsSource[i].getBatchNo());
+            itemRelatedRecord.setBatchAvailableAmount(stockRecordsSource[i].getAvailableAmount().subtract(stockRecordOld.getAvailableAmount()));
+            itemRelatedRecord.setBatchAmount(stockRecordsSource[i].getAmount().subtract(stockRecordOld.getAmount()));
+            itemRelatedRecordList.add(itemRelatedRecord);
         }
         StockRecord[] stockRecordsArraySave = (StockRecord[]) Array.newInstance(StockRecord.class, stockRecordsList.size());
         stockRecordsArraySave = stockRecordsList.toArray(stockRecordsArraySave);
@@ -1381,6 +1417,9 @@ public class StockRecordServiceImpl implements StockRecordService {
         transferRecordsArraySave = transferRecordList.toArray(transferRecordsArraySave);
         this.stockRecordDAO.add(accountBook, stockRecordsArraySave);
         transformRecordService.add(accountBook, transferRecordsArraySave);
+        ItemRelatedRecord[] itemRelatedRecordsArraySave = (ItemRelatedRecord[]) Array.newInstance(ItemRelatedRecord.class, itemRelatedRecordList.size());
+        itemRelatedRecordsArraySave = itemRelatedRecordList.toArray(itemRelatedRecords);
+        itemRelatedRecordService.add(accountBook,itemRelatedRecordsArraySave);
     }
 
 //    @Override
