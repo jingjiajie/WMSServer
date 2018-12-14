@@ -980,6 +980,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 StockRecord stockRecordNew = stockRecordsOld[0];
                 stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
+                stockRecordNew.setTime(this.getTime());
                 stockRecordsList.add(stockRecordNew);
             }
         } else if (type == ItemType.transferItem) {
@@ -1017,9 +1018,10 @@ public class StockRecordServiceImpl implements StockRecordService {
                 if (stockRecordsNew.length != 1) {
                     throw new WMSServiceException("退回数量查询库存记录出错！");
                 }
-                StockRecord stockRecordNewNew = stockRecordsSource[0];
-                stockRecordNewNew.setAvailableAmount(stockRecordNewNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAvailableAmount()));
-                stockRecordNewNew.setAmount(stockRecordNewNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
+                StockRecord stockRecordNew = stockRecordsSource[0];
+                stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAvailableAmount()));
+                stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
+                stockRecordNew.setTime(this.getTime());
                 stockRecordsList.add(stockRecordSourceNew);
             }
         } else if (type == ItemType.delierItem) {
@@ -1040,6 +1042,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 StockRecord stockRecordNew = stockRecordsOld[0];
                 stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().add(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordNew.setAmount(stockRecordNew.getAmount().add(itemRelatedRecords[i].getBatchAmount()));
+                stockRecordNew.setTime(this.getTime());
                 stockRecordsList.add(stockRecordNew);
             }
         } else {
