@@ -959,11 +959,15 @@ public class StockRecordServiceImpl implements StockRecordService {
     public void restoreAmount(String accountBook, TransferStock transferStockRestore){
         ItemRelatedRecord[] itemRelatedRecords = this.findItemAndRemove(accountBook, transferStockRestore);
         new Validator("退回条目类型").notnull().notEmpty().validate(transferStockRestore.getItemType());
-        this.restoreAmount(accountBook,itemRelatedRecords,transferStockRestore,transferStockRestore.getItemType());
+        this.restoreAmount(accountBook,itemRelatedRecords,transferStockRestore,transferStockRestore.getItemType(),true);
+    }
+
+    private void restoreAmount(String accountBook, ItemRelatedRecord[] itemRelatedRecords, TransferStock transferStockRestore, int type){
+        this.restoreAmount(accountBook,itemRelatedRecords,transferStockRestore,type,false);
     }
 
     //反向移动
-    private void restoreAmount(String accountBook, ItemRelatedRecord[] itemRelatedRecords, TransferStock transferStockRestore, int type) {
+    private void restoreAmount(String accountBook, ItemRelatedRecord[] itemRelatedRecords, TransferStock transferStockRestore, int type,boolean transferStock) {
         if (itemRelatedRecords.length == 0) {
             return;
         }
@@ -971,6 +975,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         if (type == ItemType.entryItem) {
             //数量扣下去
             for (int i = 0; i < itemRelatedRecords.length; i++) {
+                TransferRecord transferRecord=new TransferRecord();
                 StockRecordFind stockRecordFind = new StockRecordFind();
                 stockRecordFind.setSupplyId(transferStockRestore.getSupplyId());
                 stockRecordFind.setUnitAmount(transferStockRestore.getUnitAmount());
@@ -988,6 +993,16 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordNew.setTime(this.getTime());
                 stockRecordsList.add(stockRecordNew);
+                //移位记录
+                //扣数量则记录到源库位
+                transferRecord.setSourceStorageLocationUnit(stockRecordsOld[0].getUnit());
+                transferRecord.setSourceStorageLocationId(stockRecordsOld[0].getStorageLocationId());
+                transferRecord.setSourceStorageLocationUnitAmount(stockRecordsOld[0].getUnitAmount());
+                transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsOld[0].getAmount());
+                transferRecord.setSourceStorageLocationNewAmount(stockRecordNew.getAmount());
+                transferRecord.setTransferAmount(itemRelatedRecords[i].getBatchAmount());
+                transferRecord.setTransferUnit(stockRecordNew.getUnit());
+                transferRecord.setTransferUnitAmount(stockRecordNew.getUnitAmount());
             }
         } else if (type == ItemType.transferItem) {
             if (transferStockRestore.getNewStorageLocationId() == transferStockRestore.getSourceStorageLocationId() && transferStockRestore.getUnitAmount().equals(transferStockRestore.getNewUnitAmount()) && transferStockRestore.getUnit().equals(transferStockRestore.getNewUnit()) && transferStockRestore.getState() == transferStockRestore.getNewState()) {
