@@ -20,6 +20,8 @@ public interface StockRecordService
 
     void transferStock(String accountBook, TransferStock transferStock,TransferStock transferStockRestore);
 
+    void restoreAmount(String accountBook, TransferStock transferStockRestore);
+
     void addAmountToNewestBatchNo(String accountBook,TransferStock transferStock );
 
     void returnSupply(String accountBook, StockRecord[] stockRecords);
