@@ -938,7 +938,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             //目标
             transferRecord.setTargetStorageLocationUnit(transferStock.getNewUnit());
             transferRecord.setTargetStorageLocationId(transferStock.getNewStorageLocationId());
-            //transferRecord.setTransferUnit(transferStock.getNewUnit());
+            transferRecord.setTargetStorageLocationAmount(transferStock.getNewUnitAmount());
             //transferRecord.setTransferUnitAmount(transferStock.getUnitAmount());
             transferRecord.setTransferAmount(transferStock.getAmount());
             return transferRecord;
@@ -1151,7 +1151,6 @@ public class StockRecordServiceImpl implements StockRecordService {
         List<ItemRelatedRecord> itemRelatedRecordList = new ArrayList<>();
         transferStock = this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, false);
-        this.validateTransferStockRestore(transferStockRestore, false);
         BigDecimal amountNeed = transferStock.getAmount();
         ItemRelatedRecord[] itemRelatedRecords = this.findItemAndRemove(accountBook, transferStock);
         String[] batchNo = new String[itemRelatedRecords.length];
@@ -1239,6 +1238,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             if (transferStockRestore.getItemId() == -1) {
                 throw new WMSServiceException("退回数量出错，未提供正确的移库信息！");
             }
+            this.validateTransferStockRestore(transferStockRestore, false);
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.delierItem);
             //这种情况下条目应该为多条 最后一条是最久批次的
             StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
@@ -1305,7 +1305,6 @@ public class StockRecordServiceImpl implements StockRecordService {
     //全都相同的移动
     private void transferSStockSame(String accountBook, TransferStock transferStock, TransferStock transferStockRestore) {
         this.validateTransferStock(accountBook, transferStock, true);
-        this.validateTransferStockRestore(transferStock, true);
         List<StockRecord> stockRecordsList = new ArrayList();
         List<TransferRecord> transferRecordList = new ArrayList<>();
         List<ItemRelatedRecord> itemRelatedRecordList = new ArrayList<>();
@@ -1322,6 +1321,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         TransferRecord transferRecord = this.createTransferRecord(accountBook, transferStock, ItemType.transferItem);
         //数量移回去
         if (itemRelatedRecords.length != 0) {
+            this.validateTransferStockRestore(transferStock, true);
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.transferItem);
         }
         //查找源库存
@@ -1385,7 +1385,6 @@ public class StockRecordServiceImpl implements StockRecordService {
         List<ItemRelatedRecord> itemRelatedRecordList = new ArrayList<>();
         transferStock = this.stateDefaultValueDeal(transferStock);
         this.validateTransferStock(accountBook, transferStock, true);
-        this.validateTransferStockRestore(transferStock, true);
         BigDecimal amountNeed = transferStock.getAmount();
         ItemRelatedRecord[] itemRelatedRecords = this.findItemAndRemove(accountBook, transferStock);
         StockRecordFind stockRecordFind = new StockRecordFind();
@@ -1413,6 +1412,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         //数量移回去
         if (itemRelatedRecords.length != 0) {
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.transferItem);
+            this.validateTransferStockRestore(transferStock, true);
         }
         //查找源库存
         StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
@@ -1502,9 +1502,9 @@ public class StockRecordServiceImpl implements StockRecordService {
             transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[i].getAmount());
             transferRecord.setSourceStorageLocationNewAmount(stockRecordOld.getAmount());
             if (stockRecordsNewFind.length == 0) {
-                transferRecord.setTargetStorageLocationAmount(BigDecimal.ZERO);
+                transferRecord.setTargetStorageLocationOriginalAmount(BigDecimal.ZERO);
             } else {
-                transferRecord.setTargetStorageLocationAmount(stockRecordsNewFind[0].getAmount());
+                transferRecord.setTargetStorageLocationOriginalAmount(stockRecordsNewFind[0].getAmount());
             }
             transferRecord.setTargetStorageLocationNewAmount(stockRecordNew.getAmount());
             transferRecordList.add(transferRecord);
