@@ -956,6 +956,12 @@ public class StockRecordServiceImpl implements StockRecordService {
 
     }
 
+    public void restoreAmount(String accountBook, TransferStock transferStockRestore){
+        ItemRelatedRecord[] itemRelatedRecords = this.findItemAndRemove(accountBook, transferStockRestore);
+        new Validator("退回条目类型").notnull().notEmpty().validate(transferStockRestore.getItemType());
+        this.restoreAmount(accountBook,itemRelatedRecords,transferStockRestore,transferStockRestore.getItemType());
+    }
+
     //反向移动
     private void restoreAmount(String accountBook, ItemRelatedRecord[] itemRelatedRecords, TransferStock transferStockRestore, int type) {
         if (itemRelatedRecords.length == 0) {
