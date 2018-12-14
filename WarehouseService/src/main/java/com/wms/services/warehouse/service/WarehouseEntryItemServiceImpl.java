@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.WarehouseEntryItemDAO;
+import com.wms.services.warehouse.datastructures.ItemType;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.ReflectHelper;
@@ -298,6 +299,8 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(不良品移库)");
             transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.UNQUALIFIED);
+            transferStock.setItemId(warehouseEntryItem.getId());
+            transferStock.setItemType(ItemType.transferItem);
             this.stockRecordService.RealTransformStock(accountBook, transferStock);
 
             warehouseEntryItem.setState(WarehouseEntryItemService.UNQUALIFIED);

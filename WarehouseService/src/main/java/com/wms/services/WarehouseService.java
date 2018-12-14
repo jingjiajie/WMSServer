@@ -37,6 +37,7 @@ public class WarehouseService {
     public static void main(String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
+
 //        JudgeOldestBatch judgeOldestBatch=new JudgeOldestBatch();
 //        judgeOldestBatch.setSupplyId(15);
 //        judgeOldestBatch.setUnit("个");
