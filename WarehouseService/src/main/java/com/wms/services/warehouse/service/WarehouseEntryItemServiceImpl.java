@@ -299,8 +299,6 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(不良品移库)");
             transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.UNQUALIFIED);
-            transferStock.setItemId(warehouseEntryItem.getId());
-            transferStock.setItemType(ItemType.transferItem);
             this.stockRecordService.RealTransformStock(accountBook, transferStock);
 
             warehouseEntryItem.setState(WarehouseEntryItemService.UNQUALIFIED);

@@ -16,6 +16,8 @@ public interface StockRecordService
 
     void addAmount(String accountBook, TransferStock transferStock,TransferStock transferStockRestore);
 
+    void addAmount(String accountBook, TransferStock transferStocke);
+
     void reduceAmount(String accountBook, TransferStock transferStock,TransferStock transferStockRestore);
 
     void transferStock(String accountBook, TransferStock transferStock,TransferStock transferStockRestore);
