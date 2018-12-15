@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.DeliveryOrderItemDAO;
+import com.wms.services.warehouse.datastructures.ItemType;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
@@ -15,6 +16,7 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.net.ftp.FtpClient;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -49,8 +51,6 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         }
         //验证字段
         this.validateEntities(accountBook,deliveryOrderItems);
-
-
 
         //修改库存
         Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
@@ -107,6 +107,61 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
         this.updateDeliveryOrder(accountBook,deliveryOrderItems[0].getDeliveryOrderId() ,-1);
         return ids;//仅返回iDs
 
+    }
+
+    @Override
+    public int[] add2(String accountBook, DeliveryOrderItem[] deliveryOrderItems) throws WMSServiceException {
+        if (deliveryOrderItems.length == 0) return new int[]{};
+        DeliveryOrderView deliveryOrderView = this.getDeliveryOrderView(accountBook,deliveryOrderItems);
+        if(deliveryOrderView.getState()==DeliveryOrderService.STATE_IN_DELIVER){
+            throw new WMSServiceException(String.format("当前出库单（%s）已经发运在途，无法再添加出库单条目", deliveryOrderView.getNo()));
+        }
+        if(deliveryOrderView.getState()==DeliveryOrderService.STATE_DELIVER_FINNISH){
+            throw new WMSServiceException(String.format("当前出库单（%s）已经发运核减，无法再添加出库单条目", deliveryOrderView.getNo()));
+        }
+        //验证字段
+        this.validateEntities(accountBook,deliveryOrderItems);
+
+        //修改库存
+
+        int[] ids=new int[deliveryOrderItems.length];
+        for (int i=0;i<ids.length;i++) {
+            int id = this.deliveryOrderItemDAO.add(accountBook, new DeliveryOrderItem[]{deliveryOrderItems[i]})[0];
+
+            int deliveryType = 2;
+            if (deliveryOrderView.getType() == DeliveryOrderService.DELIVERY_TYPE_Unqualified) {
+                deliveryType = 1;
+            }
+            //先移动
+            TransferStock transferStock = new TransferStock();
+            transferStock.setAmount(deliveryOrderItems[i].getRealAmount());
+            transferStock.setAvailableAmount(deliveryOrderItems[i].getScheduledAmount());
+
+            transferStock.setSourceStorageLocationId(deliveryOrderItems[i].getSourceStorageLocationId());
+
+            transferStock.setRelatedOrderNo(deliveryOrderView.getNo());
+            transferStock.setItemId(id);
+            transferStock.setItemType(ItemType.delierItem);
+
+            transferStock.setSupplyId(deliveryOrderItems[i].getSupplyId());
+            transferStock.setUnit(deliveryOrderItems[i].getUnit());
+            transferStock.setUnitAmount(deliveryOrderItems[i].getUnitAmount());
+            transferStock.setState(deliveryType);
+
+            this.stockRecordService.reduceAmount(accountBook, transferStock, new TransferStock());//直接改数
+            if (deliveryOrderItems[i].getScheduledAmount().compareTo(deliveryOrderItems[i].getRealAmount())==0){
+                deliveryOrderItems[i].setState(DeliveryOrderService.STATE_ALL_LOADING);
+            }else if (deliveryOrderItems[i].getRealAmount().compareTo(BigDecimal.ZERO)==0){
+                deliveryOrderItems[i].setState(DeliveryOrderService.STATE_IN_LOADING);
+            }else{
+                deliveryOrderItems[i].setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
+            }
+            ids[i]=id;
+        }
+        //添加到数据库中
+
+        this.updateDeliveryOrder(accountBook,deliveryOrderItems[0].getDeliveryOrderId() ,-1);
+        return ids;//仅返回iDs
     }
 
     @Override
