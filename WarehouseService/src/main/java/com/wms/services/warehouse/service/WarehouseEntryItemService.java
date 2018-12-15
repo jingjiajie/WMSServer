@@ -11,9 +11,15 @@ import java.util.Map;
 
 public interface WarehouseEntryItemService
         extends BaseService<WarehouseEntryItem, WarehouseEntryItemView> {
+    int[] add1(String accountBook, WarehouseEntryItem[] warehouseEntryItems) throws WMSServiceException;
     void update(String accountBook, WarehouseEntryItem[] warehouseEntryItems, boolean allowUpdateInspectionAmount) throws WMSServiceException;
     void reject(String accountBook, List<Integer> ids,Map<Integer,BigDecimal> idAndReturnAmount) throws WMSServiceException;
     void receive(String accountBook, List<Integer> ids,Map<Integer,BigDecimal> idAndReturnAmount) throws WMSServiceException;
+
+    void update1(String accountBook, WarehouseEntryItem[] warehouseEntryItems) throws WMSServiceException;
+    void update1(String accountBook, WarehouseEntryItem[] warehouseEntryItems, boolean allowUpdateInspectionAmount) throws WMSServiceException;
+    void reject1(String accountBook, List<Integer> ids,Map<Integer,BigDecimal> idAndReturnAmount) throws WMSServiceException;
+    void receive1(String accountBook, List<Integer> ids,Map<Integer,BigDecimal> idAndReturnAmount) throws WMSServiceException;
 
     WarehouseEntryItem get(String accountBook,int id) throws WMSServiceException;
 
