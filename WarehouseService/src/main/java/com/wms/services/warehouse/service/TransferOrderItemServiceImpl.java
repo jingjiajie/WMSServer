@@ -400,6 +400,9 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             tureTransferStock.setNewStorageLocationId(transferOrderItems[i].getTargetStorageLocationId());
 
             tureTransferStock.setRelatedOrderNo(foundTransferOrders[0].getNo());
+            tureTransferStock.setItemId(transferOrderItems[i].getId());
+            tureTransferStock.setItemType(ItemType.transferItem);
+
             tureTransferStock.setSupplyId(transferOrderItems[i].getSupplyId());
             tureTransferStock.setNewUnit(transferOrderItems[i].getUnit());
             tureTransferStock.setNewUnitAmount(transferOrderItems[i].getUnitAmount());
@@ -470,6 +473,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
                 transferStockRestore.setRelatedOrderNo(transferOrderView.getNo());//获取单号
                 transferStockRestore.setItemId(transferOrderItem.getId());
+                //必须区分条目类型
                 transferStockRestore.setItemType(ItemType.transferItem);
 
                 transferStockRestore.setSupplyId(oriItemViews[0].getSupplyId());
@@ -492,6 +496,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
                 transferStock.setRelatedOrderNo(transferOrderView.getNo());//获取单号
                 transferStock.setItemId(transferOrderItem.getId());
+                //必须区分条目类型
                 transferStock.setItemType(ItemType.transferItem);
 
                 transferStock.setSupplyId(transferOrderItem.getSupplyId());
@@ -534,10 +539,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             TransferOrderItemView oriItemView=oriItemViews[0];
             curTransferOrderId=oriItemView.getTransferOrderId();
             curPersonId=oriItemView.getPersonId();
-            if (oriItemView.getState()==0
-//                    oriItemView.getScheduledAmount().compareTo(new BigDecimal(0))!=0&&
-//                    oriItemView.getRealAmount().compareTo(new BigDecimal(0))==0
-                    )
+            if (oriItemView.getState()==0)
             {
                 //删除了未经过操作的移库单，更新库存可用数量
                 TransferStock transferStock = new TransferStock();
@@ -575,6 +577,43 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
 
             }
+
+        }
+        this.transferOrderItemDAO.remove(accountBook, ids);
+        this.updateTransferOrder(accountBook,curTransferOrderId ,curPersonId);
+    }
+
+    @Override
+    public void remove2(String accountBook, int[] ids) throws WMSServiceException {
+        int curTransferOrderId=-1;
+        int curPersonId=-1;
+        for (int id : ids) {
+
+            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{id}));
+            if (oriItemViews.length == 0) {
+                throw new WMSServiceException(String.format("移库单条目不存在，删除失败(%d)", id));
+            }
+            TransferOrderItemView oriItemView=oriItemViews[0];
+            curTransferOrderId=oriItemView.getTransferOrderId();
+            curPersonId=oriItemView.getPersonId();
+
+            //旧的信息
+            TransferStock transferStockRestore = new TransferStock();
+            transferStockRestore.setNewStorageLocationId(oriItemView.getTargetStorageLocationId());
+            transferStockRestore.setSourceStorageLocationId(oriItemView.getSourceStorageLocationId());
+
+            transferStockRestore.setRelatedOrderNo(oriItemView.getTransferOrderNo());//获取单号
+            transferStockRestore.setItemId(oriItemView.getId());
+            //必须区分条目类型
+            transferStockRestore.setItemType(ItemType.transferItem);
+
+            transferStockRestore.setSupplyId(oriItemView.getSupplyId());
+            transferStockRestore.setUnit(oriItemView.getUnit());
+            transferStockRestore.setUnitAmount(oriItemView.getUnitAmount());
+            transferStockRestore.setNewUnit(oriItemView.getSourceUnit());
+            transferStockRestore.setNewUnitAmount(oriItemView.getSourceUnitAmount());
+
+            this.stockRecordService.restoreAmount(accountBook,transferStockRestore);//使用更新单位的库存修改
 
         }
         this.transferOrderItemDAO.remove(accountBook, ids);

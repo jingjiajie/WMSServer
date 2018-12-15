@@ -13,5 +13,6 @@ public interface TransferOrderItemService
 
     public int[] add2(String accountBook, TransferOrderItem[] transferOrderItems);
     public void update2(String accountBook, TransferOrderItem[] transferOrderItems);
+    public void remove2(String accountBook, int[] ids);
 
 }
