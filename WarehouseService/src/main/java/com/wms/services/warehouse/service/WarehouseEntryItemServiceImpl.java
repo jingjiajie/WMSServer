@@ -249,6 +249,43 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
     }
 
     @Override
+    public void remove1(String accountBook, int[] ids) throws WMSServiceException {
+        WarehouseEntryView warehouseEntryView = null;
+        for (int id : ids) {
+            WarehouseEntryItemView[] foundItemViews = this.warehouseEntryItemDAO.find(accountBook, new Condition().addCondition("id", id));
+            if (foundItemViews.length == 0) {
+                throw new WMSServiceException(String.format("无法找到入库单条目，请重新提交(%d)"));
+            }
+            WarehouseEntryItemView oriItemView = foundItemViews[0];
+            if (warehouseEntryView == null) {
+                final WarehouseEntryView[] warehouseEntryViews = this.warehouseEntryService.find(accountBook, new Condition().addCondition("id", oriItemView.getWarehouseEntryId()));
+                if (warehouseEntryViews.length == 0)
+                    throw new WMSServiceException(String.format("入库单(%d)不存在，请重新提交！", oriItemView.getWarehouseEntryId()));
+                warehouseEntryView = warehouseEntryViews[0];
+            }
+            if (oriItemView.getState() != WarehouseEntryItemService.WAIT_FOR_PUT_IN_STORAGE) {
+                throw new WMSServiceException(String.format("不允许删除已送检/已入库的入库单条目(%d)", oriItemView.getId()));
+            }
+            //冲抵原库存
+            TransferStock transferStockAgainst = new TransferStock();
+            transferStockAgainst.setUnit(oriItemView.getUnit());
+            transferStockAgainst.setUnitAmount(oriItemView.getUnitAmount());
+            transferStockAgainst.setInventoryDate(oriItemView.getInventoryDate());
+            transferStockAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
+            transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
+            transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
+            transferStockAgainst.setItemId(oriItemView.getId());
+            transferStockAgainst.setItemType(ItemType.entryItem);
+            this.stockRecordService.restoreAmount(accountBook, transferStockAgainst);
+        }
+        try {
+            this.warehouseEntryItemDAO.remove(accountBook, ids);
+        } catch (Throwable ex) {
+            throw new WMSServiceException("删除失败，如果条目已经被引用，需要先删除引用项目");
+        }
+    }
+
+    @Override
     public WarehouseEntryItemView[] find(String accountBook, Condition cond) throws WMSServiceException {
         return this.warehouseEntryItemDAO.find(accountBook, cond);
     }

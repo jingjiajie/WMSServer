@@ -993,7 +993,6 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordNew.setTime(this.getTime());
-                stockRecordsList.add(stockRecordNew);
                 //移位记录
                 //扣数量则记录到源库位
                 transferRecord.setSourceStorageLocationUnit(stockRecordsOld[0].getUnit());
@@ -1004,7 +1003,12 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setTransferAmount(itemRelatedRecords[i].getBatchAmount());
                 transferRecord.setTransferUnit(stockRecordNew.getUnit());
                 transferRecord.setTransferUnitAmount(stockRecordNew.getUnitAmount());
-                transferRecordList.add(transferRecord);
+                if(transferStock){
+                    stockRecordNew.setRelatedOrderNo(transferStockRestore.getRelatedOrderNo());
+                    transferRecordList.add(transferRecord);
+                }
+                stockRecordsList.add(stockRecordNew);
+
             }
         } else if (type == ItemType.transferItem) {
             if (transferStockRestore.getNewStorageLocationId() == transferStockRestore.getSourceStorageLocationId() && transferStockRestore.getUnitAmount().equals(transferStockRestore.getNewUnitAmount()) && transferStockRestore.getUnit().equals(transferStockRestore.getNewUnit()) && transferStockRestore.getState() == transferStockRestore.getNewState()) {
@@ -1046,7 +1050,6 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordNew.setTime(this.getTime());
-                stockRecordsList.add(stockRecordNew);
                 transferRecord.setTargetStorageLocationAmount(stockRecordsSource[0].getUnitAmount());
                 transferRecord.setTargetStorageLocationUnit(stockRecordsSource[0].getUnit());
                 transferRecord.setTargetStorageLocationId(stockRecordsSource[0].getStorageLocationId());
@@ -1061,6 +1064,11 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setTransferUnit(stockRecordNew.getUnit());
                 transferRecord.setTransferUnitAmount(stockRecordNew.getUnitAmount());
                 transferRecordList.add(transferRecord);
+                if(transferStock){
+                    stockRecordNew.setRelatedOrderNo(transferStockRestore.getRelatedOrderNo());
+                    transferRecordList.add(transferRecord);
+                }
+                stockRecordsList.add(stockRecordNew);
             }
         } else if (type == ItemType.delierItem) {
             //把数量加回去
@@ -1082,7 +1090,6 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().add(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordNew.setAmount(stockRecordNew.getAmount().add(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordNew.setTime(this.getTime());
-                stockRecordsList.add(stockRecordNew);
                 //增加数量则记录到目标库位
                 transferRecord.setTargetStorageLocationUnit(stockRecordsOld[0].getUnit());
                 transferRecord.setTargetStorageLocationId(stockRecordsOld[0].getStorageLocationId());
@@ -1092,7 +1099,11 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setTransferAmount(itemRelatedRecords[i].getBatchAmount());
                 transferRecord.setTransferUnit(stockRecordNew.getUnit());
                 transferRecord.setTransferUnitAmount(stockRecordNew.getUnitAmount());
-                transferRecordList.add(transferRecord);
+                if(transferStock){
+                    stockRecordNew.setRelatedOrderNo(transferStockRestore.getRelatedOrderNo());
+                    transferRecordList.add(transferRecord);
+                }
+                stockRecordsList.add(stockRecordNew);
 
             }
         } else {
