@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.datastructures.*;
 import com.wms.services.warehouse.service.StockRecordService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +58,18 @@ public class StockRecordControllerImpl implements StockRecordController {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/find_newest/{strCond}", method = RequestMethod.GET)
+    @RequestMapping(value = "/find_newest/{strCond}/all", method = RequestMethod.GET)
     public StockRecordViewNewest[] findNewest(@PathVariable("accountBook") String accountBook,
                                         @PathVariable("strCond") String condStr) {
         return stockRecordService.findNewest(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/find_newest/{strCond}/plus", method = RequestMethod.GET)
+    public StockRecordViewNewest[] findNewestWithoutZero(@PathVariable("accountBook") String accountBook,
+                                              @PathVariable("strCond") String condStr) {
+        return stockRecordService.findNewest(accountBook, Condition.fromJson(condStr).addCondition("amount",0, ConditionItem.Relation.NOT_EQUAL));
     }
     
     @Override
@@ -68,7 +77,6 @@ public class StockRecordControllerImpl implements StockRecordController {
     @RequestMapping(value = "/real_transfer", method = RequestMethod.POST)
     public void RealTransferStock(@PathVariable("accountBook") String accountBook,
                                   @RequestBody TransferStock transferStock) {
-
         stockRecordService.RealTransformStock(accountBook, transferStock);
     }
 
@@ -121,11 +129,20 @@ public class StockRecordControllerImpl implements StockRecordController {
 
 
     @Override
-    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @RequestMapping(value="/count/{condStr}/all",method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.stockRecordService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/count/{condStr}/plus",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public long findCountWithoutZero(@PathVariable("accountBook") String accountBook,
+                          @PathVariable("condStr") String condStr){
+        Condition condition= Condition.fromJson(condStr);
+        return this.stockRecordService.findCount(accountBook, condition.addCondition("amount",0, ConditionItem.Relation.NOT_EQUAL));
     }
 
     @Override
