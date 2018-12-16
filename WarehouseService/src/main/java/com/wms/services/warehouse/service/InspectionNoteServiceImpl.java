@@ -141,13 +141,24 @@ public class InspectionNoteServiceImpl
                 if(unreturnedAmount.compareTo(BigDecimal.ZERO) < 0) throw new WMSServiceException("返回数量不能大于送检数量！");
                 if (unreturnedAmount.compareTo(BigDecimal.ZERO) != 0) {
                     TransferStock transferStock = new TransferStock();
+                    //数量直接给新数量即可
                     transferStock.setAmount(unreturnedAmount.negate());
                     transferStock.setUnit(warehouseEntryItemView.getUnit());
                     transferStock.setUnitAmount(warehouseEntryItemView.getUnitAmount());
                     transferStock.setSupplyId(warehouseEntryItemView.getSupplyId());
                     transferStock.setSourceStorageLocationId(warehouseEntryItemView.getStorageLocationId());
                     transferStock.setRelatedOrderNo(warehouseEntryItemView.getWarehouseEntryNo());
-                    //this.stockRecordService.addAmount(accountBook, transferStock);
+                    transferStock.setItemId(warehouseEntryItemView.getId());
+                    transferStock.setItemType(ItemType.entryItem);
+                    TransferStock transferStockRestore=new TransferStock();
+                    transferStockRestore.setUnit(warehouseEntryItemView.getUnit());
+                    transferStockRestore.setUnitAmount(warehouseEntryItemView.getUnitAmount());
+                    transferStockRestore.setSupplyId(warehouseEntryItemView.getSupplyId());
+                    transferStockRestore.setSourceStorageLocationId(warehouseEntryItemView.getStorageLocationId());
+                    transferStockRestore.setState(TransferStock.WAITING_FOR_INSPECTION);
+                    transferStockRestore.setItemId(warehouseEntryItemView.getId());
+                    transferStockRestore.setItemType(ItemType.entryItem);
+                    this.stockRecordService.addAmount(accountBook, transferStock,transferStockRestore);
                 }
                 if (inspectFinishItem.getPersonId() != null) {
                     inspectionNoteItem.setPersonId(inspectFinishItem.getPersonId());
