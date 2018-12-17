@@ -173,9 +173,19 @@ public class TransferStock {
         ItemType = itemType;
     }
 
-    private int ItemId=-1;
+    private int ItemId = -1;
 
     private int ItemType;
+
+    public int getItemTypeForBatchNo() {
+        return ItemTypeForBatchNo;
+    }
+
+    public void setItemTypeForBatchNo(int ItemTypeForBatchNo) {
+        this.ItemTypeForBatchNo = ItemTypeForBatchNo;
+    }
+
+    private int ItemTypeForBatchNo=-1;
 
     public BigDecimal getAvailableAmount() {
         return availableAmount;
