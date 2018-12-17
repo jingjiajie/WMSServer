@@ -38,6 +38,8 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
     PersonService personService;
     @Autowired
     StockRecordService stockRecordService;
+    @Autowired
+    ItemRelatedRecordService itemRelatedRecordService;
 
     @Override
     public int[] add(String accountBook, DeliveryOrderItem[] deliveryOrderItems) throws WMSServiceException {
@@ -362,6 +364,110 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
     }
 
     @Override
+    public void update2(String accountBook, DeliveryOrderItem[] deliveryOrderItems) throws WMSServiceException {
+        DeliveryOrderView deliveryOrderView = this.getDeliveryOrderView(accountBook,deliveryOrderItems);
+
+        if(deliveryOrderView.getState()==DeliveryOrderService.STATE_IN_DELIVER){
+            throw new WMSServiceException(String.format("当前出库单（%s）已经发运在途，无法再修改出库单条目", deliveryOrderView.getNo()));
+        }
+        if(deliveryOrderView.getState()==DeliveryOrderService.STATE_DELIVER_FINNISH){
+            throw new WMSServiceException(String.format("当前出库单（%s）已经发运核减，无法再修改出库单条目", deliveryOrderView.getNo()));
+        }
+
+        //数据验证
+        this.validateEntities(accountBook,deliveryOrderItems);
+
+        Stream.of(deliveryOrderItems).forEach(deliveryOrderItem -> {
+
+            int deliveryType=2;
+            if(deliveryOrderView.getType()==DeliveryOrderService.DELIVERY_TYPE_Unqualified){
+                deliveryType=1;
+            }
+            DeliveryOrderItemView[] foundOriItems = this.find(accountBook,new Condition().addCondition("id",new Integer[]{deliveryOrderItem.getId()}));
+            if(foundOriItems.length == 0) throw new WMSServiceException(String.format("出库单条目不存在，请重新提交！",deliveryOrderItem.getId()));//排除异常
+            DeliveryOrderItemView oriItemView = foundOriItems[0];
+
+            if (deliveryOrderItem.getScheduledAmount().subtract(oriItemView.getRealAmount()).compareTo(new BigDecimal(0))<0)//如果新修改时计划数量小于当前实际已经移动的数量
+            {
+                throw new WMSServiceException(String.format("出库单条目计划数量不能小于实际数量！出库单号：(%s)",deliveryOrderView.getNo()));
+            }
+
+
+
+            if (itemRelatedRecordService.findTable(accountBook,new Condition()
+                    .addCondition("relatedItemId",deliveryOrderItem.getId())
+                    .addCondition("itemType", ItemType.delierItem)).length > 0) {
+
+                //实际移库操作
+                TransferStock transferStock = new TransferStock();
+                transferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
+
+                transferStock.setAmount(deliveryOrderItem.getRealAmount());//实际数量
+                transferStock.setAvailableAmount(deliveryOrderItem.getScheduledAmount());
+
+                transferStock.setRelatedOrderNo(deliveryOrderView.getNo());//获取单号
+                transferStock.setItemId(deliveryOrderItem.getId());
+                transferStock.setItemType(ItemType.delierItem);//必须区分条目类型
+
+                transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
+                transferStock.setUnit(deliveryOrderItem.getUnit());
+                transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+                transferStock.setState(deliveryType);
+
+                //旧的信息
+                TransferStock transferStockRestore = new TransferStock();
+                transferStockRestore.setSourceStorageLocationId(oriItemView.getSourceStorageLocationId());
+                transferStock.setAmount(oriItemView.getRealAmount());//实际数量
+                transferStock.setAvailableAmount(oriItemView.getScheduledAmount());
+
+                transferStockRestore.setRelatedOrderNo(deliveryOrderView.getNo());//获取单号
+                transferStockRestore.setItemId(deliveryOrderItem.getId());
+                transferStockRestore.setItemType(ItemType.delierItem);//必须区分条目类型
+
+                transferStockRestore.setSupplyId(oriItemView.getSupplyId());
+                transferStockRestore.setState(deliveryType);
+                transferStockRestore.setUnit(oriItemView.getUnit());
+                transferStockRestore.setUnitAmount(oriItemView.getUnitAmount());
+
+
+                this.stockRecordService.reduceAmount(accountBook, transferStock,transferStockRestore);//使用更新单位的库存修改
+
+
+            }else{
+                //实际移库操作
+                TransferStock transferStock = new TransferStock();
+                transferStock.setSourceStorageLocationId(deliveryOrderItem.getSourceStorageLocationId());
+
+                transferStock.setAmount(deliveryOrderItem.getRealAmount());//实际数量
+                transferStock.setAvailableAmount(deliveryOrderItem.getScheduledAmount());
+
+                transferStock.setRelatedOrderNo(deliveryOrderView.getNo());//获取单号
+                transferStock.setItemId(deliveryOrderItem.getId());
+                transferStock.setItemType(ItemType.delierItem);//必须区分条目类型
+
+                transferStock.setSupplyId(deliveryOrderItem.getSupplyId());
+                transferStock.setState(deliveryType);
+                transferStock.setUnit(deliveryOrderItem.getUnit());
+                transferStock.setUnitAmount(deliveryOrderItem.getUnitAmount());
+
+                this.stockRecordService.reduceAmount(accountBook, transferStock,new TransferStock());//使用更新单位的库存修改
+
+            }
+
+                if (deliveryOrderItem.getScheduledAmount().equals(deliveryOrderItem.getRealAmount())){
+                    deliveryOrderItem.setState(DeliveryOrderService.STATE_ALL_LOADING);
+                }else if (deliveryOrderItem.getRealAmount().compareTo(BigDecimal.ZERO)==0) {
+                    deliveryOrderItem.setState(DeliveryOrderService.STATE_IN_LOADING);
+                }else{
+                    deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
+                }
+
+        });
+        this.deliveryOrderItemDAO.update(accountBook,deliveryOrderItems);
+        this.updateDeliveryOrder(accountBook,deliveryOrderItems[0].getDeliveryOrderId() ,-1);
+    }
+
+    @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
         int curdeliveryOrderId=-1;
         for (int i=0;i<ids.length;i++) {
@@ -413,6 +519,45 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
 
 
             }
+        }
+        try {
+            this.deliveryOrderItemDAO.remove(accountBook, ids);
+        } catch (Throwable ex) {
+            throw new WMSServiceException("删除失败，如果条目已经被引用，需要先删除引用项目");
+        }
+        this.updateDeliveryOrder(accountBook,curdeliveryOrderId ,-1);
+    }
+
+    @Override
+    public void remove2(String accountBook, int[] ids) throws WMSServiceException {
+        int curdeliveryOrderId=-1;
+        for (int i=0;i<ids.length;i++) {
+
+            DeliveryOrderItemView[] oriItemViews = this.find(accountBook, new Condition().addCondition("id", new Integer[]{ids[i]}));
+            if (oriItemViews.length == 0) {
+                throw new WMSServiceException(String.format("出库单条目不存在，删除失败(%d)", ids[i]));
+            }
+            int deliveryType=2;
+            if(oriItemViews[0].getDeliveryOrderType()==DeliveryOrderService.DELIVERY_TYPE_Unqualified){
+                deliveryType=1;
+            }
+            DeliveryOrderItemView oriItemView=oriItemViews[0];
+            curdeliveryOrderId=oriItemView.getDeliveryOrderId();
+            //旧的信息
+            TransferStock transferStockRestore = new TransferStock();
+            transferStockRestore.setSourceStorageLocationId(oriItemView.getSourceStorageLocationId());
+
+            transferStockRestore.setRelatedOrderNo(oriItemView.getDeliveryOrderNo());//获取单号
+            transferStockRestore.setItemId(oriItemView.getId());
+            //必须区分条目类型
+            transferStockRestore.setItemType(ItemType.delierItem);
+
+            transferStockRestore.setSupplyId(oriItemView.getSupplyId());
+            transferStockRestore.setState(deliveryType);
+            transferStockRestore.setUnit(oriItemView.getUnit());
+            transferStockRestore.setUnitAmount(oriItemView.getUnitAmount());
+
+            this.stockRecordService.restoreAmount(accountBook,transferStockRestore);//使用更新单位的库存修改
         }
         try {
             this.deliveryOrderItemDAO.remove(accountBook, ids);
