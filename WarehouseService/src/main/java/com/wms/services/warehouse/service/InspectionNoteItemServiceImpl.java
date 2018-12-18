@@ -69,7 +69,70 @@ public class InspectionNoteItemServiceImpl
     }
 
     @Override
+    public int[] add1(String accountBook, InspectionNoteItem[] objs) throws WMSServiceException {
+        List<WarehouseEntryItem> warehouseEntryItemsToUpdate = new ArrayList<>();
+        //根据每条送检单条目，更新入库单条目的送检数量
+        Stream.of(objs).forEach(inspectionNoteItem -> {
+            inspectionNoteItem.setReturnAmount(inspectionNoteItem.getAmount());
+            inspectionNoteItem.setReturnUnit(inspectionNoteItem.getUnit());
+            inspectionNoteItem.setReturnUnitAmount(inspectionNoteItem.getUnitAmount());
+            int warehouseEntryItemID = inspectionNoteItem.getWarehouseEntryItemId(); //入库单条目ID
+            BigDecimal inspectAmount = inspectionNoteItem.getAmount(); //入库单条目要送检的数量
+            //检查送检的入库单条目是否存在
+            //this.idChecker.check(WarehouseEntryItemService.class, accountBook, warehouseEntryItemID, "送检入库单条目");
+            //存在就把相应的入库单条目取出来。
+            //由于数据库事务的原子性，可以保证上一条语句执行确定入库单条目存在和这一条语句之间，不会有任何进行任何其他的对该数据表进行的操作
+            WarehouseEntryItem warehouseEntryItem = this.warehouseEntryItemService.get(accountBook,warehouseEntryItemID);
+            new Validator("送检数量")
+                    .min(0)
+                    .validate(inspectAmount);
+            BigDecimal maxInspectAmount = warehouseEntryItem.getRealAmount().subtract(warehouseEntryItem.getInspectionAmount());
+            if(inspectAmount.compareTo(maxInspectAmount) > 0){
+                throw new WMSServiceException(String.format("送检数量不能大于%s！",maxInspectAmount.divide(inspectionNoteItem.getUnitAmount(),3,RoundingMode.DOWN).toString()));
+            }
+            //更新入库单条目的送检数量
+            warehouseEntryItem.setInspectionAmount(warehouseEntryItem.getInspectionAmount().add(inspectAmount));
+            warehouseEntryItem.setState(WarehouseEntryItemService.BEING_INSPECTED);
+            warehouseEntryItemsToUpdate.add(warehouseEntryItem);
+        });
+        this.validateEntities(accountBook, objs);
+        warehouseEntryItemService.update1(accountBook, ReflectHelper.listToArray(warehouseEntryItemsToUpdate,WarehouseEntryItem.class),true);
+        return this.inspectionNoteItemDAO.add(accountBook, objs);
+    }
+
+    @Override
     public void update(String accountBook, InspectionNoteItem[] objs) throws WMSServiceException {
+        this.validateEntities(accountBook, objs);
+        List<Integer> inspectionNotesToUpdateState = new ArrayList<>();
+        Stream.of(objs).forEach((inspectionNoteItem -> {
+            InspectionNoteItem oriItem = this.inspectionNoteItemDAO.get(accountBook, inspectionNoteItem.getId());
+            if (oriItem == null) {
+                throw new WMSServiceException(String.format("送检单条目不存在，修改失败(%d)", inspectionNoteItem.getId()));
+            }
+            if(oriItem.getWarehouseEntryItemId() != inspectionNoteItem.getWarehouseEntryItemId()){
+                throw new WMSServiceException("不能修改送检单条目关联的入库单条目！");
+            }
+            BigDecimal oriAmount = oriItem.getAmount(); //原送检数量
+            BigDecimal deltaAmount = inspectionNoteItem.getAmount().subtract(oriAmount); //变化送检数量
+            if (deltaAmount.compareTo(BigDecimal.ZERO) != 0) {
+                throw new WMSServiceException("不允许修改计划送检数量！");
+            }else if(!oriItem.getUnit().equals(inspectionNoteItem.getUnit())){
+                throw new WMSServiceException("不允许修改送检单位！");
+            }else if(oriItem.getUnitAmount().compareTo(inspectionNoteItem.getUnitAmount())!=0){
+                throw new WMSServiceException("不允许修改送检单位数量！");
+            }
+            if(inspectionNoteItem.getReturnAmount().compareTo(inspectionNoteItem.getAmount()) > 0){
+                throw new WMSServiceException("返回数量不允许大于送检数量！");
+            }
+            if(oriItem.getState() != inspectionNoteItem.getState() && !inspectionNotesToUpdateState.contains(inspectionNoteItem.getInspectionNoteId())){
+                inspectionNotesToUpdateState.add(inspectionNoteItem.getInspectionNoteId());
+            }
+        }));
+        this.inspectionNoteItemDAO.update(accountBook, objs);
+    }
+
+    @Override
+    public void update1(String accountBook, InspectionNoteItem[] objs) throws WMSServiceException {
         this.validateEntities(accountBook, objs);
         List<Integer> inspectionNotesToUpdateState = new ArrayList<>();
         Stream.of(objs).forEach((inspectionNoteItem -> {
