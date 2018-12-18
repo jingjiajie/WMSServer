@@ -16,8 +16,10 @@ extends BaseController<StockRecord,StockRecordView> {
   void modifyAvailableAmount(String accountbook, TransferStock transferStock);
   StockRecord[] find(String accountbook, StockRecordFind stockRecordFind);
   StockRecordViewNewest[] findNewest(String accountbook, String condition);
+  StockRecordViewNewest[] findNewestWithoutZero(String accountbook, String condition);
   StockRecordViewAndSumGroupBySupplyId[] findByTime(String accountbook, StockRecordFindByTime[] stockRecordFindByTimes);
   long findCount(String accountBook,String condStr);
+  long findCountWithoutZero(String accountBook,String condStr);
   void remove(String accountBook,String strIDs);
   void judgeOldestBatch(String accountBook, JudgeOldestBatch judgeOldestBatch);
 }
