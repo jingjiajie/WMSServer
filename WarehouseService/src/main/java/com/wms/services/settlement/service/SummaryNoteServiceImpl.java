@@ -384,7 +384,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
 //            throw new WMSServiceException("托位长度："+validateTray.getWidth()+" 不能大于所有库位长度最小值"+lengthAvailableMin);
 //        }
         if(validateTray.getLength().multiply(validateTray.getWidth()).compareTo(areaMin)>0){
-            throw new WMSServiceException("托位面积："+validateTray.getWidth()+" 不能大于所有库位面积最小值"+areaMin);
+            throw new WMSServiceException("托位面积："+validateTray.getLength().multiply(validateTray.getWidth())+" 不能大于所有库位面积最小值"+areaMin);
         }
     }
 }
