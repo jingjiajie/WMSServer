@@ -8,6 +8,8 @@
       <module fileurl="file://$PROJECT_DIR$/Utilities/Utilities.iml" filepath="$PROJECT_DIR$/Utilities/Utilities.iml" />
       <module fileurl="file://$PROJECT_DIR$/WarehouseService/WarehouseService.iml" filepath="$PROJECT_DIR$/WarehouseService/WarehouseService.iml" />
       <module fileurl="file://$PROJECT_DIR$/Zuul/Zuul.iml" filepath="$PROJECT_DIR$/Zuul/Zuul.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LedgerService/ledger-service.iml" filepath="$PROJECT_DIR$/LedgerService/ledger-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/WarehouseService/warehouse-service.iml" filepath="$PROJECT_DIR$/WarehouseService/warehouse-service.iml" />
     </modules>
   </component>
 </project>

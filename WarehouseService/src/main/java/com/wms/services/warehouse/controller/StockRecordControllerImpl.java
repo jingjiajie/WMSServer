@@ -85,7 +85,7 @@ public class StockRecordControllerImpl implements StockRecordController {
     @RequestMapping(value = "/add_amount", method = RequestMethod.POST)
     public void addAmount(@PathVariable("accountBook") String accountBook,
                           @RequestBody TransferStock transferStock) {
-        stockRecordService.addAmount(accountBook, transferStock);
+        stockRecordService.addAmount(accountBook, transferStock,transferStock);
     }
 
     @Override

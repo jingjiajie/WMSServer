@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.TransferOrderItemDAO;
+import com.wms.services.warehouse.datastructures.ItemType;
 import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.IDChecker;
 import com.wms.utilities.ReflectHelper;
@@ -35,12 +36,13 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
     IDChecker idChecker;
     @Autowired
     SessionFactory sessionFactory;
+    @Autowired
+    ItemRelatedRecordService itemRelatedRecordService;
     private static boolean autotransfer=false;
 
     public void autoTrans(boolean a){
         autotransfer=a;
     }
-
 
     @Override
     public int[] add(String accountBook, TransferOrderItem[] transferOrderItems) throws WMSServiceException {
@@ -57,15 +59,15 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             //更新库存
 
 
-                //先改变可用数量，仅是想让提示看起来正常点
-                TransferStock transferStock = new TransferStock();
-                transferStock.setModifyAvailableAmount(new BigDecimal(0).subtract(transferOrderItem.getScheduledAmount()));//计划数量
-                transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
-                transferStock.setSupplyId(transferOrderItem.getSupplyId());
-                transferStock.setUnit(transferOrderItem.getSourceUnit());
-                transferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
-                this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
-                transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
+            //先改变可用数量，仅是想让提示看起来正常点
+            TransferStock transferStock = new TransferStock();
+            transferStock.setModifyAvailableAmount(new BigDecimal(0).subtract(transferOrderItem.getScheduledAmount()));//计划数量
+            transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
+            transferStock.setSupplyId(transferOrderItem.getSupplyId());
+            transferStock.setUnit(transferOrderItem.getSourceUnit());
+            transferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
+            this.stockRecordService.modifyAvailableAmount(accountBook, transferStock);
+            transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
 
             if (transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))!=0){
 
@@ -170,15 +172,15 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 this.stockRecordService.modifyAvailableAmount(accountBook, thefixTransferStock);
 
                 //todo 再一次更新库存
-                    //没有实际数输入就只改变可用数量,都是针对源单位数量的
-                    TransferStock seTransferStock = new TransferStock();
-                    seTransferStock.setModifyAvailableAmount(new BigDecimal(0).subtract(transferOrderItem.getScheduledAmount()));//计划数量
-                    seTransferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
-                    seTransferStock.setUnit(transferOrderItem.getSourceUnit());
-                    seTransferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
-                    seTransferStock.setSupplyId(transferOrderItem.getSupplyId());
-                    this.stockRecordService.modifyAvailableAmount(accountBook, seTransferStock);
-                    transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
+                //没有实际数输入就只改变可用数量,都是针对源单位数量的
+                TransferStock seTransferStock = new TransferStock();
+                seTransferStock.setModifyAvailableAmount(new BigDecimal(0).subtract(transferOrderItem.getScheduledAmount()));//计划数量
+                seTransferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
+                seTransferStock.setUnit(transferOrderItem.getSourceUnit());
+                seTransferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
+                seTransferStock.setSupplyId(transferOrderItem.getSupplyId());
+                this.stockRecordService.modifyAvailableAmount(accountBook, seTransferStock);
+                transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
 
                 if (transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))!=0) {
                     //todo 为了提示
@@ -227,36 +229,51 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                     if ((transferOrderItem.getRealAmount().subtract(oriItemViews[0].getRealAmount())).compareTo(BigDecimal.ZERO)>=0){
                         //todo 是移库前先把当前一步实际数量加回去可用数量
                         TransferStock fixTransferStock = new TransferStock();
-                    fixTransferStock.setModifyAvailableAmount(transferOrderItem.getRealAmount().subtract(oriItemViews[0].getRealAmount()));//实际要移动的数量差值加回到可用数量
-                    fixTransferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位
-                    fixTransferStock.setSupplyId(transferOrderItem.getSupplyId());
-                    fixTransferStock.setUnit(transferOrderItem.getSourceUnit());
-                    fixTransferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
-                    this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
+                        fixTransferStock.setModifyAvailableAmount(transferOrderItem.getRealAmount().subtract(oriItemViews[0].getRealAmount()));//实际要移动的数量差值加回到可用数量
+                        fixTransferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位
+                        fixTransferStock.setSupplyId(transferOrderItem.getSupplyId());
+                        fixTransferStock.setUnit(transferOrderItem.getSourceUnit());
+                        fixTransferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
+                        this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
 
-                    //TODO 如果传进来update的单位和原来条目单位不一致
-                    if (!transferOrderItem.getUnit().equals(oriItemViews[0].getUnit()) || transferOrderItem.getUnitAmount().compareTo(oriItemViews[0].getUnitAmount()) != 0) {
-                        if (oriItemViews[0].getRealAmount().compareTo(new BigDecimal(0)) != 0) //如果原来已经有移动的货物
-                        {
-                            // 先把之前的货物在库存里移动回去
-                            TransferStock reTransferStock = new TransferStock();
-                            reTransferStock.setNewStorageLocationId(transferOrderItem.getSourceStorageLocationId());
-                            reTransferStock.setAmount(oriItemViews[0].getRealAmount());//本来已经移动了的数量
-                            reTransferStock.setSourceStorageLocationId(transferOrderItem.getTargetStorageLocationId());//目标库位反转
-                            reTransferStock.setSupplyId(transferOrderItem.getSupplyId());
-                            reTransferStock.setRelatedOrderNo(transferOrderView.getNo());//获取单号
-                            reTransferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
-                            reTransferStock.setUnit(oriItemViews[0].getUnit());
-                            reTransferStock.setUnitAmount(oriItemViews[0].getUnitAmount());
-                            reTransferStock.setNewUnit(transferOrderItem.getSourceUnit());
-                            reTransferStock.setNewUnitAmount(transferOrderItem.getSourceUnitAmount());
-                            this.stockRecordService.RealTransferStockUnitFlexible(accountBook, reTransferStock);//使用更新单位的库存修改
+                        //TODO 如果传进来update的单位和原来条目单位不一致
+                        if (!transferOrderItem.getUnit().equals(oriItemViews[0].getUnit()) || transferOrderItem.getUnitAmount().compareTo(oriItemViews[0].getUnitAmount()) != 0) {
+                            if (oriItemViews[0].getRealAmount().compareTo(new BigDecimal(0)) != 0) //如果原来已经有移动的货物
+                            {
+                                // 先把之前的货物在库存里移动回去
+                                TransferStock reTransferStock = new TransferStock();
+                                reTransferStock.setNewStorageLocationId(transferOrderItem.getSourceStorageLocationId());
+                                reTransferStock.setAmount(oriItemViews[0].getRealAmount());//本来已经移动了的数量
+                                reTransferStock.setSourceStorageLocationId(transferOrderItem.getTargetStorageLocationId());//目标库位反转
+                                reTransferStock.setSupplyId(transferOrderItem.getSupplyId());
+                                reTransferStock.setRelatedOrderNo(transferOrderView.getNo());//获取单号
+                                reTransferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                                reTransferStock.setUnit(oriItemViews[0].getUnit());
+                                reTransferStock.setUnitAmount(oriItemViews[0].getUnitAmount());
+                                reTransferStock.setNewUnit(transferOrderItem.getSourceUnit());
+                                reTransferStock.setNewUnitAmount(transferOrderItem.getSourceUnitAmount());
+                                this.stockRecordService.RealTransferStockUnitFlexible(accountBook, reTransferStock);//使用更新单位的库存修改
 
 
+                                //实际移库操作
+                                TransferStock transferStock = new TransferStock();
+                                transferStock.setNewStorageLocationId(transferOrderItem.getTargetStorageLocationId());
+                                transferStock.setAmount(transferOrderItem.getRealAmount());//计划数量
+                                transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
+                                transferStock.setSupplyId(transferOrderItem.getSupplyId());
+                                transferStock.setRelatedOrderNo(transferOrderView.getNo());//获取单号
+                                transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+                                transferStock.setUnit(transferOrderItem.getSourceUnit());
+                                transferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
+                                transferStock.setNewUnit(transferOrderItem.getUnit());
+                                transferStock.setNewUnitAmount(transferOrderItem.getUnitAmount());
+                                this.stockRecordService.RealTransferStockUnitFlexible(accountBook, transferStock);//使用更新单位的库存修改
+                            }
+                        } else {
                             //实际移库操作
                             TransferStock transferStock = new TransferStock();
                             transferStock.setNewStorageLocationId(transferOrderItem.getTargetStorageLocationId());
-                            transferStock.setAmount(transferOrderItem.getRealAmount());//计划数量
+                            transferStock.setAmount(transferOrderItem.getRealAmount().subtract(oriItemViews[0].getRealAmount()));
                             transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
                             transferStock.setSupplyId(transferOrderItem.getSupplyId());
                             transferStock.setRelatedOrderNo(transferOrderView.getNo());//获取单号
@@ -265,24 +282,9 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                             transferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
                             transferStock.setNewUnit(transferOrderItem.getUnit());
                             transferStock.setNewUnitAmount(transferOrderItem.getUnitAmount());
-                            this.stockRecordService.RealTransferStockUnitFlexible(accountBook, transferStock);//使用更新单位的库存修改
+                            this.stockRecordService.RealTransferStockUnitFlexible(accountBook, transferStock);
                         }
-                    } else {
-                        //实际移库操作
-                        TransferStock transferStock = new TransferStock();
-                        transferStock.setNewStorageLocationId(transferOrderItem.getTargetStorageLocationId());
-                        transferStock.setAmount(transferOrderItem.getRealAmount().subtract(oriItemViews[0].getRealAmount()));
-                        transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());//修改源库位可用数量
-                        transferStock.setSupplyId(transferOrderItem.getSupplyId());
-                        transferStock.setRelatedOrderNo(transferOrderView.getNo());//获取单号
-                        transferStock.setInventoryDate(new Timestamp(System.currentTimeMillis()));
-                        transferStock.setUnit(transferOrderItem.getSourceUnit());
-                        transferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
-                        transferStock.setNewUnit(transferOrderItem.getUnit());
-                        transferStock.setNewUnitAmount(transferOrderItem.getUnitAmount());
-                        this.stockRecordService.RealTransferStockUnitFlexible(accountBook, transferStock);
-                    }
-                }else if ((transferOrderItem.getRealAmount().subtract(oriItemViews[0].getRealAmount())).compareTo(BigDecimal.ZERO)<0){
+                    }else if ((transferOrderItem.getRealAmount().subtract(oriItemViews[0].getRealAmount())).compareTo(BigDecimal.ZERO)<0){
                         //todo 是移库前先把当前一步实际数量加回去,最后调整好可用数量
 
                         //TODO 如果传进来update的单位和原来条目单位不一致
@@ -375,6 +377,155 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
 
 
     @Override
+    public int[] add2(String accountBook, TransferOrderItem[] transferOrderItems) throws WMSServiceException {
+        //根据每条移库单条目，更新移库单条目的移货数量
+        //获取移库单
+        int transferOrderId = transferOrderItems[0].getTransferOrderId();
+        TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
+        if(foundTransferOrders.length == 0){
+            throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)",transferOrderId));
+        }
+
+        this.validateEntities(accountBook, transferOrderItems);
+        int[] ids=new int[transferOrderItems.length];
+        for (int i=0;i<ids.length;i++){
+            int id=this.transferOrderItemDAO.add(accountBook, new TransferOrderItem[]{transferOrderItems[i]})[0];
+
+            TransferStock tureTransferStock = new TransferStock();
+
+            tureTransferStock.setAvailableAmount(transferOrderItems[i].getScheduledAmount());
+            tureTransferStock.setAmount(transferOrderItems[i].getRealAmount());
+
+            tureTransferStock.setSourceStorageLocationId(transferOrderItems[i].getSourceStorageLocationId());
+            tureTransferStock.setNewStorageLocationId(transferOrderItems[i].getTargetStorageLocationId());
+
+            tureTransferStock.setRelatedOrderNo(foundTransferOrders[0].getNo());
+            tureTransferStock.setItemId(transferOrderItems[i].getId());
+            tureTransferStock.setItemType(ItemType.transferItem);
+
+            tureTransferStock.setSupplyId(transferOrderItems[i].getSupplyId());
+            tureTransferStock.setNewUnit(transferOrderItems[i].getUnit());
+            tureTransferStock.setNewUnitAmount(transferOrderItems[i].getUnitAmount());
+            tureTransferStock.setUnit(transferOrderItems[i].getSourceUnit());
+            tureTransferStock.setUnitAmount(transferOrderItems[i].getSourceUnitAmount());
+
+            this.stockRecordService.transferStock(accountBook, tureTransferStock,new TransferStock());//直接改数
+
+            if (transferOrderItems[i].getScheduledAmount().compareTo(transferOrderItems[i].getRealAmount())==0){
+                transferOrderItems[i].setState(TransferOrderItemService.STATE_ALL_FINISH);
+            }
+            ids[i]=id;
+        }
+        this.updateTransferOrder(accountBook, transferOrderItems[0].getTransferOrderId(), transferOrderItems[0].getPersonId());
+        return ids;
+    }
+
+    @Override
+    public void update2(String accountBook, TransferOrderItem[] transferOrderItems) throws WMSServiceException {
+        this.validateEntities(accountBook, transferOrderItems);
+        Stream.of(transferOrderItems).forEach((transferOrderItem -> {
+
+
+            //找出对应的移库单和移库单条目
+            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{transferOrderItem.getId()}));
+            if (oriItemViews.length == 0) {
+                throw new WMSServiceException(String.format("移库单条目不存在，修改失败(%d)", transferOrderItem.getId()));
+            }
+
+            int transferOrderId = transferOrderItem.getTransferOrderId();
+            TransferOrderView[] foundTransferOrders = this.transferOrderService.find(accountBook,new Condition().addCondition("id",new Integer[]{transferOrderId}));
+            if(foundTransferOrders.length == 0) {
+                throw new WMSServiceException(String.format("移库单不存在，请重新提交！(%d)", transferOrderId));
+            }
+            TransferOrderView transferOrderView = foundTransferOrders[0];
+            if (transferOrderItem.getScheduledAmount().subtract(transferOrderItem.getRealAmount()).compareTo(new BigDecimal(0)) < 0)//如果新修改时计划数量小于当前实际已经移动的数量
+            {
+                throw new WMSServiceException(String.format("移库单条目计划数量不能小于实际数量！单号：(%s)", transferOrderView.getNo()));
+            }
+
+
+
+            if (itemRelatedRecordService.findTable(accountBook,new Condition()
+                    .addCondition("relatedItemId",transferOrderItem.getId())
+                    .addCondition("itemType", ItemType.transferItem)).length > 0) {
+
+                //实际移库操作
+                TransferStock transferStock = new TransferStock();
+                transferStock.setNewStorageLocationId(transferOrderItem.getTargetStorageLocationId());
+                transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());
+                transferStock.setAmount(transferOrderItem.getRealAmount());//实际数量
+                transferStock.setAvailableAmount(transferOrderItem.getScheduledAmount());
+
+                transferStock.setRelatedOrderNo(transferOrderView.getNo());//获取单号
+                transferStock.setItemId(transferOrderItem.getId());
+                transferStock.setItemType(ItemType.transferItem);
+
+                transferStock.setSupplyId(transferOrderItem.getSupplyId());
+                transferStock.setUnit(transferOrderItem.getSourceUnit());
+                transferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
+                transferStock.setNewUnit(transferOrderItem.getUnit());
+                transferStock.setNewUnitAmount(transferOrderItem.getUnitAmount());
+
+                //旧的信息
+                TransferStock transferStockRestore = new TransferStock();
+                transferStockRestore.setNewStorageLocationId(oriItemViews[0].getTargetStorageLocationId());
+                transferStockRestore.setSourceStorageLocationId(oriItemViews[0].getSourceStorageLocationId());
+
+                transferStockRestore.setRelatedOrderNo(transferOrderView.getNo());//获取单号
+                transferStockRestore.setItemId(transferOrderItem.getId());
+                //必须区分条目类型
+                transferStockRestore.setItemType(ItemType.transferItem);
+
+                transferStockRestore.setSupplyId(oriItemViews[0].getSupplyId());
+                transferStockRestore.setUnit(oriItemViews[0].getUnit());
+                transferStockRestore.setUnitAmount(oriItemViews[0].getUnitAmount());
+                transferStockRestore.setNewUnit(oriItemViews[0].getSourceUnit());
+                transferStockRestore.setNewUnitAmount(oriItemViews[0].getSourceUnitAmount());
+
+
+                this.stockRecordService.transferStock(accountBook, transferStock,transferStockRestore);//使用更新单位的库存修改
+
+
+            }else{
+                //实际移库操作
+                TransferStock transferStock = new TransferStock();
+                transferStock.setNewStorageLocationId(transferOrderItem.getTargetStorageLocationId());
+                transferStock.setSourceStorageLocationId(transferOrderItem.getSourceStorageLocationId());
+                transferStock.setAmount(transferOrderItem.getRealAmount());//实际数量
+                transferStock.setAvailableAmount(transferOrderItem.getScheduledAmount());
+
+                transferStock.setRelatedOrderNo(transferOrderView.getNo());//获取单号
+                transferStock.setItemId(transferOrderItem.getId());
+                //必须区分条目类型
+                transferStock.setItemType(ItemType.transferItem);
+
+                transferStock.setSupplyId(transferOrderItem.getSupplyId());
+                transferStock.setUnit(transferOrderItem.getSourceUnit());
+                transferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
+                transferStock.setNewUnit(transferOrderItem.getUnit());
+                transferStock.setNewUnitAmount(transferOrderItem.getUnitAmount());
+
+                this.stockRecordService.transferStock(accountBook, transferStock,new TransferStock());//使用更新单位的库存修改
+            }
+
+            //TODO 最后状态变更
+
+            if (transferOrderItem.getScheduledAmount().compareTo(transferOrderItem.getRealAmount())==0){
+                transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+            }
+            else if (transferOrderItem.getRealAmount().compareTo(new BigDecimal(0))==0){
+                transferOrderItem.setState(TransferOrderItemService.STATE_IN_TRANSFER);
+            }else
+            {transferOrderItem.setState(TransferOrderItemService.STATE_PARTIAL_FINNISH);}
+        }));
+
+
+        this.transferOrderItemDAO.update(accountBook, transferOrderItems);
+        this.updateTransferOrder(accountBook,transferOrderItems[0].getTransferOrderId() ,transferOrderItems[0].getPersonId());
+    }
+
+
+    @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
         int curTransferOrderId=-1;
         int curPersonId=-1;
@@ -388,10 +539,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             TransferOrderItemView oriItemView=oriItemViews[0];
             curTransferOrderId=oriItemView.getTransferOrderId();
             curPersonId=oriItemView.getPersonId();
-            if (oriItemView.getState()==0
-//                    oriItemView.getScheduledAmount().compareTo(new BigDecimal(0))!=0&&
-//                    oriItemView.getRealAmount().compareTo(new BigDecimal(0))==0
-                    )
+            if (oriItemView.getState()==0)
             {
                 //删除了未经过操作的移库单，更新库存可用数量
                 TransferStock transferStock = new TransferStock();
@@ -429,6 +577,43 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
 
             }
+
+        }
+        this.transferOrderItemDAO.remove(accountBook, ids);
+        this.updateTransferOrder(accountBook,curTransferOrderId ,curPersonId);
+    }
+
+    @Override
+    public void remove2(String accountBook, int[] ids) throws WMSServiceException {
+        int curTransferOrderId=-1;
+        int curPersonId=-1;
+        for (int id : ids) {
+
+            TransferOrderItemView[] oriItemViews = this.transferOrderItemDAO.find(accountBook, new Condition().addCondition("id", new Integer[]{id}));
+            if (oriItemViews.length == 0) {
+                throw new WMSServiceException(String.format("移库单条目不存在，删除失败(%d)", id));
+            }
+            TransferOrderItemView oriItemView=oriItemViews[0];
+            curTransferOrderId=oriItemView.getTransferOrderId();
+            curPersonId=oriItemView.getPersonId();
+
+            //旧的信息
+            TransferStock transferStockRestore = new TransferStock();
+            transferStockRestore.setNewStorageLocationId(oriItemView.getTargetStorageLocationId());
+            transferStockRestore.setSourceStorageLocationId(oriItemView.getSourceStorageLocationId());
+
+            transferStockRestore.setRelatedOrderNo(oriItemView.getTransferOrderNo());//获取单号
+            transferStockRestore.setItemId(oriItemView.getId());
+            //必须区分条目类型
+            transferStockRestore.setItemType(ItemType.transferItem);
+
+            transferStockRestore.setSupplyId(oriItemView.getSupplyId());
+            transferStockRestore.setUnit(oriItemView.getUnit());
+            transferStockRestore.setUnitAmount(oriItemView.getUnitAmount());
+            transferStockRestore.setNewUnit(oriItemView.getSourceUnit());
+            transferStockRestore.setNewUnitAmount(oriItemView.getSourceUnitAmount());
+
+            this.stockRecordService.restoreAmount(accountBook,transferStockRestore);//使用更新单位的库存修改
 
         }
         this.transferOrderItemDAO.remove(accountBook, ids);

@@ -10,9 +10,19 @@ import java.sql.Timestamp;
 
 public interface StockRecordService
         extends   BaseService<StockRecord,StockRecordView> {
+
+    //transferStockRestore需要的是条目上当前的单位、单位数量，移库还需包括新单位、新单位数量等，用于反向移动
     void RealTransformStock(String accountBook, TransferStock transferStock);
 
-    void addAmount(String accountBook, TransferStock transferStock);
+    void addAmount(String accountBook, TransferStock transferStock,TransferStock transferStockRestore);
+
+    void addAmount(String accountBook, TransferStock transferStocke);
+
+    void reduceAmount(String accountBook, TransferStock transferStock,TransferStock transferStockRestore);
+
+    void transferStock(String accountBook, TransferStock transferStock,TransferStock transferStockRestore);
+
+    void restoreAmount(String accountBook, TransferStock transferStockRestore);
 
     void addAmountToNewestBatchNo(String accountBook,TransferStock transferStock );
 
@@ -57,4 +67,7 @@ public interface StockRecordService
     long findCount(String database,Condition cond) throws WMSServiceException;
 
     void judgeOldestBatch(String accountBook, JudgeOldestBatch judgeOldestBatch);
+
+
+
 }
