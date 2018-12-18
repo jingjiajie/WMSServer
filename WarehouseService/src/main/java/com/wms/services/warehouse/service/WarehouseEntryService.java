@@ -21,6 +21,7 @@ public interface WarehouseEntryService
      * @see InspectArgs
      */
     public List<Integer> inspect(String accountBook, InspectArgs inspectArgs);
+    public List<Integer> inspect1(String accountBook, InspectArgs inspectArgs);
     void updateState(String accountBook, List<Integer> ids);
     WarehouseEntry get(String accountBook,int id) throws WMSServiceException;
 
@@ -33,4 +34,7 @@ public interface WarehouseEntryService
     List<WarehouseEntryAndItems> getPreviewData(String accountBook, List<Integer> warehouseEntryIDs) throws WMSServiceException;
     void receive(String accountBook,List<Integer> id) throws WMSServiceException;
     void reject(String accountBook,List<Integer> id) throws WMSServiceException;
+
+    void receive1(String accountBook,List<Integer> id) throws WMSServiceException;
+    void reject1(String accountBook,List<Integer> id) throws WMSServiceException;
 }
