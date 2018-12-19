@@ -6,6 +6,7 @@ public class InspectFinishArgs {
     private int warehouseEntryId = -1;
     private boolean qualified = true;
     private int personId = -1;
+    private int version=-1;
     private InspectFinishItem[] inspectFinishItems = new InspectFinishItem[]{};
 
     public int getWarehouseEntryId() {
@@ -55,6 +56,14 @@ public class InspectFinishArgs {
 
     public void setInspectFinishItems(InspectFinishItem[] inspectFinishItems) {
         this.inspectFinishItems = inspectFinishItems;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
 }

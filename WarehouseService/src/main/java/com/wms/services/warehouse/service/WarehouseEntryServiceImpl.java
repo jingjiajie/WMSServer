@@ -19,10 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -109,7 +106,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         cond.addCondition("warehouseId", warehouseEntries[0].getWarehouseId());
         WarehouseEntry[] warehouseEntriesCheck = warehouseEntryDAO.findTable(accountBook, cond);
         List<WarehouseEntry> warehouseEntryList = Arrays.asList(warehouseEntriesCheck);
-        warehouseEntryList.stream().reduce((last, cur) -> {
+        warehouseEntryList.stream().sorted(Comparator.comparing(WarehouseEntry::getInboundDeliveryOrderNo)).reduce((last, cur) -> {
             if (last.getInboundDeliveryOrderNo().equals(cur.getInboundDeliveryOrderNo()) && last.getInboundDeliveryOrderNo() != null && !(last.getInboundDeliveryOrderNo().equals(""))) {
                 throw new WMSServiceException("入库单内向单号重复:" + cur.getNo());
             }
@@ -205,11 +202,13 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
             warehouseEntriesToUpdate.add(warehouseEntry);
             //创建新的送检单
             InspectionNote inspectionNote = inspectItem.getInspectionNote();
+            inspectionNote.setVersion(1);
             new Validator("送检单信息").notnull().validate(inspectionNote);
             //将每一条入库单条目生成送检单条目
             int newInspectionNoteID = this.inspectionNoteService.add(accountBook, new InspectionNote[]{inspectionNote})[0];
             Stream.of(inspectItem.getInspectionNoteItems()).forEach(inspectionNoteItem -> {
                 inspectionNoteItem.setInspectionNoteId(newInspectionNoteID);
+                inspectionNoteItem.setVersion(1);
                 inspectionNoteItemsToAdd.add(inspectionNoteItem);
             });
             inspectionNoteIDs.add(newInspectionNoteID);
@@ -282,20 +281,9 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     }
 
     @Override
-    public void receive1(String accountBook, List<Integer> ids) throws WMSServiceException {
-        this.putIn(accountBook, ids, true);
-    }
-
-    @Override
     public void reject(String accountBook, List<Integer> ids) throws WMSServiceException {
-        this.putIn1(accountBook, ids, false);
+        this.putIn(accountBook, ids, false);
     }
-
-    @Override
-    public void reject1(String accountBook, List<Integer> ids) throws WMSServiceException {
-        this.putIn1(accountBook, ids, false);
-    }
-
 
     private void putIn(String accountBook, List<Integer> ids, boolean ifQualified) {
         if (ids.size() == 0) {
@@ -320,40 +308,20 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         }
         List<Integer> itemIDs = Stream.of(warehouseEntryItemViews).map(item -> item.getId()).collect(Collectors.toList());
         //更新入库单条目
-        if (ifQualified) {
-            this.warehouseEntryItemService.receive(accountBook, itemIDs, null);
-        } else {
-            this.warehouseEntryItemService.reject(accountBook, itemIDs, null);
-        }
-    }
-
-    private void putIn1(String accountBook, List<Integer> ids, boolean ifQualified) {
-        if (ids.size() == 0) {
-            throw new WMSServiceException("请选择至少一个入库单！");
-        }
-        WarehouseEntry[] warehouseEntries = this.warehouseEntryDAO.findTable(accountBook, new Condition().addCondition("id", ids.toArray(), ConditionItem.Relation.IN));
-        Stream.of(warehouseEntries).forEach(warehouseEntry -> {
-            if (warehouseEntry.getState() != WAIT_FOR_PUT_IN_STORAGE) {
-                throw new WMSServiceException("入库单：" + warehouseEntry.getNo() + " 已经送检/入库，请勿重复操作！");
-            }
-            warehouseEntry.setState(ALL_PUT_IN_STORAGE);
-        });
-        //更新入库单
-        this.update(accountBook, warehouseEntries);
-        WarehouseEntryItemView[] warehouseEntryItemViews = this.warehouseEntryItemService.find(accountBook, new Condition().addCondition("warehouseEntryId", ids.toArray(), ConditionItem.Relation.IN));
-        Map<Integer, List<WarehouseEntryItemView>> itemGroups = Stream.of(warehouseEntryItemViews).collect(Collectors.groupingBy((item) -> item.getWarehouseEntryId()));
-        for (WarehouseEntry warehouseEntry : warehouseEntries) {
-            Integer id = warehouseEntry.getId();
-            if (!itemGroups.containsKey(id)) {
-                throw new WMSServiceException(String.format("入库单：%s 为空，请先添加物料条目！", warehouseEntry.getNo()));
+        //区分版本 直接按大单的版本区分
+        if (warehouseEntries[0].getVersion() == 0) {
+            if (ifQualified) {
+                this.warehouseEntryItemService.receive(accountBook, itemIDs, null);
+            } else {
+                this.warehouseEntryItemService.reject(accountBook, itemIDs, null);
             }
         }
-        List<Integer> itemIDs = Stream.of(warehouseEntryItemViews).map(item -> item.getId()).collect(Collectors.toList());
-        //更新入库单条目
-        if (ifQualified) {
-            this.warehouseEntryItemService.receive1(accountBook, itemIDs, null);
-        } else {
-            this.warehouseEntryItemService.reject1(accountBook, itemIDs, null);
+        if (warehouseEntries[0].getVersion() == 1) {
+            if (ifQualified) {
+                this.warehouseEntryItemService.receive1(accountBook, itemIDs, null);
+            } else {
+                this.warehouseEntryItemService.reject1(accountBook, itemIDs, null);
+            }
         }
     }
 }

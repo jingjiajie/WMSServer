@@ -34,6 +34,4 @@ public interface WarehouseEntryService
     void receive(String accountBook,List<Integer> id) throws WMSServiceException;
     void reject(String accountBook,List<Integer> id) throws WMSServiceException;
 
-    void receive1(String accountBook,List<Integer> id) throws WMSServiceException;
-    void reject1(String accountBook,List<Integer> id) throws WMSServiceException;
 }
