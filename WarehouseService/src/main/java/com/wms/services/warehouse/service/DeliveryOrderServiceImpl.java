@@ -284,6 +284,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
                 if (stockRecordViews4.length>0 && sourceAmount.compareTo(safetyStockViews[i].getAmountMin()) <0&& sourceAmount1.compareTo(safetyStockViews[i].getAmountMin())>=0) {
                     transferOrderItem.setComment("成功一键移库");
+                    transferOrderItem.setVersion(1);
                     succeedOrder=true;
                     transferOrderItemsList.add(transferOrderItem);
 
@@ -355,7 +356,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
             }
         }
         if (transferOrderItems.length!=0) {
-            this.transferOrderItemService.add(accountBook, transferOrderItems);
+            //todo 改用新的接口
+            this.transferOrderItemService.add2(accountBook, transferOrderItems);
         }
         return falseTransferOrderItemsList;
     }
@@ -486,9 +488,10 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                                     && needAmount.compareTo(BigDecimal.ZERO) > 0
                                     && sourceAmount1.compareTo(needAmount) >= 0) {
                                 transferOrderItem.setComment("成功一键移库");
+                                transferOrderItem.setVersion(1);
                                 succeedOrder = true;
                                 transferOrderItemsList.add(transferOrderItem);
-                                this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
+                                this.transferOrderItemService.add2(accountBook, new TransferOrderItem[]{transferOrderItem});
                                 needAmount = needAmount.subtract(needAmount);
                             } else if (stockRecordViews4.length == 0) {
                                 transferOrderItemView.setComment("源库位库存条目不存在！");
@@ -681,8 +684,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                         && sourceAmount.compareTo(safetyStockViews[i].getAmountMin()) <0
                         && sourceAmount1.compareTo(transferOrderItem.getScheduledAmount())>=0) {
                     transferOrderItem.setComment("成功一键上架");
+                    transferOrderItem.setVersion(1);
                     succeedOrder=true;
-                    this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
+                    this.transferOrderItemService.add2(accountBook, new TransferOrderItem[]{transferOrderItem});
                     transferOrderItemsList.add(transferOrderItem);
 
                 }else if (stockRecordViews4.length==0){
@@ -736,8 +740,9 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     }else{
                         transferOrderItem.setScheduledAmount(sourceAmount1);
                         transferOrderItem.setComment("部分一键上架");
+                        transferOrderItem.setVersion(1);
                         succeedOrder=true;
-                        this.transferOrderItemService.add(accountBook, new TransferOrderItem[]{transferOrderItem});
+                        this.transferOrderItemService.add2(accountBook, new TransferOrderItem[]{transferOrderItem});
                         transferOrderItemsList.add(transferOrderItem);
                     }
                 }
@@ -763,7 +768,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
     @Override
     public void deliveryFinish(String accountBook,DeliveryFinish deliveryFinish) throws WMSServiceException{
-
+        //todo 前端解决，代码留存
         List<Integer>ids=deliveryFinish.getDeliveryOrderIds();
         if (ids.size() == 0) {
             throw new WMSServiceException("请选择至少一个出库单！");
@@ -812,7 +817,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
     @Override
     public void decreaseInAccounting(String accountBook,List<Integer> ids) throws WMSServiceException{
 
-        //TODO 人员id没往下传
+        //todo 前端解决，代码留存
         if (ids.size() == 0) {
             throw new WMSServiceException("请选择至少一个出库单！");
         }
@@ -909,6 +914,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     deliveryOrderItem.setDeliveryOrderId(curDeliveryOrderId);
                     deliveryOrderItem.setRealAmount(BigDecimal.ZERO);
                     deliveryOrderItem.setComment("套餐发货项");
+                    //更新版本号
+                    deliveryOrderItem.setVersion(1);
                     deliveryOrderItemList.add(deliveryOrderItem);
 
             }
@@ -939,7 +946,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         if (deliveryOrderItems.length==0) {
             throw new WMSServiceException(String.format("当前发货套餐无可正常发货项，套餐名称（%S），无法创建出库单，请检查发货套餐设置再试！", curPakageViews[0].getName()));
         }
-        this.deliveryOrderItemService.add(accountBook,deliveryOrderItems);
+        //使用新版接口
+        this.deliveryOrderItemService.add2(accountBook,deliveryOrderItems);
         return falseDeliveryOrderItemList;
     }
 
