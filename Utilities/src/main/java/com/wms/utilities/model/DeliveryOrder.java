@@ -20,6 +20,7 @@ public class DeliveryOrder {
     private String driverName;
     private String liscensePlateNumber;
     private int type;
+    private Integer version;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -172,12 +173,22 @@ public class DeliveryOrder {
         this.type = type;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
 
-        DeliveryOrder that = (DeliveryOrder) object;
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DeliveryOrder that = (DeliveryOrder) o;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
@@ -198,6 +209,7 @@ public class DeliveryOrder {
         if (driverName != null ? !driverName.equals(that.driverName) : that.driverName != null) return false;
         if (liscensePlateNumber != null ? !liscensePlateNumber.equals(that.liscensePlateNumber) : that.liscensePlateNumber != null)
             return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -219,6 +231,7 @@ public class DeliveryOrder {
         result = 31 * result + (driverName != null ? driverName.hashCode() : 0);
         result = 31 * result + (liscensePlateNumber != null ? liscensePlateNumber.hashCode() : 0);
         result = 31 * result + type;
+        result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 }

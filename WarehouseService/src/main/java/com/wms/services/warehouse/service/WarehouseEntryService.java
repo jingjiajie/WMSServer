@@ -2,10 +2,9 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.datastructures.InspectArgs;
 import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.WarehouseEntry;
 import com.wms.utilities.model.WarehouseEntryView;
-import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.service.BaseService;
 
 import java.util.List;

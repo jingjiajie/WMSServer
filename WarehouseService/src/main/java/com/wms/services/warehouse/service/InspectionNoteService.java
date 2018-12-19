@@ -2,7 +2,6 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.datastructures.InspectFinishArgs;
 import com.wms.services.warehouse.datastructures.InspectionNoteAndItems;
-import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.InspectionNote;
 import com.wms.utilities.model.InspectionNoteView;

@@ -8,11 +8,11 @@ import com.wms.services.warehouse.datastructures.TransferFinishArgs;
 import com.wms.services.warehouse.service.TransferOrderService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.DeliveryOrderItemView;
+import com.wms.utilities.model.TransferOrder;
+import com.wms.utilities.model.TransferOrderView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import com.wms.utilities.model.TransferOrder;
-import com.wms.utilities.model.TransferOrderView;
 
 import java.util.List;
 
@@ -53,7 +53,7 @@ public class TransferOrderControllerImpl implements  TransferOrderController{
     @RequestMapping(value = "/{condStr}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public TransferOrderView[] find(@PathVariable("accountBook") String accountBook,
-                                     @PathVariable("condStr") String condStr) {
+                                    @PathVariable("condStr") String condStr) {
         return this.transferOrderService.find(accountBook, Condition.fromJson(condStr));
     }
 
@@ -96,7 +96,7 @@ public class TransferOrderControllerImpl implements  TransferOrderController{
     @RequestMapping(value = "/order_to_delivery",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public List<DeliveryOrderItemView> orderToDelivery(@PathVariable("accountBook") String accountBook,
-                                                        @RequestBody DeliveryByTransferOrder deliveryByTransferOrder){
+                                                       @RequestBody DeliveryByTransferOrder deliveryByTransferOrder){
         return this.transferOrderService.orderToDelivery(accountBook,deliveryByTransferOrder);
     }
 }

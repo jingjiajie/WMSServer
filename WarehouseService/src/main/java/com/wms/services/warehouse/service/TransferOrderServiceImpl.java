@@ -15,8 +15,6 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.wms.utilities.model.TransferOrder;
-import com.wms.utilities.model.TransferOrderView;
 
 
 import java.lang.reflect.Array;
@@ -24,7 +22,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service

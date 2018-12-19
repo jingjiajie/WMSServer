@@ -3,11 +3,13 @@ package com.wms.utilities.model;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 public class WarehouseEntryItem {
     private int id;
+    private int warehouseEntryId;
+    private int supplyId;
+    private int storageLocationId;
     private BigDecimal expectedAmount;
     private BigDecimal realAmount;
     private String unit;
@@ -17,17 +19,15 @@ public class WarehouseEntryItem {
     private BigDecimal refuseAmount;
     private String refuseUnit;
     private BigDecimal refuseUnitAmount;
+    private Integer personId;
     private String comment;
     private String manufactureNo;
     private Timestamp inventoryDate;
     private Timestamp manufactureDate;
     private Timestamp expiryDate;
-    private int warehouseEntryId;
-    private int supplyId;
-    private int storageLocationId;
-    private Integer personId;
     private Integer qualifiedStorageLocationId;
     private Integer unqualifiedStorageLocationId;
+    private Integer version;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +38,36 @@ public class WarehouseEntryItem {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Basic
+    @Column(name = "WarehouseEntryID")
+    public int getWarehouseEntryId() {
+        return warehouseEntryId;
+    }
+
+    public void setWarehouseEntryId(int warehouseEntryId) {
+        this.warehouseEntryId = warehouseEntryId;
+    }
+
+    @Basic
+    @Column(name = "SupplyID")
+    public int getSupplyId() {
+        return supplyId;
+    }
+
+    public void setSupplyId(int supplyId) {
+        this.supplyId = supplyId;
+    }
+
+    @Basic
+    @Column(name = "StorageLocationID")
+    public int getStorageLocationId() {
+        return storageLocationId;
+    }
+
+    public void setStorageLocationId(int storageLocationId) {
+        this.storageLocationId = storageLocationId;
     }
 
     @Basic
@@ -131,6 +161,16 @@ public class WarehouseEntryItem {
     }
 
     @Basic
+    @Column(name = "PersonID")
+    public Integer getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(Integer personId) {
+        this.personId = personId;
+    }
+
+    @Basic
     @Column(name = "Comment")
     public String getComment() {
         return comment;
@@ -180,74 +220,6 @@ public class WarehouseEntryItem {
         this.expiryDate = expiryDate;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        WarehouseEntryItem that = (WarehouseEntryItem) o;
-        return id == that.id &&
-                state == that.state &&
-                Objects.equals(expectedAmount, that.expectedAmount) &&
-                Objects.equals(realAmount, that.realAmount) &&
-                Objects.equals(unit, that.unit) &&
-                Objects.equals(unitAmount, that.unitAmount) &&
-                Objects.equals(inspectionAmount, that.inspectionAmount) &&
-                Objects.equals(refuseAmount, that.refuseAmount) &&
-                Objects.equals(refuseUnit, that.refuseUnit) &&
-                Objects.equals(refuseUnitAmount, that.refuseUnitAmount) &&
-                Objects.equals(comment, that.comment) &&
-                Objects.equals(manufactureNo, that.manufactureNo) &&
-                Objects.equals(inventoryDate, that.inventoryDate) &&
-                Objects.equals(manufactureDate, that.manufactureDate) &&
-                Objects.equals(expiryDate, that.expiryDate);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, expectedAmount, realAmount, unit, unitAmount, inspectionAmount, state, refuseAmount, refuseUnit, refuseUnitAmount, comment, manufactureNo, inventoryDate, manufactureDate, expiryDate);
-    }
-
-    @Basic
-    @Column(name = "WarehouseEntryID")
-    public int getWarehouseEntryId() {
-        return warehouseEntryId;
-    }
-
-    public void setWarehouseEntryId(int warehouseEntryId) {
-        this.warehouseEntryId = warehouseEntryId;
-    }
-
-    @Basic
-    @Column(name = "SupplyID")
-    public int getSupplyId() {
-        return supplyId;
-    }
-
-    public void setSupplyId(int supplyId) {
-        this.supplyId = supplyId;
-    }
-
-    @Basic
-    @Column(name = "StorageLocationID")
-    public int getStorageLocationId() {
-        return storageLocationId;
-    }
-
-    public void setStorageLocationId(int storageLocationId) {
-        this.storageLocationId = storageLocationId;
-    }
-
-    @Basic
-    @Column(name = "PersonID")
-    public Integer getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(Integer personId) {
-        this.personId = personId;
-    }
-
     @Basic
     @Column(name = "QualifiedStorageLocationID")
     public Integer getQualifiedStorageLocationId() {
@@ -266,5 +238,83 @@ public class WarehouseEntryItem {
 
     public void setUnqualifiedStorageLocationId(Integer unqualifiedStorageLocationId) {
         this.unqualifiedStorageLocationId = unqualifiedStorageLocationId;
+    }
+
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        WarehouseEntryItem that = (WarehouseEntryItem) o;
+
+        if (id != that.id) return false;
+        if (warehouseEntryId != that.warehouseEntryId) return false;
+        if (supplyId != that.supplyId) return false;
+        if (storageLocationId != that.storageLocationId) return false;
+        if (state != that.state) return false;
+        if (expectedAmount != null ? !expectedAmount.equals(that.expectedAmount) : that.expectedAmount != null)
+            return false;
+        if (realAmount != null ? !realAmount.equals(that.realAmount) : that.realAmount != null) return false;
+        if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+        if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
+        if (inspectionAmount != null ? !inspectionAmount.equals(that.inspectionAmount) : that.inspectionAmount != null)
+            return false;
+        if (refuseAmount != null ? !refuseAmount.equals(that.refuseAmount) : that.refuseAmount != null) return false;
+        if (refuseUnit != null ? !refuseUnit.equals(that.refuseUnit) : that.refuseUnit != null) return false;
+        if (refuseUnitAmount != null ? !refuseUnitAmount.equals(that.refuseUnitAmount) : that.refuseUnitAmount != null)
+            return false;
+        if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
+        if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
+        if (manufactureNo != null ? !manufactureNo.equals(that.manufactureNo) : that.manufactureNo != null)
+            return false;
+        if (inventoryDate != null ? !inventoryDate.equals(that.inventoryDate) : that.inventoryDate != null)
+            return false;
+        if (manufactureDate != null ? !manufactureDate.equals(that.manufactureDate) : that.manufactureDate != null)
+            return false;
+        if (expiryDate != null ? !expiryDate.equals(that.expiryDate) : that.expiryDate != null) return false;
+        if (qualifiedStorageLocationId != null ? !qualifiedStorageLocationId.equals(that.qualifiedStorageLocationId) : that.qualifiedStorageLocationId != null)
+            return false;
+        if (unqualifiedStorageLocationId != null ? !unqualifiedStorageLocationId.equals(that.unqualifiedStorageLocationId) : that.unqualifiedStorageLocationId != null)
+            return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + warehouseEntryId;
+        result = 31 * result + supplyId;
+        result = 31 * result + storageLocationId;
+        result = 31 * result + (expectedAmount != null ? expectedAmount.hashCode() : 0);
+        result = 31 * result + (realAmount != null ? realAmount.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
+        result = 31 * result + (inspectionAmount != null ? inspectionAmount.hashCode() : 0);
+        result = 31 * result + state;
+        result = 31 * result + (refuseAmount != null ? refuseAmount.hashCode() : 0);
+        result = 31 * result + (refuseUnit != null ? refuseUnit.hashCode() : 0);
+        result = 31 * result + (refuseUnitAmount != null ? refuseUnitAmount.hashCode() : 0);
+        result = 31 * result + (personId != null ? personId.hashCode() : 0);
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (manufactureNo != null ? manufactureNo.hashCode() : 0);
+        result = 31 * result + (inventoryDate != null ? inventoryDate.hashCode() : 0);
+        result = 31 * result + (manufactureDate != null ? manufactureDate.hashCode() : 0);
+        result = 31 * result + (expiryDate != null ? expiryDate.hashCode() : 0);
+        result = 31 * result + (qualifiedStorageLocationId != null ? qualifiedStorageLocationId.hashCode() : 0);
+        result = 31 * result + (unqualifiedStorageLocationId != null ? unqualifiedStorageLocationId.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        return result;
     }
 }

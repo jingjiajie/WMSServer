@@ -39,6 +39,7 @@ public class TransferOrderItemView {
     private BigDecimal sourceUnitAmount;
     private Timestamp transferOrderCreateTime;
     private String supplySerialNo;
+    private Integer version;
 
     @Basic
     @Id
@@ -321,6 +322,36 @@ public class TransferOrderItemView {
         this.sourceUnitAmount = sourceUnitAmount;
     }
 
+    @Basic
+    @Column(name = "TransferOrderCreateTime")
+    public Timestamp getTransferOrderCreateTime() {
+        return transferOrderCreateTime;
+    }
+
+    public void setTransferOrderCreateTime(Timestamp transferOrderCreateTime) {
+        this.transferOrderCreateTime = transferOrderCreateTime;
+    }
+
+    @Basic
+    @Column(name = "SupplySerialNo")
+    public String getSupplySerialNo() {
+        return supplySerialNo;
+    }
+
+    public void setSupplySerialNo(String supplySerialNo) {
+        this.supplySerialNo = supplySerialNo;
+    }
+
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -364,6 +395,11 @@ public class TransferOrderItemView {
         if (sourceUnit != null ? !sourceUnit.equals(that.sourceUnit) : that.sourceUnit != null) return false;
         if (sourceUnitAmount != null ? !sourceUnitAmount.equals(that.sourceUnitAmount) : that.sourceUnitAmount != null)
             return false;
+        if (transferOrderCreateTime != null ? !transferOrderCreateTime.equals(that.transferOrderCreateTime) : that.transferOrderCreateTime != null)
+            return false;
+        if (supplySerialNo != null ? !supplySerialNo.equals(that.supplySerialNo) : that.supplySerialNo != null)
+            return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -398,26 +434,9 @@ public class TransferOrderItemView {
         result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
         result = 31 * result + (sourceUnit != null ? sourceUnit.hashCode() : 0);
         result = 31 * result + (sourceUnitAmount != null ? sourceUnitAmount.hashCode() : 0);
+        result = 31 * result + (transferOrderCreateTime != null ? transferOrderCreateTime.hashCode() : 0);
+        result = 31 * result + (supplySerialNo != null ? supplySerialNo.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
-    }
-
-    @Basic
-    @Column(name = "TransferOrderCreateTime")
-    public Timestamp getTransferOrderCreateTime() {
-        return transferOrderCreateTime;
-    }
-
-    public void setTransferOrderCreateTime(Timestamp transferOrderCreateTime) {
-        this.transferOrderCreateTime = transferOrderCreateTime;
-    }
-
-    @Basic
-    @Column(name = "SupplySerialNo")
-    public String getSupplySerialNo() {
-        return supplySerialNo;
-    }
-
-    public void setSupplySerialNo(String supplySerialNo) {
-        this.supplySerialNo = supplySerialNo;
     }
 }

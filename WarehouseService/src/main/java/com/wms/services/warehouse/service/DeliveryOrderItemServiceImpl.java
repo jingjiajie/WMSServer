@@ -16,7 +16,6 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sun.net.ftp.FtpClient;
 
 import java.math.BigDecimal;
 import java.util.List;

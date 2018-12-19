@@ -35,6 +35,7 @@ public class DeliveryOrderItemView {
     private Timestamp deliveryOrderCreateTime;
     private String supplySerialNo;
     private Integer deliveryOrderType;
+    private Integer version;
 
     @Basic
     @Id
@@ -297,12 +298,22 @@ public class DeliveryOrderItemView {
         this.deliveryOrderType = deliveryOrderType;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
 
-        DeliveryOrderItemView that = (DeliveryOrderItemView) object;
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DeliveryOrderItemView that = (DeliveryOrderItemView) o;
 
         if (id != that.id) return false;
         if (state != that.state) return false;
@@ -340,6 +351,7 @@ public class DeliveryOrderItemView {
             return false;
         if (deliveryOrderType != null ? !deliveryOrderType.equals(that.deliveryOrderType) : that.deliveryOrderType != null)
             return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -372,6 +384,7 @@ public class DeliveryOrderItemView {
         result = 31 * result + (deliveryOrderCreateTime != null ? deliveryOrderCreateTime.hashCode() : 0);
         result = 31 * result + (supplySerialNo != null ? supplySerialNo.hashCode() : 0);
         result = 31 * result + (deliveryOrderType != null ? deliveryOrderType.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 }

@@ -26,6 +26,7 @@ public class DeliveryOrderView {
     private String driverName;
     private String liscensePlateNumber;
     private int type;
+    private Integer version;
 
     @Basic
     @Id
@@ -208,12 +209,22 @@ public class DeliveryOrderView {
         this.type = type;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
 
-        DeliveryOrderView that = (DeliveryOrderView) object;
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DeliveryOrderView that = (DeliveryOrderView) o;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
@@ -240,6 +251,7 @@ public class DeliveryOrderView {
         if (driverName != null ? !driverName.equals(that.driverName) : that.driverName != null) return false;
         if (liscensePlateNumber != null ? !liscensePlateNumber.equals(that.liscensePlateNumber) : that.liscensePlateNumber != null)
             return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -264,6 +276,7 @@ public class DeliveryOrderView {
         result = 31 * result + (driverName != null ? driverName.hashCode() : 0);
         result = 31 * result + (liscensePlateNumber != null ? liscensePlateNumber.hashCode() : 0);
         result = 31 * result + type;
+        result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 }
