@@ -4,11 +4,17 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.service.WarehouseEntryItemService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.WarehouseEntry;
 import com.wms.utilities.model.WarehouseEntryItem;
 import com.wms.utilities.model.WarehouseEntryItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 
 @RestController
 @RequestMapping("/{accountBook}/warehouse_entry_item")
@@ -21,7 +27,8 @@ public class WarehouseEntryItemControllerImpl implements WarehouseEntryItemContr
     @ResponseStatus(HttpStatus.OK)
     public int[] add(@PathVariable("accountBook") String accountBook,
                                      @RequestBody WarehouseEntryItem[] items) {
-        return this.warehouseEntryItemService.add(accountBook,items);
+        //全部用新接口增加
+        return this.warehouseEntryItemService.add1(accountBook,items);
     }
 
     @Override
@@ -29,7 +36,17 @@ public class WarehouseEntryItemControllerImpl implements WarehouseEntryItemContr
     @RequestMapping(value = "/",method = RequestMethod.PUT)
     public void update(@PathVariable("accountBook") String accountBook,
                        @RequestBody WarehouseEntryItem[] items) {
-        this.warehouseEntryItemService.update(accountBook,items);
+        if(items.length==0){return;}
+        List<WarehouseEntryItem> warehouseEntryItemList = Arrays.asList(items);
+        warehouseEntryItemList.stream().sorted(Comparator.comparing(WarehouseEntryItem::getVersion)).reduce((last, cur) -> {
+            if (!last.getVersion().equals(cur.getVersion())) {
+                throw new WMSServiceException("入库单条目版本不一致！" );
+            }
+            return cur;
+        });
+        if(items[0].getVersion()==0){
+        this.warehouseEntryItemService.update(accountBook,items);}
+        else {this.warehouseEntryItemService.update1(accountBook,items);}
     }
 
     @Override
