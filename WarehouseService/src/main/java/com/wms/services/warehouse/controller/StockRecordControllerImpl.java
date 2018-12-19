@@ -153,4 +153,13 @@ public class StockRecordControllerImpl implements StockRecordController {
     {
         this.stockRecordService.judgeOldestBatch(accountBook,judgeOldestBatch);
     }
+
+    @Override
+    @RequestMapping(value="/validate_random_code",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void validateRandomCode(@PathVariable("accountBook") String accountBook,
+                                 @RequestBody RandomCode randomCode)
+    {
+        this.stockRecordService.validateRandomCode(accountBook,randomCode.getRandomCode(),randomCode.getEntryOrDeliver(),randomCode.getItemId());
+    }
 }

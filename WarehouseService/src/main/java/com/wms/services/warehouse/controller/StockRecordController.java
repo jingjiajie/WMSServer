@@ -22,4 +22,5 @@ extends BaseController<StockRecord,StockRecordView> {
   long findCountWithoutZero(String accountBook,String condStr);
   void remove(String accountBook,String strIDs);
   void judgeOldestBatch(String accountBook, JudgeOldestBatch judgeOldestBatch);
+  void validateRandomCode(String accountBook, RandomCode randomCode);
 }

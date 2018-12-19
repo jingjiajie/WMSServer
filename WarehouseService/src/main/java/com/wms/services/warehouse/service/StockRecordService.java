@@ -68,6 +68,7 @@ public interface StockRecordService
 
     void judgeOldestBatch(String accountBook, JudgeOldestBatch judgeOldestBatch);
 
+    void validateRandomCode(String accountBook, String randomCode, int entryOrDeliver, int ItemId);
 
-
+    void removeRandomCode(String accountBook, String randomCode, int entryOrDeliver, int ItemId);
 }

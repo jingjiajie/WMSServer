@@ -10,6 +10,7 @@ import com.wms.utilities.datastructures.OrderItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
+import com.wms.utilities.service.CommonDataService;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,8 @@ public class StockRecordServiceImpl implements StockRecordService {
     TransferOrderItemService transferOrderItemService;
     @Autowired
     DeliveryOrderItemService deliveryOrderItemService;
+    @Autowired
+    CommonDataService commonDataService;
 
     private final int STATE_DEFAULT_DEPENDENT = -1;
 
@@ -3186,6 +3189,45 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
         if (batchNoInt.compareTo(batchNoIntCurrent) < 0) {
             throw new WMSServiceException("当前货物生产日期" + batchNoIntCurrent + "不符合出库要求！");
+        }
+    }
+
+    //0入 1出
+    public void validateRandomCode(String accountBook, String randomCode, int entryOrDeliver, int ItemId) {
+        String key = "";
+        if (entryOrDeliver == 0) {
+            key = "entryRandomCode" + ItemId;
+        } else if (entryOrDeliver == 1) {
+            key = "deliverRandomCode" + ItemId;
+        } else {
+            throw new WMSServiceException("入库出库类型值错误，判断随机码重复失败！");
+        }
+        if (commonDataService.find(accountBook, new Condition().addCondition("key", key).addCondition("data", randomCode)).length != 0) {
+            if (entryOrDeliver == 0) {
+                throw new WMSServiceException("入库随机码重复，此货已经完成入库！");
+            } else if (entryOrDeliver == 1) {
+                throw new WMSServiceException("出库随机码重复，此货已经完成入库！");
+            }
+        } else {
+            CommonData commonData = new CommonData();
+            commonData.setKey(key);
+            commonData.setValue(randomCode);
+            commonDataService.add(accountBook, new CommonData[]{commonData});
+        }
+    }
+
+    public void removeRandomCode(String accountBook, String randomCode, int entryOrDeliver, int ItemId){
+        String key = "";
+        if (entryOrDeliver == 0) {
+            key = "entryRandomCode" + ItemId;
+        } else if (entryOrDeliver == 1) {
+            key = "deliverRandomCode" + ItemId;
+        } else {
+            throw new WMSServiceException("入库出库类型值错误，删除随机码记录失败！");
+        }
+        CommonData[] commonData=commonDataService.find(accountBook, new Condition().addCondition("key", key).addCondition("data", randomCode));
+        if (commonData.length == 1) {
+         commonDataService.remove(accountBook,new int[]{commonData[0].getId()});
         }
     }
 }
