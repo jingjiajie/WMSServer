@@ -113,6 +113,7 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @ResponseStatus(HttpStatus.OK)
     public void receive(@PathVariable("accountBook") String accountBook,
                         @RequestBody List<Integer> ids) {
+        //在putin区分了
         this.warehouseEntryService.receive(accountBook, ids);
     }
 
@@ -121,6 +122,7 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @ResponseStatus(HttpStatus.OK)
     public void reject(@PathVariable("accountBook") String accountBook,
                        @RequestBody List<Integer> ids) {
+        //在putin区分了
         this.warehouseEntryService.reject(accountBook, ids);
     }
 }
