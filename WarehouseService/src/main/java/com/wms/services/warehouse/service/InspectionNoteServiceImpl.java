@@ -53,6 +53,7 @@ public class InspectionNoteServiceImpl
                 obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX,obj.getWarehouseId()));
             }
             obj.setCreateTime(new Timestamp(System.currentTimeMillis()));
+            obj.setVersion(1);
         });
         this.validateEntities(accountBook, inspectionNotes);
         return inspectionNoteDAO.add(accountBook, inspectionNotes);
@@ -215,12 +216,12 @@ public class InspectionNoteServiceImpl
             //如果是合格，则将每一项状态更新为合格，否则为不合格，并调用入库单的收货功能。
             if (inspectFinishArgs.isQualified()) {
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.QUALIFIED));
-                this.warehouseEntryItemService.receive(accountBook, Stream.of(inspectionNoteItems).map((item) -> item.getWarehouseEntryItemId()).collect(Collectors.toList()),null);
+                this.warehouseEntryItemService.receive1(accountBook, Stream.of(inspectionNoteItems).map((item) -> item.getWarehouseEntryItemId()).collect(Collectors.toList()),null);
             } else {
                 Stream.of(inspectionNoteItems).forEach(inspectionNoteItem -> inspectionNoteItem.setState(InspectionNoteItemService.UNQUALIFIED));
-                this.warehouseEntryItemService.reject(accountBook, Stream.of(inspectionNoteItems).map((item) -> item.getWarehouseEntryItemId()).collect(Collectors.toList()),null);
+                this.warehouseEntryItemService.reject1(accountBook, Stream.of(inspectionNoteItems).map((item) -> item.getWarehouseEntryItemId()).collect(Collectors.toList()),null);
             }
-            this.inspectionNoteItemService.update(accountBook, inspectionNoteItems);
+            this.inspectionNoteItemService.update1(accountBook, inspectionNoteItems);
         } else { //部分完成
             Map<Integer, BigDecimal> warehouseEntryItemAndReturnAmount = new HashMap<>();
             List<Integer> warehouseEntryIDsToReceive = new ArrayList<>();
@@ -275,7 +276,7 @@ public class InspectionNoteServiceImpl
             if (inspectionNoteItemsToUpdate.size() == 0) {
                 return;
             }
-            this.inspectionNoteItemService.update(accountBook, ReflectHelper.listToArray(inspectionNoteItemsToUpdate, InspectionNoteItem.class));
+            this.inspectionNoteItemService.update1(accountBook, ReflectHelper.listToArray(inspectionNoteItemsToUpdate, InspectionNoteItem.class));
             //更新送检单状态
             int inspectionNoteId = inspectFinishArgs.getInspectionNoteId();
             if(inspectionNoteId != -1) {

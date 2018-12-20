@@ -310,18 +310,20 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         //更新入库单条目
         //区分版本 直接按大单的版本区分
         if (warehouseEntries[0].getVersion() == 0) {
-            if (ifQualified) {
-                this.warehouseEntryItemService.receive(accountBook, itemIDs, null);
-            } else {
-                this.warehouseEntryItemService.reject(accountBook, itemIDs, null);
-            }
+            throw new WMSServiceException("旧");
+//            if (ifQualified) {
+//                this.warehouseEntryItemService.receive(accountBook, itemIDs, null);
+//            } else {
+//                this.warehouseEntryItemService.reject(accountBook, itemIDs, null);
+//            }
         }
         if (warehouseEntries[0].getVersion() == 1) {
-            if (ifQualified) {
-                this.warehouseEntryItemService.receive1(accountBook, itemIDs, null);
-            } else {
-                this.warehouseEntryItemService.reject1(accountBook, itemIDs, null);
-            }
+            throw new WMSServiceException("新");
+//            if (ifQualified) {
+//                this.warehouseEntryItemService.receive1(accountBook, itemIDs, null);
+//            } else {
+//                this.warehouseEntryItemService.reject1(accountBook, itemIDs, null);
+//            }
         }
     }
 }

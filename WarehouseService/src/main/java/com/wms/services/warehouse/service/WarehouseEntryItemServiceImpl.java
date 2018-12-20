@@ -402,7 +402,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
 
             warehouseEntryItem.setState(WarehouseEntryItemService.QUALIFIED);
         }));
-        this.update(accountBook, warehouseEntryItems);
+        this.update1(accountBook, warehouseEntryItems);
         //this.warehouseEntryService.updateState(accountBook, warehouseEntryIDs);
     }
 
@@ -488,7 +488,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
 
             warehouseEntryItem.setState(WarehouseEntryItemService.UNQUALIFIED);
         }));
-        this.update(accountBook, warehouseEntryItems);
+        this.update1(accountBook, warehouseEntryItems);
         //this.warehouseEntryService.updateState(accountBook, warehouseEntryIDs);
     }
 

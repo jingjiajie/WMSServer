@@ -73,10 +73,12 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
             }
         }
         if (inspectArgs.getInspectItems()[0].getInspectionNote().getVersion() == 0) {
-            return this.warehouseEntryService.inspect(accountBook, inspectArgs);
+            throw new WMSServiceException("旧");
+            //return this.warehouseEntryService.inspect(accountBook, inspectArgs);
         }
         else{
-            return this.warehouseEntryService.inspect1(accountBook, inspectArgs);
+            throw new WMSServiceException("新");
+            //return this.warehouseEntryService.inspect1(accountBook, inspectArgs);
         }
     }
 

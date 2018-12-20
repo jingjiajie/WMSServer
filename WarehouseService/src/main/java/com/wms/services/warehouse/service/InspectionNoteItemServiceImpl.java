@@ -76,6 +76,7 @@ public class InspectionNoteItemServiceImpl
             inspectionNoteItem.setReturnAmount(inspectionNoteItem.getAmount());
             inspectionNoteItem.setReturnUnit(inspectionNoteItem.getUnit());
             inspectionNoteItem.setReturnUnitAmount(inspectionNoteItem.getUnitAmount());
+            inspectionNoteItem.setVersion(1);
             int warehouseEntryItemID = inspectionNoteItem.getWarehouseEntryItemId(); //入库单条目ID
             BigDecimal inspectAmount = inspectionNoteItem.getAmount(); //入库单条目要送检的数量
             //检查送检的入库单条目是否存在
