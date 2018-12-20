@@ -68,7 +68,7 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
         }
         for (InspectionNoteItem inspectionNoteItem : inspectArgs.getInspectItems()[0].getInspectionNoteItems())
         {
-            if (inspectionNoteItem.getVersion().equals(inspectArgs.getInspectItems()[0].getInspectionNote().getVersion())) {
+            if (!inspectionNoteItem.getVersion().equals(inspectArgs.getInspectItems()[0].getInspectionNote().getVersion())) {
                 throw new WMSServiceException("入库单和入库单条目不同！");
             }
         }
