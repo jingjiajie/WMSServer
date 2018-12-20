@@ -914,7 +914,7 @@ public class StockRecordServiceImpl implements StockRecordService {
     private StockRecord createStockRecord(String accountBook, TransferStock transferStock, boolean old) {
         StockRecord stockRecord = new StockRecord();
         stockRecord.setSupplyId(transferStock.getSupplyId());
-        stockRecord.setWarehouseId(this.warehouseIdFind(accountBook, transferStock.getNewStorageLocationId())[0]);
+        stockRecord.setWarehouseId(this.warehouseIdFind(accountBook, transferStock.getSourceStorageLocationId())[0]);
         stockRecord.setTime(this.getTime());
         stockRecord.setRelatedOrderNo(transferStock.getRelatedOrderNo());
         //默认把生产日期也填进来
@@ -936,7 +936,7 @@ public class StockRecordServiceImpl implements StockRecordService {
     private TransferRecord createTransferRecord(String accountBook, TransferStock transferStock, int type) {
         TransferRecord transferRecord = new TransferRecord();
         transferRecord.setSupplyId(transferStock.getSupplyId());
-        transferRecord.setWarehouseId(this.warehouseIdFind(accountBook, transferStock.getNewStorageLocationId())[0]);
+        transferRecord.setWarehouseId(this.warehouseIdFind(accountBook, transferStock.getSourceStorageLocationId())[0]);
         if (type == ItemType.entryItem) {
             //移入则记录到目标库位
             transferRecord.setTargetStorageLocationUnit(transferStock.getUnit());
@@ -1176,6 +1176,11 @@ public class StockRecordServiceImpl implements StockRecordService {
         stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook, transferStock.getSourceStorageLocationId())[0]);
         stockRecordFind.setBatchNo(new String[]{this.batchTransfer(transferStock.getInventoryDate())});
         StockRecord stockRecordNew = this.createStockRecord(accountBook, transferStock, true);
+        //其他信息
+        stockRecordNew.setManufactureDate(transferStock.getManufactureDate());
+        //stockRecordNew.setExpiryDate(transferStock.getExpiryDate());
+        stockRecordNew.setBatchNo(this.batchTransfer(transferStock.getInventoryDate()));
+        stockRecordNew.setInventoryDate(transferStock.getInventoryDate());
         //移位记录 未包含数量
         TransferRecord transferRecord = this.createTransferRecord(accountBook, transferStock, ItemType.entryItem);
         //没有则说明没有相关记录 找所有批次进行移动
