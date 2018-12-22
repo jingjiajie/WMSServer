@@ -60,7 +60,7 @@ public class StockRecordControllerImpl implements StockRecordController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/find_newest/{strCond}/all", method = RequestMethod.GET)
     public StockRecordViewNewest[] findNewest(@PathVariable("accountBook") String accountBook,
-                                        @PathVariable("strCond") String condStr) {
+                                              @PathVariable("strCond") String condStr) {
         return stockRecordService.findNewest(accountBook, Condition.fromJson(condStr));
     }
 
@@ -68,10 +68,10 @@ public class StockRecordControllerImpl implements StockRecordController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/find_newest/{strCond}/plus", method = RequestMethod.GET)
     public StockRecordViewNewest[] findNewestWithoutZero(@PathVariable("accountBook") String accountBook,
-                                              @PathVariable("strCond") String condStr) {
-        return stockRecordService.findNewest(accountBook, Condition.fromJson(condStr).addCondition("amount",0, ConditionItem.Relation.NOT_EQUAL));
+                                                         @PathVariable("strCond") String condStr) {
+        return stockRecordService.findNewest(accountBook, Condition.fromJson(condStr).addCondition("amount", 0, ConditionItem.Relation.NOT_EQUAL));
     }
-    
+
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/real_transfer", method = RequestMethod.POST)
@@ -85,14 +85,14 @@ public class StockRecordControllerImpl implements StockRecordController {
     @RequestMapping(value = "/add_amount", method = RequestMethod.POST)
     public void addAmount(@PathVariable("accountBook") String accountBook,
                           @RequestBody TransferStock transferStock) {
-        stockRecordService.addAmount(accountBook, transferStock,transferStock);
+        stockRecordService.addAmount(accountBook, transferStock, transferStock);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/return_supply", method = RequestMethod.POST)
     public void returnSupply(@PathVariable("accountBook") String accountBook,
-                          @RequestBody StockRecord[] stockRecords) {
+                             @RequestBody StockRecord[] stockRecords) {
         stockRecordService.returnSupply(accountBook, stockRecords);
     }
 
@@ -100,7 +100,7 @@ public class StockRecordControllerImpl implements StockRecordController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/throw", method = RequestMethod.POST)
     public void throwException() {
-       throw new WMSServiceException("无法修改库存记录!");
+        throw new WMSServiceException("无法修改库存记录!");
     }
 
     @Override
@@ -116,50 +116,56 @@ public class StockRecordControllerImpl implements StockRecordController {
     @RequestMapping(value = "/find_by_time", method = RequestMethod.POST)
     public StockRecordViewAndSumGroupBySupplyId[] findByTime(@PathVariable("accountBook") String accountBook,
                                                              @RequestBody StockRecordFindByTime[] stockRecordFindByTimes) {
-      return   stockRecordService.findByTime(accountBook, stockRecordFindByTimes);
+        return stockRecordService.findByTime(accountBook, stockRecordFindByTimes);
     }
 
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/stock_record_find", method = RequestMethod.POST)
     public StockRecord[] find(@PathVariable("accountBook") String accountBook,
-                                  @RequestBody StockRecordFind stockRecordFind) {
+                              @RequestBody StockRecordFind stockRecordFind) {
         return stockRecordService.find(accountBook, stockRecordFind);
     }
 
 
     @Override
-    @RequestMapping(value="/count/{condStr}/all",method = RequestMethod.GET)
+    @RequestMapping(value = "/count/{condStr}/all", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public long findCount(@PathVariable("accountBook") String accountBook,
-                          @PathVariable("condStr") String condStr){
+                          @PathVariable("condStr") String condStr) {
         return this.stockRecordService.findCount(accountBook, Condition.fromJson(condStr));
     }
 
     @Override
-    @RequestMapping(value="/count/{condStr}/plus",method = RequestMethod.GET)
+    @RequestMapping(value = "/count/{condStr}/plus", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public long findCountWithoutZero(@PathVariable("accountBook") String accountBook,
-                          @PathVariable("condStr") String condStr){
-        Condition condition= Condition.fromJson(condStr);
-        return this.stockRecordService.findCount(accountBook, condition.addCondition("amount",0, ConditionItem.Relation.NOT_EQUAL));
+                                     @PathVariable("condStr") String condStr) {
+        Condition condition = Condition.fromJson(condStr);
+        return this.stockRecordService.findCount(accountBook, condition.addCondition("amount", 0, ConditionItem.Relation.NOT_EQUAL));
     }
 
     @Override
-    @RequestMapping(value="/judgeBatch",method = RequestMethod.POST)
+    @RequestMapping(value = "/judgeBatch", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void judgeOldestBatch(@PathVariable("accountBook") String accountBook,
-                          @RequestBody JudgeOldestBatch judgeOldestBatch)
-    {
-        this.stockRecordService.judgeOldestBatch(accountBook,judgeOldestBatch);
+                                 @RequestBody JudgeOldestBatch judgeOldestBatch) {
+        this.stockRecordService.judgeOldestBatch(accountBook, judgeOldestBatch);
     }
 
     @Override
-    @RequestMapping(value="/validate_random_code",method = RequestMethod.POST)
+    @RequestMapping(value = "/validate_random_code", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void validateRandomCode(@PathVariable("accountBook") String accountBook,
-                                 @RequestBody RandomCode randomCode)
-    {
-        this.stockRecordService.validateRandomCode(accountBook,randomCode.getRandomCode(),randomCode.getEntryOrDeliver(),randomCode.getItemId());
+                                   @RequestBody RandomCode randomCode) {
+        this.stockRecordService.validateRandomCode(accountBook, randomCode.getRandomCode(), randomCode.getEntryOrDeliver(), randomCode.getItemId());
+    }
+
+    @Override
+    @RequestMapping(value = "/remove_random_code", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void removeRandomCode(@PathVariable("accountBook") String accountBook,
+                                 @RequestBody RandomCode randomCode) {
+       this.stockRecordService.removeRandomCode(accountBook,randomCode);
     }
 }

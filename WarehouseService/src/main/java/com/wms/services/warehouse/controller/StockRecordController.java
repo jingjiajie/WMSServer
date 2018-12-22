@@ -5,6 +5,8 @@ import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.StockRecordView;
 import com.wms.utilities.model.StockRecordViewNewest;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 public interface StockRecordController
@@ -23,4 +25,5 @@ extends BaseController<StockRecord,StockRecordView> {
   void remove(String accountBook,String strIDs);
   void judgeOldestBatch(String accountBook, JudgeOldestBatch judgeOldestBatch);
   void validateRandomCode(String accountBook, RandomCode randomCode);
+  void removeRandomCode( String accountBook, RandomCode randomCode);
 }

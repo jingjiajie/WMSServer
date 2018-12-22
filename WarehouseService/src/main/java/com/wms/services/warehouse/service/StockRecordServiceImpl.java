@@ -3230,4 +3230,24 @@ public class StockRecordServiceImpl implements StockRecordService {
          commonDataService.remove(accountBook,new int[]{commonData[0].getId()});
         }
     }
+
+    public void removeRandomCode(String accountBook, String randomCode){
+        CommonData[] commonData=commonDataService.find(accountBook, new Condition().addCondition("data", randomCode));
+        int[] ids=null;
+        if(commonData.length!=0){ids=new int[commonData.length];}
+        else{return;}
+        for(int i=0;i<commonData.length;i++){
+            ids[i]=commonData[i].getId();
+        }
+            commonDataService.remove(accountBook,new int[]{commonData[0].getId()});
+    }
+
+    public void removeRandomCode(String accountBook, RandomCode randomCode){
+        if(randomCode.getRandomCode().equals("-1")){throw new WMSServiceException("请提供随机码！");}
+        if (randomCode.getItemId() == -1 || randomCode.getEntryOrDeliver() == 1) {
+            this.removeRandomCode(accountBook, randomCode.getRandomCode());
+        } else {
+            this.removeRandomCode(accountBook, randomCode.getRandomCode(), randomCode.getEntryOrDeliver(), randomCode.getItemId());
+        }
+    }
 }

@@ -13,8 +13,8 @@ public class RandomCode {
         return ItemId;
     }
 
-    String randomCode;
-    int entryOrDeliver ;
+    String randomCode="-1";
+    int entryOrDeliver=-1 ;
 
     public void setRandomCode(String randomCode) {
         this.randomCode = randomCode;
@@ -28,5 +28,5 @@ public class RandomCode {
         ItemId = itemId;
     }
 
-    int ItemId;
+    int ItemId=-1;
 }

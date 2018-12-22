@@ -71,4 +71,8 @@ public interface StockRecordService
     void validateRandomCode(String accountBook, String randomCode, int entryOrDeliver, int ItemId);
 
     void removeRandomCode(String accountBook, String randomCode, int entryOrDeliver, int ItemId);
+
+    void removeRandomCode(String accountBook, String randomCode);
+
+    void removeRandomCode( String accountBook, RandomCode randomCode);
 }
