@@ -3225,7 +3225,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         } else {
             throw new WMSServiceException("入库出库类型值错误，删除随机码记录失败！");
         }
-        CommonData[] commonData=commonDataService.find(accountBook, new Condition().addCondition("key", key).addCondition("data", randomCode));
+        CommonData[] commonData=commonDataService.find(accountBook, new Condition().addCondition("key", key));
         if (commonData.length == 1) {
          commonDataService.remove(accountBook,new int[]{commonData[0].getId()});
         }
