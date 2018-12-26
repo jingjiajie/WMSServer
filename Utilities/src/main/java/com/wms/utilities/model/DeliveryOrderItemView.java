@@ -36,10 +36,11 @@ public class DeliveryOrderItemView {
     private String supplySerialNo;
     private Integer deliveryOrderType;
     private Integer version;
+    private String deliveryRandomCode;
 
     @Basic
-    @Id
     @Column(name = "ID")
+    @Id
     public int getId() {
         return id;
     }
@@ -308,12 +309,22 @@ public class DeliveryOrderItemView {
         this.version = version;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "DeliveryRandomCode")
+    public String getDeliveryRandomCode() {
+        return deliveryRandomCode;
+    }
 
-        DeliveryOrderItemView that = (DeliveryOrderItemView) o;
+    public void setDeliveryRandomCode(String deliveryRandomCode) {
+        this.deliveryRandomCode = deliveryRandomCode;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        DeliveryOrderItemView that = (DeliveryOrderItemView) object;
 
         if (id != that.id) return false;
         if (state != that.state) return false;
@@ -352,6 +363,8 @@ public class DeliveryOrderItemView {
         if (deliveryOrderType != null ? !deliveryOrderType.equals(that.deliveryOrderType) : that.deliveryOrderType != null)
             return false;
         if (version != null ? !version.equals(that.version) : that.version != null) return false;
+        if (deliveryRandomCode != null ? !deliveryRandomCode.equals(that.deliveryRandomCode) : that.deliveryRandomCode != null)
+            return false;
 
         return true;
     }
@@ -385,6 +398,7 @@ public class DeliveryOrderItemView {
         result = 31 * result + (supplySerialNo != null ? supplySerialNo.hashCode() : 0);
         result = 31 * result + (deliveryOrderType != null ? deliveryOrderType.hashCode() : 0);
         result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (deliveryRandomCode != null ? deliveryRandomCode.hashCode() : 0);
         return result;
     }
 }

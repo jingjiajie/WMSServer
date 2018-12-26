@@ -1,9 +1,6 @@
 package com.wms.utilities.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -52,6 +49,7 @@ public class WarehouseEntryItemView {
     private String unqualifiedStorageLocationNo;
     private String unqualifiedStorageLocationName;
     private Integer version;
+    private String entryRandomCode;
 
     @Basic
     @Id
@@ -484,12 +482,22 @@ public class WarehouseEntryItemView {
         this.version = version;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "EntryRandomCode")
+    public String getEntryRandomCode() {
+        return entryRandomCode;
+    }
 
-        WarehouseEntryItemView that = (WarehouseEntryItemView) o;
+    public void setEntryRandomCode(String entryRandomCode) {
+        this.entryRandomCode = entryRandomCode;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        WarehouseEntryItemView that = (WarehouseEntryItemView) object;
 
         if (id != that.id) return false;
         if (warehouseEntryId != that.warehouseEntryId) return false;
@@ -556,6 +564,8 @@ public class WarehouseEntryItemView {
         if (unqualifiedStorageLocationName != null ? !unqualifiedStorageLocationName.equals(that.unqualifiedStorageLocationName) : that.unqualifiedStorageLocationName != null)
             return false;
         if (version != null ? !version.equals(that.version) : that.version != null) return false;
+        if (entryRandomCode != null ? !entryRandomCode.equals(that.entryRandomCode) : that.entryRandomCode != null)
+            return false;
 
         return true;
     }
@@ -605,6 +615,7 @@ public class WarehouseEntryItemView {
         result = 31 * result + (unqualifiedStorageLocationNo != null ? unqualifiedStorageLocationNo.hashCode() : 0);
         result = 31 * result + (unqualifiedStorageLocationName != null ? unqualifiedStorageLocationName.hashCode() : 0);
         result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (entryRandomCode != null ? entryRandomCode.hashCode() : 0);
         return result;
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collector;
@@ -65,6 +66,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
         });
         //添加到数据库中
         int[] ids = this.warehouseEntryItemDAO.add(accountBook, warehouseEntryItems);
+        this.validateRandomDuplication(accountBook,warehouseEntryItems);
         return ids;
     }
 
@@ -79,6 +81,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
         this.validateEntities(accountBook, warehouseEntryItems);
         //添加到数据库中
         int[] ids = this.warehouseEntryItemDAO.add(accountBook, warehouseEntryItems);
+        this.validateRandomDuplication(accountBook,warehouseEntryItems);
         //增加库存
         for (int i = 0; i < warehouseEntryItems.length; i++) {
             TransferStock transferStock = new TransferStock();
@@ -511,5 +514,25 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
     @Override
     public WarehouseEntryItem get(String accountBook, int id) throws WMSServiceException {
         return this.warehouseEntryItemDAO.get(accountBook, id);
+    }
+
+    private void validateRandomDuplication(String accountBook, WarehouseEntryItem[] warehouseEntryItems) {
+        Condition cond = new Condition();
+        if(warehouseEntryItems.length==0){return;}
+        WarehouseEntryItem[] warehouseEntryItemsCheck = warehouseEntryItemDAO.findTable(accountBook, cond);
+        List<WarehouseEntryItem> warehouseEntryItemsList=new ArrayList<>();
+        for(int i=0;i<warehouseEntryItemsCheck.length;i++){
+            if(warehouseEntryItemsCheck[i].getEntryRandomCode()!=null){
+                if(!warehouseEntryItemsCheck[i].getEntryRandomCode().equals(""))
+                {
+                    warehouseEntryItemsList.add(warehouseEntryItemsCheck[i]);
+                }}
+        }
+        warehouseEntryItemsList.stream().sorted(Comparator.comparing(WarehouseEntryItem::getEntryRandomCode)).reduce((last, cur) -> {
+            if (last.getEntryRandomCode().equals(cur.getEntryRandomCode()) && last.getEntryRandomCode() != null && !(last.getEntryRandomCode().equals(""))) {
+                throw new WMSServiceException("随机码重复！");
+            }
+            return cur;
+        });
     }
 }
