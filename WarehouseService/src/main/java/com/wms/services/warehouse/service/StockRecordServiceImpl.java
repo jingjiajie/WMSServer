@@ -1646,7 +1646,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         String unit = transferStock.getUnit();
         BigDecimal unitAmount = transferStock.getUnitAmount();
         int state = 0;
-        //TODO 
+        //TODO
         if (transferStock.getState() != this.STATE_DEFAULT_DEPENDENT) {
             state = transferStock.getState();
         }
