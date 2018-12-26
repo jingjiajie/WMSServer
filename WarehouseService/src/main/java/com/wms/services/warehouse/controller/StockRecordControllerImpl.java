@@ -66,7 +66,7 @@ public class StockRecordControllerImpl implements StockRecordController {
 
     @Override
     @ResponseStatus(HttpStatus.OK)
-    @RequestMapping(value = "/find_newest/{strCond}/plus", method = RequestMethod.GET)
+    @RequestMapping(value = "/find_newest/{strCond}", method = RequestMethod.GET)
     public StockRecordViewNewest[] findNewestWithoutZero(@PathVariable("accountBook") String accountBook,
                                               @PathVariable("strCond") String condStr) {
         return stockRecordService.findNewest(accountBook, Condition.fromJson(condStr).addCondition("amount",0, ConditionItem.Relation.NOT_EQUAL));
@@ -137,7 +137,7 @@ public class StockRecordControllerImpl implements StockRecordController {
     }
 
     @Override
-    @RequestMapping(value="/count/{condStr}/plus",method = RequestMethod.GET)
+    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public long findCountWithoutZero(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
