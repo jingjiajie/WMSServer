@@ -88,6 +88,8 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setSourceStorageLocationId(warehouseEntryItems[i].getStorageLocationId());
             transferStock.setSupplyId(warehouseEntryItems[i].getSupplyId());
             transferStock.setManufactureDate(warehouseEntryItems[i].getManufactureDate());
+            transferStock.setItemId(warehouseEntryItems[i].getId());
+            transferStock.setItemType(ItemType.entryItem);
             this.stockRecordService.addAmount(accountBook, transferStock,new TransferStock());
         }
         return ids;

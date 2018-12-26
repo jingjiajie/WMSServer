@@ -729,6 +729,9 @@ public class StockRecordServiceImpl implements StockRecordService {
         new Validator("数量").notnull().validate(transferStock.getAmount());
         new Validator("可用数量").notnull().validate(transferStock.getAvailableAmount());
         new Validator("条目id").notnull().validate(transferStock.getItemId());
+        if(transferStock.getItemId()==-1){
+            throw new WMSServiceException("请填写正确的条目id！");
+        }
         new Validator("条目类型").notnull().validate(transferStock.getItemType());
         new Validator("数量").min(0).validate(transferStock.getAmount());
         new Validator("可用数量").min(0).validate(transferStock.getAvailableAmount());
@@ -793,7 +796,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 "GROUP BY s2.BatchNo) AS s3 \n" +
                 "\n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
-                "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo AND (s1.Amount!=0 or s1.AvailableAmount!=0) n";
+                "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo AND (s1.Amount!=0 or s1.AvailableAmount!=0)";
         session.flush();
         query = session.createNativeQuery(sqlNew, StockRecord.class);
         query.setParameter("warehouseId", stockRecordFind.getWarehouseId());
