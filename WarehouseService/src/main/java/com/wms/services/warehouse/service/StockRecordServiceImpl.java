@@ -1507,8 +1507,8 @@ public class StockRecordServiceImpl implements StockRecordService {
         TransferRecord transferRecord = this.createTransferRecord(accountBook, transferStock, ItemType.transferItem);
         //数量移回去
         if (itemRelatedRecords.length != 0) {
+            this.validateTransferStockRestore(transferStockRestore, true);
             this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, ItemType.transferItem);
-            this.validateTransferStockRestore(transferStock, true);
         }
         //查找源库存
         StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);

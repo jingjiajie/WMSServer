@@ -396,9 +396,14 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
+            transferStock.setNewUnit(warehouseEntryItem.getUnit());
+            transferStock.setNewUnitAmount(warehouseEntryItem.getUnitAmount());
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(正品移库)");
             transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.QUALIFIED);
+            transferStock.setItemTypeForBatchNo(ItemType.entryItem);
+            transferStock.setItemType(ItemType.transferItem);
+            transferStock.setItemId(warehouseEntryItem.getId());
             this.stockRecordService.transferStock(accountBook, transferStock,new TransferStock());
 
             warehouseEntryItem.setState(WarehouseEntryItemService.QUALIFIED);
@@ -481,11 +486,14 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
+            transferStock.setNewUnit(warehouseEntryItem.getUnit());
+            transferStock.setNewUnitAmount(warehouseEntryItem.getUnitAmount());
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(不良品移库)");
             transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.UNQUALIFIED);
             transferStock.setItemTypeForBatchNo(ItemType.entryItem);
             transferStock.setItemType(ItemType.transferItem);
+            transferStock.setItemId(warehouseEntryItem.getId());
             this.stockRecordService.transferStock(accountBook, transferStock,new TransferStock());
 
             warehouseEntryItem.setState(WarehouseEntryItemService.UNQUALIFIED);
