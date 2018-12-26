@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 import java.sql.Timestamp;
@@ -767,5 +769,25 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
 //            e.printStackTrace();
 //        }
     }
+
+    private void validateRandomDuplication(String accountBook) {
+        Condition cond = new Condition();
+        DeliveryOrderItem[] deliveryOrderItemsCheck = deliveryOrderItemDAO.findTable(accountBook, cond);
+        List<DeliveryOrderItem> deliveryOrderItemList=new ArrayList<>();
+        for(int i=0;i<deliveryOrderItemsCheck.length;i++){
+            if(deliveryOrderItemsCheck[i].getDeliveryRandomCode()!=null){
+                if(!deliveryOrderItemsCheck[i].getDeliveryRandomCode().equals(""))
+                {
+                    deliveryOrderItemList.add(deliveryOrderItemsCheck[i]);
+                }}
+        }
+        deliveryOrderItemList.stream().sorted(Comparator.comparing(DeliveryOrderItem::getDeliveryRandomCode)).reduce((last, cur) -> {
+            if (last.getDeliveryRandomCode().equals(cur.getDeliveryRandomCode()) && last.getDeliveryRandomCode() != null && !(last.getDeliveryRandomCode().equals(""))) {
+                throw new WMSServiceException("随机码重复！");
+            }
+            return cur;
+        });
+    }
+
 
 }
