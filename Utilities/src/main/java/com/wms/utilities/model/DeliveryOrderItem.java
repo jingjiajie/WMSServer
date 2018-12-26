@@ -19,10 +19,11 @@ public class DeliveryOrderItem {
     private String comment;
     private Integer personId;
     private Integer version;
+    private String deliveryRandomCode;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int getId() {
         return id;
     }
@@ -151,12 +152,22 @@ public class DeliveryOrderItem {
         this.version = version;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "DeliveryRandomCode")
+    public String getDeliveryRandomCode() {
+        return deliveryRandomCode;
+    }
 
-        DeliveryOrderItem that = (DeliveryOrderItem) o;
+    public void setDeliveryRandomCode(String deliveryRandomCode) {
+        this.deliveryRandomCode = deliveryRandomCode;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        DeliveryOrderItem that = (DeliveryOrderItem) object;
 
         if (id != that.id) return false;
         if (state != that.state) return false;
@@ -174,6 +185,8 @@ public class DeliveryOrderItem {
         if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
         if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
         if (version != null ? !version.equals(that.version) : that.version != null) return false;
+        if (deliveryRandomCode != null ? !deliveryRandomCode.equals(that.deliveryRandomCode) : that.deliveryRandomCode != null)
+            return false;
 
         return true;
     }
@@ -193,6 +206,7 @@ public class DeliveryOrderItem {
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (personId != null ? personId.hashCode() : 0);
         result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (deliveryRandomCode != null ? deliveryRandomCode.hashCode() : 0);
         return result;
     }
 }
