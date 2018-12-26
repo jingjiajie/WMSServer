@@ -258,6 +258,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStockAgainst1.setSupplyId(oriItemView.getSupplyId());
             transferStockAgainst1.setItemId(oriItemView.getId());
             transferStockAgainst1.setItemType(ItemType.entryItem);
+            transferStockAgainst1.setState(TransferStock.WAITING_FOR_INSPECTION);
             this.stockRecordService.restoreAmount(accountBook, transferStockAgainst1);}
         }
         try {

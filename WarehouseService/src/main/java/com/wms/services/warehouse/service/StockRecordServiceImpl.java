@@ -789,7 +789,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         String sqlNew = "SELECT s1.* FROM StockRecord AS s1 \n" +
                 "INNER JOIN \n" +
                 "\n" +
-                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME , s2.state   FROM StockRecordView As s2 \n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME , s2.state   FROM StockRecord As s2 \n" +
                 "\n" +
                 "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount and s2.state=:state \n" +
                 "\n" +
@@ -836,11 +836,11 @@ public class StockRecordServiceImpl implements StockRecordService {
         String sqlNew = "SELECT s1.* FROM StockRecord AS s1 \n" +
                 "INNER JOIN \n" +
                 "\n" +
-                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME ,s2.state  FROM StockRecordView As s2  \n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME ,s2.state  FROM StockRecord As s2  \n" +
                 "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount AND  s2.BatchNo in " + ReflectHelper.ArrayToStringForSqlQuery(stockRecordFind.getBatchNo()) + "  and s2.state=:state " + " GROUP BY s2.BatchNo) AS s3 \n" +
                 "\n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
-                "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo AND (s1.Amount!=0 or s1.AvailableAmount!=0) \n";
+                "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo AND (s1.Amount!=0 or s1.AvailableAmount!=0)";
         query = session.createNativeQuery(sqlNew, StockRecord.class);
         query.setParameter("warehouseId", stockRecordFind.getWarehouseId());
         query.setParameter("storageLocationId", stockRecordFind.getStorageLocationId());
@@ -1646,6 +1646,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         String unit = transferStock.getUnit();
         BigDecimal unitAmount = transferStock.getUnitAmount();
         int state = 0;
+        //TODO 
         if (transferStock.getState() != this.STATE_DEFAULT_DEPENDENT) {
             state = transferStock.getState();
         }
