@@ -71,6 +71,9 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
     @Override
     public int[] add1(String accountBook, WarehouseEntryItem[] warehouseEntryItems) throws WMSServiceException {
         if (warehouseEntryItems.length == 0) return new int[]{};
+        for(int i=0;i<warehouseEntryItems.length;i++){
+            warehouseEntryItems[i].setVersion(1);
+        }
         WarehouseEntryView warehouseEntryView = this.getWarehouseEntryView(accountBook, warehouseEntryItems);
         //验证字段
         this.validateEntities(accountBook, warehouseEntryItems);
