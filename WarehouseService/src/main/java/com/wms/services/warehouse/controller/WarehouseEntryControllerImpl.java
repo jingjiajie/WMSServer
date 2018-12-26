@@ -2,18 +2,15 @@ package com.wms.services.warehouse.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.netflix.discovery.converters.Auto;
 import com.wms.services.warehouse.datastructures.InspectArgs;
 import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
-import com.wms.utilities.OrderNoGenerator;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.WarehouseEntry;
-import com.wms.utilities.model.WarehouseEntryView;
 import com.wms.services.warehouse.service.WarehouseEntryService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.WarehouseEntry;
+import com.wms.utilities.model.WarehouseEntryView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,7 +52,7 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{strCond}", method = RequestMethod.GET)
     public WarehouseEntryView[] find(@PathVariable("accountBook") String accountBook,
-                                                     @PathVariable("strCond") String condStr) {
+                                     @PathVariable("strCond") String condStr) {
         return warehouseEntryService.find(accountBook, Condition.fromJson(condStr));
     }
 

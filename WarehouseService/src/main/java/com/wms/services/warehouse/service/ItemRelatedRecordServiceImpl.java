@@ -1,11 +1,8 @@
 package com.wms.services.warehouse.service;
 
-import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.ItemRelatedRecordDAO;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.InspectionNote;
-import com.wms.utilities.model.InspectionNoteView;
 import com.wms.utilities.model.ItemRelatedRecord;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.stream.Stream;
 
 @Service

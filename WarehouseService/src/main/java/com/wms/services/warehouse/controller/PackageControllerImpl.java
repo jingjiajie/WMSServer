@@ -7,7 +7,6 @@ import com.wms.services.warehouse.service.PackageService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.Package;
 import com.wms.utilities.model.PackageView;
-import com.wms.utilities.model.WarehouseEntryView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

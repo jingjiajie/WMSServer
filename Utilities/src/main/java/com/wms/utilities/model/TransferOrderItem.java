@@ -21,10 +21,11 @@ public class TransferOrderItem {
     private int sourceStorageLocationId;
     private String sourceUnit;
     private BigDecimal sourceUnitAmount;
+    private Integer version;
 
     @Id
-    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -173,6 +174,16 @@ public class TransferOrderItem {
         this.sourceUnitAmount = sourceUnitAmount;
     }
 
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -197,6 +208,7 @@ public class TransferOrderItem {
         if (sourceUnit != null ? !sourceUnit.equals(that.sourceUnit) : that.sourceUnit != null) return false;
         if (sourceUnitAmount != null ? !sourceUnitAmount.equals(that.sourceUnitAmount) : that.sourceUnitAmount != null)
             return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -218,6 +230,7 @@ public class TransferOrderItem {
         result = 31 * result + sourceStorageLocationId;
         result = 31 * result + (sourceUnit != null ? sourceUnit.hashCode() : 0);
         result = 31 * result + (sourceUnitAmount != null ? sourceUnitAmount.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 }

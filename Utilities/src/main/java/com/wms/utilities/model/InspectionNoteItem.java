@@ -2,7 +2,6 @@ package com.wms.utilities.model;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Objects;
 
 @Entity
 public class InspectionNoteItem {
@@ -18,10 +17,10 @@ public class InspectionNoteItem {
     private BigDecimal returnUnitAmount;
     private String comment;
     private Integer personId;
+    private Integer version;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -31,7 +30,7 @@ public class InspectionNoteItem {
     }
 
     @Basic
-    @Column(name = "InspectionNoteID", nullable = false)
+    @Column(name = "InspectionNoteID")
     public int getInspectionNoteId() {
         return inspectionNoteId;
     }
@@ -41,7 +40,7 @@ public class InspectionNoteItem {
     }
 
     @Basic
-    @Column(name = "WarehouseEntryItemID", nullable = false)
+    @Column(name = "WarehouseEntryItemID")
     public int getWarehouseEntryItemId() {
         return warehouseEntryItemId;
     }
@@ -51,7 +50,7 @@ public class InspectionNoteItem {
     }
 
     @Basic
-    @Column(name = "State", nullable = false)
+    @Column(name = "State")
     public int getState() {
         return state;
     }
@@ -61,7 +60,7 @@ public class InspectionNoteItem {
     }
 
     @Basic
-    @Column(name = "Amount", nullable = false, precision = 3)
+    @Column(name = "Amount")
     public BigDecimal getAmount() {
         return amount;
     }
@@ -71,7 +70,7 @@ public class InspectionNoteItem {
     }
 
     @Basic
-    @Column(name = "Unit", nullable = false, length = 64)
+    @Column(name = "Unit")
     public String getUnit() {
         return unit;
     }
@@ -81,7 +80,7 @@ public class InspectionNoteItem {
     }
 
     @Basic
-    @Column(name = "UnitAmount", nullable = false, precision = 3)
+    @Column(name = "UnitAmount")
     public BigDecimal getUnitAmount() {
         return unitAmount;
     }
@@ -90,9 +89,8 @@ public class InspectionNoteItem {
         this.unitAmount = unitAmount;
     }
 
-
     @Basic
-    @Column(name = "ReturnAmount", nullable = true, precision = 3)
+    @Column(name = "ReturnAmount")
     public BigDecimal getReturnAmount() {
         return returnAmount;
     }
@@ -102,7 +100,7 @@ public class InspectionNoteItem {
     }
 
     @Basic
-    @Column(name = "ReturnUnit", nullable = true, length = 64)
+    @Column(name = "ReturnUnit")
     public String getReturnUnit() {
         return returnUnit;
     }
@@ -112,7 +110,7 @@ public class InspectionNoteItem {
     }
 
     @Basic
-    @Column(name = "ReturnUnitAmount", nullable = true, precision = 3)
+    @Column(name = "ReturnUnitAmount")
     public BigDecimal getReturnUnitAmount() {
         return returnUnitAmount;
     }
@@ -121,9 +119,8 @@ public class InspectionNoteItem {
         this.returnUnitAmount = returnUnitAmount;
     }
 
-
     @Basic
-    @Column(name = "Comment", nullable = true, length = 64)
+    @Column(name = "Comment")
     public String getComment() {
         return comment;
     }
@@ -133,7 +130,7 @@ public class InspectionNoteItem {
     }
 
     @Basic
-    @Column(name = "PersonID", nullable = true)
+    @Column(name = "PersonID")
     public Integer getPersonId() {
         return personId;
     }
@@ -142,28 +139,56 @@ public class InspectionNoteItem {
         this.personId = personId;
     }
 
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         InspectionNoteItem that = (InspectionNoteItem) o;
-        return id == that.id &&
-                inspectionNoteId == that.inspectionNoteId &&
-                warehouseEntryItemId == that.warehouseEntryItemId &&
-                state == that.state &&
-                Objects.equals(amount, that.amount) &&
-                Objects.equals(unit, that.unit) &&
-                Objects.equals(unitAmount, that.unitAmount) &&
-                Objects.equals(returnAmount, that.returnAmount) &&
-                Objects.equals(returnUnit, that.returnUnit) &&
-                Objects.equals(returnUnitAmount, that.returnUnitAmount) &&
-                Objects.equals(comment, that.comment) &&
-                Objects.equals(personId, that.personId);
+
+        if (id != that.id) return false;
+        if (inspectionNoteId != that.inspectionNoteId) return false;
+        if (warehouseEntryItemId != that.warehouseEntryItemId) return false;
+        if (state != that.state) return false;
+        if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
+        if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+        if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
+        if (returnAmount != null ? !returnAmount.equals(that.returnAmount) : that.returnAmount != null) return false;
+        if (returnUnit != null ? !returnUnit.equals(that.returnUnit) : that.returnUnit != null) return false;
+        if (returnUnitAmount != null ? !returnUnitAmount.equals(that.returnUnitAmount) : that.returnUnitAmount != null)
+            return false;
+        if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
+        if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, inspectionNoteId, warehouseEntryItemId, state, amount, unit, unitAmount, returnAmount, returnUnit, returnUnitAmount, comment, personId);
+        int result = id;
+        result = 31 * result + inspectionNoteId;
+        result = 31 * result + warehouseEntryItemId;
+        result = 31 * result + state;
+        result = 31 * result + (amount != null ? amount.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
+        result = 31 * result + (returnAmount != null ? returnAmount.hashCode() : 0);
+        result = 31 * result + (returnUnit != null ? returnUnit.hashCode() : 0);
+        result = 31 * result + (returnUnitAmount != null ? returnUnitAmount.hashCode() : 0);
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (personId != null ? personId.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        return result;
     }
 }

@@ -118,4 +118,14 @@ public class StockRecordFind {
     }
 
     private int state;
+
+    public String[] getBatchNo() {
+        return batchNo;
+    }
+
+    public void setBatchNo(String[] batchNo) {
+        this.batchNo = batchNo;
+    }
+
+    private String[] batchNo=null;
 }

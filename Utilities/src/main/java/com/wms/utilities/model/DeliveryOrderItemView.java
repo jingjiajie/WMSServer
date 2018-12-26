@@ -35,6 +35,8 @@ public class DeliveryOrderItemView {
     private Timestamp deliveryOrderCreateTime;
     private String supplySerialNo;
     private Integer deliveryOrderType;
+    private Integer version;
+    private String deliveryRandomCode;
 
     @Basic
     @Id
@@ -297,6 +299,26 @@ public class DeliveryOrderItemView {
         this.deliveryOrderType = deliveryOrderType;
     }
 
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    @Basic
+    @Column(name = "DeliveryRandomCode")
+    public String getDeliveryRandomCode() {
+        return deliveryRandomCode;
+    }
+
+    public void setDeliveryRandomCode(String deliveryRandomCode) {
+        this.deliveryRandomCode = deliveryRandomCode;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -340,6 +362,9 @@ public class DeliveryOrderItemView {
             return false;
         if (deliveryOrderType != null ? !deliveryOrderType.equals(that.deliveryOrderType) : that.deliveryOrderType != null)
             return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+        if (deliveryRandomCode != null ? !deliveryRandomCode.equals(that.deliveryRandomCode) : that.deliveryRandomCode != null)
+            return false;
 
         return true;
     }
@@ -372,6 +397,8 @@ public class DeliveryOrderItemView {
         result = 31 * result + (deliveryOrderCreateTime != null ? deliveryOrderCreateTime.hashCode() : 0);
         result = 31 * result + (supplySerialNo != null ? supplySerialNo.hashCode() : 0);
         result = 31 * result + (deliveryOrderType != null ? deliveryOrderType.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (deliveryRandomCode != null ? deliveryRandomCode.hashCode() : 0);
         return result;
     }
 }

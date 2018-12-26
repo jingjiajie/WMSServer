@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 public class InspectionNoteItemView {
@@ -35,10 +34,11 @@ public class InspectionNoteItemView {
     private BigDecimal warehouseEntryItemUnitAmount;
     private BigDecimal warehouseEntryItemRealAmount;
     private Timestamp inspectionNoteCreateTime;
+    private Integer version;
 
-    @Id
     @Basic
-    @Column(name = "ID", nullable = false)
+    @Id
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -48,7 +48,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "InspectionNoteID", nullable = false)
+    @Column(name = "InspectionNoteID")
     public int getInspectionNoteId() {
         return inspectionNoteId;
     }
@@ -58,7 +58,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "WarehouseEntryItemID", nullable = false)
+    @Column(name = "WarehouseEntryItemID")
     public int getWarehouseEntryItemId() {
         return warehouseEntryItemId;
     }
@@ -68,7 +68,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "State", nullable = false)
+    @Column(name = "State")
     public int getState() {
         return state;
     }
@@ -78,7 +78,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "Amount", nullable = false, precision = 3)
+    @Column(name = "Amount")
     public BigDecimal getAmount() {
         return amount;
     }
@@ -88,7 +88,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "Unit", nullable = false, length = 64)
+    @Column(name = "Unit")
     public String getUnit() {
         return unit;
     }
@@ -98,7 +98,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "UnitAmount", nullable = false, precision = 3)
+    @Column(name = "UnitAmount")
     public BigDecimal getUnitAmount() {
         return unitAmount;
     }
@@ -108,7 +108,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "ReturnAmount", nullable = true, precision = 3)
+    @Column(name = "ReturnAmount")
     public BigDecimal getReturnAmount() {
         return returnAmount;
     }
@@ -118,7 +118,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "ReturnUnit", nullable = true, length = 64)
+    @Column(name = "ReturnUnit")
     public String getReturnUnit() {
         return returnUnit;
     }
@@ -128,7 +128,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "ReturnUnitAmount", nullable = true, precision = 3)
+    @Column(name = "ReturnUnitAmount")
     public BigDecimal getReturnUnitAmount() {
         return returnUnitAmount;
     }
@@ -138,7 +138,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "Comment", nullable = true, length = 64)
+    @Column(name = "Comment")
     public String getComment() {
         return comment;
     }
@@ -148,7 +148,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "PersonID", nullable = true)
+    @Column(name = "PersonID")
     public Integer getPersonId() {
         return personId;
     }
@@ -158,7 +158,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "InspectionNoteNo", nullable = true, length = 64)
+    @Column(name = "InspectionNoteNo")
     public String getInspectionNoteNo() {
         return inspectionNoteNo;
     }
@@ -168,7 +168,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "MaterialNo", nullable = true, length = 64)
+    @Column(name = "MaterialNo")
     public String getMaterialNo() {
         return materialNo;
     }
@@ -178,7 +178,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "MaterialName", nullable = true, length = 64)
+    @Column(name = "MaterialName")
     public String getMaterialName() {
         return materialName;
     }
@@ -188,7 +188,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "SupplierNo", nullable = true, length = 64)
+    @Column(name = "SupplierNo")
     public String getSupplierNo() {
         return supplierNo;
     }
@@ -198,7 +198,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "SupplierName", nullable = true, length = 64)
+    @Column(name = "SupplierName")
     public String getSupplierName() {
         return supplierName;
     }
@@ -208,7 +208,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "PersonName", nullable = true, length = 64)
+    @Column(name = "PersonName")
     public String getPersonName() {
         return personName;
     }
@@ -217,39 +217,8 @@ public class InspectionNoteItemView {
         this.personName = personName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        InspectionNoteItemView that = (InspectionNoteItemView) o;
-        return id == that.id &&
-                inspectionNoteId == that.inspectionNoteId &&
-                warehouseEntryItemId == that.warehouseEntryItemId &&
-                state == that.state &&
-                Objects.equals(amount, that.amount) &&
-                Objects.equals(unit, that.unit) &&
-                Objects.equals(unitAmount, that.unitAmount) &&
-                Objects.equals(returnAmount, that.returnAmount) &&
-                Objects.equals(returnUnit, that.returnUnit) &&
-                Objects.equals(returnUnitAmount, that.returnUnitAmount) &&
-                Objects.equals(comment, that.comment) &&
-                Objects.equals(personId, that.personId) &&
-                Objects.equals(inspectionNoteNo, that.inspectionNoteNo) &&
-                Objects.equals(materialNo, that.materialNo) &&
-                Objects.equals(materialName, that.materialName) &&
-                Objects.equals(supplierNo, that.supplierNo) &&
-                Objects.equals(supplierName, that.supplierName) &&
-                Objects.equals(personName, that.personName);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, inspectionNoteId, warehouseEntryItemId, state, amount, unit, unitAmount, returnAmount, returnUnit, returnUnitAmount, comment, personId, inspectionNoteNo, materialNo, materialName, supplierNo, supplierName, personName);
-    }
-
     @Basic
-    @Column(name = "MaterialProductLine", nullable = true, length = 64)
+    @Column(name = "MaterialProductLine")
     public String getMaterialProductLine() {
         return materialProductLine;
     }
@@ -259,7 +228,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "SupplierID", nullable = true)
+    @Column(name = "SupplierID")
     public Integer getSupplierId() {
         return supplierId;
     }
@@ -269,7 +238,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "MaterialID", nullable = true)
+    @Column(name = "MaterialID")
     public Integer getMaterialId() {
         return materialId;
     }
@@ -279,7 +248,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "WarehouseEntryItemUnit", nullable = true, length = 64)
+    @Column(name = "WarehouseEntryItemUnit")
     public String getWarehouseEntryItemUnit() {
         return warehouseEntryItemUnit;
     }
@@ -289,7 +258,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "WarehouseEntryItemUnitAmount", nullable = true, precision = 3)
+    @Column(name = "WarehouseEntryItemUnitAmount")
     public BigDecimal getWarehouseEntryItemUnitAmount() {
         return warehouseEntryItemUnitAmount;
     }
@@ -299,7 +268,7 @@ public class InspectionNoteItemView {
     }
 
     @Basic
-    @Column(name = "WarehouseEntryItemRealAmount", nullable = true, precision = 3)
+    @Column(name = "WarehouseEntryItemRealAmount")
     public BigDecimal getWarehouseEntryItemRealAmount() {
         return warehouseEntryItemRealAmount;
     }
@@ -316,5 +285,90 @@ public class InspectionNoteItemView {
 
     public void setInspectionNoteCreateTime(Timestamp inspectionNoteCreateTime) {
         this.inspectionNoteCreateTime = inspectionNoteCreateTime;
+    }
+
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        InspectionNoteItemView that = (InspectionNoteItemView) o;
+
+        if (id != that.id) return false;
+        if (inspectionNoteId != that.inspectionNoteId) return false;
+        if (warehouseEntryItemId != that.warehouseEntryItemId) return false;
+        if (state != that.state) return false;
+        if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
+        if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+        if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
+        if (returnAmount != null ? !returnAmount.equals(that.returnAmount) : that.returnAmount != null) return false;
+        if (returnUnit != null ? !returnUnit.equals(that.returnUnit) : that.returnUnit != null) return false;
+        if (returnUnitAmount != null ? !returnUnitAmount.equals(that.returnUnitAmount) : that.returnUnitAmount != null)
+            return false;
+        if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
+        if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
+        if (inspectionNoteNo != null ? !inspectionNoteNo.equals(that.inspectionNoteNo) : that.inspectionNoteNo != null)
+            return false;
+        if (materialNo != null ? !materialNo.equals(that.materialNo) : that.materialNo != null) return false;
+        if (materialName != null ? !materialName.equals(that.materialName) : that.materialName != null) return false;
+        if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
+        if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
+        if (personName != null ? !personName.equals(that.personName) : that.personName != null) return false;
+        if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
+            return false;
+        if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
+        if (materialId != null ? !materialId.equals(that.materialId) : that.materialId != null) return false;
+        if (warehouseEntryItemUnit != null ? !warehouseEntryItemUnit.equals(that.warehouseEntryItemUnit) : that.warehouseEntryItemUnit != null)
+            return false;
+        if (warehouseEntryItemUnitAmount != null ? !warehouseEntryItemUnitAmount.equals(that.warehouseEntryItemUnitAmount) : that.warehouseEntryItemUnitAmount != null)
+            return false;
+        if (warehouseEntryItemRealAmount != null ? !warehouseEntryItemRealAmount.equals(that.warehouseEntryItemRealAmount) : that.warehouseEntryItemRealAmount != null)
+            return false;
+        if (inspectionNoteCreateTime != null ? !inspectionNoteCreateTime.equals(that.inspectionNoteCreateTime) : that.inspectionNoteCreateTime != null)
+            return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + inspectionNoteId;
+        result = 31 * result + warehouseEntryItemId;
+        result = 31 * result + state;
+        result = 31 * result + (amount != null ? amount.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
+        result = 31 * result + (returnAmount != null ? returnAmount.hashCode() : 0);
+        result = 31 * result + (returnUnit != null ? returnUnit.hashCode() : 0);
+        result = 31 * result + (returnUnitAmount != null ? returnUnitAmount.hashCode() : 0);
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (personId != null ? personId.hashCode() : 0);
+        result = 31 * result + (inspectionNoteNo != null ? inspectionNoteNo.hashCode() : 0);
+        result = 31 * result + (materialNo != null ? materialNo.hashCode() : 0);
+        result = 31 * result + (materialName != null ? materialName.hashCode() : 0);
+        result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
+        result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
+        result = 31 * result + (personName != null ? personName.hashCode() : 0);
+        result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
+        result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
+        result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
+        result = 31 * result + (warehouseEntryItemUnit != null ? warehouseEntryItemUnit.hashCode() : 0);
+        result = 31 * result + (warehouseEntryItemUnitAmount != null ? warehouseEntryItemUnitAmount.hashCode() : 0);
+        result = 31 * result + (warehouseEntryItemRealAmount != null ? warehouseEntryItemRealAmount.hashCode() : 0);
+        result = 31 * result + (inspectionNoteCreateTime != null ? inspectionNoteCreateTime.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        return result;
     }
 }

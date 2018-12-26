@@ -15,8 +15,6 @@ import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.wms.utilities.model.TransferOrder;
-import com.wms.utilities.model.TransferOrderView;
 
 
 import java.lang.reflect.Array;
@@ -24,7 +22,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -270,6 +267,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
     public List<DeliveryOrderItemView> orderToDelivery(String accountBook, DeliveryByTransferOrder deliveryByTransferOrder) {
 
         TransferOrderView[] transferOrderViews=this.find(accountBook,new Condition().addCondition("id",deliveryByTransferOrder.getTransferOrderId()));
+        TransferOrder transferOrder=this.transferOrderDAO.findTable(accountBook,new Condition().addCondition("id",deliveryByTransferOrder.getTransferOrderId()))[0];
         if (transferOrderViews[0].getState()!=2){
             throw new WMSServiceException(String.format("当前备货单未整单完成，备货单号（%S），无法创建出库单", transferOrderViews[0].getNo()));
         }
@@ -343,6 +341,9 @@ public class TransferOrderServiceImpl implements TransferOrderService{
             throw new WMSServiceException(String.format("当前备货单无可直接正常发货项，备货单号（%S），无法创建出库单，请检查后再试！", itemViews[0].getTransferOrderNo()));
         }
         this.deliveryOrderItemService.add(accountBook,deliveryOrderItems);
+        //加个提示
+        transferOrder.setDescription(String.format("(已出库)",transferOrder.getDescription()));
+        this.update(accountBook,new TransferOrder[]{transferOrder});
         return falseDeliveryOrderItemList;
     }
 }

@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.Objects;
 
 @Entity
 public class WarehouseEntryItemView {
@@ -52,10 +51,12 @@ public class WarehouseEntryItemView {
     private String qualifiedStorageLocationName;
     private String unqualifiedStorageLocationNo;
     private String unqualifiedStorageLocationName;
+    private Integer version;
+    private String entryRandomCode;
 
-    @Id
     @Basic
     @Column(name = "ID")
+    @Id
     public int getId() {
         return id;
     }
@@ -474,58 +475,150 @@ public class WarehouseEntryItemView {
         this.unqualifiedStorageLocationName = unqualifiedStorageLocationName;
     }
 
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    @Basic
+    @Column(name = "EntryRandomCode")
+    public String getEntryRandomCode() {
+        return entryRandomCode;
+    }
+
+    public void setEntryRandomCode(String entryRandomCode) {
+        this.entryRandomCode = entryRandomCode;
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        WarehouseEntryItemView that = (WarehouseEntryItemView) o;
-        return id == that.id &&
-                warehouseEntryId == that.warehouseEntryId &&
-                supplyId == that.supplyId &&
-                storageLocationId == that.storageLocationId &&
-                state == that.state &&
-                Objects.equals(expectedAmount, that.expectedAmount) &&
-                Objects.equals(realAmount, that.realAmount) &&
-                Objects.equals(unit, that.unit) &&
-                Objects.equals(unitAmount, that.unitAmount) &&
-                Objects.equals(inspectionAmount, that.inspectionAmount) &&
-                Objects.equals(refuseAmount, that.refuseAmount) &&
-                Objects.equals(refuseUnit, that.refuseUnit) &&
-                Objects.equals(refuseUnitAmount, that.refuseUnitAmount) &&
-                Objects.equals(personId, that.personId) &&
-                Objects.equals(comment, that.comment) &&
-                Objects.equals(manufactureNo, that.manufactureNo) &&
-                Objects.equals(inventoryDate, that.inventoryDate) &&
-                Objects.equals(manufactureDate, that.manufactureDate) &&
-                Objects.equals(expiryDate, that.expiryDate) &&
-                Objects.equals(qualifiedStorageLocationId, that.qualifiedStorageLocationId) &&
-                Objects.equals(unqualifiedStorageLocationId, that.unqualifiedStorageLocationId) &&
-                Objects.equals(warehouseEntryNo, that.warehouseEntryNo) &&
-                Objects.equals(warehouseEntryCreateTime, that.warehouseEntryCreateTime) &&
-                Objects.equals(materialId, that.materialId) &&
-                Objects.equals(materialNo, that.materialNo) &&
-                Objects.equals(materialName, that.materialName) &&
-                Objects.equals(materialProductLine, that.materialProductLine) &&
-                Objects.equals(supplierId, that.supplierId) &&
-                Objects.equals(supplierNo, that.supplierNo) &&
-                Objects.equals(supplierName, that.supplierName) &&
-                Objects.equals(storageLocationNo, that.storageLocationNo) &&
-                Objects.equals(storageLocationName, that.storageLocationName) &&
-                Objects.equals(personName, that.personName) &&
-                Objects.equals(supplySerialNo, that.supplySerialNo) &&
-                Objects.equals(supplyDefaultInspectionAmount, that.supplyDefaultInspectionAmount) &&
-                Objects.equals(supplyDefaultInspectionUnit, that.supplyDefaultInspectionUnit) &&
-                Objects.equals(supplyDefaultInspectionUnitAmount, that.supplyDefaultInspectionUnitAmount) &&
-                Objects.equals(supplyDefaultInspectionStorageLocationNo, that.supplyDefaultInspectionStorageLocationNo) &&
-                Objects.equals(qualifiedStorageLocationNo, that.qualifiedStorageLocationNo) &&
-                Objects.equals(qualifiedStorageLocationName, that.qualifiedStorageLocationName) &&
-                Objects.equals(unqualifiedStorageLocationNo, that.unqualifiedStorageLocationNo) &&
-                Objects.equals(unqualifiedStorageLocationName, that.unqualifiedStorageLocationName);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        WarehouseEntryItemView that = (WarehouseEntryItemView) object;
+
+        if (id != that.id) return false;
+        if (warehouseEntryId != that.warehouseEntryId) return false;
+        if (supplyId != that.supplyId) return false;
+        if (storageLocationId != that.storageLocationId) return false;
+        if (state != that.state) return false;
+        if (expectedAmount != null ? !expectedAmount.equals(that.expectedAmount) : that.expectedAmount != null)
+            return false;
+        if (realAmount != null ? !realAmount.equals(that.realAmount) : that.realAmount != null) return false;
+        if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+        if (unitAmount != null ? !unitAmount.equals(that.unitAmount) : that.unitAmount != null) return false;
+        if (inspectionAmount != null ? !inspectionAmount.equals(that.inspectionAmount) : that.inspectionAmount != null)
+            return false;
+        if (refuseAmount != null ? !refuseAmount.equals(that.refuseAmount) : that.refuseAmount != null) return false;
+        if (refuseUnit != null ? !refuseUnit.equals(that.refuseUnit) : that.refuseUnit != null) return false;
+        if (refuseUnitAmount != null ? !refuseUnitAmount.equals(that.refuseUnitAmount) : that.refuseUnitAmount != null)
+            return false;
+        if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
+        if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
+        if (manufactureNo != null ? !manufactureNo.equals(that.manufactureNo) : that.manufactureNo != null)
+            return false;
+        if (inventoryDate != null ? !inventoryDate.equals(that.inventoryDate) : that.inventoryDate != null)
+            return false;
+        if (manufactureDate != null ? !manufactureDate.equals(that.manufactureDate) : that.manufactureDate != null)
+            return false;
+        if (expiryDate != null ? !expiryDate.equals(that.expiryDate) : that.expiryDate != null) return false;
+        if (qualifiedStorageLocationId != null ? !qualifiedStorageLocationId.equals(that.qualifiedStorageLocationId) : that.qualifiedStorageLocationId != null)
+            return false;
+        if (unqualifiedStorageLocationId != null ? !unqualifiedStorageLocationId.equals(that.unqualifiedStorageLocationId) : that.unqualifiedStorageLocationId != null)
+            return false;
+        if (warehouseEntryNo != null ? !warehouseEntryNo.equals(that.warehouseEntryNo) : that.warehouseEntryNo != null)
+            return false;
+        if (warehouseEntryCreateTime != null ? !warehouseEntryCreateTime.equals(that.warehouseEntryCreateTime) : that.warehouseEntryCreateTime != null)
+            return false;
+        if (materialId != null ? !materialId.equals(that.materialId) : that.materialId != null) return false;
+        if (materialNo != null ? !materialNo.equals(that.materialNo) : that.materialNo != null) return false;
+        if (materialName != null ? !materialName.equals(that.materialName) : that.materialName != null) return false;
+        if (materialProductLine != null ? !materialProductLine.equals(that.materialProductLine) : that.materialProductLine != null)
+            return false;
+        if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
+        if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
+        if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
+        if (storageLocationNo != null ? !storageLocationNo.equals(that.storageLocationNo) : that.storageLocationNo != null)
+            return false;
+        if (storageLocationName != null ? !storageLocationName.equals(that.storageLocationName) : that.storageLocationName != null)
+            return false;
+        if (personName != null ? !personName.equals(that.personName) : that.personName != null) return false;
+        if (supplySerialNo != null ? !supplySerialNo.equals(that.supplySerialNo) : that.supplySerialNo != null)
+            return false;
+        if (supplyDefaultInspectionAmount != null ? !supplyDefaultInspectionAmount.equals(that.supplyDefaultInspectionAmount) : that.supplyDefaultInspectionAmount != null)
+            return false;
+        if (supplyDefaultInspectionUnit != null ? !supplyDefaultInspectionUnit.equals(that.supplyDefaultInspectionUnit) : that.supplyDefaultInspectionUnit != null)
+            return false;
+        if (supplyDefaultInspectionUnitAmount != null ? !supplyDefaultInspectionUnitAmount.equals(that.supplyDefaultInspectionUnitAmount) : that.supplyDefaultInspectionUnitAmount != null)
+            return false;
+        if (supplyDefaultInspectionStorageLocationNo != null ? !supplyDefaultInspectionStorageLocationNo.equals(that.supplyDefaultInspectionStorageLocationNo) : that.supplyDefaultInspectionStorageLocationNo != null)
+            return false;
+        if (qualifiedStorageLocationNo != null ? !qualifiedStorageLocationNo.equals(that.qualifiedStorageLocationNo) : that.qualifiedStorageLocationNo != null)
+            return false;
+        if (qualifiedStorageLocationName != null ? !qualifiedStorageLocationName.equals(that.qualifiedStorageLocationName) : that.qualifiedStorageLocationName != null)
+            return false;
+        if (unqualifiedStorageLocationNo != null ? !unqualifiedStorageLocationNo.equals(that.unqualifiedStorageLocationNo) : that.unqualifiedStorageLocationNo != null)
+            return false;
+        if (unqualifiedStorageLocationName != null ? !unqualifiedStorageLocationName.equals(that.unqualifiedStorageLocationName) : that.unqualifiedStorageLocationName != null)
+            return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+        if (entryRandomCode != null ? !entryRandomCode.equals(that.entryRandomCode) : that.entryRandomCode != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, warehouseEntryId, supplyId, storageLocationId, expectedAmount, realAmount, unit, unitAmount, inspectionAmount, state, refuseAmount, refuseUnit, refuseUnitAmount, personId, comment, manufactureNo, inventoryDate, manufactureDate, expiryDate, qualifiedStorageLocationId, unqualifiedStorageLocationId, warehouseEntryNo, warehouseEntryCreateTime, materialId, materialNo, materialName, materialProductLine, supplierId, supplierNo, supplierName, storageLocationNo, storageLocationName, personName, supplySerialNo, supplyDefaultInspectionAmount, supplyDefaultInspectionUnit, supplyDefaultInspectionUnitAmount, supplyDefaultInspectionStorageLocationNo, qualifiedStorageLocationNo, qualifiedStorageLocationName, unqualifiedStorageLocationNo, unqualifiedStorageLocationName);
+        int result = id;
+        result = 31 * result + warehouseEntryId;
+        result = 31 * result + supplyId;
+        result = 31 * result + storageLocationId;
+        result = 31 * result + (expectedAmount != null ? expectedAmount.hashCode() : 0);
+        result = 31 * result + (realAmount != null ? realAmount.hashCode() : 0);
+        result = 31 * result + (unit != null ? unit.hashCode() : 0);
+        result = 31 * result + (unitAmount != null ? unitAmount.hashCode() : 0);
+        result = 31 * result + (inspectionAmount != null ? inspectionAmount.hashCode() : 0);
+        result = 31 * result + state;
+        result = 31 * result + (refuseAmount != null ? refuseAmount.hashCode() : 0);
+        result = 31 * result + (refuseUnit != null ? refuseUnit.hashCode() : 0);
+        result = 31 * result + (refuseUnitAmount != null ? refuseUnitAmount.hashCode() : 0);
+        result = 31 * result + (personId != null ? personId.hashCode() : 0);
+        result = 31 * result + (comment != null ? comment.hashCode() : 0);
+        result = 31 * result + (manufactureNo != null ? manufactureNo.hashCode() : 0);
+        result = 31 * result + (inventoryDate != null ? inventoryDate.hashCode() : 0);
+        result = 31 * result + (manufactureDate != null ? manufactureDate.hashCode() : 0);
+        result = 31 * result + (expiryDate != null ? expiryDate.hashCode() : 0);
+        result = 31 * result + (qualifiedStorageLocationId != null ? qualifiedStorageLocationId.hashCode() : 0);
+        result = 31 * result + (unqualifiedStorageLocationId != null ? unqualifiedStorageLocationId.hashCode() : 0);
+        result = 31 * result + (warehouseEntryNo != null ? warehouseEntryNo.hashCode() : 0);
+        result = 31 * result + (warehouseEntryCreateTime != null ? warehouseEntryCreateTime.hashCode() : 0);
+        result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
+        result = 31 * result + (materialNo != null ? materialNo.hashCode() : 0);
+        result = 31 * result + (materialName != null ? materialName.hashCode() : 0);
+        result = 31 * result + (materialProductLine != null ? materialProductLine.hashCode() : 0);
+        result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
+        result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
+        result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
+        result = 31 * result + (storageLocationNo != null ? storageLocationNo.hashCode() : 0);
+        result = 31 * result + (storageLocationName != null ? storageLocationName.hashCode() : 0);
+        result = 31 * result + (personName != null ? personName.hashCode() : 0);
+        result = 31 * result + (supplySerialNo != null ? supplySerialNo.hashCode() : 0);
+        result = 31 * result + (supplyDefaultInspectionAmount != null ? supplyDefaultInspectionAmount.hashCode() : 0);
+        result = 31 * result + (supplyDefaultInspectionUnit != null ? supplyDefaultInspectionUnit.hashCode() : 0);
+        result = 31 * result + (supplyDefaultInspectionUnitAmount != null ? supplyDefaultInspectionUnitAmount.hashCode() : 0);
+        result = 31 * result + (supplyDefaultInspectionStorageLocationNo != null ? supplyDefaultInspectionStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (qualifiedStorageLocationNo != null ? qualifiedStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (qualifiedStorageLocationName != null ? qualifiedStorageLocationName.hashCode() : 0);
+        result = 31 * result + (unqualifiedStorageLocationNo != null ? unqualifiedStorageLocationNo.hashCode() : 0);
+        result = 31 * result + (unqualifiedStorageLocationName != null ? unqualifiedStorageLocationName.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (entryRandomCode != null ? entryRandomCode.hashCode() : 0);
+        return result;
     }
 }

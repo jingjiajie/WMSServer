@@ -1,7 +1,6 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
-import com.wms.services.ledger.service.TaxItemService;
 import com.wms.services.warehouse.dao.DeliveryOrderDAO;
 import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.IDChecker;
@@ -14,7 +13,6 @@ import com.wms.utilities.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.wms.utilities.model.TransferOrder;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
