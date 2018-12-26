@@ -96,6 +96,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setManufactureDate(warehouseEntryItems[i].getManufactureDate());
             transferStock.setItemId(warehouseEntryItems[i].getId());
             transferStock.setItemType(ItemType.entryItem);
+            transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             this.stockRecordService.addAmount(accountBook, transferStock,new TransferStock());
         }
         return ids;
