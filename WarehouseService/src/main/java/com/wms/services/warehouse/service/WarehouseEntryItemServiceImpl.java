@@ -477,6 +477,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             } else {
                 transferStock.setAmount(warehouseEntryItem.getRealAmount());
             }
+            transferStock.setAvailableAmount(transferStock.getAmount());
             transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
