@@ -316,6 +316,10 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                     formula = salaryItem.getIdentifier() + "=" + salaryItem.getDefaultAmount() + ";";
                     identifier = "var " + salaryItem.getIdentifier() + ";";
                 }
+                PersonSalary[] personSalaries=personSalaryDAO.findTable(accountBook,new Condition().addCondition("salaryItemId",salaryItem.getIdentifier()).addCondition("salaryPeriodId",addPersonSalary.getSalaryPeriodId()).addCondition("personId",salaryTypePerson.getPersonId()));
+                if(personSalaries.length==1){
+                    formula=salaryItem.getIdentifier()+"="+personSalaries[0].getAmount();
+                }
                 BigDecimal result = null;
                 try {
                     nashorn.eval(identifier);
