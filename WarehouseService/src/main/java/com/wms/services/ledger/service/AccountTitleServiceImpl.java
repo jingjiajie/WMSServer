@@ -76,15 +76,15 @@ public class AccountTitleServiceImpl implements AccountTitleService {
                 if (accountRecordViews.length>0) {
                     //找出最新那条
                     AccountRecordView newestAccountRecordView = accountRecordViews[0];
-                    for (int j = 0; j < accountRecordViews.length; j++) {
-                        if (accountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
-                            newestAccountRecordView = accountRecordViews[j];
-                        }
-                    }
-                    //如果父级科目最新一条记录余额不为0
-                    if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO)!=0){
-                        throw new WMSServiceException(String.format("无法添加新的子级科目！当前科目的对应父级科目中还有余额，如要继续需确认上级科目余额为0，当前科目名称(%s)，", accountTitles[0].getName()));
-                    }
+//                    for (int j = 0; j < accountRecordViews.length; j++) {
+//                        if (accountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
+//                            newestAccountRecordView = accountRecordViews[j];
+//                        }
+//                    }
+//                    //如果父级科目最新一条记录余额不为0
+//                    if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO)!=0){
+//                        throw new WMSServiceException(String.format("无法添加新的子级科目！当前科目的对应父级科目中还有余额，如要继续需确认上级科目余额为0，当前科目名称(%s)，", accountTitles[0].getName()));
+//                    }
                 }
             });
         }
@@ -145,35 +145,35 @@ public class AccountTitleServiceImpl implements AccountTitleService {
                                 .addCondition("accountTitleId", new Integer[]{oldAccountTitles[0].getId()}));
 
 
-                        //存在库存记录
-                        if (thaccountRecordViews.length > 0) {
-                            //按科目分组
-                            Map<Integer, List<AccountRecordView>> groupByWarehouseId =
-                                    Stream.of(thaccountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getWarehouseId));
-
-                            Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupByWarehouseId.entrySet().iterator();
-                            //将每组最新的加到一个列表中
-                            while (entries.hasNext()) {
-                                Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
-                                Integer warehouseId = entry.getKey();
-                                List<AccountRecordView> accountRecordViewsList=entry.getValue();
-                                AccountRecordView[] curAccountRecordViews=(AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
-                                accountRecordViewsList.toArray(curAccountRecordViews);
-
-                                //找出最新那条
-                                AccountRecordView newestAccountRecordView = curAccountRecordViews[0];
-                                for (int j = 0; j < curAccountRecordViews.length; j++) {
-                                    if (curAccountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
-                                        newestAccountRecordView = curAccountRecordViews[j];
-                                    }
-                                }
-                                //如果父级科目最新一条记录余额不为0
-                                if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO) != 0) {
-                                    throw new WMSServiceException(String.format("无法修改为新的子级科目！当前科目编码的对应父级科目：(%s)在仓库：(%s)中还有余额，如要继续需确认上级科目余额为0，当前科目名称(%s)，",newestAccountRecordView.getAccountTitleName(),newestAccountRecordView.getWarehouseName(), accountTitles[0].getName()));
-                                }
-                            }
-
-                        }
+//                        //存在库存记录
+//                        if (thaccountRecordViews.length > 0) {
+//                            //按科目分组
+//                            Map<Integer, List<AccountRecordView>> groupByWarehouseId =
+//                                    Stream.of(thaccountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getWarehouseId));
+//
+//                            Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupByWarehouseId.entrySet().iterator();
+//                            //将每组最新的加到一个列表中
+//                            while (entries.hasNext()) {
+//                                Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
+//                                Integer warehouseId = entry.getKey();
+//                                List<AccountRecordView> accountRecordViewsList=entry.getValue();
+//                                AccountRecordView[] curAccountRecordViews=(AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
+//                                accountRecordViewsList.toArray(curAccountRecordViews);
+//
+//                                //找出最新那条
+//                                AccountRecordView newestAccountRecordView = curAccountRecordViews[0];
+//                                for (int j = 0; j < curAccountRecordViews.length; j++) {
+//                                    if (curAccountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
+//                                        newestAccountRecordView = curAccountRecordViews[j];
+//                                    }
+//                                }
+//                                //如果父级科目最新一条记录余额不为0
+//                                if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO) != 0) {
+//                                    throw new WMSServiceException(String.format("无法修改为新的子级科目！当前科目编码的对应父级科目：(%s)在仓库：(%s)中还有余额，如要继续需确认上级科目余额为0，当前科目名称(%s)，",newestAccountRecordView.getAccountTitleName(),newestAccountRecordView.getWarehouseName(), accountTitles[0].getName()));
+//                                }
+//                            }
+//
+//                        }
                     }
 
                 }
@@ -205,17 +205,17 @@ public class AccountTitleServiceImpl implements AccountTitleService {
                                 AccountRecordView[] curAccountRecordViews=(AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
                                 accountRecordViewsList.toArray(curAccountRecordViews);
 
-                                //找出最新那条
-                                AccountRecordView newestAccountRecordView = curAccountRecordViews[0];
-                                for (int j = 0; j < curAccountRecordViews.length; j++) {
-                                    if (curAccountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
-                                        newestAccountRecordView = curAccountRecordViews[j];
-                                    }
-                                }
-                                //如果父级科目最新一条记录余额不为0
-                                if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO)!=0){
-                                    throw new WMSServiceException(String.format("无法修改为新的子级科目！当前科目编码的对应父级科目：(%s)在仓库：(%s)中还有余额，如要继续需确认上级科目余额为0，当前科目名称(%s)，",newestAccountRecordView.getAccountTitleName(),newestAccountRecordView.getWarehouseName(), accountTitles[0].getName()));
-                                }
+//                                //找出最新那条
+//                                AccountRecordView newestAccountRecordView = curAccountRecordViews[0];
+//                                for (int j = 0; j < curAccountRecordViews.length; j++) {
+//                                    if (curAccountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
+//                                        newestAccountRecordView = curAccountRecordViews[j];
+//                                    }
+//                                }
+//                                //如果父级科目最新一条记录余额不为0
+//                                if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO)!=0){
+//                                    throw new WMSServiceException(String.format("无法修改为新的子级科目！当前科目编码的对应父级科目：(%s)在仓库：(%s)中还有余额，如要继续需确认上级科目余额为0，当前科目名称(%s)，",newestAccountRecordView.getAccountTitleName(),newestAccountRecordView.getWarehouseName(), accountTitles[0].getName()));
+//                                }
                             }
 
                         }

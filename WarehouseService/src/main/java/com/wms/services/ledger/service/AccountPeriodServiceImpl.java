@@ -71,14 +71,14 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             {
                 if (accountRecordViews.length>0) {
                     Stream.of(accountRecordViews).forEach((accountRecordView) -> {
-                        if (accountRecordView.getTime().before(accountPeriod.getStartTime())) {
+                        if (accountRecordView.getServiceTime().before(accountPeriod.getStartTime())) {
                             throw new WMSServiceException(String.format("本期间的起始时间必须在本期间所有账目记录时间之前，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                         }
                     });
                 }
                 if (lastAccountRecordViews!=null) {
                     Stream.of(lastAccountRecordViews).forEach((lastAccountRecordView) -> {
-                        if (lastAccountRecordView.getTime().after(accountPeriod.getStartTime())) {
+                        if (lastAccountRecordView.getServiceTime().after(accountPeriod.getStartTime())) {
                             throw new WMSServiceException(String.format("本期间的起始时间必须在上一个会计期间所有账目记录时间之后，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                         }
                     });
@@ -88,16 +88,16 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             if (accountPeriod.getEnded()==AccountPeriodService.ended_ture)
             {
                 Stream.of(accountRecordViews).forEach((accountRecordView)->{
-                    if (accountRecordView.getTime().before(accountPeriod.getStartTime())){
+                    if (accountRecordView.getServiceTime().before(accountPeriod.getStartTime())){
                         throw new WMSServiceException(String.format("本期间的起始时间必须在本期间所有账目记录时间之前，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                     }
-                    if (accountRecordView.getTime().after(accountPeriod.getEndTime())){
+                    if (accountRecordView.getServiceTime().after(accountPeriod.getEndTime())){
                         throw new WMSServiceException(String.format("本期间的结束时间必须在本期间所有账目记录时间之后，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                     }
                 });
                 if (lastAccountRecordViews!=null) {
                     Stream.of(lastAccountRecordViews).forEach((lastAccountRecordView) -> {
-                        if (lastAccountRecordView.getTime().after(accountPeriod.getStartTime())) {
+                        if (lastAccountRecordView.getServiceTime().after(accountPeriod.getStartTime())) {
                             throw new WMSServiceException(String.format("本期间的起始时间必须在上一个会计期间所有账目记录时间之后，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                         }
                     });
@@ -106,7 +106,7 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
                 if (decAccountPeriodViews.length>0) {
                     AccountRecordView[] decAccountRecordViews = accountRecordService.find(accountBook, new Condition().addCondition("warehouseId", new Integer[]{accountPeriod.getWarehouseId()}).addCondition("accountPeriodId", new Integer[]{decAccountPeriodViews[0].getId()}));
                     Stream.of(decAccountRecordViews).forEach((decAccountRecordView) -> {
-                        if (decAccountRecordView.getTime().before(accountPeriod.getEndTime())) {
+                        if (decAccountRecordView.getServiceTime().before(accountPeriod.getEndTime())) {
                             throw new WMSServiceException(String.format("本期间的结束时间必须在后一个会计期间所有账目记录时间之前，请重新检查后输入！周期名称(%s)", accountPeriod.getName()));
                         }
                     });
@@ -199,7 +199,7 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
             throw new WMSServiceException("当前期间此仓库中无账目记录，无法结转");
         }
         Map<Integer, List<AccountRecordView>> groupBySupplierIdMap =
-                Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountTitleId));
+                Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getOwnAccountTitleId));
 
         Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupBySupplierIdMap.entrySet().iterator();
         //将每组最新的加到一个列表中
@@ -214,20 +214,20 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
 
             AccountRecordView newestAccountRecordView=curAccountRecordViews[0];
             for (int i=0;i<curAccountRecordViews.length;i++){
-                    if (curAccountRecordViews[i].getTime().after(newestAccountRecordView.getTime())){
-                        newestAccountRecordView=curAccountRecordViews[i];
-                    }
-                if (curAccountRecordViews[i].getTime().after(cutTime)){
-                    throw new WMSServiceException("结转时间节点不能早于现存记录最后时间！");
-                }
+//                    if (curAccountRecordViews[i].getTime().after(newestAccountRecordView.getTime())){
+//                        newestAccountRecordView=curAccountRecordViews[i];
+//                    }
+//                if (curAccountRecordViews[i].getTime().after(cutTime)){
+//                    throw new WMSServiceException("结转时间节点不能早于现存记录最后时间！");
+//                }
             }
             AccountRecord theAccountRecord=new AccountRecord();
             theAccountRecord.setWarehouseId(curWarehouseId);
-            theAccountRecord.setAccountTitleId(accountPeriodId);
+            //theAccountRecord.setAccountTitleId(accountPeriodId);
             theAccountRecord.setAccountPeriodId(newAccountPeriodID);
-            theAccountRecord.setTime(new Timestamp(System.currentTimeMillis()));
+            //theAccountRecord.setTime(new Timestamp(System.currentTimeMillis()));
             theAccountRecord.setPersonId(curPersonId);
-            theAccountRecord.setBalance(newestAccountRecordView.getBalance());
+            //heAccountRecord.setBalance(newestAccountRecordView.getBalance());
             theAccountRecord.setComment("财务转结");
             theAccountRecord.setCreditAmount(new BigDecimal(0));
             theAccountRecord.setDebitAmount(new BigDecimal(0));

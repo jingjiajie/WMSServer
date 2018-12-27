@@ -56,7 +56,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         this.validateEntities(accountBook,accountRecords);
         //设置时间
         Stream.of(accountRecords).forEach((accountRecord)->{
-            accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
+            //accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
         });
         //创建列表存放可能要更改余额的父级科目
         List<AccountRecord> updateParentRecordList=new ArrayList<>();
@@ -64,9 +64,9 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             //取得输入的发生额
             BigDecimal creditAmount=accountRecords[k].getCreditAmount();
             BigDecimal debitAmount=accountRecords[k].getDebitAmount();
-            BigDecimal thisBalance=accountRecords[k].getBalance();
+            //BigDecimal thisBalance=accountRecords[k].getOBalance();
             //找到对应的科目
-            AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getAccountTitleId()));
+            AccountTitleView[] AccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getOwnAccountTitleId()));
             AccountTitleView accountTitleView=AccountTitleViews[0];
             AccountTitle[] accountTitles = ReflectHelper.createAndCopyFields(AccountTitleViews,AccountTitle.class);
 
@@ -84,7 +84,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             AccountRecord[] oldAccountRecords= accountRecordDAO.findTable(accountBook,new Condition()
                     .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
                     .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
-                    .addCondition("accountTitleId",new Integer[]{accountRecords[k].getAccountTitleId()}));
+                    .addCondition("accountTitleId",new Integer[]{accountRecords[k].getOwnAccountTitleId()}));
 
             //TODO 如果有就存上，没有就看是不是有实际发生额，有的话要提示还没有录入期初余额
             if (oldAccountRecords.length>0){
@@ -93,43 +93,43 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                         &&debitAmount.compareTo(new BigDecimal(0))==0){
                     throw new WMSServiceException(String.format("业务记录未输入业务发生额，请检查后重新录入！科目名称(%s)，", accountTitles[0].getName()));
                 }
-                if (accountRecords[k].getBalance().compareTo(BigDecimal.ZERO)!=0){
-                    throw new WMSServiceException(String.format("业务记录无需输入余额，当前科目名称(%s)，", accountTitles[0].getName()));
-                }
+//                if (accountRecords[k].getBalance().compareTo(BigDecimal.ZERO)!=0){
+//                    throw new WMSServiceException(String.format("业务记录无需输入余额，当前科目名称(%s)，", accountTitles[0].getName()));
+//                }
                 AccountRecord newestAccountRecord=oldAccountRecords[0];
-                for (int i=0;i<oldAccountRecords.length;i++){
-                    if (oldAccountRecords[i].getTime().after(newestAccountRecord.getTime())) {
-                        newestAccountRecord = oldAccountRecords[i];
-                    }
-                }
-                BigDecimal curBalance=newestAccountRecord.getBalance();
-                //如果科目类型是借方
-                if (accountTitleView.getDirection()==AccountTitleService.Debit){
-                    accountRecords[k].setBalance(curBalance.subtract(creditAmount).add(debitAmount));
-                }else{
-                    accountRecords[k].setBalance(curBalance.subtract(debitAmount).add(creditAmount));
-                }
-            }else{
-                if ((creditAmount.compareTo(new BigDecimal(0))!=0
-                        ||debitAmount.compareTo(new BigDecimal(0))!=0)
-                        &&accountRecords[k].getBalance().compareTo(BigDecimal.ZERO)!=0){
-                    throw new WMSServiceException(String.format("无法添加账目记录！输入发生额时请勿输入余额！科目名称(%s)，", accountTitles[0].getName()));
-                }
-                if ((creditAmount.compareTo(new BigDecimal(0))==0
-                        &&debitAmount.compareTo(new BigDecimal(0))==0)
-                        &&accountRecords[k].getBalance().compareTo(BigDecimal.ZERO)==0){
-                    throw new WMSServiceException(String.format("无法添加账目记录！当前未录入非零发生额/余额！科目名称(%s)，", accountTitles[0].getName()));
+//                for (int i=0;i<oldAccountRecords.length;i++){
+//                    if (oldAccountRecords[i].getTime().after(newestAccountRecord.getTime())) {
+//                        newestAccountRecord = oldAccountRecords[i];
+//                    }
+//                }
+//                BigDecimal curBalance=newestAccountRecord.getBalance();
+//                //如果科目类型是借方
+//                if (accountTitleView.getDirection()==AccountTitleService.Debit){
+//                    accountRecords[k].setBalance(curBalance.subtract(creditAmount).add(debitAmount));
+//                }else{
+//                    accountRecords[k].setBalance(curBalance.subtract(debitAmount).add(creditAmount));
+//                }
+//            }else{
+//                if ((creditAmount.compareTo(new BigDecimal(0))!=0
+//                        ||debitAmount.compareTo(new BigDecimal(0))!=0)
+//                        &&accountRecords[k].getBalance().compareTo(BigDecimal.ZERO)!=0){
+//                    throw new WMSServiceException(String.format("无法添加账目记录！输入发生额时请勿输入余额！科目名称(%s)，", accountTitles[0].getName()));
+//                }
+//                if ((creditAmount.compareTo(new BigDecimal(0))==0
+//                        &&debitAmount.compareTo(new BigDecimal(0))==0)
+//                        &&accountRecords[k].getBalance().compareTo(BigDecimal.ZERO)==0){
+//                    throw new WMSServiceException(String.format("无法添加账目记录！当前未录入非零发生额/余额！科目名称(%s)，", accountTitles[0].getName()));
                 }
 
                 if (creditAmount.compareTo(new BigDecimal(0))!=0
                         ||debitAmount.compareTo(new BigDecimal(0))!=0){
                     BigDecimal curBalance=new BigDecimal(0);
                     //如果科目类型是借方
-                    if (accountTitleView.getDirection()==AccountTitleService.Debit){
-                        accountRecords[k].setBalance(curBalance.subtract(creditAmount).add(debitAmount));
-                    }else{
-                        accountRecords[k].setBalance(curBalance.subtract(debitAmount).add(creditAmount));
-                    }
+//                    if (accountTitleView.getDirection()==AccountTitleService.Debit){
+//                        accountRecords[k].setBalance(curBalance.subtract(creditAmount).add(debitAmount));
+//                    }else{
+//                        accountRecords[k].setBalance(curBalance.subtract(debitAmount).add(creditAmount));
+//                    }
                 }
 
             }
@@ -183,8 +183,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 //                }
 //            });
 
-            ids[k]= accountRecordDAO.add(accountBook,new AccountRecord[]{accountRecords[k]})[0];
-        }
+//            ids[k]= accountRecordDAO.add(accountBook,new AccountRecord[]{accountRecords[k]})[0];
+//        }
         AccountRecord[] updateParentRecords=new AccountRecord[updateParentRecordList.size()];
         updateParentRecordList.toArray(updateParentRecords);
         if(updateParentRecords.length>0)
@@ -200,7 +200,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         this.validateEntities(accountBook,accountRecords);
         //设置时间
         Stream.of(accountRecords).forEach((accountRecord)->{
-            accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
+            //accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
         });
 
         return accountRecordDAO.add(accountBook,accountRecords);
@@ -214,12 +214,12 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
             AccountRecordView[] oidAccountTitleViews=this.find(accountBook,new Condition().addCondition("id",accountRecords[k].getId()));
 
-            if(oidAccountTitleViews[0].getCreditAmount().compareTo(accountRecords[k].getCreditAmount())!=0
-                    ||oidAccountTitleViews[0].getDebitAmount().compareTo(accountRecords[k].getDebitAmount())!=0
-                    ||oidAccountTitleViews[0].getBalance().compareTo(accountRecords[k].getBalance())!=0
-                    ||oidAccountTitleViews[0].getAccountTitleId()!=accountRecords[k].getAccountTitleId()){
-                throw new WMSServiceException(String.format("无法修改账目记录！发生额/余额/科目名称无法修改！如需订正，请进行冲销操作，原科目名称(%s)", oidAccountTitleViews[0].getAccountTitleName()));
-            }
+//            if(oidAccountTitleViews[0].getCreditAmount().compareTo(accountRecords[k].getCreditAmount())!=0
+//                    ||oidAccountTitleViews[0].getDebitAmount().compareTo(accountRecords[k].getDebitAmount())!=0
+//                    ||oidAccountTitleViews[0].getBalance().compareTo(accountRecords[k].getBalance())!=0
+//                    ||oidAccountTitleViews[0].getAccountTitleId()!=accountRecords[k].getAccountTitleId()){
+//                throw new WMSServiceException(String.format("无法修改账目记录！发生额/余额/科目名称无法修改！如需订正，请进行冲销操作，原科目名称(%s)", oidAccountTitleViews[0].getAccountTitleName()));
+//            }
         }
 
 //        for (int k=0;k<accountRecords.length;k++){
@@ -272,33 +272,33 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     private void validateEntities(String accountBook,AccountRecord[] accountRecords) throws WMSServiceException{
 
         //外键检测
-        Stream.of(accountRecords).forEach((accountRecord -> {
+//        Stream.of(accountRecords).forEach((accountRecord -> {
+//
+//            //验证外键
+//            this.idChecker.check(WarehouseService.class, accountBook, accountRecord.getWarehouseId(), "仓库");
+//            this.idChecker.check(AccountPeriodService.class, accountBook, accountRecord.getAccountPeriodId(), "会计期间");
+//            //this.idChecker.check(AccountTitleService.class, accountBook, accountRecord.getAccountTitleId(), "科目");
+//            this.idChecker.check(PersonService.class, accountBook, accountRecord.getPersonId(), "记录人");
+//            new Validator("贷方金额").notEmpty().validate(accountRecord.getCreditAmount());
+//            new Validator("借方金额").notEmpty().validate(accountRecord.getDebitAmount());
+            //new Validator("余额").notEmpty().validate(accountRecord.getBalance());
 
-            //验证外键
-            this.idChecker.check(WarehouseService.class, accountBook, accountRecord.getWarehouseId(), "仓库");
-            this.idChecker.check(AccountPeriodService.class, accountBook, accountRecord.getAccountPeriodId(), "会计期间");
-            this.idChecker.check(AccountTitleService.class, accountBook, accountRecord.getAccountTitleId(), "科目");
-            this.idChecker.check(PersonService.class, accountBook, accountRecord.getPersonId(), "记录人");
-            new Validator("贷方金额").notEmpty().validate(accountRecord.getCreditAmount());
-            new Validator("借方金额").notEmpty().validate(accountRecord.getDebitAmount());
-            new Validator("余额").notEmpty().validate(accountRecord.getBalance());
 
+//            AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecord.getAccountTitleId()));
+//            if (accountTitleViews[0].getEnabled()!=AccountTitleService.ENABLED_ON){
+//                throw new WMSServiceException(String.format("该科目已被禁用，无法新添加账目记录，当前科目名称(%s)，", accountTitleViews[0].getName()));
+//            }
+//        }));
 
-            AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecord.getAccountTitleId()));
-            if (accountTitleViews[0].getEnabled()!=AccountTitleService.ENABLED_ON){
-                throw new WMSServiceException(String.format("该科目已被禁用，无法新添加账目记录，当前科目名称(%s)，", accountTitleViews[0].getName()));
-            }
-        }));
-
-        //外键检测
-        Stream.of(accountRecords).forEach((accountRecord -> {
-
-            if(accountRecord.getCreditAmount().compareTo(BigDecimal.ZERO)!=0
-                    &&accountRecord.getDebitAmount().compareTo(BigDecimal.ZERO)!=0){
-                throw new WMSServiceException("发生额只能填写借方或者贷方其中一个方向！无法添加账目记录!");
-            }
-
-        }));
+//        //外键检测
+//        Stream.of(accountRecords).forEach((accountRecord -> {
+//
+//            if(accountRecord.getCreditAmount().compareTo(BigDecimal.ZERO)!=0
+//                    &&accountRecord.getDebitAmount().compareTo(BigDecimal.ZERO)!=0){
+//                throw new WMSServiceException("发生额只能填写借方或者贷方其中一个方向！无法添加账目记录!");
+//            }
+//
+//        }));
 
     }
 
@@ -315,7 +315,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         AccountTitleView InAccountTitleView=InAccountTitleViews[0];
 
         AccountRecord accountRecord=new AccountRecord();
-        accountRecord.setAccountTitleId(OutAccountTitleView.getId());
+        //accountRecord.setAccountTitleId(OutAccountTitleView.getId());
         accountRecord.setAccountPeriodId(transferAccount.getAccountPeriodId());
         accountRecord.setPersonId(transferAccount.getPersonId());
         accountRecord.setComment("转账记录");
@@ -324,7 +324,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         accountRecord.setVoucherInfo(transferAccount.getVoucherInfo());
 
         AccountRecord accountRecord1=new AccountRecord();
-        accountRecord1.setAccountTitleId(InAccountTitleView.getId());
+        //accountRecord1.setAccountTitleId(InAccountTitleView.getId());
         accountRecord1.setAccountPeriodId(transferAccount.getAccountPeriodId());
         accountRecord1.setPersonId(transferAccount.getPersonId());
         accountRecord1.setComment("转账记录");
@@ -336,20 +336,20 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         if (OutAccountTitleView.getDirection()==AccountTitleService.Debit){
             accountRecord.setCreditAmount(transferAccount.getChangeAmount());
             accountRecord.setDebitAmount(BigDecimal.ZERO);
-            accountRecord.setBalance(BigDecimal.ZERO);
+            //accountRecord.setBalance(BigDecimal.ZERO);
 
             accountRecord1.setDebitAmount(transferAccount.getChangeAmount());
             accountRecord1.setCreditAmount(BigDecimal.ZERO);
-            accountRecord1.setBalance(BigDecimal.ZERO);
+            //accountRecord1.setBalance(BigDecimal.ZERO);
 
         }else{
             accountRecord.setDebitAmount(transferAccount.getChangeAmount());
             accountRecord.setCreditAmount(BigDecimal.ZERO);
-            accountRecord.setBalance(BigDecimal.ZERO);
+            //accountRecord.setBalance(BigDecimal.ZERO);
 
             accountRecord1.setCreditAmount(transferAccount.getChangeAmount());
             accountRecord1.setDebitAmount(BigDecimal.ZERO);
-            accountRecord1.setBalance(BigDecimal.ZERO);
+            //accountRecord1.setBalance(BigDecimal.ZERO);
 
         }
         this.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
@@ -477,7 +477,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             accountRecord.setDebitAmount(creditAmount);
             accountRecord.setCreditAmount(debitAmount);
             accountRecord.setComment("冲销账目");
-            accountRecord.setBalance(BigDecimal.ZERO);
+            //accountRecord.setBalance(BigDecimal.ZERO);
         });
         this.add(accountBook,accountRecords);
     }
@@ -522,7 +522,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
         //按科目分组
         Map<Integer, List<AccountRecordView>> groupByAccountTitleId =
-                Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountTitleId));
+                Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountPeriodId));
 
         Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupByAccountTitleId.entrySet().iterator();
         //将每组最新的加到一个列表中
@@ -535,12 +535,12 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
             AccountRecordView newestAccountRecordView=curAccountRecordViews[0];
             for (int i=0;i<curAccountRecordViews.length;i++){
-                if (curAccountRecordViews[i].getTime().after(newestAccountRecordView.getTime())) {
+                if (curAccountRecordViews[i].getServiceTime().after(newestAccountRecordView.getServiceTime())) {
                     newestAccountRecordView = curAccountRecordViews[i];
                 }
             }
 
-            if (newestAccountRecordView.getBalance().compareTo(BigDecimal.ZERO)<0) {
+            if (newestAccountRecordView.getOwnBalance().compareTo(BigDecimal.ZERO)<0) {
                 returnAccountRecordViewList.add(newestAccountRecordView);
             }
         }
@@ -577,13 +577,13 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     .addCondition("accountTitleId",new Integer[]{curAccountTitleId})
                     .addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
             if(accountRecordViews.length>0) {
-                AccountRecordView newestAccountRecordView = accountRecordViews[0];
-                for (int i = 0; i < accountRecordViews.length; i++) {
-                    if (accountRecordViews[i].getTime().after(newestAccountRecordView.getTime())) {
-                        newestAccountRecordView = accountRecordViews[i];
-                    }
-                }
-                accrualCheck1.setBalance(newestAccountRecordView.getBalance());
+//                AccountRecordView newestAccountRecordView = accountRecordViews[0];
+//                for (int i = 0; i < accountRecordViews.length; i++) {
+//                    if (accountRecordViews[i].getTime().after(newestAccountRecordView.getTime())) {
+//                        newestAccountRecordView = accountRecordViews[i];
+//                    }
+//                }
+//                accrualCheck1.setBalance(newestAccountRecordView.getBalance());
             }
             else{
                 accrualCheck1.setBalance(BigDecimal.ZERO);
@@ -598,12 +598,12 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                 if (accountRecordViews.length>0){
 
                     AccountRecordView newestAccountRecordView=accountRecordViews[0];
-                    for (int j=0;j<accountRecordViews.length;j++){
-                        if (accountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
-                            newestAccountRecordView = accountRecordViews[j];
-                        }
-                    }
-                    sumBalance=sumBalance.add(newestAccountRecordView.getBalance());
+//                    for (int j=0;j<accountRecordViews.length;j++){
+//                        if (accountRecordViews[j].getTime().after(newestAccountRecordView.getTime())) {
+//                            newestAccountRecordView = accountRecordViews[j];
+//                        }
+//                    }
+//                    sumBalance=sumBalance.add(newestAccountRecordView.getBalance());
                 }
             }
             accrualCheck1.setBalance(sumBalance);
