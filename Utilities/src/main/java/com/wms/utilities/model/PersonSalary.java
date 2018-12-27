@@ -14,8 +14,8 @@ public class PersonSalary {
     private Integer edited;
 
     @Id
-    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }

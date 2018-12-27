@@ -9,26 +9,53 @@ import java.sql.Timestamp;
 
 @Entity
 public class AccountRecordView {
+    private int ownAccountTitleId;
+    private int otherAccountTitleId;
     private int id;
     private int warehouseId;
-    private int accountTitleId;
+    private String ownAccountTitleDependence;
+    private String otherAccountTitleDependence;
     private Integer accountPeriodId;
     private String voucherInfo;
     private String summary;
     private BigDecimal debitAmount;
     private BigDecimal creditAmount;
-    private BigDecimal balance;
+    private BigDecimal ownBalance;
+    private BigDecimal otherBalance;
     private String comment;
     private Integer personId;
-    private Timestamp time;
-    private String personName;
-    private String warehouseName;
+    private Timestamp recordingTime;
+    private Timestamp serviceTime;
+    private String ownAccountName;
+    private String ownAccountNo;
+    private String otherAccountName;
+    private String otherAccountNo;
     private String accountPeriodName;
-    private String accountTitleName;
-    private String accountTitleNo;
+    private String warehouseName;
+    private String personName;
 
     @Basic
     @Id
+    @Column(name = "OwnAccountTitleID")
+    public int getOwnAccountTitleId() {
+        return ownAccountTitleId;
+    }
+
+    public void setOwnAccountTitleId(int ownAccountTitleId) {
+        this.ownAccountTitleId = ownAccountTitleId;
+    }
+
+    @Basic
+    @Column(name = "OtherAccountTitleID")
+    public int getOtherAccountTitleId() {
+        return otherAccountTitleId;
+    }
+
+    public void setOtherAccountTitleId(int otherAccountTitleId) {
+        this.otherAccountTitleId = otherAccountTitleId;
+    }
+
+    @Basic
     @Column(name = "ID")
     public int getId() {
         return id;
@@ -49,13 +76,23 @@ public class AccountRecordView {
     }
 
     @Basic
-    @Column(name = "AccountTitleID")
-    public int getAccountTitleId() {
-        return accountTitleId;
+    @Column(name = "OwnAccountTitleDependence")
+    public String getOwnAccountTitleDependence() {
+        return ownAccountTitleDependence;
     }
 
-    public void setAccountTitleId(int accountTitleId) {
-        this.accountTitleId = accountTitleId;
+    public void setOwnAccountTitleDependence(String ownAccountTitleDependence) {
+        this.ownAccountTitleDependence = ownAccountTitleDependence;
+    }
+
+    @Basic
+    @Column(name = "OtherAccountTitleDependence")
+    public String getOtherAccountTitleDependence() {
+        return otherAccountTitleDependence;
+    }
+
+    public void setOtherAccountTitleDependence(String otherAccountTitleDependence) {
+        this.otherAccountTitleDependence = otherAccountTitleDependence;
     }
 
     @Basic
@@ -109,13 +146,23 @@ public class AccountRecordView {
     }
 
     @Basic
-    @Column(name = "Balance")
-    public BigDecimal getBalance() {
-        return balance;
+    @Column(name = "OwnBalance")
+    public BigDecimal getOwnBalance() {
+        return ownBalance;
     }
 
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
+    public void setOwnBalance(BigDecimal ownBalance) {
+        this.ownBalance = ownBalance;
+    }
+
+    @Basic
+    @Column(name = "OtherBalance")
+    public BigDecimal getOtherBalance() {
+        return otherBalance;
+    }
+
+    public void setOtherBalance(BigDecimal otherBalance) {
+        this.otherBalance = otherBalance;
     }
 
     @Basic
@@ -139,33 +186,63 @@ public class AccountRecordView {
     }
 
     @Basic
-    @Column(name = "Time")
-    public Timestamp getTime() {
-        return time;
+    @Column(name = "RecordingTime")
+    public Timestamp getRecordingTime() {
+        return recordingTime;
     }
 
-    public void setTime(Timestamp time) {
-        this.time = time;
-    }
-
-    @Basic
-    @Column(name = "PersonName")
-    public String getPersonName() {
-        return personName;
-    }
-
-    public void setPersonName(String personName) {
-        this.personName = personName;
+    public void setRecordingTime(Timestamp recordingTime) {
+        this.recordingTime = recordingTime;
     }
 
     @Basic
-    @Column(name = "WarehouseName")
-    public String getWarehouseName() {
-        return warehouseName;
+    @Column(name = "ServiceTime")
+    public Timestamp getServiceTime() {
+        return serviceTime;
     }
 
-    public void setWarehouseName(String warehouseName) {
-        this.warehouseName = warehouseName;
+    public void setServiceTime(Timestamp serviceTime) {
+        this.serviceTime = serviceTime;
+    }
+
+    @Basic
+    @Column(name = "OwnAccountName")
+    public String getOwnAccountName() {
+        return ownAccountName;
+    }
+
+    public void setOwnAccountName(String ownAccountName) {
+        this.ownAccountName = ownAccountName;
+    }
+
+    @Basic
+    @Column(name = "OwnAccountNo")
+    public String getOwnAccountNo() {
+        return ownAccountNo;
+    }
+
+    public void setOwnAccountNo(String ownAccountNo) {
+        this.ownAccountNo = ownAccountNo;
+    }
+
+    @Basic
+    @Column(name = "OtherAccountName")
+    public String getOtherAccountName() {
+        return otherAccountName;
+    }
+
+    public void setOtherAccountName(String otherAccountName) {
+        this.otherAccountName = otherAccountName;
+    }
+
+    @Basic
+    @Column(name = "OtherAccountNo")
+    public String getOtherAccountNo() {
+        return otherAccountNo;
+    }
+
+    public void setOtherAccountNo(String otherAccountNo) {
+        this.otherAccountNo = otherAccountNo;
     }
 
     @Basic
@@ -179,23 +256,23 @@ public class AccountRecordView {
     }
 
     @Basic
-    @Column(name = "AccountTitleName")
-    public String getAccountTitleName() {
-        return accountTitleName;
+    @Column(name = "WarehouseName")
+    public String getWarehouseName() {
+        return warehouseName;
     }
 
-    public void setAccountTitleName(String accountTitleName) {
-        this.accountTitleName = accountTitleName;
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
     }
 
     @Basic
-    @Column(name = "AccountTitleNo")
-    public String getAccountTitleNo() {
-        return accountTitleNo;
+    @Column(name = "PersonName")
+    public String getPersonName() {
+        return personName;
     }
 
-    public void setAccountTitleNo(String accountTitleNo) {
-        this.accountTitleNo = accountTitleNo;
+    public void setPersonName(String personName) {
+        this.personName = personName;
     }
 
     @Override
@@ -205,51 +282,69 @@ public class AccountRecordView {
 
         AccountRecordView that = (AccountRecordView) object;
 
+        if (ownAccountTitleId != that.ownAccountTitleId) return false;
+        if (otherAccountTitleId != that.otherAccountTitleId) return false;
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
-        if (accountTitleId != that.accountTitleId) return false;
+        if (ownAccountTitleDependence != null ? !ownAccountTitleDependence.equals(that.ownAccountTitleDependence) : that.ownAccountTitleDependence != null)
+            return false;
+        if (otherAccountTitleDependence != null ? !otherAccountTitleDependence.equals(that.otherAccountTitleDependence) : that.otherAccountTitleDependence != null)
+            return false;
         if (accountPeriodId != null ? !accountPeriodId.equals(that.accountPeriodId) : that.accountPeriodId != null)
             return false;
         if (voucherInfo != null ? !voucherInfo.equals(that.voucherInfo) : that.voucherInfo != null) return false;
         if (summary != null ? !summary.equals(that.summary) : that.summary != null) return false;
         if (debitAmount != null ? !debitAmount.equals(that.debitAmount) : that.debitAmount != null) return false;
         if (creditAmount != null ? !creditAmount.equals(that.creditAmount) : that.creditAmount != null) return false;
-        if (balance != null ? !balance.equals(that.balance) : that.balance != null) return false;
+        if (ownBalance != null ? !ownBalance.equals(that.ownBalance) : that.ownBalance != null) return false;
+        if (otherBalance != null ? !otherBalance.equals(that.otherBalance) : that.otherBalance != null) return false;
         if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
         if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
-        if (time != null ? !time.equals(that.time) : that.time != null) return false;
-        if (personName != null ? !personName.equals(that.personName) : that.personName != null) return false;
-        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
+        if (recordingTime != null ? !recordingTime.equals(that.recordingTime) : that.recordingTime != null)
+            return false;
+        if (serviceTime != null ? !serviceTime.equals(that.serviceTime) : that.serviceTime != null) return false;
+        if (ownAccountName != null ? !ownAccountName.equals(that.ownAccountName) : that.ownAccountName != null)
+            return false;
+        if (ownAccountNo != null ? !ownAccountNo.equals(that.ownAccountNo) : that.ownAccountNo != null) return false;
+        if (otherAccountName != null ? !otherAccountName.equals(that.otherAccountName) : that.otherAccountName != null)
+            return false;
+        if (otherAccountNo != null ? !otherAccountNo.equals(that.otherAccountNo) : that.otherAccountNo != null)
             return false;
         if (accountPeriodName != null ? !accountPeriodName.equals(that.accountPeriodName) : that.accountPeriodName != null)
             return false;
-        if (accountTitleName != null ? !accountTitleName.equals(that.accountTitleName) : that.accountTitleName != null)
+        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
             return false;
-        if (accountTitleNo != null ? !accountTitleNo.equals(that.accountTitleNo) : that.accountTitleNo != null)
-            return false;
+        if (personName != null ? !personName.equals(that.personName) : that.personName != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id;
+        int result = ownAccountTitleId;
+        result = 31 * result + otherAccountTitleId;
+        result = 31 * result + id;
         result = 31 * result + warehouseId;
-        result = 31 * result + accountTitleId;
+        result = 31 * result + (ownAccountTitleDependence != null ? ownAccountTitleDependence.hashCode() : 0);
+        result = 31 * result + (otherAccountTitleDependence != null ? otherAccountTitleDependence.hashCode() : 0);
         result = 31 * result + (accountPeriodId != null ? accountPeriodId.hashCode() : 0);
         result = 31 * result + (voucherInfo != null ? voucherInfo.hashCode() : 0);
         result = 31 * result + (summary != null ? summary.hashCode() : 0);
         result = 31 * result + (debitAmount != null ? debitAmount.hashCode() : 0);
         result = 31 * result + (creditAmount != null ? creditAmount.hashCode() : 0);
-        result = 31 * result + (balance != null ? balance.hashCode() : 0);
+        result = 31 * result + (ownBalance != null ? ownBalance.hashCode() : 0);
+        result = 31 * result + (otherBalance != null ? otherBalance.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (personId != null ? personId.hashCode() : 0);
-        result = 31 * result + (time != null ? time.hashCode() : 0);
-        result = 31 * result + (personName != null ? personName.hashCode() : 0);
-        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
+        result = 31 * result + (recordingTime != null ? recordingTime.hashCode() : 0);
+        result = 31 * result + (serviceTime != null ? serviceTime.hashCode() : 0);
+        result = 31 * result + (ownAccountName != null ? ownAccountName.hashCode() : 0);
+        result = 31 * result + (ownAccountNo != null ? ownAccountNo.hashCode() : 0);
+        result = 31 * result + (otherAccountName != null ? otherAccountName.hashCode() : 0);
+        result = 31 * result + (otherAccountNo != null ? otherAccountNo.hashCode() : 0);
         result = 31 * result + (accountPeriodName != null ? accountPeriodName.hashCode() : 0);
-        result = 31 * result + (accountTitleName != null ? accountTitleName.hashCode() : 0);
-        result = 31 * result + (accountTitleNo != null ? accountTitleNo.hashCode() : 0);
+        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
+        result = 31 * result + (personName != null ? personName.hashCode() : 0);
         return result;
     }
 }
