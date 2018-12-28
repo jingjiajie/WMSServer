@@ -731,6 +731,28 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         personSalaryDAO.add(accountBook, personSalaries);
     }
 
+    public void addLastPeriod(String accountBook, AddPersonSalary addPersonSalary){
+       SalaryPeriodView[]  salaryPeriodViews=salaryPeriodService.find(accountBook,
+               new Condition().addOrder("endTime", OrderItem.Order.DESC));
+       if(salaryPeriodViews.length==0){
+           throw new WMSServiceException("无薪资期间，无法执行！");
+       }
+       if(salaryPeriodViews.length==1){
+           throw new WMSServiceException("只有一个薪资期间，无法按上个期间生成！");
+       }
+       if(salaryPeriodViews[0].getId()!=addPersonSalary.getSalaryPeriodId()){
+           throw new WMSServiceException("只有最新区间才能按上个期间生成！");
+       }
+       int lastPeriodId=salaryPeriodViews[1].getId();
+       //查找上个期间所有的人员薪资
+        PersonSalary[] personSalaries=this.personSalaryDAO.findTable(accountBook
+        ,new Condition().addCondition("salaryPeriodId",lastPeriodId));
+       for(int i=0;i<personSalaries.length;i++){
+           personSalaries[i].setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
+       }
+       personSalaryDAO.add(accountBook,personSalaries);
+    }
+
     private PersonSalary[] findExistPersonSalary(String accountBook, AddPersonSalary addPersonSalary) {
         PersonSalary[] resultArray = null;
         Session session = this.sessionFactory.getCurrentSession();

@@ -18,4 +18,5 @@ public interface PersonSalaryService extends BaseService<PersonSalary,PersonSala
     PersonSalary[] findTable(String accountBook, Condition cond) throws WMSServiceException;
     void refreshFormula(String accountBook, AddPersonSalary addPersonSalary);
     void refreshPersonSalary(String accountBook, AddPersonSalary addPersonSalary);
+    void addLastPeriod(String accountBook, AddPersonSalary addPersonSalary);
 }
