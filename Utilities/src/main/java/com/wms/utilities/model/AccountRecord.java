@@ -9,7 +9,7 @@ public class AccountRecord {
     private int id;
     private int warehouseId;
     private int ownAccountTitleId;
-    private int otherAccountTitleId;
+    private Integer otherAccountTitleId;
     private String ownAccountTitleDependence;
     private String otherAccountTitleDependence;
     private Integer accountPeriodId;
@@ -57,11 +57,11 @@ public class AccountRecord {
 
     @Basic
     @Column(name = "OtherAccountTitleID")
-    public int getOtherAccountTitleId() {
+    public Integer getOtherAccountTitleId() {
         return otherAccountTitleId;
     }
 
-    public void setOtherAccountTitleId(int otherAccountTitleId) {
+    public void setOtherAccountTitleId(Integer otherAccountTitleId) {
         this.otherAccountTitleId = otherAccountTitleId;
     }
 
@@ -196,16 +196,17 @@ public class AccountRecord {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        AccountRecord that = (AccountRecord) object;
+        AccountRecord that = (AccountRecord) o;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
         if (ownAccountTitleId != that.ownAccountTitleId) return false;
-        if (otherAccountTitleId != that.otherAccountTitleId) return false;
+        if (otherAccountTitleId != null ? !otherAccountTitleId.equals(that.otherAccountTitleId) : that.otherAccountTitleId != null)
+            return false;
         if (ownAccountTitleDependence != null ? !ownAccountTitleDependence.equals(that.ownAccountTitleDependence) : that.ownAccountTitleDependence != null)
             return false;
         if (otherAccountTitleDependence != null ? !otherAccountTitleDependence.equals(that.otherAccountTitleDependence) : that.otherAccountTitleDependence != null)
@@ -232,7 +233,7 @@ public class AccountRecord {
         int result = id;
         result = 31 * result + warehouseId;
         result = 31 * result + ownAccountTitleId;
-        result = 31 * result + otherAccountTitleId;
+        result = 31 * result + (otherAccountTitleId != null ? otherAccountTitleId.hashCode() : 0);
         result = 31 * result + (ownAccountTitleDependence != null ? ownAccountTitleDependence.hashCode() : 0);
         result = 31 * result + (otherAccountTitleDependence != null ? otherAccountTitleDependence.hashCode() : 0);
         result = 31 * result + (accountPeriodId != null ? accountPeriodId.hashCode() : 0);

@@ -6,11 +6,8 @@ import com.wms.services.ledger.datestructures.TransferAccount;
 import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.services.ledger.service.AccountRecordService;
 import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.model.AccountRecord;
-import com.wms.utilities.model.AccountRecordView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Entity
 public class AccountRecordView {
     private int ownAccountTitleId;
-    private int otherAccountTitleId;
+    private Integer otherAccountTitleId;
     private int id;
     private int warehouseId;
     private String ownAccountTitleDependence;
@@ -47,11 +47,11 @@ public class AccountRecordView {
 
     @Basic
     @Column(name = "OtherAccountTitleID")
-    public int getOtherAccountTitleId() {
+    public Integer getOtherAccountTitleId() {
         return otherAccountTitleId;
     }
 
-    public void setOtherAccountTitleId(int otherAccountTitleId) {
+    public void setOtherAccountTitleId(Integer otherAccountTitleId) {
         this.otherAccountTitleId = otherAccountTitleId;
     }
 
@@ -276,16 +276,17 @@ public class AccountRecordView {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        AccountRecordView that = (AccountRecordView) object;
+        AccountRecordView that = (AccountRecordView) o;
 
         if (ownAccountTitleId != that.ownAccountTitleId) return false;
-        if (otherAccountTitleId != that.otherAccountTitleId) return false;
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
+        if (otherAccountTitleId != null ? !otherAccountTitleId.equals(that.otherAccountTitleId) : that.otherAccountTitleId != null)
+            return false;
         if (ownAccountTitleDependence != null ? !ownAccountTitleDependence.equals(that.ownAccountTitleDependence) : that.ownAccountTitleDependence != null)
             return false;
         if (otherAccountTitleDependence != null ? !otherAccountTitleDependence.equals(that.otherAccountTitleDependence) : that.otherAccountTitleDependence != null)
@@ -322,7 +323,7 @@ public class AccountRecordView {
     @Override
     public int hashCode() {
         int result = ownAccountTitleId;
-        result = 31 * result + otherAccountTitleId;
+        result = 31 * result + (otherAccountTitleId != null ? otherAccountTitleId.hashCode() : 0);
         result = 31 * result + id;
         result = 31 * result + warehouseId;
         result = 31 * result + (ownAccountTitleDependence != null ? ownAccountTitleDependence.hashCode() : 0);

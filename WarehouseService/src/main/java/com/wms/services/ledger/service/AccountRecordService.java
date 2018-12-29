@@ -5,8 +5,6 @@ import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
 import com.wms.services.ledger.datestructures.TransferAccount;
 import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.AccountRecord;
-import com.wms.utilities.model.AccountRecordView;
 import com.wms.utilities.model.*;
 import com.wms.utilities.service.BaseService;
 
