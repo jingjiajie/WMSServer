@@ -4,6 +4,7 @@ import com.wms.services.ledger.dao.AccountTitleDAO;
 import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.ConditionItem;
+import com.wms.utilities.model.AccountRecordView;
 import com.wms.utilities.model.AccountTitle;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
