@@ -60,167 +60,244 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         });
         //创建列表存放可能要更改余额的父级科目
         List<AccountRecord> updateParentRecordList=new ArrayList<>();
+
+
         for (int k=0;k<accountRecords.length;k++){
             //取得输入的发生额
-            BigDecimal creditAmount=accountRecords[k].getCreditAmount();
-            BigDecimal debitAmount=accountRecords[k].getDebitAmount();
-            //BigDecimal thisBalance=accountRecords[k].getOBalance();
-            //找到对应的己方科目
-            AccountTitleView[] ownAccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getOwnAccountTitleId()));
-            AccountTitleView ownAccountTitleView=ownAccountTitleViews[0];
-            AccountTitle[] ownAccountTitles = ReflectHelper.createAndCopyFields(ownAccountTitleViews,AccountTitle.class);
+            BigDecimal creditAmount = accountRecords[k].getCreditAmount();
+            BigDecimal debitAmount = accountRecords[k].getDebitAmount();
 
-            //判断是否存在子级科目，存在的话将不能在当前科目新加科目记录
-            List<FindLinkAccountTitle> findSonAccountTitleList=this.FindSonAccountTitle(accountBook,ownAccountTitles);
-            FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
-            findSonAccountTitleList.toArray(sonAccountTitles);
-            List<AccountTitleView> sonAccountTitleViewsList= sonAccountTitles[0].getAccountTitleViews();
-            AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
-            sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
-            if (curSonAccountTitleViews.length>0){
-                throw new WMSServiceException(String.format("无法添加明细记录！当前己方科目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", ownAccountTitles[0].getName()));
+            //先判断能不能往下走
+            if ((creditAmount.compareTo(new BigDecimal(0)) != 0
+                    || debitAmount.compareTo(new BigDecimal(0)) != 0)
+                    && accountRecords[k].getOwnBalance().compareTo(BigDecimal.ZERO) != 0
+                    && accountRecords[k].getOtherBalance().compareTo(BigDecimal.ZERO) != 0) {
+                throw new WMSServiceException(String.format("无法添加账目记录！输入发生额时请勿输入余额！凭证信息(%s)，", accountRecords[0].getVoucherInfo()));
+            }
+            if ((creditAmount.compareTo(new BigDecimal(0)) == 0
+                    && debitAmount.compareTo(new BigDecimal(0)) == 0)
+                    && accountRecords[k].getOwnBalance().compareTo(BigDecimal.ZERO) != 0
+                    && accountRecords[k].getOtherBalance().compareTo(BigDecimal.ZERO) != 0) {
+                throw new WMSServiceException(String.format("无法添加账目记录！当前未录入非零发生额/余额！凭证信息(%s)，", accountRecords[0].getVoucherInfo()));
             }
 
-            //找到对应的对方科目
-            AccountTitleView[] otherAccountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecords[k].getOtherAccountTitleId()));
-            AccountTitleView otherAccountTitleView=otherAccountTitleViews[0];
-            AccountTitle[] otherAccountTitles = ReflectHelper.createAndCopyFields(otherAccountTitleViews,AccountTitle.class);
+            if (accountRecords[k].getOtherAccountTitleId()!=null&&accountRecords[k].getOtherAccountTitleId()!=-1) {
+                //TODO 这里判断有对方科目，即为业务记录
 
-            //判断是否存在子级科目，存在的话将不能在当前科目新加科目记录
-            List<FindLinkAccountTitle> findSonAccountTitleList1=this.FindSonAccountTitle(accountBook,otherAccountTitles);
-            FindLinkAccountTitle[] sonAccountTitles1=new FindLinkAccountTitle[findSonAccountTitleList1.size()];
-            findSonAccountTitleList1.toArray(sonAccountTitles1);
-            List<AccountTitleView> sonAccountTitleViewsList1= sonAccountTitles1[0].getAccountTitleViews();
-            AccountTitleView[] curSonAccountTitleViews1=new AccountTitleView[sonAccountTitleViewsList1.size()];
-            sonAccountTitleViewsList1.toArray(curSonAccountTitleViews1);
-            if (curSonAccountTitleViews1.length>0){
-                throw new WMSServiceException(String.format("无法添加明细记录！当前对方科目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", otherAccountTitles[0].getName()));
-            }
-
-            AccountRecord[] oldAccountRecords= accountRecordDAO.findTable(accountBook,new Condition()
-                    .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
-                    .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
-                    .addCondition("ownAccountTitleId",new Integer[]{accountRecords[k].getOwnAccountTitleId()}));
-
-            AccountRecord[] oldAccountRecords1= accountRecordDAO.findTable(accountBook,new Condition()
-                    .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
-                    .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
-                    .addCondition("otherAccountTitleId",new Integer[]{accountRecords[k].getOwnAccountTitleId()}));
-
-            AccountRecord[] oldAccountRecords2= accountRecordDAO.findTable(accountBook,new Condition()
-                    .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
-                    .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
-                    .addCondition("ownAccountTitleId",new Integer[]{accountRecords[k].getOtherAccountTitleId()}));
-
-            AccountRecord[] oldAccountRecords3= accountRecordDAO.findTable(accountBook,new Condition()
-                    .addCondition("warehouseId",new Integer[]{accountRecords[k].getWarehouseId()})
-                    .addCondition("accountPeriodId",new Integer[]{accountRecords[k].getAccountPeriodId()})
-                    .addCondition("otherAccountTitleId",new Integer[]{accountRecords[k].getOtherAccountTitleId()}));
-
-            //TODO 如果有就存上，没有就看是不是有实际发生额，有的话要提示还没有录入期初余额
-            if ((oldAccountRecords.length>0||oldAccountRecords1.length>0)
-                    &&(oldAccountRecords2.length>0||oldAccountRecords3.length>0)){
-
-                if (creditAmount.compareTo(new BigDecimal(0))==0
-                        &&debitAmount.compareTo(new BigDecimal(0))==0){
+                if (creditAmount.compareTo(new BigDecimal(0)) == 0
+                        && debitAmount.compareTo(new BigDecimal(0)) == 0) {
                     throw new WMSServiceException(String.format("业务记录未输入业务发生额，请检查后重新录入！凭证信息(%s)，", accountRecords[0].getVoucherInfo()));
                 }
-                if (accountRecords[k].getOwnBalance().compareTo(BigDecimal.ZERO)!=0
-                        ||accountRecords[k].getOtherBalance().compareTo(BigDecimal.ZERO)!=0){
+                if (accountRecords[k].getOwnBalance().compareTo(BigDecimal.ZERO) != 0
+                        || accountRecords[k].getOtherBalance().compareTo(BigDecimal.ZERO) != 0) {
                     throw new WMSServiceException(String.format("业务记录无需输入余额，凭证信息(%s)，", accountRecords[0].getVoucherInfo()));
                 }
-                BigDecimal curOwnBalance=BigDecimal.ZERO;
-                if(oldAccountRecords.length>0){
-                    AccountRecord newestAccountRecord=oldAccountRecords[0];
-                    for (int i=0;i<oldAccountRecords.length;i++){
+
+                //BigDecimal thisBalance=accountRecords[k].getOBalance();
+                //找到对应的己方科目
+                AccountTitleView[] ownAccountTitleViews = this.accountTitleService.find(accountBook, new Condition().addCondition("id", accountRecords[k].getOwnAccountTitleId()));
+                AccountTitleView ownAccountTitleView = ownAccountTitleViews[0];
+                AccountTitle[] ownAccountTitles = ReflectHelper.createAndCopyFields(ownAccountTitleViews, AccountTitle.class);
+
+                //判断是否存在子级科目，存在的话将不能在当前科目新加科目记录
+                List<FindLinkAccountTitle> findSonAccountTitleList = this.FindSonAccountTitle(accountBook, ownAccountTitles);
+                FindLinkAccountTitle[] sonAccountTitles = new FindLinkAccountTitle[findSonAccountTitleList.size()];
+                findSonAccountTitleList.toArray(sonAccountTitles);
+                List<AccountTitleView> sonAccountTitleViewsList = sonAccountTitles[0].getAccountTitleViews();
+                AccountTitleView[] curSonAccountTitleViews = new AccountTitleView[sonAccountTitleViewsList.size()];
+                sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
+                if (curSonAccountTitleViews.length > 0) {
+                    throw new WMSServiceException(String.format("无法添加明细记录！当前己方科目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", ownAccountTitles[0].getName()));
+                }
+
+                //找到对应的对方科目
+                AccountTitleView[] otherAccountTitleViews = this.accountTitleService.find(accountBook, new Condition().addCondition("id", accountRecords[k].getOtherAccountTitleId()));
+                AccountTitleView otherAccountTitleView = otherAccountTitleViews[0];
+                AccountTitle[] otherAccountTitles = ReflectHelper.createAndCopyFields(otherAccountTitleViews, AccountTitle.class);
+
+                //判断是否存在子级科目，存在的话将不能在当前科目新加科目记录
+                List<FindLinkAccountTitle> findSonAccountTitleList1 = this.FindSonAccountTitle(accountBook, otherAccountTitles);
+                FindLinkAccountTitle[] sonAccountTitles1 = new FindLinkAccountTitle[findSonAccountTitleList1.size()];
+                findSonAccountTitleList1.toArray(sonAccountTitles1);
+                List<AccountTitleView> sonAccountTitleViewsList1 = sonAccountTitles1[0].getAccountTitleViews();
+                AccountTitleView[] curSonAccountTitleViews1 = new AccountTitleView[sonAccountTitleViewsList1.size()];
+                sonAccountTitleViewsList1.toArray(curSonAccountTitleViews1);
+                if (curSonAccountTitleViews1.length > 0) {
+                    throw new WMSServiceException(String.format("无法添加明细记录！当前对方科目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", otherAccountTitles[0].getName()));
+                }
+
+                AccountRecord[] oldAccountRecords = accountRecordDAO.findTable(accountBook, new Condition()
+                        .addCondition("warehouseId", new Integer[]{accountRecords[k].getWarehouseId()})
+                        .addCondition("accountPeriodId", new Integer[]{accountRecords[k].getAccountPeriodId()})
+                        .addCondition("ownAccountTitleId", new Integer[]{accountRecords[k].getOwnAccountTitleId()}));
+
+                AccountRecord[] oldAccountRecords1 = accountRecordDAO.findTable(accountBook, new Condition()
+                        .addCondition("warehouseId", new Integer[]{accountRecords[k].getWarehouseId()})
+                        .addCondition("accountPeriodId", new Integer[]{accountRecords[k].getAccountPeriodId()})
+                        .addCondition("otherAccountTitleId", new Integer[]{accountRecords[k].getOwnAccountTitleId()}));
+
+                AccountRecord[] oldAccountRecords2 = accountRecordDAO.findTable(accountBook, new Condition()
+                        .addCondition("warehouseId", new Integer[]{accountRecords[k].getWarehouseId()})
+                        .addCondition("accountPeriodId", new Integer[]{accountRecords[k].getAccountPeriodId()})
+                        .addCondition("ownAccountTitleId", new Integer[]{accountRecords[k].getOtherAccountTitleId()}));
+
+                AccountRecord[] oldAccountRecords3 = accountRecordDAO.findTable(accountBook, new Condition()
+                        .addCondition("warehouseId", new Integer[]{accountRecords[k].getWarehouseId()})
+                        .addCondition("accountPeriodId", new Integer[]{accountRecords[k].getAccountPeriodId()})
+                        .addCondition("otherAccountTitleId", new Integer[]{accountRecords[k].getOtherAccountTitleId()}));
+
+                //TODO 如果都有历史纪录有就存上，没有就看是不是有实际发生额，有的话要提示还没有录入期初余额
+                if ((oldAccountRecords.length > 0 || oldAccountRecords1.length > 0)
+                        && (oldAccountRecords2.length > 0 || oldAccountRecords3.length > 0)) {
+
+                    BigDecimal curOwnBalance = BigDecimal.ZERO;
+                    if (oldAccountRecords.length > 0) {
+                        AccountRecord newestAccountRecord = oldAccountRecords[0];
+                        for (int i = 0; i < oldAccountRecords.length; i++) {
+                            if (oldAccountRecords[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                newestAccountRecord = oldAccountRecords[i];
+                            }
+                        }
+                        curOwnBalance = newestAccountRecord.getOwnBalance();
+                        if (oldAccountRecords1.length > 0) {
+                            for (int i = 0; i < oldAccountRecords1.length; i++) {
+                                if (oldAccountRecords1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                    newestAccountRecord = oldAccountRecords[i];
+                                }
+                            }
+                            curOwnBalance = newestAccountRecord.getOtherBalance();
+                        }
+                    }
+
+                    //如果科目类型是借方
+                    if (ownAccountTitleView.getDirection() == AccountTitleService.Debit) {
+                        accountRecords[k].setOwnBalance(curOwnBalance.subtract(creditAmount).add(debitAmount));
+                    } else {
+                        accountRecords[k].setOwnBalance(curOwnBalance.subtract(debitAmount).add(creditAmount));
+                    }
+
+                    BigDecimal curOtherBalance = BigDecimal.ZERO;
+                    if (oldAccountRecords2.length > 0) {
+                        AccountRecord newestAccountRecord1 = oldAccountRecords2[0];
+                        for (int i = 0; i < oldAccountRecords.length; i++) {
+                            if (oldAccountRecords2[i].getRecordingTime().after(newestAccountRecord1.getRecordingTime())) {
+                                newestAccountRecord1 = oldAccountRecords[i];
+                            }
+                        }
+                        curOtherBalance = newestAccountRecord1.getOwnBalance();
+                        if (oldAccountRecords3.length > 0) {
+                            for (int i = 0; i < oldAccountRecords1.length; i++) {
+                                if (oldAccountRecords3[i].getRecordingTime().after(newestAccountRecord1.getRecordingTime())) {
+                                    newestAccountRecord1 = oldAccountRecords[i];
+                                }
+                            }
+                            curOtherBalance = newestAccountRecord1.getOtherBalance();
+                        }
+                    }
+
+                    //如果科目类型是借方
+                    if (otherAccountTitleView.getDirection() == AccountTitleService.Debit) {
+
+                        accountRecords[k].setOtherBalance(curOtherBalance.subtract(debitAmount).add(creditAmount));
+                    } else {
+                        accountRecords[k].setOtherBalance(curOtherBalance.subtract(creditAmount).add(debitAmount));
+                    }
+                }
+                else if ((oldAccountRecords.length ==0 &&oldAccountRecords1.length ==0)){
+                    //这里排除掉己方科目没有历史纪录/期初余额的情况
+                    throw new WMSServiceException(String.format("当前业务记录的己方科目没有余额信息，请检查后重新录入！凭证信息(%s)，", accountRecords[0].getVoucherInfo()));
+                }
+                else {
+                    //己方科目有历史余额，对方科目没有任何历史记录的情况
+
+                    BigDecimal curOwnBalance = BigDecimal.ZERO;
+                    if (oldAccountRecords.length > 0) {
+                        AccountRecord newestAccountRecord = oldAccountRecords[0];
+                        for (int i = 0; i < oldAccountRecords.length; i++) {
+                            if (oldAccountRecords[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                newestAccountRecord = oldAccountRecords[i];
+                            }
+                        }
+                        curOwnBalance = newestAccountRecord.getOwnBalance();
+                        if (oldAccountRecords1.length > 0) {
+                            for (int i = 0; i < oldAccountRecords1.length; i++) {
+                                if (oldAccountRecords1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                    newestAccountRecord = oldAccountRecords[i];
+                                }
+                            }
+                            curOwnBalance = newestAccountRecord.getOtherBalance();
+                        }
+                    }
+                    //如果科目类型是借方
+                    if (ownAccountTitleView.getDirection() == AccountTitleService.Debit) {
+                        accountRecords[k].setOwnBalance(curOwnBalance.subtract(creditAmount).add(debitAmount));
+                    } else {
+                        accountRecords[k].setOwnBalance(curOwnBalance.subtract(debitAmount).add(creditAmount));
+                    }
+
+                    BigDecimal curBalance = new BigDecimal(0);
+
+                    //如果科目类型是借方
+                    if (otherAccountTitleView.getDirection() == AccountTitleService.Debit) {
+
+                        accountRecords[k].setOtherBalance(curBalance.subtract(debitAmount).add(creditAmount));
+                    } else {
+                        accountRecords[k].setOtherBalance(curBalance.subtract(creditAmount).add(debitAmount));
+                    }
+
+                }
+
+
+                ids[k] = accountRecordDAO.add(accountBook, new AccountRecord[]{accountRecords[k]})[0];
+            }
+            else{
+
+                //todo 这里是期初余额唯一的录入方式
+                //找到对应的己方科目
+                AccountTitleView[] ownAccountTitleViews = this.accountTitleService.find(accountBook, new Condition().addCondition("id", accountRecords[k].getOwnAccountTitleId()));
+                AccountTitleView ownAccountTitleView = ownAccountTitleViews[0];
+                AccountTitle[] ownAccountTitles = ReflectHelper.createAndCopyFields(ownAccountTitleViews, AccountTitle.class);
+
+                //判断是否存在子级科目，存在的话将不能在当前科目新加科目记录
+                List<FindLinkAccountTitle> findSonAccountTitleList = this.FindSonAccountTitle(accountBook, ownAccountTitles);
+                FindLinkAccountTitle[] sonAccountTitles = new FindLinkAccountTitle[findSonAccountTitleList.size()];
+                findSonAccountTitleList.toArray(sonAccountTitles);
+                List<AccountTitleView> sonAccountTitleViewsList = sonAccountTitles[0].getAccountTitleViews();
+                AccountTitleView[] curSonAccountTitleViews = new AccountTitleView[sonAccountTitleViewsList.size()];
+                sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
+                if (curSonAccountTitleViews.length > 0) {
+                    throw new WMSServiceException(String.format("无法添加明细记录！当前己方科目存在子级科目，请在子级科目下记录，当前科目名称(%s)，", ownAccountTitles[0].getName()));
+                }
+
+                AccountRecord[] oldAccountRecords = accountRecordDAO.findTable(accountBook, new Condition()
+                        .addCondition("warehouseId", new Integer[]{accountRecords[k].getWarehouseId()})
+                        .addCondition("accountPeriodId", new Integer[]{accountRecords[k].getAccountPeriodId()})
+                        .addCondition("ownAccountTitleId", new Integer[]{accountRecords[k].getOwnAccountTitleId()}));
+
+                AccountRecord[] oldAccountRecords1 = accountRecordDAO.findTable(accountBook, new Condition()
+                        .addCondition("warehouseId", new Integer[]{accountRecords[k].getWarehouseId()})
+                        .addCondition("accountPeriodId", new Integer[]{accountRecords[k].getAccountPeriodId()})
+                        .addCondition("otherAccountTitleId", new Integer[]{accountRecords[k].getOwnAccountTitleId()}));
+
+                BigDecimal curOwnBalance = BigDecimal.ZERO;
+                if (oldAccountRecords.length > 0) {
+                    AccountRecord newestAccountRecord = oldAccountRecords[0];
+                    for (int i = 0; i < oldAccountRecords.length; i++) {
                         if (oldAccountRecords[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
                             newestAccountRecord = oldAccountRecords[i];
                         }
                     }
-                    curOwnBalance=newestAccountRecord.getOwnBalance();
-                    if (oldAccountRecords1.length>0){
-                        for (int i=0;i<oldAccountRecords1.length;i++){
+                    curOwnBalance = newestAccountRecord.getOwnBalance();
+                    if (oldAccountRecords1.length > 0) {
+                        for (int i = 0; i < oldAccountRecords1.length; i++) {
                             if (oldAccountRecords1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
                                 newestAccountRecord = oldAccountRecords[i];
                             }
                         }
-                        curOwnBalance=newestAccountRecord.getOtherBalance();
+                        curOwnBalance = newestAccountRecord.getOtherBalance();
                     }
                 }
-
-                //如果科目类型是借方
-                if (ownAccountTitleView.getDirection()==AccountTitleService.Debit){
-                    accountRecords[k].setOwnBalance(curOwnBalance.subtract(creditAmount).add(debitAmount));
-                }else{
-                    accountRecords[k].setOwnBalance(curOwnBalance.subtract(debitAmount).add(creditAmount));
-                }
-
-                BigDecimal curOtherBalance=BigDecimal.ZERO;
-                if(oldAccountRecords2.length>0){
-                    AccountRecord newestAccountRecord1=oldAccountRecords2[0];
-
-                    for (int i=0;i<oldAccountRecords.length;i++){
-                        if (oldAccountRecords2[i].getRecordingTime().after(newestAccountRecord1.getRecordingTime())) {
-                            newestAccountRecord1 = oldAccountRecords[i];
-                        }
-                    }
-                    curOtherBalance=newestAccountRecord1.getOwnBalance();
-                    if (oldAccountRecords3.length>0){
-                        for (int i=0;i<oldAccountRecords1.length;i++){
-                            if (oldAccountRecords3[i].getRecordingTime().after(newestAccountRecord1.getRecordingTime())) {
-                                newestAccountRecord1 = oldAccountRecords[i];
-                            }
-                        }
-                        curOtherBalance=newestAccountRecord1.getOtherBalance();
-                    }
-                }
-
-                //如果科目类型是借方
-                if (otherAccountTitleView.getDirection()==AccountTitleService.Debit){
-
-                    accountRecords[k].setOtherBalance(curOtherBalance.subtract(debitAmount).add(creditAmount));
-                }else{
-                    accountRecords[k].setOtherBalance(curOtherBalance.subtract(creditAmount).add(debitAmount));
-                }
-            }else{
-                if ((creditAmount.compareTo(new BigDecimal(0))!=0
-                        ||debitAmount.compareTo(new BigDecimal(0))!=0)
-                        &&accountRecords[k].getOwnBalance().compareTo(BigDecimal.ZERO)!=0
-                        &&accountRecords[k].getOtherBalance().compareTo(BigDecimal.ZERO)!=0){
-                    throw new WMSServiceException(String.format("无法添加账目记录！输入发生额时请勿输入余额！凭证信息(%s)，", accountRecords[0].getVoucherInfo()));
-                }
-                if ((creditAmount.compareTo(new BigDecimal(0))==0
-                        &&debitAmount.compareTo(new BigDecimal(0))==0)
-                        &&accountRecords[k].getOwnBalance().compareTo(BigDecimal.ZERO)!=0
-                        &&accountRecords[k].getOtherBalance().compareTo(BigDecimal.ZERO)!=0){
-                    throw new WMSServiceException(String.format("无法添加账目记录！当前未录入非零发生额/余额！凭证信息(%s)，", accountRecords[0].getVoucherInfo()));
-                }
-
-                //todo 这里有很大问题
-                if (creditAmount.compareTo(new BigDecimal(0))!=0
-                        ||debitAmount.compareTo(new BigDecimal(0))!=0){
-                    BigDecimal curBalance=new BigDecimal(0);
-
-                    //如果科目类型是借方
-                    if (ownAccountTitleView.getDirection()==AccountTitleService.Debit){
-                        accountRecords[k].setOwnBalance(curBalance.subtract(creditAmount).add(debitAmount));
-                    }else{
-                        accountRecords[k].setOwnBalance(curBalance.subtract(debitAmount).add(creditAmount));
-                    }
-
-                    //如果科目类型是借方
-                    if (otherAccountTitleView.getDirection()==AccountTitleService.Debit){
-
-                        accountRecords[k].setOtherBalance(curBalance.subtract(debitAmount).add(creditAmount));
-                    }else{
-                        accountRecords[k].setOtherBalance(curBalance.subtract(creditAmount).add(debitAmount));
-                    }
-                }
-
             }
-
-
-            ids[k]= accountRecordDAO.add(accountBook,new AccountRecord[]{accountRecords[k]})[0];
         }
         AccountRecord[] updateParentRecords=new AccountRecord[updateParentRecordList.size()];
         updateParentRecordList.toArray(updateParentRecords);
@@ -330,12 +407,12 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                 throw new WMSServiceException(String.format("该科目已被禁用，无法新添加账目记录，科目名称(%s)，", accountTitleViews[0].getName()));
             }
 
-//            if (accountRecord.getOtherAccountTitleId()!=null) {
-//                AccountTitleView[] accountTitleViews1 = this.accountTitleService.find(accountBook, new Condition().addCondition("id", accountRecord.getOtherAccountTitleId()));
-//                if (accountTitleViews1[0].getEnabled() != AccountTitleService.ENABLED_ON) {
-//                    throw new WMSServiceException(String.format("该科目已被禁用，无法新添加账目记录，科目名称(%s)，", accountTitleViews[0].getName()));
-//                }
-//            }
+            if (accountRecord.getOtherAccountTitleId()!=null) {
+                AccountTitleView[] accountTitleViews1 = this.accountTitleService.find(accountBook, new Condition().addCondition("id", accountRecord.getOtherAccountTitleId()));
+                if (accountTitleViews1[0].getEnabled() != AccountTitleService.ENABLED_ON) {
+                    throw new WMSServiceException(String.format("该科目已被禁用，无法新添加账目记录，科目名称(%s)，", accountTitleViews[0].getName()));
+                }
+            }
         }));
 
         Stream.of(accountRecords).forEach((accountRecord -> {
