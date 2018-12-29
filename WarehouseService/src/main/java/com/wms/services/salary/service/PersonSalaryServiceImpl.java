@@ -413,7 +413,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
                 //没编辑过
                 personSalary.setEdited(0);
-                if (salaryItem.getGiveOut() == SalaryItemTypeState.GIVE_OUT_ON && salaryItem.getType() == SalaryItemTypeState.Formula) {
+                if (salaryItem.getType() == SalaryItemTypeState.Formula) {
                     personSalaryList.add(personSalary);
                 }
             }
