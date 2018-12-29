@@ -231,6 +231,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         return ids;
     }
 
+
+
     public int[] simpleAdd(String accountBook, AccountRecord[] accountRecords) throws WMSServiceException
     {
         //数据验证
@@ -251,12 +253,14 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
             AccountRecordView[] oidAccountTitleViews=this.find(accountBook,new Condition().addCondition("id",accountRecords[k].getId()));
 
-//            if(oidAccountTitleViews[0].getCreditAmount().compareTo(accountRecords[k].getCreditAmount())!=0
-//                    ||oidAccountTitleViews[0].getDebitAmount().compareTo(accountRecords[k].getDebitAmount())!=0
-//                    ||oidAccountTitleViews[0].getBalance().compareTo(accountRecords[k].getBalance())!=0
-//                    ||oidAccountTitleViews[0].getAccountTitleId()!=accountRecords[k].getAccountTitleId()){
-//                throw new WMSServiceException(String.format("无法修改账目记录！发生额/余额/科目名称无法修改！如需订正，请进行冲销操作，原科目名称(%s)", oidAccountTitleViews[0].getAccountTitleName()));
-//            }
+            if(oidAccountTitleViews[0].getCreditAmount().compareTo(accountRecords[k].getCreditAmount())!=0
+                    ||oidAccountTitleViews[0].getDebitAmount().compareTo(accountRecords[k].getDebitAmount())!=0
+                    ||oidAccountTitleViews[0].getOwnBalance().compareTo(accountRecords[k].getOwnBalance())!=0
+                    ||oidAccountTitleViews[0].getOtherBalance().compareTo(accountRecords[k].getOtherBalance())!=0
+                    ||oidAccountTitleViews[0].getOwnAccountTitleId()!=accountRecords[k].getOwnAccountTitleId()
+                    ||oidAccountTitleViews[0].getOtherAccountTitleId()!=accountRecords[k].getOtherAccountTitleId()){
+                throw new WMSServiceException(String.format("无法修改账目记录！发生额/余额/科目名称无法修改！如需订正，请进行冲销操作，凭证信息(%s)", oidAccountTitleViews[0].getVoucherInfo()));
+            }
         }
 
 //        for (int k=0;k<accountRecords.length;k++){
@@ -309,33 +313,39 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     private void validateEntities(String accountBook,AccountRecord[] accountRecords) throws WMSServiceException{
 
         //外键检测
-//        Stream.of(accountRecords).forEach((accountRecord -> {
-//
-//            //验证外键
-//            this.idChecker.check(WarehouseService.class, accountBook, accountRecord.getWarehouseId(), "仓库");
-//            this.idChecker.check(AccountPeriodService.class, accountBook, accountRecord.getAccountPeriodId(), "会计期间");
-//            //this.idChecker.check(AccountTitleService.class, accountBook, accountRecord.getAccountTitleId(), "科目");
-//            this.idChecker.check(PersonService.class, accountBook, accountRecord.getPersonId(), "记录人");
-//            new Validator("贷方金额").notEmpty().validate(accountRecord.getCreditAmount());
-//            new Validator("借方金额").notEmpty().validate(accountRecord.getDebitAmount());
-            //new Validator("余额").notEmpty().validate(accountRecord.getBalance());
+        Stream.of(accountRecords).forEach((accountRecord -> {
+
+            //验证外键
+            this.idChecker.check(WarehouseService.class, accountBook, accountRecord.getWarehouseId(), "仓库");
+            this.idChecker.check(AccountPeriodService.class, accountBook, accountRecord.getAccountPeriodId(), "会计期间");
+            this.idChecker.check(AccountTitleService.class, accountBook, accountRecord.getOwnAccountTitleId(), "科目");
+            this.idChecker.check(PersonService.class, accountBook, accountRecord.getPersonId(), "记录人");
+            new Validator("贷方金额").notEmpty().validate(accountRecord.getCreditAmount());
+            new Validator("借方金额").notEmpty().validate(accountRecord.getDebitAmount());
+//            new Validator("余额").notEmpty().validate(accountRecord.getBalance());
 
 
-//            AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecord.getAccountTitleId()));
-//            if (accountTitleViews[0].getEnabled()!=AccountTitleService.ENABLED_ON){
-//                throw new WMSServiceException(String.format("该科目已被禁用，无法新添加账目记录，当前科目名称(%s)，", accountTitleViews[0].getName()));
+            AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",accountRecord.getOwnAccountTitleId()));
+            if (accountTitleViews[0].getEnabled()!=AccountTitleService.ENABLED_ON){
+                throw new WMSServiceException(String.format("该科目已被禁用，无法新添加账目记录，科目名称(%s)，", accountTitleViews[0].getName()));
+            }
+
+//            if (accountRecord.getOtherAccountTitleId()!=null) {
+//                AccountTitleView[] accountTitleViews1 = this.accountTitleService.find(accountBook, new Condition().addCondition("id", accountRecord.getOtherAccountTitleId()));
+//                if (accountTitleViews1[0].getEnabled() != AccountTitleService.ENABLED_ON) {
+//                    throw new WMSServiceException(String.format("该科目已被禁用，无法新添加账目记录，科目名称(%s)，", accountTitleViews[0].getName()));
+//                }
 //            }
-//        }));
+        }));
 
-//        //外键检测
-//        Stream.of(accountRecords).forEach((accountRecord -> {
-//
-//            if(accountRecord.getCreditAmount().compareTo(BigDecimal.ZERO)!=0
-//                    &&accountRecord.getDebitAmount().compareTo(BigDecimal.ZERO)!=0){
-//                throw new WMSServiceException("发生额只能填写借方或者贷方其中一个方向！无法添加账目记录!");
-//            }
-//
-//        }));
+        Stream.of(accountRecords).forEach((accountRecord -> {
+
+            if(accountRecord.getCreditAmount().compareTo(BigDecimal.ZERO)!=0
+                    &&accountRecord.getDebitAmount().compareTo(BigDecimal.ZERO)!=0){
+                throw new WMSServiceException("发生额只能填写借方或者贷方其中一个方向！无法添加账目记录!");
+            }
+
+        }));
 
     }
 
