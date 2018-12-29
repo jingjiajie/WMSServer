@@ -3,9 +3,9 @@ package com.wms.services.ledger.service;
 
 import com.wms.services.ledger.dao.PersonDAO;
 import com.wms.utilities.datastructures.ConditionItem;
-import com.wms.utilities.model.Person;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.Person;
 import com.wms.utilities.model.PersonView;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;

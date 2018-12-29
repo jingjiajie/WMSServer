@@ -20,6 +20,8 @@ public class PersonSalaryView {
     private String salaryItemName;
     private Integer edited;
     private Integer salaryTypeId;
+    private int giveOut;
+    private String post;
 
     @Basic
     @Id
@@ -142,14 +144,35 @@ public class PersonSalaryView {
         this.salaryTypeId = salaryTypeId;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "GiveOut")
+    public int getGiveOut() {
+        return giveOut;
+    }
 
-        PersonSalaryView that = (PersonSalaryView) object;
+    public void setGiveOut(int giveOut) {
+        this.giveOut = giveOut;
+    }
+
+    @Basic
+    @Column(name = "Post")
+    public String getPost() {
+        return post;
+    }
+
+    public void setPost(String post) {
+        this.post = post;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PersonSalaryView that = (PersonSalaryView) o;
 
         if (id != that.id) return false;
+        if (giveOut != that.giveOut) return false;
         if (warehouseId != null ? !warehouseId.equals(that.warehouseId) : that.warehouseId != null) return false;
         if (salaryPeriodId != null ? !salaryPeriodId.equals(that.salaryPeriodId) : that.salaryPeriodId != null)
             return false;
@@ -165,6 +188,7 @@ public class PersonSalaryView {
             return false;
         if (edited != null ? !edited.equals(that.edited) : that.edited != null) return false;
         if (salaryTypeId != null ? !salaryTypeId.equals(that.salaryTypeId) : that.salaryTypeId != null) return false;
+        if (post != null ? !post.equals(that.post) : that.post != null) return false;
 
         return true;
     }
@@ -183,6 +207,8 @@ public class PersonSalaryView {
         result = 31 * result + (salaryItemName != null ? salaryItemName.hashCode() : 0);
         result = 31 * result + (edited != null ? edited.hashCode() : 0);
         result = 31 * result + (salaryTypeId != null ? salaryTypeId.hashCode() : 0);
+        result = 31 * result + giveOut;
+        result = 31 * result + (post != null ? post.hashCode() : 0);
         return result;
     }
 }

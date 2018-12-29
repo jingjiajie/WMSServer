@@ -7,8 +7,6 @@ import com.wms.services.salary.service.PersonSalaryService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.PersonSalary;
 import com.wms.utilities.model.PersonSalaryView;
-import com.wms.utilities.model.SalaryItem;
-import com.wms.utilities.model.SalaryItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
