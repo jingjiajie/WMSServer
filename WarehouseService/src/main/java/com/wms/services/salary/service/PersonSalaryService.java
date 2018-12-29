@@ -19,4 +19,5 @@ public interface PersonSalaryService extends BaseService<PersonSalary,PersonSala
     void refreshFormula(String accountBook, AddPersonSalary addPersonSalary);
     void refreshPersonSalary(String accountBook, AddPersonSalary addPersonSalary);
     void addLastPeriod(String accountBook, AddPersonSalary addPersonSalary);
+    void refreshValuation(String accountBook, AddPersonSalary addPersonSalary);
 }

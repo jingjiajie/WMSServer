@@ -344,7 +344,6 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
     }
 
     public void addAllItem(String accountBook,AddAllItem AddAllItem){
-        //int warehouseId= AddAllItem.getWarehouseId();
         int payNoteId= AddAllItem.getPayNoteId();
         PayNote[] payNotes=payNoteService.findTable(accountBook,new Condition().addCondition("id",payNoteId));
         PayNoteItem[] payNoteItemsTable=payNoteItemDAO.findTable(accountBook,new Condition().addCondition("payNoteId",payNoteId));
@@ -367,14 +366,16 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
             itemIds.add(salaryItems[i].getId());
         }
         //TODO 加人员
-        PersonSalary[] personSalarys=personSalaryService.findTable(accountBook,new Condition().addCondition("salaryPeriodId",periodId).addCondition("warehouseId",warehouseId).addCondition("salaryItemId",itemIds.toArray(), ConditionItem.Relation.IN));
-        Map<Integer, List<PersonSalary>> groupByPersonIdMap =
-                Stream.of(personSalarys).collect(Collectors.groupingBy(PersonSalary::getPersonId));
-        for (Map.Entry<Integer, List<PersonSalary>> entry : groupByPersonIdMap.entrySet()){
-            PersonSalary[] personSalaryViewsEachGroup=new PersonSalary[entry.getValue().size()];
+        PersonSalaryView[] personSalaryViews=personSalaryService.find(accountBook,new Condition().addCondition("salaryPeriodId",periodId).addCondition("warehouseId",warehouseId).addCondition("salaryItemId",itemIds.toArray(), ConditionItem.Relation.IN));
+        //把人员薪资按人员分组
+        Map<Integer, List<PersonSalaryView>> groupByPersonIdMap =
+                Stream.of(personSalaryViews).collect(Collectors.groupingBy(PersonSalaryView::getPersonId));
+        for (Map.Entry<Integer, List<PersonSalaryView>> entry : groupByPersonIdMap.entrySet()){
+            PersonSalaryView[] personSalaryViewsEachGroup=new PersonSalaryView[entry.getValue().size()];
             entry.getValue().toArray(personSalaryViewsEachGroup);
             BigDecimal preTaxAmount=new BigDecimal(0);
             for(int i=0;i<personSalaryViewsEachGroup.length;i++){
+                if(personSalaryViewsEachGroup[i].getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON)
                 preTaxAmount=preTaxAmount.add(personSalaryViewsEachGroup[i].getAmount());
             }
             if(ids.contains(entry.getKey())){continue;}
