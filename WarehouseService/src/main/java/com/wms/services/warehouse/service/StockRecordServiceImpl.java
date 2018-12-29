@@ -1227,18 +1227,18 @@ public class StockRecordServiceImpl implements StockRecordService {
             stockRecordNew.setBatchNo(stockRecordsSource[0].getBatchNo());
             stockRecordNew.setInventoryDate(stockRecordsSource[0].getInventoryDate());
             //移位记录数量
-            transferRecord.setSourceStorageLocationOriginalAmount(stockRecordsSource[0].getAmount());
-            transferRecord.setSourceStorageLocationNewAmount(stockRecordsSource[0].getAmount().add(transferStock.getAmount()));
+            transferRecord.setTargetStorageLocationOriginalAmount(stockRecordsSource[0].getAmount());
+            transferRecord.setTargetStorageLocationNewAmount(stockRecordsSource[0].getAmount().add(transferStock.getAmount()));
         } else {
             stockRecordNew.setAmount(transferStock.getAmount());
             stockRecordNew.setAvailableAmount(transferStock.getAvailableAmount());
-            transferRecord.setSourceStorageLocationOriginalAmount(new BigDecimal(0));
-            transferRecord.setSourceStorageLocationNewAmount(transferStock.getAmount());
+            transferRecord.setTargetStorageLocationOriginalAmount(new BigDecimal(0));
+            transferRecord.setTargetStorageLocationNewAmount(transferStock.getAmount());
         }
-        ;
         stockRecordDAO.add(accountBook, new StockRecord[]{stockRecordNew});
         this.transformRecordService.add(accountBook, new TransferRecord[]{transferRecord});
         itemRelatedRecordService.add(accountBook, new ItemRelatedRecord[]{itemRelatedRecord});
+        this.transformRecordService.add(accountBook,new TransferRecord[]{transferRecord});
     }
 
     @Override
