@@ -88,8 +88,14 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     @RequestMapping(value = "/refresh_formula",method = RequestMethod.POST)
     @ResponseBody
     public void refreshFormula(@PathVariable("accountBook") String accountBook,
-                               @RequestBody AddPersonSalary addPersonSalary) {
-        personSalaryService.refreshFormula(accountBook,addPersonSalary);
+                               @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
+        for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
+            AddPersonSalary addPersonSalary=new AddPersonSalary();
+            addPersonSalary.setSalaryPeriodId(addPersonSalary.getSalaryTypeId());
+            addPersonSalary.setPersonSalaryIds(addPersonSalary.getPersonSalaryIds());
+            addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
+            personSalaryService.refreshFormula(accountBook,addPersonSalary);
+        }
     }
 
     @RequestMapping(value = "/refresh_valuation",method = RequestMethod.POST)
