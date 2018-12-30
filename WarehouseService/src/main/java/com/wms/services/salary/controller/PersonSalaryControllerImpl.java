@@ -3,6 +3,7 @@ package com.wms.services.salary.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.salary.datestructures.AddPersonSalary;
+import com.wms.services.salary.datestructures.AddPersonSalaryRequest;
 import com.wms.services.salary.service.PersonSalaryService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.PersonSalary;
@@ -74,8 +75,14 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     @RequestMapping(value = "/refresh_person_salary",method = RequestMethod.POST)
     @ResponseBody
     public void refreshPersonSalary(@PathVariable("accountBook") String accountBook,
-                               @RequestBody AddPersonSalary addPersonSalary) {
-        personSalaryService.refreshPersonSalary(accountBook,addPersonSalary);
+                               @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
+        for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
+            AddPersonSalary addPersonSalary=new AddPersonSalary();
+            addPersonSalary.setSalaryPeriodId(addPersonSalary.getSalaryTypeId());
+            addPersonSalary.setPersonSalaryIds(addPersonSalary.getPersonSalaryIds());
+            addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
+            personSalaryService.refreshPersonSalary(accountBook,addPersonSalary);
+        }
     }
 
     @RequestMapping(value = "/refresh_formula",method = RequestMethod.POST)
@@ -88,8 +95,14 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     @RequestMapping(value = "/refresh_valuation",method = RequestMethod.POST)
     @ResponseBody
     public void refreshValuation(@PathVariable("accountBook") String accountBook,
-                               @RequestBody AddPersonSalary addPersonSalary) {
-        personSalaryService.refreshValuation(accountBook,addPersonSalary);
+                               @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
+        for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
+            AddPersonSalary addPersonSalary=new AddPersonSalary();
+            addPersonSalary.setSalaryPeriodId(addPersonSalary.getSalaryTypeId());
+            addPersonSalary.setPersonSalaryIds(addPersonSalary.getPersonSalaryIds());
+            addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
+            personSalaryService.refreshValuation(accountBook,addPersonSalary);
+        }
     }
 
     @RequestMapping(value = "/add_last_period",method = RequestMethod.POST)
@@ -97,6 +110,20 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     public void addLastPeriod(@PathVariable("accountBook") String accountBook,
                                  @RequestBody AddPersonSalary addPersonSalary) {
         personSalaryService.addLastPeriod(accountBook,addPersonSalary);
+    }
+
+    @RequestMapping(value = "/refresh_formula_and_valuation",method = RequestMethod.POST)
+    @ResponseBody
+    public void refreshFormulaAndValuation(@PathVariable("accountBook") String accountBook,
+                              @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
+        for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
+            AddPersonSalary addPersonSalary=new AddPersonSalary();
+            addPersonSalary.setSalaryPeriodId(addPersonSalary.getSalaryTypeId());
+            addPersonSalary.setPersonSalaryIds(addPersonSalary.getPersonSalaryIds());
+            addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
+            personSalaryService.refreshFormula(accountBook,addPersonSalary);
+            personSalaryService.refreshValuation(accountBook,addPersonSalary);
+        }
     }
 
     @RequestMapping(value = "/remove_no",method = RequestMethod.DELETE)
