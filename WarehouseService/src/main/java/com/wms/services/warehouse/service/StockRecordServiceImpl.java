@@ -877,13 +877,15 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
         //排序之后最后一条为最久的
         JudgeAmount judgeAmount = new JudgeAmount();
+        judgeAmount.setLastIRemainAmount(new BigDecimal(100));
         BigDecimal amountAvailableAll = BigDecimal.ZERO;
         for (int i = stockRecords.length - 1; i >= 0; i--) {
             amountAvailableAll = amountAvailableAll.add(stockRecords[i].getAvailableAmount());
             //如果加到某个记录够移出数量 则跳出并记录下i
             if (amountAvailableAll.subtract(transferStock.getAvailableAmount()).compareTo(BigDecimal.ZERO) >= 0) {
                 judgeAmount.setI(i);
-                judgeAmount.setLastIRemainAmount(stockRecords[i].getAvailableAmount().subtract(amountAvailableAll.subtract(transferStock.getAvailableAmount())));
+                BigDecimal lastRemainAmount=stockRecords[i].getAvailableAmount().subtract(amountAvailableAll.subtract(transferStock.getAvailableAmount()));
+                judgeAmount.setLastIRemainAmount(lastRemainAmount);
             }
         }
         //数量不足
