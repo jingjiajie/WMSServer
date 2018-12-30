@@ -15,4 +15,5 @@ public interface PersonSalaryController extends BaseController<PersonSalary,Pers
     void refreshFormula(String accountBook, AddPersonSalary addPersonSalary);
     void refreshValuation(String accountBook, AddPersonSalary addPersonSalary);
     void refreshPersonSalary(String accountBook, AddPersonSalary addPersonSalary);
+    void addLastPeriod(String accountBook, AddPersonSalary addPersonSalary);
 }

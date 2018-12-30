@@ -71,7 +71,7 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
         personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalaries);
     }
 
-    @RequestMapping(value = "/refresh_formula",method = RequestMethod.POST)
+    @RequestMapping(value = "/refresh_person_salary",method = RequestMethod.POST)
     @ResponseBody
     public void refreshPersonSalary(@PathVariable("accountBook") String accountBook,
                                @RequestBody AddPersonSalary addPersonSalary) {
@@ -90,6 +90,13 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     public void refreshValuation(@PathVariable("accountBook") String accountBook,
                                @RequestBody AddPersonSalary addPersonSalary) {
         personSalaryService.refreshValuation(accountBook,addPersonSalary);
+    }
+
+    @RequestMapping(value = "/add_last_period",method = RequestMethod.POST)
+    @ResponseBody
+    public void addLastPeriod(@PathVariable("accountBook") String accountBook,
+                                 @RequestBody AddPersonSalary addPersonSalary) {
+        personSalaryService.addLastPeriod(accountBook,addPersonSalary);
     }
 
     @RequestMapping(value = "/remove_no",method = RequestMethod.DELETE)
