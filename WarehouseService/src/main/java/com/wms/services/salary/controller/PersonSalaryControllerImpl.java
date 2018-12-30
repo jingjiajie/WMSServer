@@ -73,10 +73,23 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
 
     @RequestMapping(value = "/refresh_formula",method = RequestMethod.POST)
     @ResponseBody
+    public void refreshPersonSalary(@PathVariable("accountBook") String accountBook,
+                               @RequestBody AddPersonSalary addPersonSalary) {
+        personSalaryService.refreshPersonSalary(accountBook,addPersonSalary);
+    }
+
+    @RequestMapping(value = "/refresh_formula",method = RequestMethod.POST)
+    @ResponseBody
     public void refreshFormula(@PathVariable("accountBook") String accountBook,
                                @RequestBody AddPersonSalary addPersonSalary) {
-        //personSalaryService.refreshFormula(accountBook,addPersonSalary);
-        personSalaryService.refreshPersonSalary(accountBook,addPersonSalary);
+        personSalaryService.refreshFormula(accountBook,addPersonSalary);
+    }
+
+    @RequestMapping(value = "/refresh_valuation",method = RequestMethod.POST)
+    @ResponseBody
+    public void refreshValuation(@PathVariable("accountBook") String accountBook,
+                               @RequestBody AddPersonSalary addPersonSalary) {
+        personSalaryService.refreshValuation(accountBook,addPersonSalary);
     }
 
     @RequestMapping(value = "/remove_no",method = RequestMethod.DELETE)
