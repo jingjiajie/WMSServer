@@ -114,8 +114,13 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     @RequestMapping(value = "/add_last_period",method = RequestMethod.POST)
     @ResponseBody
     public void addLastPeriod(@PathVariable("accountBook") String accountBook,
-                                 @RequestBody AddPersonSalary addPersonSalary) {
-        personSalaryService.addLastPeriod(accountBook,addPersonSalary);
+                                 @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
+        for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
+            AddPersonSalary addPersonSalary=new AddPersonSalary();
+            addPersonSalary.setSalaryPeriodId(addPersonSalary.getSalaryTypeId());
+            addPersonSalary.setPersonSalaryIds(addPersonSalary.getPersonSalaryIds());
+            personSalaryService.addLastPeriod(accountBook,addPersonSalary);
+        }
     }
 
     @RequestMapping(value = "/refresh_formula_and_valuation",method = RequestMethod.POST)
