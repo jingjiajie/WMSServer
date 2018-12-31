@@ -30,4 +30,14 @@ public class AddPersonSalaryRequest {
     private int salaryPeriodId;
     private List<Integer> salaryTypeIds;
     private List<Integer> personSalaryIds;
+
+    public int getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(int warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    private int warehouseId;
 }

@@ -6,6 +6,7 @@ import com.wms.services.salary.datestructures.AddPersonSalary;
 import com.wms.services.salary.datestructures.AddPersonSalaryRequest;
 import com.wms.services.salary.service.PersonSalaryService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.PersonSalary;
 import com.wms.utilities.model.PersonSalaryView;
 import com.wms.utilities.model.SalaryItem;
@@ -13,6 +14,8 @@ import com.wms.utilities.model.SalaryItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.xml.bind.annotation.W3CDomHandler;
 
 @RestController
 @RequestMapping("/{accountBook}/person_salary")
@@ -76,11 +79,15 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     @ResponseBody
     public void refreshPersonSalary(@PathVariable("accountBook") String accountBook,
                                @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
+        if(addPersonSalaryRequest.getSalaryTypeIds()==null){
+            throw new WMSServiceException("人员薪资类型为空!");
+        }
         for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
             AddPersonSalary addPersonSalary=new AddPersonSalary();
             addPersonSalary.setSalaryPeriodId(addPersonSalaryRequest.getSalaryPeriodId());
             addPersonSalary.setPersonSalaryIds(addPersonSalaryRequest.getPersonSalaryIds());
             addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
+            addPersonSalary.setWarehouseId(addPersonSalaryRequest.getWarehouseId());
             personSalaryService.refreshPersonSalary(accountBook,addPersonSalary);
         }
     }
@@ -89,11 +96,15 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     @ResponseBody
     public void refreshFormula(@PathVariable("accountBook") String accountBook,
                                @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
+        if(addPersonSalaryRequest.getSalaryTypeIds()==null){
+            throw new WMSServiceException("人员薪资类型为空!");
+        }
         for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
             AddPersonSalary addPersonSalary=new AddPersonSalary();
             addPersonSalary.setSalaryPeriodId(addPersonSalaryRequest.getSalaryPeriodId());
             addPersonSalary.setPersonSalaryIds(addPersonSalaryRequest.getPersonSalaryIds());
             addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
+            addPersonSalary.setWarehouseId(addPersonSalaryRequest.getWarehouseId());
             personSalaryService.refreshFormula(accountBook,addPersonSalary);
         }
     }
@@ -102,11 +113,15 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     @ResponseBody
     public void refreshValuation(@PathVariable("accountBook") String accountBook,
                                @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
+        if(addPersonSalaryRequest.getSalaryTypeIds()==null){
+            throw new WMSServiceException("人员薪资类型为空!");
+        }
         for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
             AddPersonSalary addPersonSalary=new AddPersonSalary();
             addPersonSalary.setSalaryPeriodId(addPersonSalaryRequest.getSalaryPeriodId());
             addPersonSalary.setPersonSalaryIds(addPersonSalaryRequest.getPersonSalaryIds());
             addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
+            addPersonSalary.setWarehouseId(addPersonSalaryRequest.getWarehouseId());
             personSalaryService.refreshValuation(accountBook,addPersonSalary);
         }
     }
@@ -118,6 +133,7 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
             AddPersonSalary addPersonSalary=new AddPersonSalary();
             addPersonSalary.setSalaryPeriodId(addPersonSalaryRequest.getSalaryPeriodId());
             addPersonSalary.setPersonSalaryIds(addPersonSalaryRequest.getPersonSalaryIds());
+            addPersonSalary.setWarehouseId(addPersonSalaryRequest.getWarehouseId());
             personSalaryService.addLastPeriod(accountBook,addPersonSalary);
     }
 
@@ -125,11 +141,15 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     @ResponseBody
     public void refreshFormulaAndValuation(@PathVariable("accountBook") String accountBook,
                               @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
+        if(addPersonSalaryRequest.getSalaryTypeIds()==null){
+            throw new WMSServiceException("人员薪资类型为空!");
+        }
         for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
             AddPersonSalary addPersonSalary=new AddPersonSalary();
             addPersonSalary.setSalaryPeriodId(addPersonSalaryRequest.getSalaryPeriodId());
             addPersonSalary.setPersonSalaryIds(addPersonSalaryRequest.getPersonSalaryIds());
             addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
+            addPersonSalary.setWarehouseId(addPersonSalaryRequest.getWarehouseId());
             personSalaryService.refreshFormula(accountBook,addPersonSalary);
             personSalaryService.refreshValuation(accountBook,addPersonSalary);
         }
