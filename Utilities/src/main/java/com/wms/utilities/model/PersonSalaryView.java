@@ -21,6 +21,7 @@ public class PersonSalaryView {
     private Integer edited;
     private Integer salaryTypeId;
     private int giveOut;
+    private String post;
 
     @Basic
     @Id
@@ -153,6 +154,16 @@ public class PersonSalaryView {
         this.giveOut = giveOut;
     }
 
+    @Basic
+    @Column(name = "Post")
+    public String getPost() {
+        return post;
+    }
+
+    public void setPost(String post) {
+        this.post = post;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -177,6 +188,7 @@ public class PersonSalaryView {
             return false;
         if (edited != null ? !edited.equals(that.edited) : that.edited != null) return false;
         if (salaryTypeId != null ? !salaryTypeId.equals(that.salaryTypeId) : that.salaryTypeId != null) return false;
+        if (post != null ? !post.equals(that.post) : that.post != null) return false;
 
         return true;
     }
@@ -196,6 +208,7 @@ public class PersonSalaryView {
         result = 31 * result + (edited != null ? edited.hashCode() : 0);
         result = 31 * result + (salaryTypeId != null ? salaryTypeId.hashCode() : 0);
         result = 31 * result + giveOut;
+        result = 31 * result + (post != null ? post.hashCode() : 0);
         return result;
     }
 }
