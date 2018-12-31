@@ -78,8 +78,8 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
                                @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
         for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
             AddPersonSalary addPersonSalary=new AddPersonSalary();
-            addPersonSalary.setSalaryPeriodId(addPersonSalary.getSalaryTypeId());
-            addPersonSalary.setPersonSalaryIds(addPersonSalary.getPersonSalaryIds());
+            addPersonSalary.setSalaryPeriodId(addPersonSalaryRequest.getSalaryPeriodId());
+            addPersonSalary.setPersonSalaryIds(addPersonSalaryRequest.getPersonSalaryIds());
             addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
             personSalaryService.refreshPersonSalary(accountBook,addPersonSalary);
         }
@@ -91,8 +91,8 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
                                @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
         for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
             AddPersonSalary addPersonSalary=new AddPersonSalary();
-            addPersonSalary.setSalaryPeriodId(addPersonSalary.getSalaryTypeId());
-            addPersonSalary.setPersonSalaryIds(addPersonSalary.getPersonSalaryIds());
+            addPersonSalary.setSalaryPeriodId(addPersonSalaryRequest.getSalaryPeriodId());
+            addPersonSalary.setPersonSalaryIds(addPersonSalaryRequest.getPersonSalaryIds());
             addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
             personSalaryService.refreshFormula(accountBook,addPersonSalary);
         }
@@ -104,8 +104,8 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
                                @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
         for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
             AddPersonSalary addPersonSalary=new AddPersonSalary();
-            addPersonSalary.setSalaryPeriodId(addPersonSalary.getSalaryTypeId());
-            addPersonSalary.setPersonSalaryIds(addPersonSalary.getPersonSalaryIds());
+            addPersonSalary.setSalaryPeriodId(addPersonSalaryRequest.getSalaryPeriodId());
+            addPersonSalary.setPersonSalaryIds(addPersonSalaryRequest.getPersonSalaryIds());
             addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
             personSalaryService.refreshValuation(accountBook,addPersonSalary);
         }
@@ -115,12 +115,10 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     @ResponseBody
     public void addLastPeriod(@PathVariable("accountBook") String accountBook,
                                  @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
-        for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
             AddPersonSalary addPersonSalary=new AddPersonSalary();
-            addPersonSalary.setSalaryPeriodId(addPersonSalary.getSalaryTypeId());
-            addPersonSalary.setPersonSalaryIds(addPersonSalary.getPersonSalaryIds());
+            addPersonSalary.setSalaryPeriodId(addPersonSalaryRequest.getSalaryPeriodId());
+            addPersonSalary.setPersonSalaryIds(addPersonSalaryRequest.getPersonSalaryIds());
             personSalaryService.addLastPeriod(accountBook,addPersonSalary);
-        }
     }
 
     @RequestMapping(value = "/refresh_formula_and_valuation",method = RequestMethod.POST)
@@ -129,8 +127,8 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
                               @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
         for(int i=0;i<addPersonSalaryRequest.getSalaryTypeIds().size();i++){
             AddPersonSalary addPersonSalary=new AddPersonSalary();
-            addPersonSalary.setSalaryPeriodId(addPersonSalary.getSalaryTypeId());
-            addPersonSalary.setPersonSalaryIds(addPersonSalary.getPersonSalaryIds());
+            addPersonSalary.setSalaryPeriodId(addPersonSalaryRequest.getSalaryPeriodId());
+            addPersonSalary.setPersonSalaryIds(addPersonSalaryRequest.getPersonSalaryIds());
             addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
             personSalaryService.refreshFormula(accountBook,addPersonSalary);
             personSalaryService.refreshValuation(accountBook,addPersonSalary);
