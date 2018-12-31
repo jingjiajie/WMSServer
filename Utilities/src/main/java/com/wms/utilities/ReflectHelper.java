@@ -71,6 +71,14 @@ public class ReflectHelper {
         return result;
     }
 
+    public static int[] IntegerToIntArray(List<Integer> integerList) {
+        int[] result = new int[integerList.size()];
+        for (int i = 0; i < integerList.size(); i++) {
+            result[i] = integerList.get(i);
+        }
+        return result;
+    }
+
     public static<T> T[] listToArray(List<T> list,Class<T> targetClass) {
         T[] result = (T[]) Array.newInstance(targetClass, list.size());
         for (int i = 0; i < result.length; i++) {

@@ -828,6 +828,11 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         //查找上个期间所有的人员薪资
         PersonSalary[] personSalaries = this.personSalaryDAO.findTable(accountBook
                 , new Condition().addCondition("salaryPeriodId", lastPeriodId));
+        //删除当前区间所有人员薪资
+        PersonSalary[] personSalariesCur = this.personSalaryDAO.findTable(accountBook
+                , new Condition().addCondition("salaryPeriodId", addPersonSalary.getSalaryPeriodId()));
+        List<Integer> curIds = Stream.of(personSalariesCur).map(item -> item.getId()).collect(Collectors.toList());
+        personSalaryDAO.remove(accountBook,ReflectHelper.IntegerToIntArray(curIds));
         for (int i = 0; i < personSalaries.length; i++) {
             personSalaries[i].setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
         }
