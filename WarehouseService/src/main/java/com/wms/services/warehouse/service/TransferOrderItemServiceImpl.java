@@ -595,6 +595,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 transferStockRestore.setUnitAmount(oriItemView.getUnitAmount());
                 transferStockRestore.setNewUnit(oriItemView.getSourceUnit());
                 transferStockRestore.setNewUnitAmount(oriItemView.getSourceUnitAmount());
+                transferStockRestore.setState(2);
 
                 this.stockRecordService.restoreAmount(accountBook,transferStockRestore);//使用更新单位的库存修改
             }

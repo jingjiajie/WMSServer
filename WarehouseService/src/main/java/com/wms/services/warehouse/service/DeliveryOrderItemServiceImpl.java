@@ -537,6 +537,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStockRestore.setState(deliveryType);
                 transferStockRestore.setUnit(oriItemView.getUnit());
                 transferStockRestore.setUnitAmount(oriItemView.getUnitAmount());
+                transferStockRestore.setState(deliveryType);
 
                 this.stockRecordService.restoreAmount(accountBook,transferStockRestore);//使用更新单位的库存修改
             }
