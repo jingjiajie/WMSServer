@@ -998,6 +998,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             //数量扣下去
             for (int i = 0; i < itemRelatedRecords.length; i++) {
                 TransferRecord transferRecord = new TransferRecord();
+                transferRecord.setWarehouseId(this.warehouseIdFind(accountBook, transferStockRestore.getSourceStorageLocationId())[0]);
                 StockRecordFind stockRecordFind = new StockRecordFind();
                 stockRecordFind.setSupplyId(transferStockRestore.getSupplyId());
                 stockRecordFind.setUnitAmount(transferStockRestore.getUnitAmount());
@@ -1045,6 +1046,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordFind.setState(transferStockRestore.getState());
                 stockRecordFind.setBatchNo(new String[]{itemRelatedRecords[i].getStockRecordBatchNo()});
                 stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook, transferStockRestore.getSourceStorageLocationId())[0]);
+                transferRecord.setWarehouseId(this.warehouseIdFind(accountBook, transferStockRestore.getSourceStorageLocationId())[0]);
                 StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
                 if (stockRecordsSource.length != 1) {
                     throw new WMSServiceException("退回数量查询库存记录出错！");
@@ -1083,7 +1085,6 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setTransferAmount(itemRelatedRecords[i].getBatchAmount());
                 transferRecord.setTransferUnit(stockRecordNew.getUnit());
                 transferRecord.setTransferUnitAmount(stockRecordNew.getUnitAmount());
-                transferRecordList.add(transferRecord);
                 if (transferStock) {
                     stockRecordNew.setRelatedOrderNo(transferStockRestore.getRelatedOrderNo());
                     transferRecordList.add(transferRecord);
@@ -1102,6 +1103,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordFind.setState(transferStockRestore.getState());
                 stockRecordFind.setBatchNo(new String[]{itemRelatedRecords[i].getStockRecordBatchNo()});
                 stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook, transferStockRestore.getSourceStorageLocationId())[0]);
+                transferRecord.setWarehouseId(this.warehouseIdFind(accountBook, transferStockRestore.getSourceStorageLocationId())[0]);
                 StockRecord[] stockRecordsOld = this.findInterface(accountBook, stockRecordFind);
                 if (stockRecordsOld.length != 1) {
                     throw new WMSServiceException("退回数量查询库存记录出错！");
