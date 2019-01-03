@@ -26,10 +26,10 @@ public class AccountRecordView {
     private Integer personId;
     private Timestamp recordingTime;
     private Timestamp serviceTime;
-    private String ownAccountName;
-    private String ownAccountNo;
-    private String otherAccountName;
-    private String otherAccountNo;
+    private String ownAccountTitleName;
+    private String ownAccountTitleNo;
+    private String otherAccountTitleName;
+    private String otherAccountTitleNo;
     private String accountPeriodName;
     private String warehouseName;
     private String personName;
@@ -206,43 +206,43 @@ public class AccountRecordView {
     }
 
     @Basic
-    @Column(name = "OwnAccountName")
-    public String getOwnAccountName() {
-        return ownAccountName;
+    @Column(name = "OwnAccountTitleName")
+    public String getOwnAccountTitleName() {
+        return ownAccountTitleName;
     }
 
-    public void setOwnAccountName(String ownAccountName) {
-        this.ownAccountName = ownAccountName;
-    }
-
-    @Basic
-    @Column(name = "OwnAccountNo")
-    public String getOwnAccountNo() {
-        return ownAccountNo;
-    }
-
-    public void setOwnAccountNo(String ownAccountNo) {
-        this.ownAccountNo = ownAccountNo;
+    public void setOwnAccountTitleName(String ownAccountTitleName) {
+        this.ownAccountTitleName = ownAccountTitleName;
     }
 
     @Basic
-    @Column(name = "OtherAccountName")
-    public String getOtherAccountName() {
-        return otherAccountName;
+    @Column(name = "OwnAccountTitleNo")
+    public String getOwnAccountTitleNo() {
+        return ownAccountTitleNo;
     }
 
-    public void setOtherAccountName(String otherAccountName) {
-        this.otherAccountName = otherAccountName;
+    public void setOwnAccountTitleNo(String ownAccountTitleNo) {
+        this.ownAccountTitleNo = ownAccountTitleNo;
     }
 
     @Basic
-    @Column(name = "OtherAccountNo")
-    public String getOtherAccountNo() {
-        return otherAccountNo;
+    @Column(name = "OtherAccountTitleName")
+    public String getOtherAccountTitleName() {
+        return otherAccountTitleName;
     }
 
-    public void setOtherAccountNo(String otherAccountNo) {
-        this.otherAccountNo = otherAccountNo;
+    public void setOtherAccountTitleName(String otherAccountTitleName) {
+        this.otherAccountTitleName = otherAccountTitleName;
+    }
+
+    @Basic
+    @Column(name = "OtherAccountTitleNo")
+    public String getOtherAccountTitleNo() {
+        return otherAccountTitleNo;
+    }
+
+    public void setOtherAccountTitleNo(String otherAccountTitleNo) {
+        this.otherAccountTitleNo = otherAccountTitleNo;
     }
 
     @Basic
@@ -276,11 +276,11 @@ public class AccountRecordView {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        AccountRecordView that = (AccountRecordView) o;
+        AccountRecordView that = (AccountRecordView) object;
 
         if (ownAccountTitleId != that.ownAccountTitleId) return false;
         if (id != that.id) return false;
@@ -304,12 +304,13 @@ public class AccountRecordView {
         if (recordingTime != null ? !recordingTime.equals(that.recordingTime) : that.recordingTime != null)
             return false;
         if (serviceTime != null ? !serviceTime.equals(that.serviceTime) : that.serviceTime != null) return false;
-        if (ownAccountName != null ? !ownAccountName.equals(that.ownAccountName) : that.ownAccountName != null)
+        if (ownAccountTitleName != null ? !ownAccountTitleName.equals(that.ownAccountTitleName) : that.ownAccountTitleName != null)
             return false;
-        if (ownAccountNo != null ? !ownAccountNo.equals(that.ownAccountNo) : that.ownAccountNo != null) return false;
-        if (otherAccountName != null ? !otherAccountName.equals(that.otherAccountName) : that.otherAccountName != null)
+        if (ownAccountTitleNo != null ? !ownAccountTitleNo.equals(that.ownAccountTitleNo) : that.ownAccountTitleNo != null)
             return false;
-        if (otherAccountNo != null ? !otherAccountNo.equals(that.otherAccountNo) : that.otherAccountNo != null)
+        if (otherAccountTitleName != null ? !otherAccountTitleName.equals(that.otherAccountTitleName) : that.otherAccountTitleName != null)
+            return false;
+        if (otherAccountTitleNo != null ? !otherAccountTitleNo.equals(that.otherAccountTitleNo) : that.otherAccountTitleNo != null)
             return false;
         if (accountPeriodName != null ? !accountPeriodName.equals(that.accountPeriodName) : that.accountPeriodName != null)
             return false;
@@ -339,10 +340,10 @@ public class AccountRecordView {
         result = 31 * result + (personId != null ? personId.hashCode() : 0);
         result = 31 * result + (recordingTime != null ? recordingTime.hashCode() : 0);
         result = 31 * result + (serviceTime != null ? serviceTime.hashCode() : 0);
-        result = 31 * result + (ownAccountName != null ? ownAccountName.hashCode() : 0);
-        result = 31 * result + (ownAccountNo != null ? ownAccountNo.hashCode() : 0);
-        result = 31 * result + (otherAccountName != null ? otherAccountName.hashCode() : 0);
-        result = 31 * result + (otherAccountNo != null ? otherAccountNo.hashCode() : 0);
+        result = 31 * result + (ownAccountTitleName != null ? ownAccountTitleName.hashCode() : 0);
+        result = 31 * result + (ownAccountTitleNo != null ? ownAccountTitleNo.hashCode() : 0);
+        result = 31 * result + (otherAccountTitleName != null ? otherAccountTitleName.hashCode() : 0);
+        result = 31 * result + (otherAccountTitleNo != null ? otherAccountTitleNo.hashCode() : 0);
         result = 31 * result + (accountPeriodName != null ? accountPeriodName.hashCode() : 0);
         result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
         result = 31 * result + (personName != null ? personName.hashCode() : 0);
