@@ -2,6 +2,7 @@ package com.wms.services;
 import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.services.salary.service.GetBigDecimal;
 import com.wms.services.settlement.service.SummaryNoteService;
+import com.wms.services.warehouse.dao.StockRecordDAO;
 import com.wms.services.warehouse.datastructures.JudgeOldestBatch;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.service.RefreshGlobalDateService;
@@ -37,6 +38,22 @@ public class WarehouseService {
     public static void main(String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
+        StockRecordService stockRecordService=applicationContext.getBean(StockRecordService.class);
+        StockRecord stockRecord=new StockRecord();
+        stockRecord.setId(3380);
+        stockRecord.setBatchNo("3");
+        stockRecord.setSupplyId(5);
+        stockRecord.setWarehouseId(5587);
+        stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+        stockRecord.setAvailableAmount(new BigDecimal(1));
+        stockRecord.setAmount(new BigDecimal(100));
+        stockRecord.setUnit("5");
+        stockRecord.setUnitAmount(new BigDecimal(1));
+        stockRecord.setState(1);
+        stockRecord.setStorageLocationId(23212);
+        stockRecord.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+        //stockRecordService.add("WMS_Template",new StockRecord[]{stockRecord});
+
 
 //        JudgeOldestBatch judgeOldestBatch=new JudgeOldestBatch();
 //        judgeOldestBatch.setSupplyId(15);
