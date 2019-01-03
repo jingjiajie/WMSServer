@@ -793,9 +793,14 @@ public class StockRecordServiceImpl implements StockRecordService {
                 "GROUP BY s2.BatchNo) AS s3 \n" +
                 "\n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
-                "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo AND (s1.AvailableAmount>0)";
+                "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo";
+        String sqlAmount0="  AND (s1.AvailableAmount>0)";
+        //如果为false则不滤掉0
+        if(!stockRecordFind.isFilterZero()){
+            sqlAmount0="";
+        }
         session.flush();
-        query = session.createNativeQuery(sqlNew, StockRecord.class);
+        query = session.createNativeQuery(sqlNew+sqlAmount0, StockRecord.class);
         query.setParameter("warehouseId", stockRecordFind.getWarehouseId());
         query.setParameter("storageLocationId", stockRecordFind.getStorageLocationId());
         query.setParameter("supplyId", stockRecordFind.getSupplyId());
@@ -837,8 +842,13 @@ public class StockRecordServiceImpl implements StockRecordService {
                 "where s2.WarehouseID=:warehouseId and s2.StorageLocationID=:storageLocationId and s2.SupplyID=:supplyId  and s2.Unit=:unit and s2.UnitAmount=:unitAmount AND  s2.BatchNo in " + ReflectHelper.ArrayToStringForSqlQuery(stockRecordFind.getBatchNo()) + "  and s2.state=:state " + " GROUP BY s2.BatchNo) AS s3 \n" +
                 "\n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
-                "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo AND (s1.AvailableAmount>0)";
-        query = session.createNativeQuery(sqlNew, StockRecord.class);
+                "  and s1.SupplyID=:supplyId and s1.WarehouseID=:warehouseId and s1.StorageLocationID=:storageLocationId   AND s1.BatchNo=s3.BatchNo";
+        String sqlAmount0="  AND (s1.AvailableAmount>0)";
+        //如果为false则不滤掉0
+        if(!stockRecordFind.isFilterZero()){
+            sqlAmount0="";
+        }
+        query = session.createNativeQuery(sqlNew+sqlAmount0, StockRecord.class);
         query.setParameter("warehouseId", stockRecordFind.getWarehouseId());
         query.setParameter("storageLocationId", stockRecordFind.getStorageLocationId());
         query.setParameter("supplyId", stockRecordFind.getSupplyId());
@@ -999,6 +1009,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             for (int i = 0; i < itemRelatedRecords.length; i++) {
                 TransferRecord transferRecord = this.createTransferRecord(accountBook, transferStockRestore, ItemType.stateForCreateTransferRecord);
                 StockRecordFind stockRecordFind = new StockRecordFind();
+                stockRecordFind.setFilterZero(false);
                 stockRecordFind.setSupplyId(transferStockRestore.getSupplyId());
                 stockRecordFind.setUnitAmount(transferStockRestore.getUnitAmount());
                 stockRecordFind.setUnit(transferStockRestore.getUnit());
@@ -1038,6 +1049,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             for (int i = 0; i < itemRelatedRecords.length; i++) {
                 TransferRecord transferRecord = this.createTransferRecord(accountBook, transferStockRestore, ItemType.stateForCreateTransferRecord);
                 StockRecordFind stockRecordFind = new StockRecordFind();
+                stockRecordFind.setFilterZero(false);
                 stockRecordFind.setSupplyId(transferStockRestore.getSupplyId());
                 stockRecordFind.setUnitAmount(transferStockRestore.getUnitAmount());
                 stockRecordFind.setUnit(transferStockRestore.getUnit());
@@ -1094,6 +1106,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             for (int i = 0; i < itemRelatedRecords.length; i++) {
                 TransferRecord transferRecord = this.createTransferRecord(accountBook, transferStockRestore, ItemType.stateForCreateTransferRecord);
                 StockRecordFind stockRecordFind = new StockRecordFind();
+                stockRecordFind.setFilterZero(false);
                 stockRecordFind.setSupplyId(transferStockRestore.getSupplyId());
                 stockRecordFind.setUnitAmount(transferStockRestore.getUnitAmount());
                 stockRecordFind.setUnit(transferStockRestore.getUnit());
@@ -1543,14 +1556,14 @@ public class StockRecordServiceImpl implements StockRecordService {
                 if (amountNeed.compareTo(BigDecimal.ZERO) > 0) {//TODO
                     //如果移动的数量小于需要的值 则只减少移动的值
                     if (availableAmountDifferecnce.compareTo(amountNeed) <= 0) {
-                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(availableAmountDifferecnce));
+                        stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(availableAmountDifferecnce));
                         //数量需要的值也跟着减少
                         amountNeed = amountNeed.subtract(availableAmountDifferecnce);
                     } else {//否则 数量减少需要的值（amountNeed）
-                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                        stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
                     }
                 } else {
-                    stockRecordNew.setAmount(stockRecordsSource[i].getAmount());
+                    stockRecordOld.setAmount(stockRecordsSource[i].getAmount());
                 }
                 //这是新条目的变化
                 if (stockRecordsNewFind.length == 0) {
@@ -1576,11 +1589,11 @@ public class StockRecordServiceImpl implements StockRecordService {
                 if (amountNeed.compareTo(BigDecimal.ZERO) > 0) {
                     //如果移动的数量小于需要的值 则只减少移动的值
                     if (availableAmountDifferecnce.compareTo(amountNeed) <= 0) {
-                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(availableAmountDifferecnce));
+                        stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(availableAmountDifferecnce));
                         //数量需要的值也跟着减少
                         amountNeed = amountNeed.subtract(availableAmountDifferecnce);
                     } else {//否则 数量减少需要的值（amountNeed）
-                        stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                        stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
                     }
                 } else {
                     stockRecordOld.setAmount(stockRecordsSource[i].getAmount());
@@ -1613,7 +1626,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             }
             transferRecord.setTargetStorageLocationNewAmount(stockRecordNew.getAmount());
             transferRecord.setTransferAmount(transferRecord.getSourceStorageLocationOriginalAmount().subtract(transferRecord.getSourceStorageLocationNewAmount()));
-            transferRecord.setTransferAmount(transferRecord.getTransferAmount().abs());
+            //transferRecord.setTransferAmount(transferRecord.getTransferAmount().abs());
             stockRecordsList.add(stockRecordNew);
             //相关信息 用旧条目的变化代表批次数量和可用数量
             itemRelatedRecord.setStockRecordBatchNo(stockRecordsSource[i].getBatchNo());
