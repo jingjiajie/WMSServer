@@ -1390,6 +1390,8 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordsList.add(stockRecordNew);
                 transferRecordList.add(transferRecord);
                 //相关信息
+                itemRelatedRecord.setRelatedItemId(transferStock.getItemId());
+                itemRelatedRecord.setItemType(transferStock.getItemType());
                 itemRelatedRecord.setStockRecordBatchNo(stockRecordsSource[i].getBatchNo());
                 itemRelatedRecord.setBatchAvailableAmount(stockRecordsSource[i].getAvailableAmount().subtract(stockRecordNew.getAvailableAmount()));
                 itemRelatedRecord.setBatchAmount(stockRecordsSource[i].getAmount().subtract(stockRecordNew.getAmount()));
