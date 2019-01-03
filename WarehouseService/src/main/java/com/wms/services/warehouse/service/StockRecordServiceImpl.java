@@ -994,7 +994,7 @@ public class StockRecordServiceImpl implements StockRecordService {
     }
 
     private void restoreAmount(String accountBook, ItemRelatedRecord[] itemRelatedRecords, TransferStock transferStockRestore, int type) {
-        this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, type, false);
+        this.restoreAmount(accountBook, itemRelatedRecords, transferStockRestore, type, true);
     }
 
     //反向移动
@@ -1035,7 +1035,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setTransferAmount(itemRelatedRecords[i].getBatchAmount());
                 transferRecord.setTransferUnit(stockRecordNew.getUnit());
                 transferRecord.setTransferUnitAmount(stockRecordNew.getUnitAmount());
-                if (transferStock) {
+                if (transferStock&&!(transferRecord.getTransferAmount().equals(BigDecimal.ZERO))) {
                     stockRecordNew.setRelatedOrderNo(transferStockRestore.getRelatedOrderNo());
                     transferRecordList.add(transferRecord);
                 }
@@ -1096,7 +1096,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setTransferAmount(itemRelatedRecords[i].getBatchAmount());
                 transferRecord.setTransferUnit(stockRecordNew.getUnit());
                 transferRecord.setTransferUnitAmount(stockRecordNew.getUnitAmount());
-                if (transferStock) {
+                if (transferStock&&!(transferRecord.getTransferAmount().equals(BigDecimal.ZERO))) {
                     stockRecordNew.setRelatedOrderNo(transferStockRestore.getRelatedOrderNo());
                     transferRecordList.add(transferRecord);
                 }
@@ -1132,7 +1132,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 transferRecord.setTransferAmount(itemRelatedRecords[i].getBatchAmount());
                 transferRecord.setTransferUnit(stockRecordNew.getUnit());
                 transferRecord.setTransferUnitAmount(stockRecordNew.getUnitAmount());
-                if (transferStock) {
+                if (transferStock&&!(transferRecord.getTransferAmount().equals(BigDecimal.ZERO))) {
                     stockRecordNew.setRelatedOrderNo(transferStockRestore.getRelatedOrderNo());
                     transferRecordList.add(transferRecord);
                 }
