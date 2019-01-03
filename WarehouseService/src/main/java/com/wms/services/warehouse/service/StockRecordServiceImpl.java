@@ -1054,17 +1054,9 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordFind.setUnitAmount(transferStockRestore.getUnitAmount());
                 stockRecordFind.setUnit(transferStockRestore.getUnit());
                 stockRecordFind.setStorageLocationId(transferStockRestore.getSourceStorageLocationId());
-                stockRecordFind.setState(transferStockRestore.getState());
+                stockRecordFind.setState(transferStockRestore.getNewState());
                 stockRecordFind.setBatchNo(new String[]{itemRelatedRecords[i].getStockRecordBatchNo()});
                 stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook, transferStockRestore.getSourceStorageLocationId())[0]);
-                StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
-                if (stockRecordsSource.length != 1) {
-                    throw new WMSServiceException("退回数量查询库存记录出错！");
-                }
-                StockRecord stockRecordSourceNew = ReflectHelper.createAndCopyFields(stockRecordsSource[0],StockRecord.class);
-                stockRecordSourceNew.setAvailableAmount(stockRecordSourceNew.getAvailableAmount().add(itemRelatedRecords[i].getBatchAvailableAmount()));
-                stockRecordSourceNew.setAmount(stockRecordSourceNew.getAmount().add(itemRelatedRecords[i].getBatchAmount()));
-                stockRecordsList.add(stockRecordSourceNew);
 
                 StockRecordFind stockRecordFindNew = new StockRecordFind();
                 stockRecordFindNew.setSupplyId(transferStockRestore.getSupplyId());
@@ -1074,11 +1066,20 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordFindNew.setState(transferStockRestore.getNewState());
                 stockRecordFindNew.setBatchNo(new String[]{itemRelatedRecords[i].getStockRecordBatchNo()});
                 stockRecordFindNew.setWarehouseId(this.warehouseIdFind(accountBook, transferStockRestore.getNewStorageLocationId())[0]);
-                StockRecord[] stockRecordsNew = this.findInterface(accountBook, stockRecordFind);
+                StockRecord[] stockRecordsSource = this.findInterface(accountBook, stockRecordFind);
+                if (stockRecordsSource.length != 1) {
+                    throw new WMSServiceException("退回数量查询库存记录出错！");
+                }
+                StockRecord stockRecordSourceNew = ReflectHelper.createAndCopyFields(stockRecordsSource[0],StockRecord.class);
+                stockRecordSourceNew.setAvailableAmount(stockRecordSourceNew.getAvailableAmount().add(itemRelatedRecords[i].getBatchAvailableAmount()));
+                stockRecordSourceNew.setAmount(stockRecordSourceNew.getAmount().add(itemRelatedRecords[i].getBatchAmount()));
+                stockRecordSourceNew.setTime(this.getTime());
+                stockRecordsList.add(stockRecordSourceNew);
+                StockRecord[] stockRecordsNew = this.findInterface(accountBook, stockRecordFindNew);
                 if (stockRecordsNew.length != 1) {
                     throw new WMSServiceException("退回数量查询库存记录出错！");
                 }
-                StockRecord stockRecordNew = ReflectHelper.createAndCopyFields(stockRecordsSource[0],StockRecord.class);
+                StockRecord stockRecordNew = ReflectHelper.createAndCopyFields(stockRecordsNew[0],StockRecord.class);
                 stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordNew.setTime(this.getTime());
@@ -1166,6 +1167,7 @@ public class StockRecordServiceImpl implements StockRecordService {
 
         return transferStock;
     }
+
 
     private ItemRelatedRecord createItemRelateRecord(TransferStock transferStock) {
         ItemRelatedRecord itemRelatedRecord = new ItemRelatedRecord();
