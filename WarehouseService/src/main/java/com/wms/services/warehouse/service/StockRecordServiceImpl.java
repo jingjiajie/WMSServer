@@ -1337,6 +1337,8 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordsList.add(stockRecordNew);
                 transferRecordList.add(transferRecord);
                 //相关信息
+                itemRelatedRecord.setRelatedItemId(transferStock.getItemId());
+                itemRelatedRecord.setItemType(transferStock.getItemType());
                 itemRelatedRecord.setStockRecordBatchNo(stockRecordsSource[i].getBatchNo());
                 itemRelatedRecord.setBatchAvailableAmount(stockRecordsSource[i].getAvailableAmount().subtract(stockRecordNew.getAvailableAmount()));
                 itemRelatedRecord.setBatchAmount(stockRecordsSource[i].getAmount().subtract(stockRecordNew.getAmount()));
@@ -1629,6 +1631,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             transferRecord.setTargetStorageLocationNewAmount(stockRecordNew.getAmount());
             transferRecord.setTransferAmount(transferRecord.getSourceStorageLocationOriginalAmount().subtract(transferRecord.getSourceStorageLocationNewAmount()));
             //transferRecord.setTransferAmount(transferRecord.getTransferAmount().abs());
+            transferRecordList.add(transferRecord);
             stockRecordsList.add(stockRecordNew);
             //相关信息 用旧条目的变化代表批次数量和可用数量
             itemRelatedRecord.setStockRecordBatchNo(stockRecordsSource[i].getBatchNo());
