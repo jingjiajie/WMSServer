@@ -1021,7 +1021,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 if (stockRecordsOld.length != 1) {
                     throw new WMSServiceException("退回数量查询库存记录出错！");
                 }
-                StockRecord stockRecordNew = stockRecordsOld[0];
+                StockRecord stockRecordNew = ReflectHelper.createAndCopyFields(stockRecordsOld[0],StockRecord.class);
                 stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordNew.setTime(this.getTime());
@@ -1061,7 +1061,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 if (stockRecordsSource.length != 1) {
                     throw new WMSServiceException("退回数量查询库存记录出错！");
                 }
-                StockRecord stockRecordSourceNew = stockRecordsSource[0];
+                StockRecord stockRecordSourceNew = ReflectHelper.createAndCopyFields(stockRecordsSource[0],StockRecord.class);
                 stockRecordSourceNew.setAvailableAmount(stockRecordSourceNew.getAvailableAmount().add(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordSourceNew.setAmount(stockRecordSourceNew.getAmount().add(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordsList.add(stockRecordSourceNew);
@@ -1078,7 +1078,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 if (stockRecordsNew.length != 1) {
                     throw new WMSServiceException("退回数量查询库存记录出错！");
                 }
-                StockRecord stockRecordNew = stockRecordsSource[0];
+                StockRecord stockRecordNew = ReflectHelper.createAndCopyFields(stockRecordsSource[0],StockRecord.class);
                 stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordNew.setTime(this.getTime());
@@ -1118,7 +1118,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 if (stockRecordsOld.length != 1) {
                     throw new WMSServiceException("退回数量查询库存记录出错！");
                 }
-                StockRecord stockRecordNew = stockRecordsOld[0];
+                StockRecord stockRecordNew = ReflectHelper.createAndCopyFields(stockRecordsOld[0],StockRecord.class);
                 stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().add(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordNew.setAmount(stockRecordNew.getAmount().add(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordNew.setTime(this.getTime());
