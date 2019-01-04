@@ -7,10 +7,7 @@ import com.wms.services.salary.datestructures.AddPersonSalaryRequest;
 import com.wms.services.salary.service.PersonSalaryService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.PersonSalary;
-import com.wms.utilities.model.PersonSalaryView;
-import com.wms.utilities.model.SalaryItem;
-import com.wms.utilities.model.SalaryItemView;
+import com.wms.utilities.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -45,12 +42,21 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
         personSalaryService.remove(accountBook,ids);
     }
 
-    @RequestMapping(value = "/{condStr}",method = RequestMethod.GET)
+    @RequestMapping(value = "/{condStr}/old",method = RequestMethod.GET)
     public PersonSalaryView[] find(@PathVariable("accountBook") String accountBook,
                                   @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
         PersonSalaryView[] personSalaryViews =personSalaryService.find(accountBook, cond);
         return personSalaryViews;
+    }
+
+    @Override
+    @RequestMapping(value = "/{condStr}",method = RequestMethod.GET)
+    public PersonSalaryWithSumAmount[] findSum(@PathVariable("accountBook") String accountBook,
+                                            @PathVariable("condStr") String condStr) {
+        Condition cond = Condition.fromJson(condStr);
+        PersonSalaryWithSumAmount[] personSalaryWithSumAmounts =personSalaryService.findSum(accountBook, cond);
+        return personSalaryWithSumAmounts;
     }
 
     @Override

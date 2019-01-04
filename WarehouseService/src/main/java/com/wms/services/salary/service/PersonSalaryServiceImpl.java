@@ -186,12 +186,17 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         return this.personSalaryDAO.find(accountBook, cond);
     }
 
+    public PersonSalaryWithSumAmount[] findSum(String accountBook, Condition cond) throws WMSServiceException {
+        return this.personSalaryDAO.findSum(accountBook, cond);
+    }
+
     public PersonSalary[] findTable(String accountBook, Condition cond) throws WMSServiceException {
         return this.personSalaryDAO.findTable(accountBook, cond);
     }
 
     public long findCount(String database, Condition cond) throws WMSServiceException {
-        return this.personSalaryDAO.findCount(database, cond);
+        //return this.personSalaryDAO.findCount(database, cond);
+        return this.personSalaryDAO.findCountSum(database, cond);
     }
 
 

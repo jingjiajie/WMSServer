@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import java.math.BigDecimal;
 
 @Entity
-public class PersonSalaryView {
+public class PersonSalaryWithSumAmount {
     private int id;
     private Integer warehouseId;
     private Integer salaryPeriodId;
@@ -180,7 +180,7 @@ public class PersonSalaryView {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
 
-        PersonSalaryView that = (PersonSalaryView) object;
+        PersonSalaryWithSumAmount that = (PersonSalaryWithSumAmount) object;
 
         if (id != that.id) return false;
         if (giveOut != that.giveOut) return false;

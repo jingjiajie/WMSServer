@@ -6,11 +6,13 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.PayNoteItem;
 import com.wms.utilities.model.PersonSalary;
 import com.wms.utilities.model.PersonSalaryView;
+import com.wms.utilities.model.PersonSalaryWithSumAmount;
 import com.wms.utilities.service.BaseService;
 
 import java.util.List;
 
 public interface PersonSalaryService extends BaseService<PersonSalary,PersonSalaryView> {
+    PersonSalaryWithSumAmount[] findSum(String accountBook,Condition condition);
     void addPersonSalaryBySalaryType(String accountBook, AddPersonSalary addPersonSalary);
     void updateNewestPeriodPersonSalaryDelete(String accountBook, AddPersonSalary addPersonSalary, List<Integer> personRemoveIds);
     void updateNewestPeriodPersonSalary(String accountBook, AddPersonSalary addPersonSalary);

@@ -100,6 +100,7 @@
       <mapping class="com.wms.utilities.model.SummaryDetailsView"/>
       <mapping class="com.wms.utilities.model.TrayThresholdsView"/>
       <mapping class="com.wms.utilities.model.ItemRelatedRecord"/>
+      <mapping class="com.wms.utilities.model.PersonSalaryWithSumAmount"/>
 
 
       <!-- DB schema will be updated if needed -->
