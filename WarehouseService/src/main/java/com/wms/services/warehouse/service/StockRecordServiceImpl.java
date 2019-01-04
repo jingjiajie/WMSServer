@@ -1080,8 +1080,8 @@ public class StockRecordServiceImpl implements StockRecordService {
                     throw new WMSServiceException("退回数量查询库存记录出错！");
                 }
                 StockRecord stockRecordNew = ReflectHelper.createAndCopyFields(stockRecordsNew[0],StockRecord.class);
-                stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAvailableAmount()));
                 stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
+                stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordNew.setTime(this.getTime());
                 transferRecord.setTargetStorageLocationAmount(stockRecordsSource[0].getUnitAmount());
                 transferRecord.setTargetStorageLocationUnit(stockRecordsSource[0].getUnit());
@@ -1249,6 +1249,8 @@ public class StockRecordServiceImpl implements StockRecordService {
             transferRecord.setTargetStorageLocationOriginalAmount(new BigDecimal(0));
             transferRecord.setTargetStorageLocationNewAmount(transferStock.getAmount());
         }
+        //重新更新时间 否则时间将不是最新的
+        stockRecordNew.setTime(this.getTime());
         stockRecordDAO.add(accountBook, new StockRecord[]{stockRecordNew});
         this.transformRecordService.add(accountBook, new TransferRecord[]{transferRecord});
         itemRelatedRecordService.add(accountBook, new ItemRelatedRecord[]{itemRelatedRecord});
@@ -1588,18 +1590,17 @@ public class StockRecordServiceImpl implements StockRecordService {
                 }
                 //这是新条目的变化
                 if (stockRecordsNewFind.length == 0) {
-                    //没有可以合并的记录 可用数量为旧条目的可用数量变化
-                    stockRecordNew.setAvailableAmount(stockRecordsSource[i].getAvailableAmount().subtract(stockRecordOld.getAvailableAmount()));
                     //数量直接为旧条目的数量变化即可
                     stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordOld.getAmount()));
+                    stockRecordNew.setAvailableAmount(stockRecordNew.getAmount());
                 } else if (stockRecordsNewFind.length == 1) {
                     //有可以合并的记录
-                    stockRecordNew.setAvailableAmount(stockRecordsSource[i].getAvailableAmount().subtract(stockRecordOld.getAvailableAmount()));
                     //有则再加上原有数量即可
-                    stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().add(stockRecordsNewFind[0].getAvailableAmount()));
                     //数量直接为旧条目的数量变化即可
                     stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordOld.getAmount()));
                     stockRecordNew.setAmount(stockRecordNew.getAmount().add(stockRecordsNewFind[0].getAmount()));
+                    stockRecordNew.setAvailableAmount(stockRecordsNewFind[0].getAvailableAmount().
+                            add((stockRecordNew.getAmount().subtract(stockRecordsNewFind[0].getAmount()))));
                 }
             } else {//对于最后一批单独处理
                 // 这是旧条目的变化
@@ -1621,18 +1622,18 @@ public class StockRecordServiceImpl implements StockRecordService {
                 }
                 //这是新条目的变化
                 if (stockRecordsNewFind.length == 0) {
-                    //没有可以合并的记录 可用数量为旧条目的可用数量变化
-                    stockRecordNew.setAvailableAmount(stockRecordsSource[i].getAvailableAmount().subtract(stockRecordOld.getAvailableAmount()));
                     //数量直接为旧条目的数量变化即可
                     stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordOld.getAmount()));
+                    //没有可以合并的记录 可用数量为旧条目的可用数量变化
+                    stockRecordNew.setAvailableAmount(stockRecordNew.getAmount());
                 } else if (stockRecordsNewFind.length == 1) {
                     //有可以合并的记录
-                    stockRecordNew.setAvailableAmount(stockRecordsSource[i].getAvailableAmount().subtract(stockRecordOld.getAvailableAmount()));
-                    //有则再加上原有数量即可
-                    stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().add(stockRecordsNewFind[0].getAvailableAmount()));
                     //数量直接为旧条目的数量变化即可
                     stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(stockRecordOld.getAmount()));
                     stockRecordNew.setAmount(stockRecordNew.getAmount().add(stockRecordsNewFind[0].getAmount()));
+                    //有则再加上原有数量即可
+                    stockRecordNew.setAvailableAmount(stockRecordsNewFind[0].getAvailableAmount().
+                            add((stockRecordNew.getAmount().subtract(stockRecordsNewFind[0].getAmount()))));
                 }
             }
             stockRecordsList.add(stockRecordNew);
