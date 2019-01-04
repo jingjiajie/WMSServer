@@ -1059,6 +1059,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 stockRecordFind.setWarehouseId(this.warehouseIdFind(accountBook, transferStockRestore.getSourceStorageLocationId())[0]);
 
                 StockRecordFind stockRecordFindNew = new StockRecordFind();
+                stockRecordFindNew.setFilterZero(false);
                 stockRecordFindNew.setSupplyId(transferStockRestore.getSupplyId());
                 stockRecordFindNew.setUnitAmount(transferStockRestore.getNewUnitAmount());
                 stockRecordFindNew.setUnit(transferStockRestore.getNewUnit());
@@ -1650,7 +1651,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             transferRecord.setTransferAmount(transferRecord.getSourceStorageLocationOriginalAmount().subtract(transferRecord.getSourceStorageLocationNewAmount()));
             //transferRecord.setTransferAmount(transferRecord.getTransferAmount().abs());
             transferRecordList.add(transferRecord);
-            stockRecordsList.add(stockRecordNew);
+            //stockRecordsList.add(stockRecordNew);
             //相关信息 用旧条目的变化代表批次数量和可用数量
             itemRelatedRecord.setStockRecordBatchNo(stockRecordsSource[i].getBatchNo());
             itemRelatedRecord.setBatchAvailableAmount(stockRecordsSource[i].getAvailableAmount().subtract(stockRecordOld.getAvailableAmount()));
