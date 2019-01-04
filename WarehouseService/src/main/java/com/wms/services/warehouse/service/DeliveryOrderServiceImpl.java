@@ -196,7 +196,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
 
                 }
             });
-            this.transferOrderItemService.add(accountBook, transferOrderItems);
+            this.transferOrderItemService.add2(accountBook, transferOrderItems);
         });
     }
 

@@ -671,10 +671,15 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             if (deliveryOrderItem.getState() ==TransferOrderItemService.STATE_IN_TRANSFER) {
                 deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
                 deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+                deliveryOrderItem.setLoadingTime(new Timestamp(System.currentTimeMillis()));
+                if (deliveryOrderItem.getVersion()==0){
+                    this.update(accountBook,new DeliveryOrderItem[]{deliveryOrderItem});
+                }else{
+                    this.update2(accountBook,new DeliveryOrderItem[]{deliveryOrderItem});
+                }
             }
-            deliveryOrderItem.setLoadingTime(new Timestamp(System.currentTimeMillis()));
         });
-        this.update(accountBook,deliveryOrderItems);
+
         //更新出库单状态
         Stream.of(deliveryOrders).forEach(deliveryOrder -> {
             if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_DELIVER) {
@@ -717,9 +722,14 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             if (deliveryOrderItem.getState() ==TransferOrderItemService.STATE_IN_TRANSFER) {
                 deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
                 deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+
+                if (deliveryOrderItem.getVersion()==0){
+                    this.update(accountBook,new DeliveryOrderItem[]{deliveryOrderItem});
+                }else{
+                    this.update2(accountBook,new DeliveryOrderItem[]{deliveryOrderItem});
+                }
             }
         });
-        this.update(accountBook,deliveryOrderItems);
         //TODO 如果部分更新的时候是全部完成，需要补逻辑
         //更新出库单状态,应该是只有一个单子
         Stream.of(deliveryOrders).forEach(deliveryOrder -> {
@@ -740,6 +750,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             }
 
         });
+
         this.deliveryOrderService.update(accountBook, deliveryOrders);
 
     }
