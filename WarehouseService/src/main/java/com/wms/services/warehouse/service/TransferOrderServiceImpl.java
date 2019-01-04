@@ -324,6 +324,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                 deliveryOrderItem.setDeliveryOrderId(curDeliveryOrderId);
                 deliveryOrderItem.setRealAmount(BigDecimal.ZERO);
                 deliveryOrderItem.setComment("发货");
+                deliveryOrderItem.setVersion(1);
                 deliveryOrderItemList.add(deliveryOrderItem);
 
             }
