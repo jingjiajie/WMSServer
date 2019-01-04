@@ -651,11 +651,12 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     }
 
     @Override
-    public List<AccountRecordView> deficitCheck(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException{
+    public List<AccrualCheck> deficitCheck(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException{
         //赤字提醒
         int curWarehouseId=accrualCheck.getWarehouseId();
         int curAccountPeriodId=accrualCheck.getCurAccountPeriodId();
-        List<AccountRecordView> returnAccountRecordViewList=new ArrayList();
+//        List<AccountRecordView> returnAccountRecordViewList=new ArrayList();
+        List<AccrualCheck> returnAccrualCheckList=new ArrayList();
 
         AccountRecordView[] tdAccountRecordViews= this.find(accountBook,new Condition().addCondition("warehouseId",new Integer[]{curWarehouseId}).addCondition("accountPeriodId",new Integer[]{curAccountPeriodId}));
         if (tdAccountRecordViews.length<=0)
@@ -714,36 +715,39 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                 }
             }
             if (balance.compareTo(BigDecimal.ZERO)<0) {
+                AccrualCheck returnAccrualCheck=new AccrualCheck();
+                returnAccrualCheck.setBalance(balance);
+                returnAccrualCheck.setCurAccountTitleName(accountTitleViews[k].getName());
+                returnAccrualCheckList.add(returnAccrualCheck);          
+            }
+        }
+//        //按科目分组
+//        Map<Integer, List<AccountRecordView>> groupByAccountTitleId =
+//                Stream.of(tdAccountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountPeriodId));
+//
+//        Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupByAccountTitleId.entrySet().iterator();
+//        //将每组最新的加到一个列表中
+//        while (entries.hasNext()) {
+//            Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
+//            Integer accountTitleId = entry.getKey();
+//            List<AccountRecordView> accountRecordViewsList=entry.getValue();
+//            AccountRecordView[] curAccountRecordViews=(AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
+//            accountRecordViewsList.toArray(curAccountRecordViews);
+//
+//            AccountRecordView newestAccountRecordView=curAccountRecordViews[0];
+//            for (int i=0;i<curAccountRecordViews.length;i++){
+//                if (curAccountRecordViews[i].getServiceTime().after(newestAccountRecordView.getServiceTime())) {
+//                    newestAccountRecordView = curAccountRecordViews[i];
+//                }
+//            }
+//
+//            if (newestAccountRecordView.getOwnBalance().compareTo(BigDecimal.ZERO)<0) {
 //                returnAccountRecordViewList.add(newestAccountRecordView);
-            }
-        }
-        //按科目分组
-        Map<Integer, List<AccountRecordView>> groupByAccountTitleId =
-                Stream.of(tdAccountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getAccountPeriodId));
-
-        Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupByAccountTitleId.entrySet().iterator();
-        //将每组最新的加到一个列表中
-        while (entries.hasNext()) {
-            Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
-            Integer accountTitleId = entry.getKey();
-            List<AccountRecordView> accountRecordViewsList=entry.getValue();
-            AccountRecordView[] curAccountRecordViews=(AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
-            accountRecordViewsList.toArray(curAccountRecordViews);
-
-            AccountRecordView newestAccountRecordView=curAccountRecordViews[0];
-            for (int i=0;i<curAccountRecordViews.length;i++){
-                if (curAccountRecordViews[i].getServiceTime().after(newestAccountRecordView.getServiceTime())) {
-                    newestAccountRecordView = curAccountRecordViews[i];
-                }
-            }
-
-            if (newestAccountRecordView.getOwnBalance().compareTo(BigDecimal.ZERO)<0) {
-                returnAccountRecordViewList.add(newestAccountRecordView);
-            }
-        }
+//            }
+//        }
 
 
-        return returnAccountRecordViewList;
+        return returnAccrualCheckList;
     }
 
     @Override
