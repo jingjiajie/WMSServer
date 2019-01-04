@@ -73,4 +73,14 @@ public class AccrualCheck {
 
     int curAccountTitleId;
 
+    public String getCurAccountTitleName() {
+        return curAccountTitleName;
+    }
+
+    public void setCurAccountTitleName(String curAccountTitleName) {
+        this.curAccountTitleName = curAccountTitleName;
+    }
+
+    String curAccountTitleName;
+
 }
