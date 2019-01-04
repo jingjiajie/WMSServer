@@ -289,7 +289,7 @@ public class InspectionNoteServiceImpl
             }
             //更新入库单条目状态
             if (warehouseEntryIDsToReceive.size() > 0) {
-                //this.warehouseEntryItemService.receive1(accountBook, warehouseEntryIDsToReceive,warehouseEntryItemAndReturnAmount);
+                this.warehouseEntryItemService.receive1(accountBook, warehouseEntryIDsToReceive,warehouseEntryItemAndReturnAmount);
             }
             if (warehouseEntryIDsToReject.size() > 0) {
                 this.warehouseEntryItemService.reject1(accountBook, warehouseEntryIDsToReject,warehouseEntryItemAndReturnAmount);
