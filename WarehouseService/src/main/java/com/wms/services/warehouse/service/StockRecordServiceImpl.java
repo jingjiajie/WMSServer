@@ -1249,6 +1249,8 @@ public class StockRecordServiceImpl implements StockRecordService {
             transferRecord.setTargetStorageLocationOriginalAmount(new BigDecimal(0));
             transferRecord.setTargetStorageLocationNewAmount(transferStock.getAmount());
         }
+        //重新更新时间 否则时间将不是最新的
+        stockRecordNew.setTime(this.getTime());
         stockRecordDAO.add(accountBook, new StockRecord[]{stockRecordNew});
         this.transformRecordService.add(accountBook, new TransferRecord[]{transferRecord});
         itemRelatedRecordService.add(accountBook, new ItemRelatedRecord[]{itemRelatedRecord});
