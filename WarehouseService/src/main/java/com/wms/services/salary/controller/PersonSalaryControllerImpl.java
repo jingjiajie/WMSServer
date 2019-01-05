@@ -42,7 +42,7 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
         personSalaryService.remove(accountBook,ids);
     }
 
-    @RequestMapping(value = "/{condStr}/old",method = RequestMethod.GET)
+    @RequestMapping(value = "/{condStr}",method = RequestMethod.GET)
     public PersonSalaryView[] find(@PathVariable("accountBook") String accountBook,
                                   @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
@@ -51,7 +51,7 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     }
 
     @Override
-    @RequestMapping(value = "/{condStr}",method = RequestMethod.GET)
+    @RequestMapping(value = "/{condStr}/old",method = RequestMethod.GET)
     public PersonSalaryWithSumAmount[] findSum(@PathVariable("accountBook") String accountBook,
                                             @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);

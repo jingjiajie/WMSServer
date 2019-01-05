@@ -195,8 +195,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     }
 
     public long findCount(String database, Condition cond) throws WMSServiceException {
-        //return this.personSalaryDAO.findCount(database, cond);
-        return this.personSalaryDAO.findCountSum(database, cond);
+        return this.personSalaryDAO.findCount(database, cond);
+        //return this.personSalaryDAO.findCountSum(database, cond);
     }
 
 
