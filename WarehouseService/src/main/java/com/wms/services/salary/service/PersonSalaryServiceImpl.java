@@ -3,6 +3,7 @@ package com.wms.services.salary.service;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.salary.dao.PersonSalaryDAO;
 import com.wms.services.salary.datestructures.AddPersonSalary;
+import com.wms.services.salary.datestructures.PersonSalaryViewGroupByTypeAndPeriod;
 import com.wms.services.salary.datestructures.SalaryItemTypeState;
 import com.wms.services.warehouse.service.*;
 import com.wms.utilities.ReflectHelper;
@@ -27,6 +28,7 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -186,8 +188,51 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         return this.personSalaryDAO.find(accountBook, cond);
     }
 
-    public PersonSalaryWithSumAmount[] findSum(String accountBook, Condition cond) throws WMSServiceException {
-        return this.personSalaryDAO.findSum(accountBook, cond);
+    public PersonSalaryView[] findSum(String accountBook, Condition cond) throws WMSServiceException {
+        List<PersonSalaryView> personSalaryViewResult = new ArrayList<>();
+        PersonSalaryView[] personSalaryViews = this.find(accountBook, cond);
+        List<PersonSalaryViewGroupByTypeAndPeriod> personSalaryViewGroupByTypeAndPeriodArrayList = new ArrayList<>();
+        for (int i = 0; i < personSalaryViews.length; i++) {
+            PersonSalaryViewGroupByTypeAndPeriod personSalaryViewGroupByTypeAndPeriod = new PersonSalaryViewGroupByTypeAndPeriod();
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append(personSalaryViews[i].getPersonId());
+            stringBuffer.append(";");
+            stringBuffer.append(personSalaryViews[i].getSalaryPeriodId());
+            stringBuffer.append(";");
+            stringBuffer.append(personSalaryViews[i].getSalaryTypeId());
+            stringBuffer.append(";");
+            personSalaryViewGroupByTypeAndPeriod.setGroupCondition(stringBuffer.toString());
+            personSalaryViewGroupByTypeAndPeriod.setPersonSalaryViews(personSalaryViews[i]);
+            personSalaryViewGroupByTypeAndPeriodArrayList.add(personSalaryViewGroupByTypeAndPeriod);
+        }
+        PersonSalaryViewGroupByTypeAndPeriod[] resultArray = null;
+        resultArray = (PersonSalaryViewGroupByTypeAndPeriod[]) Array.newInstance(PersonSalaryViewGroupByTypeAndPeriod.class, personSalaryViewGroupByTypeAndPeriodArrayList.size());
+        personSalaryViewGroupByTypeAndPeriodArrayList.toArray(resultArray);
+        Map<String, List<PersonSalaryViewGroupByTypeAndPeriod>> personSalaryGroup = Stream.of(resultArray).collect(Collectors.groupingBy(PersonSalaryViewGroupByTypeAndPeriod::getGroupCondition));
+        Iterator<Map.Entry<String, List<PersonSalaryViewGroupByTypeAndPeriod>>> entries = personSalaryGroup.entrySet().iterator();
+        //将每组求和然后加到一个列表中
+        while (entries.hasNext()) {
+            Map.Entry<String, List<PersonSalaryViewGroupByTypeAndPeriod>> entry = entries.next();
+            List<PersonSalaryViewGroupByTypeAndPeriod> personSalaryViewGroupByTypeAndPeriods = entry.getValue();
+            PersonSalaryViewGroupByTypeAndPeriod[] resultArray1 = null;
+            resultArray1 = (PersonSalaryViewGroupByTypeAndPeriod[]) Array.newInstance(PersonSalaryViewGroupByTypeAndPeriod.class, personSalaryViewGroupByTypeAndPeriods.size());
+            personSalaryViewGroupByTypeAndPeriods.toArray(resultArray1);
+            BigDecimal amountAll = new BigDecimal(0);
+            PersonSalaryView personSalaryView = new PersonSalaryView();
+            for (int i = 0; i < resultArray1.length; i++) {
+                personSalaryView = resultArray1[i].getPersonSalaryView();
+                if (personSalaryView.getGiveOut() == 1)
+                    amountAll = amountAll.add(personSalaryView.getAmount());
+            }
+            personSalaryView.setAmount(amountAll);
+            personSalaryView.setSalaryItemName("总金额");
+            if (resultArray1.length != 0) {
+                personSalaryViewResult.add(personSalaryView);
+            }
+        }
+        PersonSalaryView[] personSalaryViewResultArray = (PersonSalaryView[]) Array.newInstance(PersonSalaryView.class, personSalaryViewResult.size());
+        personSalaryViewResult.toArray(personSalaryViewResultArray);
+        return this.find(accountBook, cond);
     }
 
     public PersonSalary[] findTable(String accountBook, Condition cond) throws WMSServiceException {

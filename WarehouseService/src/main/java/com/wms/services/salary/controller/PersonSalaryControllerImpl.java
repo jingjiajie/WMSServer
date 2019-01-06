@@ -4,7 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.salary.datestructures.AddPersonSalary;
 import com.wms.services.salary.datestructures.AddPersonSalaryRequest;
+import com.wms.services.salary.datestructures.PersonSalaryViewGroupByTypeAndPeriod;
 import com.wms.services.salary.service.PersonSalaryService;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
@@ -13,6 +15,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.xml.bind.annotation.W3CDomHandler;
+import java.lang.reflect.Array;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/{accountBook}/person_salary")
@@ -52,11 +62,56 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
 
     @Override
     @RequestMapping(value = "/{condStr}",method = RequestMethod.GET)
-    public PersonSalaryWithSumAmount[] findSum(@PathVariable("accountBook") String accountBook,
+    public PersonSalaryView[] findSum(@PathVariable("accountBook") String accountBook,
                                             @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
-        PersonSalaryWithSumAmount[] personSalaryWithSumAmounts =personSalaryService.findSum(accountBook, cond);
-        return personSalaryWithSumAmounts;
+        PersonSalaryView[] personSalaryViews =personSalaryService.find(accountBook, cond);
+        List<PersonSalaryView> personSalaryViewResult = new ArrayList<>();
+        List<PersonSalaryViewGroupByTypeAndPeriod> personSalaryViewGroupByTypeAndPeriodArrayList = new ArrayList<>();
+        for (int i = 0; i < personSalaryViews.length; i++) {
+            PersonSalaryViewGroupByTypeAndPeriod personSalaryViewGroupByTypeAndPeriod = new PersonSalaryViewGroupByTypeAndPeriod();
+            StringBuffer stringBuffer = new StringBuffer();
+            stringBuffer.append(personSalaryViews[i].getPersonId());
+            stringBuffer.append(";");
+            stringBuffer.append(personSalaryViews[i].getSalaryPeriodId());
+            stringBuffer.append(";");
+            stringBuffer.append(personSalaryViews[i].getSalaryTypeId());
+            stringBuffer.append(";");
+            personSalaryViewGroupByTypeAndPeriod.setGroupCondition(stringBuffer.toString());
+            personSalaryViewGroupByTypeAndPeriod.setPersonSalaryViews(personSalaryViews[i]);
+            personSalaryViewGroupByTypeAndPeriodArrayList.add(personSalaryViewGroupByTypeAndPeriod);
+        }
+        PersonSalaryViewGroupByTypeAndPeriod[] resultArray = null;
+        resultArray = (PersonSalaryViewGroupByTypeAndPeriod[]) Array.newInstance(PersonSalaryViewGroupByTypeAndPeriod.class, personSalaryViewGroupByTypeAndPeriodArrayList.size());
+        personSalaryViewGroupByTypeAndPeriodArrayList.toArray(resultArray);
+        Map<String, List<PersonSalaryViewGroupByTypeAndPeriod>> personSalaryGroup = Stream.of(resultArray).collect(Collectors.groupingBy(PersonSalaryViewGroupByTypeAndPeriod::getGroupCondition));
+        Iterator<Map.Entry<String, List<PersonSalaryViewGroupByTypeAndPeriod>>> entries = personSalaryGroup.entrySet().iterator();
+        //将每组求和然后加到一个列表中
+        while (entries.hasNext()) {
+            Map.Entry<String, List<PersonSalaryViewGroupByTypeAndPeriod>> entry = entries.next();
+            List<PersonSalaryViewGroupByTypeAndPeriod> personSalaryViewGroupByTypeAndPeriods = entry.getValue();
+            PersonSalaryViewGroupByTypeAndPeriod[] resultArray1 = null;
+            resultArray1 = (PersonSalaryViewGroupByTypeAndPeriod[]) Array.newInstance(PersonSalaryViewGroupByTypeAndPeriod.class, personSalaryViewGroupByTypeAndPeriods.size());
+            personSalaryViewGroupByTypeAndPeriods.toArray(resultArray1);
+            BigDecimal amountAll = new BigDecimal(0);
+            PersonSalaryView personSalaryView = new PersonSalaryView();
+            for (int i = 0; i < resultArray1.length; i++) {
+                ReflectHelper.copyFields(resultArray1[i].getPersonSalaryView(),personSalaryView);
+                if (personSalaryView.getGiveOut() == 1)
+                    amountAll = amountAll.add(personSalaryView.getAmount());
+            }
+            personSalaryView.setAmount(amountAll);
+            personSalaryView.setSalaryItemName("总金额");
+            if (resultArray1.length != 0) {
+                personSalaryViewResult.add(personSalaryView);
+            }
+        }
+        for(int i=0;i<personSalaryViews.length;i++){
+            personSalaryViewResult.add(personSalaryViews[i]);
+        }
+        PersonSalaryView[] personSalaryViewResultArray = (PersonSalaryView[]) Array.newInstance(PersonSalaryView.class, personSalaryViewResult.size());
+        personSalaryViewResult.toArray(personSalaryViewResultArray);
+        return personSalaryViewResultArray;
     }
 
     @Override

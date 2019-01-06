@@ -19,5 +19,5 @@ public interface PersonSalaryController extends BaseController<PersonSalary,Pers
     void refreshPersonSalary(String accountBook, AddPersonSalaryRequest addPersonSalaryRequest);
     void refreshFormulaAndValuation(String accountBook, AddPersonSalaryRequest addPersonSalaryRequest);
     void addLastPeriod(String accountBook, AddPersonSalaryRequest addPersonSalaryRequest);
-    PersonSalaryWithSumAmount[] findSum( String accountBook,String condStr);
+    PersonSalaryView[] findSum( String accountBook,String condStr);
 }

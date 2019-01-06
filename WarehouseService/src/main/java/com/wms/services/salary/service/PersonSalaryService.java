@@ -12,7 +12,7 @@ import com.wms.utilities.service.BaseService;
 import java.util.List;
 
 public interface PersonSalaryService extends BaseService<PersonSalary,PersonSalaryView> {
-    PersonSalaryWithSumAmount[] findSum(String accountBook,Condition condition);
+    PersonSalaryView[] findSum(String accountBook,Condition condition);
     void addPersonSalaryBySalaryType(String accountBook, AddPersonSalary addPersonSalary);
     void updateNewestPeriodPersonSalaryDelete(String accountBook, AddPersonSalary addPersonSalary, List<Integer> personRemoveIds);
     void updateNewestPeriodPersonSalary(String accountBook, AddPersonSalary addPersonSalary);

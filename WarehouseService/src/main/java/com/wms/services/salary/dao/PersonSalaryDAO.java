@@ -9,6 +9,6 @@ import com.wms.utilities.model.PersonSalaryWithSumAmount;
 import com.wms.utilities.model.StockRecordViewNewest;
 
 public interface PersonSalaryDAO extends BaseDAO<PersonSalary,PersonSalaryView> {
-    PersonSalaryWithSumAmount[] findSum(String accountBook, Condition condition);
-    long findCountSum(String database,Condition cond) throws WMSDAOException;
+//    PersonSalaryView[] findSum(String accountBook, Condition condition);
+//    long findCountSum(String database,Condition cond) throws WMSDAOException;
 }
