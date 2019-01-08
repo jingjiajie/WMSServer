@@ -51,7 +51,8 @@ public class SalaryTypeServiceImpl implements SalaryTypeService {
         AddPersonSalary addPersonSalary=new AddPersonSalary();
         addPersonSalary.setWarehouseId(salaryTypes[0].getWarehouseId());
         addPersonSalary.setSalaryTypeId(ids[i]);
-        this.personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalary);}
+        //this.personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalary);
+        }
         return ids;
     }
 

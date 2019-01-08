@@ -14,9 +14,6 @@ import java.util.List;
 public interface PersonSalaryService extends BaseService<PersonSalary,PersonSalaryView> {
     PersonSalaryView[] findSum(String accountBook,Condition condition);
     void addPersonSalaryBySalaryType(String accountBook, AddPersonSalary addPersonSalary);
-    void updateNewestPeriodPersonSalaryDelete(String accountBook, AddPersonSalary addPersonSalary, List<Integer> personRemoveIds);
-    void updateNewestPeriodPersonSalary(String accountBook, AddPersonSalary addPersonSalary);
-    void addForNewPeriod(String accountBook, AddPersonSalary addPersonSalary);
     PersonSalary[] findTable(String accountBook, Condition cond) throws WMSServiceException;
     void refreshFormula(String accountBook, AddPersonSalary addPersonSalary);
     void refreshPersonSalary(String accountBook, AddPersonSalary addPersonSalary);
