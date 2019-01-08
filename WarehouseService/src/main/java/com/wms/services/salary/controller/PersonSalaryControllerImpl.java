@@ -66,6 +66,7 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
                                             @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
         PersonSalaryView[] personSalaryViews =personSalaryService.find(accountBook, cond);
+        if(personSalaryViews.length==0){return personSalaryViews;}
         List<PersonSalaryView> personSalaryViewResult = new ArrayList<>();
         List<PersonSalaryViewGroupByTypeAndPeriod> personSalaryViewGroupByTypeAndPeriodArrayList = new ArrayList<>();
         for (int i = 0; i < personSalaryViews.length; i++) {
@@ -98,7 +99,8 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
             for (int i = 0; i < resultArray1.length; i++) {
                 ReflectHelper.copyFields(resultArray1[i].getPersonSalaryView(),personSalaryView);
                 if (personSalaryView.getGiveOut() == 1)
-                    amountAll = amountAll.add(personSalaryView.getAmount());
+                    if(personSalaryView.getAmount()!=null){
+                    amountAll = amountAll.add(personSalaryView.getAmount());}
             }
             personSalaryView.setAmount(amountAll);
             personSalaryView.setSalaryItemName("总金额");
@@ -119,7 +121,8 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     @ResponseStatus(HttpStatus.OK)
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
-        return this.personSalaryService.findCount(accountBook, Condition.fromJson(condStr));
+        return this.findSum(accountBook,condStr).length;
+        //return this.personSalaryService.findCount(accountBook, Condition.fromJson(condStr));
     }
 
     @RequestMapping(value = "/add_person_salary_by_salary_type",method = RequestMethod.POST)
