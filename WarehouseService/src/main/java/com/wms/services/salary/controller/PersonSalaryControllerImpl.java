@@ -17,10 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.xml.bind.annotation.W3CDomHandler;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.text.Collator;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -104,6 +102,7 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
             }
             personSalaryView.setAmount(amountAll);
             personSalaryView.setSalaryItemName("总金额");
+            personSalaryView.setSalaryItemDisplayPriority(0);
             if (resultArray1.length != 0) {
                 personSalaryViewResult.add(personSalaryView);
             }
@@ -111,6 +110,8 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
         for(int i=0;i<personSalaryViews.length;i++){
             personSalaryViewResult.add(personSalaryViews[i]);
         }
+        personSalaryViewResult.sort(Comparator.comparing(PersonSalaryView::getSalaryItemDisplayPriority));
+        Collections.reverse(personSalaryViewResult);
         PersonSalaryView[] personSalaryViewResultArray = (PersonSalaryView[]) Array.newInstance(PersonSalaryView.class, personSalaryViewResult.size());
         personSalaryViewResult.toArray(personSalaryViewResultArray);
         return personSalaryViewResultArray;
