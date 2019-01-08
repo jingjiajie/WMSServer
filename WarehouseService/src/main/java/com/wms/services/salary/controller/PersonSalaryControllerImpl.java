@@ -210,7 +210,7 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
             addPersonSalary.setSalaryTypeId(addPersonSalaryRequest.getSalaryTypeIds().get(i));
             addPersonSalary.setWarehouseId(addPersonSalaryRequest.getWarehouseId());
             personSalaryService.refreshFormula(accountBook,addPersonSalary);
-            personSalaryService.refreshValuation(accountBook,addPersonSalary);
+            //personSalaryService.refreshValuation(accountBook,addPersonSalary);
         }
     }
 
