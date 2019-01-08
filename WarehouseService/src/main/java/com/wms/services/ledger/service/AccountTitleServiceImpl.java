@@ -78,8 +78,9 @@ public class AccountTitleServiceImpl implements AccountTitleService {
         }
 
         int[]ids= accountTitleDAO.add(accountBook, accountTitles);
-        List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
-        List<FindLinkAccountTitle> findLinkAccountTitleList1=this.accountRecordService.FindSonAccountTitle(accountBook,accountTitles);
+//        List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
+//        List<FindLinkAccountTitle> findLinkAccountTitleList1=this.accountRecordService.FindSonAccountTitle(accountBook,accountTitles);
+        this.updateAllTitle(accountBook);
         return ids;
 
     }
@@ -160,7 +161,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
         List<FindLinkAccountTitle> findLinkAccountTitleList=this.accountRecordService.FindParentAccountTitle(accountBook,accountTitles);
         List<FindLinkAccountTitle> findLinkAccountTitleList1=this.accountRecordService.FindSonAccountTitle(accountBook,accountTitles);
         accountTitleDAO.update(accountBook, accountTitles);
-
+        this.updateAllTitle(accountBook);
     }
 
     @Transactional
@@ -225,7 +226,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
             parentAccountTitleViewsList.toArray(curParentAccountTitleViews);
 
             if (curParentAccountTitleViews.length>0) {
-                StringBuilder parent = null;
+                StringBuilder parent=new StringBuilder();
                 for (int i = 0; i < curParentAccountTitleViews.length - 1; i++) {
                     for (int j = 0; j < curParentAccountTitleViews.length - 1 - j; j++) {
                         if (curParentAccountTitleViews[j].getNo().length() > curParentAccountTitleViews[j + 1].getNo().length()) {

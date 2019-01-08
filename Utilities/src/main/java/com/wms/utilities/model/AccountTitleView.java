@@ -57,7 +57,7 @@ public class AccountTitleView {
     }
 
     @Basic
-    @Column(name = "Direction")
+    @Column(name = "Direction",updatable =false)
     public int getDirection() {
         return direction;
     }
