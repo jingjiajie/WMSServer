@@ -133,12 +133,6 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
            personSalaryService.addPersonSalaryBySalaryType(accountBook,addPersonSalaries);
    }
 
-    @RequestMapping(value = "/update_newest_period",method = RequestMethod.POST)
-    @ResponseBody
-    public void updateNewestPeriodPersonSalary(@PathVariable("accountBook") String accountBook,
-                                @RequestBody AddPersonSalary addPersonSalaries) {
-        personSalaryService.updateNewestPeriodPersonSalary(accountBook,addPersonSalaries);
-    }
 
     @RequestMapping(value = "/refresh_person_salary",method = RequestMethod.POST)
     @ResponseBody
