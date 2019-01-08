@@ -50,6 +50,7 @@ public class SalaryItemServiceImpl implements SalaryItemService {
         for (int i = 0; i < salaryItems.length; i++) {
             for (int j = i + 1; j < salaryItems.length; j++) {
                 String name = salaryItems[i].getName();
+                if(name.equals("总金额")){throw new WMSServiceException("项目名称不允许为“总金额”");}
                 if (name.equals(salaryItems[j].getName())) {
                     throw new WMSServiceException("薪金项目名称" + name + "在添加的列表中重复!");
                 }
@@ -114,6 +115,7 @@ public class SalaryItemServiceImpl implements SalaryItemService {
         for (int i = 0; i < salaryItems.length; i++) {
             for (int j = i + 1; j < salaryItems.length; j++) {
                 String name = salaryItems[i].getName();
+                if(name.equals("总金额")){throw new WMSServiceException("项目名称不允许为“总金额”");}
                 if (name.equals(salaryItems[j].getName())) {
                     throw new WMSServiceException("薪金项目名称" + name + "在添加的列表中重复!");
                 }
