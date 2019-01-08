@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
 
 import com.wms.services.ledger.datestructures.AccrualCheck;
-
+import com.wms.services.ledger.datestructures.FindBalance;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -748,6 +748,118 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
 
         return returnAccrualCheckList;
+    }
+
+    public FindBalance findNewBalance(String accountBook,AccountTitle accountTitle,Integer curWarehouseId) throws WMSServiceException {
+        BigDecimal balance=BigDecimal.ZERO;
+
+        int curAccountTitleId=accountTitle.getId();
+        AccountRecordView[] accountRecordViews = this.find(accountBook, new Condition()
+                .addCondition("warehouseId", new Integer[]{curWarehouseId})
+                .addCondition("ownAccountTitleId", new Integer[]{curAccountTitleId}));
+
+        AccountRecordView[] accountRecordViews1 = this.find(accountBook, new Condition()
+                .addCondition("warehouseId", new Integer[]{curWarehouseId})
+                .addCondition("otherAccountTitleId", new Integer[]{curAccountTitleId}));
+
+        if (accountRecordViews.length > 0 || accountRecordViews1.length > 0) {
+            //存在历史纪录
+            if (accountRecordViews.length > 0) {
+                //己方科目
+                AccountRecordView newestAccountRecord = accountRecordViews[0];
+                for (int i = 0; i < accountRecordViews.length; i++) {
+                    if (accountRecordViews[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                        newestAccountRecord = accountRecordViews[i];
+                    }
+                }
+                BigDecimal curBalance = newestAccountRecord.getOwnBalance();
+                if (accountRecordViews1.length > 0) {
+                    for (int i = 0; i < accountRecordViews1.length; i++) {
+                        if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                            newestAccountRecord = accountRecordViews1[i];
+                            curBalance = newestAccountRecord.getOtherBalance();
+                        }
+                    }
+                }
+                balance=curBalance;
+            } else {
+                //仅存在对方科目记录
+                AccountRecordView newestAccountRecord = accountRecordViews1[0];
+                BigDecimal curBalance = accountRecordViews1[0].getOtherBalance();
+                for (int i = 0; i < accountRecordViews1.length; i++) {
+                    if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                        newestAccountRecord = accountRecordViews1[i];
+                        curBalance = newestAccountRecord.getOtherBalance();
+                    }
+                }
+                balance=curBalance;
+            }
+        }
+        FindBalance findBalance=new FindBalance();
+        if (balance.compareTo(BigDecimal.ZERO)>0) {
+            findBalance.setExistBalance(true);
+            findBalance.setBalance(balance);
+        }
+        return findBalance;
+    }
+
+    public FindBalance findNewBalance(String accountBook,AccountTitle accountTitle) throws WMSServiceException {
+
+        FindBalance findBalance=new FindBalance();
+
+        BigDecimal returnBalance=BigDecimal.ZERO;
+        WarehouseView[] warehouseViews= warehouseService.find(accountBook,new Condition());
+        int curAccountTitleId=accountTitle.getId();
+        for(int j=0;j<warehouseViews.length;j++){
+            BigDecimal balance=BigDecimal.ZERO;
+            AccountRecordView[] accountRecordViews = this.find(accountBook, new Condition()
+                    .addCondition("warehouseId", new Integer[]{warehouseViews[j].getId()})
+                    .addCondition("ownAccountTitleId", new Integer[]{curAccountTitleId}));
+
+            AccountRecordView[] accountRecordViews1 = this.find(accountBook, new Condition()
+                    .addCondition("warehouseId", new Integer[]{warehouseViews[j].getId()})
+                    .addCondition("otherAccountTitleId", new Integer[]{curAccountTitleId}));
+
+            if (accountRecordViews.length > 0 || accountRecordViews1.length > 0) {
+                //存在历史纪录
+                if (accountRecordViews.length > 0) {
+                    //己方科目
+                    AccountRecordView newestAccountRecord = accountRecordViews[0];
+                    for (int i = 0; i < accountRecordViews.length; i++) {
+                        if (accountRecordViews[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                            newestAccountRecord = accountRecordViews[i];
+                        }
+                    }
+                    BigDecimal curBalance = newestAccountRecord.getOwnBalance();
+                    if (accountRecordViews1.length > 0) {
+                        for (int i = 0; i < accountRecordViews1.length; i++) {
+                            if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                newestAccountRecord = accountRecordViews1[i];
+                                curBalance = newestAccountRecord.getOtherBalance();
+                            }
+                        }
+                    }
+                    balance=curBalance;
+                } else {
+                    //仅存在对方科目记录
+                    AccountRecordView newestAccountRecord = accountRecordViews1[0];
+                    BigDecimal curBalance = accountRecordViews1[0].getOtherBalance();
+                    for (int i = 0; i < accountRecordViews1.length; i++) {
+                        if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                            newestAccountRecord = accountRecordViews1[i];
+                            curBalance = newestAccountRecord.getOtherBalance();
+                        }
+                    }
+                    balance=curBalance;
+                }
+            }
+
+            if (balance.compareTo(BigDecimal.ZERO)>0) {
+                findBalance.setExistBalance(true);
+            }
+        }
+
+        return findBalance;
     }
 
     @Override
