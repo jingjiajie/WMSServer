@@ -1,9 +1,6 @@
 package com.wms.services.ledger.service;
 
-import com.wms.services.ledger.datestructures.AccrualCheck;
-import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
-import com.wms.services.ledger.datestructures.TransferAccount;
-import com.wms.services.ledger.datestructures.TreeViewData;
+import com.wms.services.ledger.datestructures.*;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.service.BaseService;
@@ -22,6 +19,6 @@ public interface AccountRecordService extends BaseService<AccountRecord,AccountR
     public List<AccrualCheck> showBalance(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException;
     public List<TreeViewData> buildAccountTitleTreeView(String accountBook) throws WMSServiceException;
 
-
-
+    public FindBalance findNewBalance(String accountBook, AccountTitle accountTitle);
+    public FindBalance findNewBalance(String accountBook,AccountTitle accountTitle,Integer curWarehouseId);
     }
