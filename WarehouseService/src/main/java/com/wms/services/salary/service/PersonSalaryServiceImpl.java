@@ -684,6 +684,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                     personSalary.setAmount(salaryItem.getDefaultAmount().multiply(amount));
                 }
                 else if(salaryItem.getType()==SalaryItemTypeState.Formula){continue;}
+                personSalary.setEdited(0);
                 personSalary.setSalaryItemId(salaryItem.getId());
                 personSalary.setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
                 personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
