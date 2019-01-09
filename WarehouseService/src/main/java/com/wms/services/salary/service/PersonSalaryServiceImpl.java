@@ -720,6 +720,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     public void addLastPeriod(String accountBook, AddPersonSalary addPersonSalary) {
         SalaryPeriodView[] salaryPeriodViews = salaryPeriodService.find(accountBook,
                 new Condition().addOrder("endTime", OrderItem.Order.DESC));
+        List<PersonSalary> personSalaryListAdd=new ArrayList<>();
         if (salaryPeriodViews.length == 0) {
             throw new WMSServiceException("无薪资期间，无法执行！");
         }
@@ -739,9 +740,12 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         List<Integer> curIds = Stream.of(personSalariesCur).map(item -> item.getId()).collect(Collectors.toList());
         personSalaryDAO.remove(accountBook, ReflectHelper.IntegerToIntArray(curIds));
         for (int i = 0; i < personSalaries.length; i++) {
-            personSalaries[i].setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
+            PersonSalary personSalary=ReflectHelper.createAndCopyFields(personSalaries[i],PersonSalary.class);
+            personSalary.setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
+            personSalary.setEdited(0);
+            personSalaryListAdd.add(personSalary);
         }
-        personSalaryDAO.add(accountBook, personSalaries);
+        personSalaryDAO.add(accountBook, ReflectHelper.listToArray(personSalaryListAdd,PersonSalary.class));
     }
 
     private PersonSalary[] findExistPersonSalary(String accountBook, AddPersonSalary addPersonSalary) {
