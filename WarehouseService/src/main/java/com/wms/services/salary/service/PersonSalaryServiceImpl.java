@@ -256,21 +256,26 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         }
         try {
             Query query = null;
-            String sql = "SELECT  p.* FROM PersonSalary as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId " +
+            String sql = "SELECT  p.* FROM PersonSalaryView as p where p.salaryPeriodId=:salaryPeriodId and p.warehouseId=:warehouseId " +
                     "and p.personId in (select a.personId from SalaryTypePerson as a WHERE a.salaryTypeId =:salaryTypeId) " +
                     "and p.salaryItemId in (select b.id from SalaryItem as b WHERE b.salaryTypeId =:salaryTypeId) " +
                     "and (SELECT s.type from SalaryItem as s where s.id=p.salaryItemId )=1";
-            query = session.createNativeQuery(sql, PersonSalary.class);
+            query = session.createNativeQuery(sql, PersonSalaryView.class);
             query.setParameter("salaryPeriodId", addPersonSalary.getSalaryPeriodId());
             query.setParameter("warehouseId", addPersonSalary.getWarehouseId());
             query.setParameter("salaryTypeId", addPersonSalary.getSalaryTypeId());
-            PersonSalary[] resultArray = null;
-            List<PersonSalary> resultList = query.list();
-            resultArray = (PersonSalary[]) Array.newInstance(PersonSalary.class, resultList.size());
+            PersonSalaryView[] resultArray = null;
+            List<PersonSalaryView> resultList = query.list();
+            resultArray = (PersonSalaryView[]) Array.newInstance(PersonSalaryView.class, resultList.size());
             resultList.toArray(resultArray);
             ids = new int[resultArray.length];
+
             for (int i = 0; i < resultArray.length; i++) {
-                ids[i] = resultArray[i].getId();
+                //设置默认值 避免删除id是0的条目
+                ids[i]=-1;
+                //未编辑过才删除
+                if (resultArray[i].getEdited() == 0)
+                    ids[i] = resultArray[i].getId();
             }
         } catch (Exception e) {
             throw new WMSServiceException("查询人员薪资出错！");
@@ -284,7 +289,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         if (salaryTypePersons.length == 0) {
             throw new WMSServiceException("此类型中无人员，无法添加！");
         }
-        SalaryItem[] salaryItems = salaryItemService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()).addCondition("type",SalaryItemTypeState.VALUATION_SALARY));
+        SalaryItem[] salaryItems = salaryItemService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()).addCondition("type", SalaryItemTypeState.VALUATION_SALARY));
         if (salaryItems.length == 0) {
             return;
         }
@@ -292,6 +297,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         if (salaryPeriods.length != 1) {
             throw new WMSServiceException("查询薪资期间错误！");
         }
+        PersonSalary[] personSalaryExist = this.findExistPersonSalary(accountBook, addPersonSalary);
+
         List<PersonSalary> personSalaryList = new ArrayList<>();
         for (SalaryTypePerson salaryTypePerson : salaryTypePersons) {
             for (SalaryItem salaryItem : salaryItems) {
@@ -317,7 +324,16 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalary.setAmount(amount);
                 //没编辑过
                 personSalary.setEdited(0);
-                personSalaryList.add(personSalary);
+                if (personSalaryExist.length == 0) {
+                    personSalaryList.add(personSalary);
+                } else {
+                    for (PersonSalary personSalaryExistEach : personSalaryExist) {
+                        //项目、人员、仓库、期间不全相同的加入，相同的说明已经编辑过，就不再更新
+                        if (!(personSalaryExistEach.getSalaryItemId().equals(personSalary.getSalaryItemId()) && personSalaryExistEach.getPersonId().equals(personSalary.getPersonId()) && personSalaryExistEach.getWarehouseId().equals(personSalary.getWarehouseId()) && personSalaryExistEach.getSalaryPeriodId().equals(personSalary.getSalaryPeriodId()))) {
+                            personSalaryList.add(personSalary);
+                        }
+                    }
+                }
             }
         }
         PersonSalary[] personSalaries = new PersonSalary[personSalaryList.size()];
@@ -348,16 +364,18 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             resultList.toArray(resultArray);
             ids = new int[resultArray.length];
             for (int i = 0; i < resultArray.length; i++) {
+                //设置默认值 避免删除id是0的条目
+                ids[i]=-1;
                 //把实际支付和不支付且没编辑过的全删除
-                if(resultArray[i].getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON||(resultArray[i].getGiveOut()==SalaryItemTypeState.GIVE_OUT_OFF&&resultArray[i].getEdited()==0))
-                ids[i] = resultArray[i].getId();
+                if (resultArray[i].getGiveOut() == SalaryItemTypeState.GIVE_OUT_ON || (resultArray[i].getGiveOut() == SalaryItemTypeState.GIVE_OUT_OFF && resultArray[i].getEdited() == 0))
+                    ids[i] = resultArray[i].getId();
             }
         } catch (Exception e) {
             throw new WMSServiceException("查询人员薪资出错！");
         }
         personSalaryDAO.remove(accountBook, ids);
         this.addFormulaGiveOutOff(accountBook, addPersonSalary);
-        this.addFormulaGiveOutOn(accountBook,addPersonSalary);
+        this.addFormulaGiveOutOn(accountBook, addPersonSalary);
     }
 
     //将一个类型的公式添加进去 不管删除
@@ -365,7 +383,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
         List<PersonSalary> personSalaryList = new ArrayList<>();
         SalaryTypePerson[] salaryTypePersons = salaryTypePersonService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()));
         //把不实际的支付的先添加进去
-        SalaryItem[] salaryItems = salaryItemService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()).addOrder("priority", OrderItem.Order.DESC).addCondition("giveOut",SalaryItemTypeState.GIVE_OUT_OFF));
+        SalaryItem[] salaryItems = salaryItemService.findTable(accountBook, new Condition().addCondition("salaryTypeId", addPersonSalary.getSalaryTypeId()).addOrder("priority", OrderItem.Order.DESC).addCondition("giveOut", SalaryItemTypeState.GIVE_OUT_OFF));
         SalaryPeriod[] salaryPeriods = salaryPeriodService.findTable(accountBook, new Condition().addCondition("id", addPersonSalary.getSalaryPeriodId()));
         if (salaryPeriods.length != 1) {
             throw new WMSServiceException("查询薪资期间错误！");
@@ -413,7 +431,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
                 //没编辑过
                 personSalary.setEdited(0);
-                if (salaryItem.getType() == SalaryItemTypeState.Formula&&salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_OFF) {
+                if (salaryItem.getType() == SalaryItemTypeState.Formula && salaryItem.getGiveOut() == SalaryItemTypeState.GIVE_OUT_OFF) {
                     personSalaryList.add(personSalary);
                 }
             }
@@ -475,7 +493,7 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalary.setWarehouseId(addPersonSalary.getWarehouseId());
                 //没编辑过
                 personSalary.setEdited(0);
-                if (salaryItem.getType() == SalaryItemTypeState.Formula&&salaryItem.getGiveOut()==SalaryItemTypeState.GIVE_OUT_ON) {
+                if (salaryItem.getType() == SalaryItemTypeState.Formula && salaryItem.getGiveOut() == SalaryItemTypeState.GIVE_OUT_ON) {
                     personSalaryList.add(personSalary);
                 }
             }
@@ -630,6 +648,8 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
     public void refreshPersonSalary(String accountBook, AddPersonSalary addPersonSalary) {
         int[] ids = (int[]) Array.newInstance(int.class, addPersonSalary.getPersonSalaryIds().size());
         for (int i = 0; i < ids.length; i++) {
+            //设置默认值 避免删除id是0的条目
+            ids[i]=-1;
             ids[i] = addPersonSalary.getPersonSalaryIds().get(i);
         }
         //全部删除
@@ -682,8 +702,9 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                         amount = amount.add(transferOrderItemViews[i].getRealAmount());
                     }
                     personSalary.setAmount(salaryItem.getDefaultAmount().multiply(amount));
+                } else if (salaryItem.getType() == SalaryItemTypeState.Formula) {
+                    continue;
                 }
-                else if(salaryItem.getType()==SalaryItemTypeState.Formula){continue;}
                 personSalary.setEdited(0);
                 personSalary.setSalaryItemId(salaryItem.getId());
                 personSalary.setSalaryPeriodId(addPersonSalary.getSalaryPeriodId());
