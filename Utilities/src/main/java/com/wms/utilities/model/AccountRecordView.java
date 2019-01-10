@@ -35,7 +35,6 @@ public class AccountRecordView {
     private String personName;
 
     @Basic
-    @Id
     @Column(name = "OwnAccountTitleID")
     public int getOwnAccountTitleId() {
         return ownAccountTitleId;
@@ -56,6 +55,7 @@ public class AccountRecordView {
     }
 
     @Basic
+    @Id
     @Column(name = "ID")
     public int getId() {
         return id;
