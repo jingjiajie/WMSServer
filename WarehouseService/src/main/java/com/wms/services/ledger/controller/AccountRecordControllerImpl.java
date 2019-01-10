@@ -54,7 +54,8 @@ public class AccountRecordControllerImpl implements AccountRecordController {
     @RequestMapping(value = "/{strCond}", method = RequestMethod.GET)
     public AccountRecordView[] find(@PathVariable("accountBook") String accountBook,
                                     @PathVariable("strCond") String condStr) {
-        return accountRecordService.find(accountBook, Condition.fromJson(condStr));
+        AccountRecordView[] a= accountRecordService.find(accountBook, Condition.fromJson(condStr));
+        return a;
     }
 
     @Override

@@ -67,7 +67,7 @@ public class AccountTitleView {
     }
 
     @Basic
-    @Column(name = "Enabled")
+    @Column(name = "Enabled",updatable =false)
     public int getEnabled() {
         return enabled;
     }
@@ -77,7 +77,7 @@ public class AccountTitleView {
     }
 
     @Basic
-    @Column(name = "AccountTitleDdpendent")
+    @Column(name = "AccountTitleDdpendent",updatable =false)
     public String getAccountTitleDdpendent() {
         return accountTitleDdpendent;
     }
