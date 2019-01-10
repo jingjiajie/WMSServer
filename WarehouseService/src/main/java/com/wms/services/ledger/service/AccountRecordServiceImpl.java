@@ -18,6 +18,7 @@ import org.springframework.expression.spel.ast.NullLiteral;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.wms.services.ledger.datestructures.FindLinkAccountTitle;
+import com.wms.services.ledger.datestructures.SummaryAccountRecord;
 
 import com.wms.services.ledger.datestructures.AccrualCheck;
 import com.wms.services.ledger.datestructures.FindBalance;
@@ -856,6 +857,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
             if (balance.compareTo(BigDecimal.ZERO)>0) {
                 findBalance.setExistBalance(true);
+                findBalance.setBalance(balance);
             }
         }
 
@@ -1043,5 +1045,208 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         return returnAccountTitleTreeViewList;
     }
 
+    public List<SummaryAccountRecord>  summaryAllTitle(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException{
+
+        //必须有仓库，时间段
+        if (accrualCheck.getStartTime()==null){
+            throw new WMSServiceException("没有输入汇总起始时间！");
+        }
+        if (accrualCheck.getEndTime()==null){
+            throw new WMSServiceException("没有输入汇总截止时间！");
+        }
+        if (accrualCheck.getEndTime().before(accrualCheck.getStartTime())){
+            throw new WMSServiceException("时间输入错误！汇总截止时间不能早于汇总起始时间！");
+        }
+
+        AccountTitle[] accountTitles= this.accountTitleDAO.findTable(accountBook,new Condition());
+        List<SummaryAccountRecord> summary=new ArrayList();
+
+
+        Stream.of(accountTitles).forEach((accountTitle)->{
+            SummaryAccountRecord summaryAccountRecord=new SummaryAccountRecord();
+            summaryAccountRecord.setSummaryTime(accrualCheck.getStartTime());
+            summaryAccountRecord.setAccountTitleDependent(accountTitle.getAccountTitleDdpendent());
+            summaryAccountRecord.setAccountTitleName(accountTitle.getName());
+            summaryAccountRecord.setAccountTitleNo(accountTitle.getNo());
+            summaryAccountRecord.setBalance(new ArrayList<>());
+            summaryAccountRecord.setCreditAmount(new ArrayList<>());
+            summaryAccountRecord.setDebitAmount(new ArrayList<>());
+
+            AccrualCheck checkAccrualCheck=new AccrualCheck();
+            checkAccrualCheck.setWarehouseId(accrualCheck.getWarehouseId());
+            checkAccrualCheck.setStartTime(accrualCheck.getStartTime());
+            checkAccrualCheck.setEndTime(accrualCheck.getEndTime());
+
+            //TODO 这里只查找一个时间段
+            AccrualCheck returnAccrualCheck=this.showAccrualBalance(accountBook,checkAccrualCheck);
+            summaryAccountRecord.getBalance().add(returnAccrualCheck.getBalance());
+            summaryAccountRecord.getCreditAmount().add(returnAccrualCheck.getCreditAmount());
+            summaryAccountRecord.getDebitAmount().add(returnAccrualCheck.getDebitAmount());
+
+            summary.add(summaryAccountRecord);
+        });
+
+        return summary;
+    }
+
+
+    public AccrualCheck showAccrualBalance(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException{
+
+        //给定时间段，返回余额，发生额
+        int curWarehouseId=accrualCheck.getWarehouseId();
+
+
+        Timestamp startTime=accrualCheck.getStartTime();
+        Timestamp endTime=accrualCheck.getEndTime();
+
+        int curAccountTitleId= accrualCheck.getCurAccountTitleId();
+
+        AccrualCheck accrualCheck1=new AccrualCheck();
+
+
+        AccountTitleView[] accountTitleViews=this.accountTitleService.find(accountBook,new Condition().addCondition("id",new Integer[]{curAccountTitleId}));
+        AccountTitle[] accountTitles = ReflectHelper.createAndCopyFields(accountTitleViews,AccountTitle.class);
+
+        //判断是否存在子级科目
+        List<FindLinkAccountTitle> findSonAccountTitleList=this.FindSonAccountTitle(accountBook,accountTitles);
+        FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
+        findSonAccountTitleList.toArray(sonAccountTitles);
+        List<AccountTitleView> sonAccountTitleViewsList= sonAccountTitles[0].getAccountTitleViews();
+        AccountTitleView[] curSonAccountTitleViews=new AccountTitleView[sonAccountTitleViewsList.size()];
+        sonAccountTitleViewsList.toArray(curSonAccountTitleViews);
+
+        //没有子代就把自己科目最新的余额返回
+        if (curSonAccountTitleViews.length==0){
+
+            BigDecimal sumDebitAmount=BigDecimal.ZERO;
+            BigDecimal sumCreditAmount=BigDecimal.ZERO;
+            AccountRecordView[] accountRecordViews= this.find(accountBook,new Condition()
+                    .addCondition("warehouseId",new Integer[]{curWarehouseId})
+                    .addCondition("ownAccountTitleId",new Integer[]{curAccountTitleId})
+                    .addCondition("recordingTime",new Timestamp[]{startTime,endTime}, ConditionItem.Relation.BETWEEN));
+
+            AccountRecordView[] accountRecordViews1= this.find(accountBook,new Condition()
+                    .addCondition("warehouseId",new Integer[]{curWarehouseId})
+                    .addCondition("otherAccountTitleId",new Integer[]{curAccountTitleId})
+                    .addCondition("recordingTime",new Timestamp[]{startTime,endTime}, ConditionItem.Relation.BETWEEN));
+
+            if(accountRecordViews.length>0||accountRecordViews1.length>0) {
+                //存在历史纪录
+                if (accountRecordViews.length > 0) {
+                    //己方科目
+                    AccountRecordView newestAccountRecord = accountRecordViews[0];
+                    for (int i = 0; i < accountRecordViews.length; i++) {
+
+                        sumDebitAmount=sumDebitAmount.add(accountRecordViews[i].getDebitAmount());
+                        sumCreditAmount=sumCreditAmount.add(accountRecordViews[i].getCreditAmount());
+                        if (accountRecordViews[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                            newestAccountRecord = accountRecordViews[i];
+                        }
+                    }
+                    BigDecimal curBalance = newestAccountRecord.getOwnBalance();
+                    if (accountRecordViews1.length > 0) {
+                        for (int i = 0; i < accountRecordViews1.length; i++) {
+
+                            sumDebitAmount=sumDebitAmount.add(accountRecordViews[i].getCreditAmount());
+                            sumCreditAmount=sumCreditAmount.add(accountRecordViews[i].getDebitAmount());
+                            if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                newestAccountRecord = accountRecordViews1[i];
+                                curBalance = newestAccountRecord.getOtherBalance();
+                            }
+                        }
+                    }
+                    accrualCheck1.setBalance(curBalance);
+                }else{
+                    //仅存在对方科目记录
+                    AccountRecordView newestAccountRecord = accountRecordViews1[0];
+                    BigDecimal curBalance = accountRecordViews1[0].getOtherBalance();
+                    for (int i = 0; i < accountRecordViews1.length; i++) {
+                        sumDebitAmount=sumDebitAmount.add(accountRecordViews[i].getCreditAmount());
+                        sumCreditAmount=sumCreditAmount.add(accountRecordViews[i].getDebitAmount());
+                        if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                            newestAccountRecord = accountRecordViews1[i];
+                            curBalance = newestAccountRecord.getOtherBalance();
+                        }
+                    }
+                    accrualCheck1.setBalance(curBalance);
+                }
+            }
+            else{
+                accrualCheck1.setBalance(BigDecimal.ZERO);
+            }
+            accrualCheck1.setCreditAmount(sumCreditAmount);
+            accrualCheck1.setDebitAmount(sumDebitAmount);
+        }else{
+            //科目为上级科目，统计下级科目综合
+            BigDecimal sumBalance=BigDecimal.ZERO;
+            BigDecimal sumDebitAmount=BigDecimal.ZERO;
+            BigDecimal sumCreditAmount=BigDecimal.ZERO;
+
+            for(int k=0;k<curSonAccountTitleViews.length;k++){
+                AccountRecordView[] accountRecordViews= this.find(accountBook,new Condition()
+                        .addCondition("warehouseId",new Integer[]{curWarehouseId})
+                        .addCondition("ownAccountTitleId",new Integer[]{curSonAccountTitleViews[k].getId()})
+                        .addCondition("recordingTime",new Timestamp[]{startTime,endTime}, ConditionItem.Relation.BETWEEN));
+
+                AccountRecordView[] accountRecordViews1= this.find(accountBook,new Condition()
+                        .addCondition("warehouseId",new Integer[]{curWarehouseId})
+                        .addCondition("otherAccountTitleId",new Integer[]{curSonAccountTitleViews[k].getId()})
+                        .addCondition("recordingTime",new Timestamp[]{startTime,endTime}, ConditionItem.Relation.BETWEEN));
+
+                if(accountRecordViews.length>0||accountRecordViews1.length>0) {
+                    //存在历史纪录
+                    if (accountRecordViews.length > 0) {
+                        //己方科目
+                        //找余额
+                        AccountRecordView newestAccountRecord = accountRecordViews[0];
+                        for (int i = 0; i < accountRecordViews.length; i++) {
+                            sumDebitAmount=sumDebitAmount.add(accountRecordViews[i].getDebitAmount());
+                            sumCreditAmount=sumCreditAmount.add(accountRecordViews[i].getCreditAmount());
+
+                            if (accountRecordViews[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                newestAccountRecord = accountRecordViews[i];
+                            }
+                        }
+                        BigDecimal curBalance = newestAccountRecord.getOwnBalance();
+                        if (accountRecordViews1.length > 0) {
+                            for (int i = 0; i < accountRecordViews1.length; i++) {
+                                sumDebitAmount=sumDebitAmount.add(accountRecordViews[i].getCreditAmount());
+                                sumCreditAmount=sumCreditAmount.add(accountRecordViews[i].getDebitAmount());
+
+                                if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                    newestAccountRecord = accountRecordViews1[i];
+                                    curBalance = newestAccountRecord.getOtherBalance();
+                                }
+                            }
+                        }
+                        sumBalance=sumBalance.add(curBalance);
+
+                    }else{
+                        //仅存在对方科目记录
+                        AccountRecordView newestAccountRecord = accountRecordViews1[0];
+                        BigDecimal curBalance = accountRecordViews1[0].getOtherBalance();
+                        for (int i = 0; i < accountRecordViews1.length; i++) {
+                            sumDebitAmount=sumDebitAmount.add(accountRecordViews[i].getCreditAmount());
+                            sumCreditAmount=sumCreditAmount.add(accountRecordViews[i].getDebitAmount());
+                            if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                newestAccountRecord = accountRecordViews1[i];
+                                curBalance = newestAccountRecord.getOtherBalance();
+                            }
+                        }
+                        sumBalance=sumBalance.add(curBalance);
+                    }
+                }
+                else{
+                    sumBalance=sumBalance.add(BigDecimal.ZERO);
+                }
+            }
+            accrualCheck1.setBalance(sumBalance);
+            accrualCheck1.setCreditAmount(sumCreditAmount);
+            accrualCheck1.setDebitAmount(sumDebitAmount);
+        }
+
+        return accrualCheck1;
+
+    }
 }
 

@@ -2,6 +2,7 @@ package com.wms.services.ledger.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.ledger.datestructures.AccrualCheck;
+import com.wms.services.ledger.datestructures.SummaryAccountRecord;
 import com.wms.services.ledger.datestructures.TransferAccount;
 import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.services.ledger.service.AccountRecordService;
@@ -109,5 +110,13 @@ public class AccountRecordControllerImpl implements AccountRecordController {
     @ResponseStatus(HttpStatus.OK)
     public List<TreeViewData> buildAccountTitleTreeView(@PathVariable("accountBook") String accountBook){
         return this.accountRecordService.buildAccountTitleTreeView(accountBook);
+    }
+
+    @Override
+    @RequestMapping(value = "/summary_all_title",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<SummaryAccountRecord> summaryAllTitle(@PathVariable("accountBook") String accountBook,
+                                                   @RequestBody AccrualCheck accrualCheck){
+        return this.accountRecordService.summaryAllTitle(accountBook,accrualCheck);
     }
 }
