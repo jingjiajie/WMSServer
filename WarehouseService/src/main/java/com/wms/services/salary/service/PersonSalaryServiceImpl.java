@@ -324,14 +324,18 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
                 personSalary.setAmount(amount);
                 //没编辑过
                 personSalary.setEdited(0);
+                Boolean add=true;
                 if (personSalaryExist.length == 0) {
                     personSalaryList.add(personSalary);
                 } else {
                     for (PersonSalary personSalaryExistEach : personSalaryExist) {
-                        //项目、人员、仓库、期间不全相同的加入，相同的说明已经编辑过，就不再更新
-                        if (!(personSalaryExistEach.getSalaryItemId().equals(personSalary.getSalaryItemId()) && personSalaryExistEach.getPersonId().equals(personSalary.getPersonId()) && personSalaryExistEach.getWarehouseId().equals(personSalary.getWarehouseId()) && personSalaryExistEach.getSalaryPeriodId().equals(personSalary.getSalaryPeriodId()))) {
-                            personSalaryList.add(personSalary);
+                        //全相同则把add变为false 不加入
+                        if (personSalaryExistEach.getSalaryItemId().equals(personSalary.getSalaryItemId()) && personSalaryExistEach.getPersonId().equals(personSalary.getPersonId()) && personSalaryExistEach.getWarehouseId().equals(personSalary.getWarehouseId()) && personSalaryExistEach.getSalaryPeriodId().equals(personSalary.getSalaryPeriodId())) {
+                           add=false;
                         }
+                    }
+                    if(add){
+                        personSalaryList.add(personSalary);
                     }
                 }
             }
