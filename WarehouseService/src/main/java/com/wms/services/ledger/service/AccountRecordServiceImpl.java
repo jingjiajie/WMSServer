@@ -164,7 +164,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                         if (oldAccountRecords1.length > 0) {
                             for (int i = 0; i < oldAccountRecords1.length; i++) {
                                 if (oldAccountRecords1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
-                                    newestAccountRecord = oldAccountRecords[i];
+                                    newestAccountRecord = oldAccountRecords1[i];
                                 }
                             }
                             curOwnBalance = newestAccountRecord.getOtherBalance();
@@ -181,16 +181,16 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     BigDecimal curOtherBalance = BigDecimal.ZERO;
                     if (oldAccountRecords2.length > 0) {
                         AccountRecord newestAccountRecord1 = oldAccountRecords2[0];
-                        for (int i = 0; i < oldAccountRecords.length; i++) {
+                        for (int i = 0; i < oldAccountRecords2.length; i++) {
                             if (oldAccountRecords2[i].getRecordingTime().after(newestAccountRecord1.getRecordingTime())) {
-                                newestAccountRecord1 = oldAccountRecords[i];
+                                newestAccountRecord1 = oldAccountRecords2[i];
                             }
                         }
                         curOtherBalance = newestAccountRecord1.getOwnBalance();
                         if (oldAccountRecords3.length > 0) {
-                            for (int i = 0; i < oldAccountRecords1.length; i++) {
+                            for (int i = 0; i < oldAccountRecords3.length; i++) {
                                 if (oldAccountRecords3[i].getRecordingTime().after(newestAccountRecord1.getRecordingTime())) {
-                                    newestAccountRecord1 = oldAccountRecords[i];
+                                    newestAccountRecord1 = oldAccountRecords3[i];
                                 }
                             }
                             curOtherBalance = newestAccountRecord1.getOtherBalance();
@@ -223,7 +223,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                         if (oldAccountRecords1.length > 0) {
                             for (int i = 0; i < oldAccountRecords1.length; i++) {
                                 if (oldAccountRecords1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
-                                    newestAccountRecord = oldAccountRecords[i];
+                                    newestAccountRecord = oldAccountRecords1[i];
                                 }
                             }
                             curOwnBalance = newestAccountRecord.getOtherBalance();
@@ -304,7 +304,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                         if (oldAccountRecords1.length > 0) {
                             for (int i = 0; i < oldAccountRecords1.length; i++) {
                                 if (oldAccountRecords1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
-                                    newestAccountRecord = oldAccountRecords[i];
+                                    newestAccountRecord = oldAccountRecords1[i];
                                 }
                             }
                             curOwnBalance = newestAccountRecord.getOtherBalance();
