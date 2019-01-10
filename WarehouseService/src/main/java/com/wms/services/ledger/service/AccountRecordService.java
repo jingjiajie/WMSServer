@@ -21,4 +21,6 @@ public interface AccountRecordService extends BaseService<AccountRecord,AccountR
 
     public FindBalance findNewBalance(String accountBook, AccountTitle accountTitle);
     public FindBalance findNewBalance(String accountBook,AccountTitle accountTitle,Integer curWarehouseId);
+    //汇总单生成
+    public List<SummaryAccountRecord>  summaryAllTitle(String accountBook,AccrualCheck accrualCheck);
     }

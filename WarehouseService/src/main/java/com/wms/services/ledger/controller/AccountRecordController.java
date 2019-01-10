@@ -1,6 +1,7 @@
 package com.wms.services.ledger.controller;
 
 import com.wms.services.ledger.datestructures.AccrualCheck;
+import com.wms.services.ledger.datestructures.SummaryAccountRecord;
 import com.wms.services.ledger.datestructures.TransferAccount;
 import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.utilities.controller.BaseController;
@@ -19,6 +20,6 @@ public interface AccountRecordController
     public List<AccrualCheck> showBalance(String accountBook,AccrualCheck accrualCheck) throws WMSServiceException;
     public List<TreeViewData> buildAccountTitleTreeView(String accountBook) throws WMSServiceException;
 
-
+    public List<SummaryAccountRecord>  summaryAllTitle(String accountBook, AccrualCheck accrualCheck);
 
 }
