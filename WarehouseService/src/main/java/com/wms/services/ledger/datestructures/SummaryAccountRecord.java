@@ -17,24 +17,39 @@ public class SummaryAccountRecord {
         this.accountTitleDependent = accountTitleDependent;
     }
 
-    public void setDebitAmount(List<BigDecimal> debitAmount) {
-        this.debitAmount = debitAmount;
-    }
 
-    public void setCreditAmount(List<BigDecimal> creditAmount) {
-        this.creditAmount = creditAmount;
-    }
-
-    public void setBalance(List<BigDecimal> balance) {
-        Balance = balance;
-    }
 
     String accountTitleNo;
     String accountTitleName;
     String accountTitleDependent;
-    private List<BigDecimal> debitAmount;
-    private List<BigDecimal> creditAmount;
-    private List<BigDecimal> Balance;
+
+    public BigDecimal getDebitAmount() {
+        return debitAmount;
+    }
+
+    public BigDecimal getCreditAmount() {
+        return creditAmount;
+    }
+
+    public BigDecimal getBalance() {
+        return Balance;
+    }
+
+    public void setDebitAmount(BigDecimal debitAmount) {
+        this.debitAmount = debitAmount;
+    }
+
+    public void setCreditAmount(BigDecimal creditAmount) {
+        this.creditAmount = creditAmount;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        Balance = balance;
+    }
+
+    private BigDecimal debitAmount;
+    private BigDecimal creditAmount;
+    private BigDecimal Balance;
 
     public String getAccountTitleNo() {
         return accountTitleNo;
@@ -48,17 +63,7 @@ public class SummaryAccountRecord {
         return accountTitleDependent;
     }
 
-    public List<BigDecimal> getDebitAmount() {
-        return debitAmount;
-    }
 
-    public List<BigDecimal> getCreditAmount() {
-        return creditAmount;
-    }
-
-    public List<BigDecimal> getBalance() {
-        return Balance;
-    }
 
 
     public Timestamp getSummaryStartTime() {

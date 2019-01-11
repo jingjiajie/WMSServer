@@ -1094,9 +1094,6 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             summaryAccountRecord.setAccountTitleDependent(accountTitle.getAccountTitleDdpendent());
             summaryAccountRecord.setAccountTitleName(accountTitle.getName());
             summaryAccountRecord.setAccountTitleNo(accountTitle.getNo());
-            summaryAccountRecord.setBalance(new ArrayList<>());
-            summaryAccountRecord.setCreditAmount(new ArrayList<>());
-            summaryAccountRecord.setDebitAmount(new ArrayList<>());
 
             AccrualCheck checkAccrualCheck=new AccrualCheck();
             checkAccrualCheck.setWarehouseId(accrualCheck.getWarehouseId());
@@ -1106,9 +1103,9 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
             //TODO 这里只查找一个时间段
             AccrualCheck returnAccrualCheck=this.showAccrualBalance(accountBook,checkAccrualCheck);
-            summaryAccountRecord.getBalance().add(returnAccrualCheck.getBalance());
-            summaryAccountRecord.getCreditAmount().add(returnAccrualCheck.getCreditAmount());
-            summaryAccountRecord.getDebitAmount().add(returnAccrualCheck.getDebitAmount());
+            summaryAccountRecord.setBalance(returnAccrualCheck.getBalance());
+            summaryAccountRecord.setCreditAmount(returnAccrualCheck.getCreditAmount());
+            summaryAccountRecord.setDebitAmount(returnAccrualCheck.getDebitAmount());
 
             summary.add(summaryAccountRecord);
         });
