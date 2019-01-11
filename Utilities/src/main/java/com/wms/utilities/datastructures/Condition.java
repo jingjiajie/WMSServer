@@ -20,6 +20,14 @@ public class Condition {
     private int page = -1;
     private int pageSize = 50;
 
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
     public static Condition fromJson(String jsonStr) throws ConditionException {
         Gson gson = new Gson();
         Condition result = gson.fromJson(jsonStr, new TypeToken<Condition>() {
