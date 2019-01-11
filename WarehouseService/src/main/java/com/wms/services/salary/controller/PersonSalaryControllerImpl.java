@@ -63,6 +63,7 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
     public PersonSalaryView[] findSum(@PathVariable("accountBook") String accountBook,
                                             @PathVariable("condStr") String condStr) {
         Condition cond = Condition.fromJson(condStr);
+        cond.setPage(-1);
         PersonSalaryView[] personSalaryViews =personSalaryService.find(accountBook, cond);
         if(personSalaryViews.length==0){return personSalaryViews;}
         List<PersonSalaryView> personSalaryViewResult = new ArrayList<>();
@@ -219,4 +220,10 @@ public class PersonSalaryControllerImpl implements PersonSalaryController {
         return;
     }
 
+    @RequestMapping(value = "/judge_salary_type_person",method = RequestMethod.POST)
+    @ResponseBody
+    public SalaryTypePersonView judgeSalaryTypePerson(@PathVariable("accountBook") String accountBook,
+                                    @RequestBody AddPersonSalaryRequest addPersonSalaryRequest) {
+       return personSalaryService.judgeSalaryTypePerson(accountBook,addPersonSalaryRequest);
+    }
 }

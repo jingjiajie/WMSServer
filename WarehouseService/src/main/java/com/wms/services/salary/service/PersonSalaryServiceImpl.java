@@ -3,6 +3,7 @@ package com.wms.services.salary.service;
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.salary.dao.PersonSalaryDAO;
 import com.wms.services.salary.datestructures.AddPersonSalary;
+import com.wms.services.salary.datestructures.AddPersonSalaryRequest;
 import com.wms.services.salary.datestructures.PersonSalaryViewGroupByTypeAndPeriod;
 import com.wms.services.salary.datestructures.SalaryItemTypeState;
 import com.wms.services.warehouse.service.*;
@@ -775,6 +776,26 @@ public class PersonSalaryServiceImpl implements PersonSalaryService {
             throw new WMSServiceException("查询人员薪资出错！");
         }
         return resultArray;
+    }
+
+    public SalaryTypePersonView judgeSalaryTypePerson(String accountBook, AddPersonSalaryRequest addPersonSalaryRequest){
+        SalaryTypePersonView[] salaryTypePersonViews=salaryTypePersonService.find(accountBook,new Condition().addCondition("warehouseId",addPersonSalaryRequest.getWarehouseId()));
+        SalaryTypePersonView salaryTypePersonView=this.checkIsRepeat(salaryTypePersonViews);
+        return salaryTypePersonView;
+    }
+
+    private SalaryTypePersonView checkIsRepeat(SalaryTypePersonView[] salaryTypePersonViews) {
+        SalaryTypePersonView salaryTypePersonView=new SalaryTypePersonView();
+        salaryTypePersonView.setPersonId(-1);
+        for (int i = 0; i < salaryTypePersonViews.length - 1; i++) { //循环开始元素
+            for (int j = i + 1; j < salaryTypePersonViews.length; j++) { //循环后续所有元素
+                //如果相等，则重复
+                if (salaryTypePersonViews[i].getPersonId().equals(salaryTypePersonViews[j].getPersonId())) {
+                    return salaryTypePersonViews[i];
+                }
+            }
+        }
+        return salaryTypePersonView;
     }
 }
 
