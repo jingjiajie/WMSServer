@@ -1089,7 +1089,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
         Stream.of(accountTitles).forEach((accountTitle)->{
             SummaryAccountRecord summaryAccountRecord=new SummaryAccountRecord();
-            summaryAccountRecord.setSummaryTime(accrualCheck.getStartTime());
+            summaryAccountRecord.setSummaryStartTime(accrualCheck.getStartTime());
+            summaryAccountRecord.setSummaryEndTime(accrualCheck.getEndTime());
             summaryAccountRecord.setAccountTitleDependent(accountTitle.getAccountTitleDdpendent());
             summaryAccountRecord.setAccountTitleName(accountTitle.getName());
             summaryAccountRecord.setAccountTitleNo(accountTitle.getNo());

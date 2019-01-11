@@ -61,14 +61,24 @@ public class SummaryAccountRecord {
     }
 
 
-    public void setSummaryTime(Timestamp summaryTime) {
-        this.summaryTime = summaryTime;
+    public Timestamp getSummaryStartTime() {
+        return summaryStartTime;
     }
 
-    public Timestamp getSummaryTime() {
-        return summaryTime;
+    public Timestamp getSummaryEndTime() {
+        return summaryEndTime;
     }
 
-    Timestamp summaryTime;
+    Timestamp summaryStartTime;
+
+    public void setSummaryStartTime(Timestamp summaryStartTime) {
+        this.summaryStartTime = summaryStartTime;
+    }
+
+    public void setSummaryEndTime(Timestamp summaryEndTime) {
+        this.summaryEndTime = summaryEndTime;
+    }
+
+    Timestamp summaryEndTime;
 
 }
