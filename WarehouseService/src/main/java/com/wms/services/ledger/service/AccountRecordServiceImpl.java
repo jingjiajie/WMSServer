@@ -1089,7 +1089,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
         Stream.of(accountTitles).forEach((accountTitle)->{
             SummaryAccountRecord summaryAccountRecord=new SummaryAccountRecord();
-            summaryAccountRecord.setSummaryTime(accrualCheck.getStartTime());
+            summaryAccountRecord.setSummaryStartTime(accrualCheck.getStartTime());
+            summaryAccountRecord.setSummaryEndTime(accrualCheck.getEndTime());
             summaryAccountRecord.setAccountTitleDependent(accountTitle.getAccountTitleDdpendent());
             summaryAccountRecord.setAccountTitleName(accountTitle.getName());
             summaryAccountRecord.setAccountTitleNo(accountTitle.getNo());
@@ -1101,6 +1102,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
             checkAccrualCheck.setWarehouseId(accrualCheck.getWarehouseId());
             checkAccrualCheck.setStartTime(accrualCheck.getStartTime());
             checkAccrualCheck.setEndTime(accrualCheck.getEndTime());
+            checkAccrualCheck.setCurAccountTitleId(accountTitle.getId());
 
             //TODO 这里只查找一个时间段
             AccrualCheck returnAccrualCheck=this.showAccrualBalance(accountBook,checkAccrualCheck);
@@ -1172,8 +1174,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     if (accountRecordViews1.length > 0) {
                         for (int i = 0; i < accountRecordViews1.length; i++) {
 
-                            sumDebitAmount=sumDebitAmount.add(accountRecordViews[i].getCreditAmount());
-                            sumCreditAmount=sumCreditAmount.add(accountRecordViews[i].getDebitAmount());
+                            sumDebitAmount=sumDebitAmount.add(accountRecordViews1[i].getCreditAmount());
+                            sumCreditAmount=sumCreditAmount.add(accountRecordViews1[i].getDebitAmount());
                             if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
                                 newestAccountRecord = accountRecordViews1[i];
                                 curBalance = newestAccountRecord.getOtherBalance();
@@ -1186,8 +1188,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     AccountRecordView newestAccountRecord = accountRecordViews1[0];
                     BigDecimal curBalance = accountRecordViews1[0].getOtherBalance();
                     for (int i = 0; i < accountRecordViews1.length; i++) {
-                        sumDebitAmount=sumDebitAmount.add(accountRecordViews[i].getCreditAmount());
-                        sumCreditAmount=sumCreditAmount.add(accountRecordViews[i].getDebitAmount());
+                        sumDebitAmount=sumDebitAmount.add(accountRecordViews1[i].getCreditAmount());
+                        sumCreditAmount=sumCreditAmount.add(accountRecordViews1[i].getDebitAmount());
                         if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
                             newestAccountRecord = accountRecordViews1[i];
                             curBalance = newestAccountRecord.getOtherBalance();
@@ -1235,8 +1237,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                         BigDecimal curBalance = newestAccountRecord.getOwnBalance();
                         if (accountRecordViews1.length > 0) {
                             for (int i = 0; i < accountRecordViews1.length; i++) {
-                                sumDebitAmount=sumDebitAmount.add(accountRecordViews[i].getCreditAmount());
-                                sumCreditAmount=sumCreditAmount.add(accountRecordViews[i].getDebitAmount());
+                                sumDebitAmount=sumDebitAmount.add(accountRecordViews1[i].getCreditAmount());
+                                sumCreditAmount=sumCreditAmount.add(accountRecordViews1[i].getDebitAmount());
 
                                 if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
                                     newestAccountRecord = accountRecordViews1[i];
@@ -1251,8 +1253,8 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                         AccountRecordView newestAccountRecord = accountRecordViews1[0];
                         BigDecimal curBalance = accountRecordViews1[0].getOtherBalance();
                         for (int i = 0; i < accountRecordViews1.length; i++) {
-                            sumDebitAmount=sumDebitAmount.add(accountRecordViews[i].getCreditAmount());
-                            sumCreditAmount=sumCreditAmount.add(accountRecordViews[i].getDebitAmount());
+                            sumDebitAmount=sumDebitAmount.add(accountRecordViews1[i].getCreditAmount());
+                            sumCreditAmount=sumCreditAmount.add(accountRecordViews1[i].getDebitAmount());
                             if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
                                 newestAccountRecord = accountRecordViews1[i];
                                 curBalance = newestAccountRecord.getOtherBalance();
