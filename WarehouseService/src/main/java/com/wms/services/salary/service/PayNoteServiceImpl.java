@@ -282,12 +282,13 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setPersonId(personId);
        accountRecord.setCreditAmount(totalAmount);//贷方
        accountRecord.setDebitAmount(ZERO);//借方
+       accountRecord.setOtherBalance(new BigDecimal(0));
+       accountRecord.setOwnBalance(new BigDecimal(0));
        accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
        accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord.setComment(accountSynchronize.getComment());
-       //accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
-       //accountRecord.setBalance(new BigDecimal(0));
+       accountRecord.setServiceTime(new Timestamp(System.currentTimeMillis()));
        //TODO 将总金额增加到 总账
        try{
        accountRecordService.add(accountBook,new AccountRecord[]{accountRecord});
@@ -329,12 +330,13 @@ public class PayNoteServiceImpl implements PayNoteService{
        accountRecord.setPersonId(personId);
        accountRecord.setDebitAmount(ZERO);//借方
        accountRecord.setCreditAmount(totalPaidAmount);//贷方
+       accountRecord.setOtherBalance(new BigDecimal(0));
+       accountRecord.setOwnBalance(new BigDecimal(0));
        accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
        accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord.setComment(accountSynchronize.getComment());
-       //accountRecord.setBalance(new BigDecimal(0));
-       //accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
+       accountRecord.setServiceTime(new Timestamp(System.currentTimeMillis()));
        try
        {
        accountRecordService.add(accountBook,new AccountRecord[]{accountRecord});
