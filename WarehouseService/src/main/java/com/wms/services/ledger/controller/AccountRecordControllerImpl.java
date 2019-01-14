@@ -2,6 +2,7 @@ package com.wms.services.ledger.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.ledger.datestructures.AccrualCheck;
+import com.wms.services.ledger.datestructures.SummaryAccountRecord;
 import com.wms.services.ledger.datestructures.TransferAccount;
 import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.services.ledger.service.AccountRecordService;
@@ -10,7 +11,6 @@ import com.wms.utilities.model.AccountRecord;
 import com.wms.utilities.model.AccountRecordView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,8 +53,9 @@ public class AccountRecordControllerImpl implements AccountRecordController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/{strCond}", method = RequestMethod.GET)
     public AccountRecordView[] find(@PathVariable("accountBook") String accountBook,
-                                        @PathVariable("strCond") String condStr) {
-        return accountRecordService.find(accountBook, Condition.fromJson(condStr));
+                                    @PathVariable("strCond") String condStr) {
+        AccountRecordView[] a= accountRecordService.find(accountBook, Condition.fromJson(condStr));
+        return a;
     }
 
     @Override
@@ -84,7 +85,7 @@ public class AccountRecordControllerImpl implements AccountRecordController {
     @Override
     @RequestMapping(value = "/deficit_check",method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public List<AccountRecordView> deficitCheck(@PathVariable("accountBook") String accountBook,
+    public List<AccrualCheck> deficitCheck(@PathVariable("accountBook") String accountBook,
                                            @RequestBody AccrualCheck accrualCheck){
         return this.accountRecordService.deficitCheck(accountBook,accrualCheck);
     }
@@ -110,5 +111,13 @@ public class AccountRecordControllerImpl implements AccountRecordController {
     @ResponseStatus(HttpStatus.OK)
     public List<TreeViewData> buildAccountTitleTreeView(@PathVariable("accountBook") String accountBook){
         return this.accountRecordService.buildAccountTitleTreeView(accountBook);
+    }
+
+    @Override
+    @RequestMapping(value = "/summary_all_title",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<SummaryAccountRecord> summaryAllTitle(@PathVariable("accountBook") String accountBook,
+                                                   @RequestBody AccrualCheck accrualCheck){
+        return this.accountRecordService.summaryAllTitle(accountBook,accrualCheck);
     }
 }

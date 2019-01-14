@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import java.math.BigDecimal;
 
 @Entity
-public class PersonSalaryView {
+public class PersonSalaryWithSumAmount {
     private int id;
     private Integer warehouseId;
     private Integer salaryPeriodId;
@@ -23,7 +23,6 @@ public class PersonSalaryView {
     private int giveOut;
     private String post;
     private String salaryTypeName;
-    private int salaryItemDisplayPriority;
 
     @Basic
     @Id
@@ -176,26 +175,15 @@ public class PersonSalaryView {
         this.salaryTypeName = salaryTypeName;
     }
 
-    @Basic
-    @Column(name = "SalaryItemDisplayPriority")
-    public int getSalaryItemDisplayPriority() {
-        return salaryItemDisplayPriority;
-    }
-
-    public void setSalaryItemDisplayPriority(int salaryItemDisplayPriority) {
-        this.salaryItemDisplayPriority = salaryItemDisplayPriority;
-    }
-
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
 
-        PersonSalaryView that = (PersonSalaryView) object;
+        PersonSalaryWithSumAmount that = (PersonSalaryWithSumAmount) object;
 
         if (id != that.id) return false;
         if (giveOut != that.giveOut) return false;
-        if (salaryItemDisplayPriority != that.salaryItemDisplayPriority) return false;
         if (warehouseId != null ? !warehouseId.equals(that.warehouseId) : that.warehouseId != null) return false;
         if (salaryPeriodId != null ? !salaryPeriodId.equals(that.salaryPeriodId) : that.salaryPeriodId != null)
             return false;
@@ -235,7 +223,6 @@ public class PersonSalaryView {
         result = 31 * result + giveOut;
         result = 31 * result + (post != null ? post.hashCode() : 0);
         result = 31 * result + (salaryTypeName != null ? salaryTypeName.hashCode() : 0);
-        result = 31 * result + salaryItemDisplayPriority;
         return result;
     }
 }

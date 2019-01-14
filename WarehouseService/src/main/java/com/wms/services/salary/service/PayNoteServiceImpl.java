@@ -274,33 +274,24 @@ public class PayNoteServiceImpl implements PayNoteService{
        }
        //应付薪资
        int accountTitlePayableID=payNoteViews[0].getAccountTitlePayableId();
+       //管理费用
+       int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
        AccountRecord accountRecord=new AccountRecord();
-       accountRecord.setAccountTitleId(accountTitlePayableID);
+       accountRecord.setOwnAccountTitleId(accountTitlePayableID);
+       accountRecord.setOtherAccountTitleId(accountTitleExpenseID);
        accountRecord.setPersonId(personId);
-       accountRecord.setCreditAmount(totalAmount);
-       accountRecord.setDebitAmount(ZERO);
+       accountRecord.setCreditAmount(totalAmount);//贷方
+       accountRecord.setDebitAmount(ZERO);//借方
+       accountRecord.setOtherBalance(new BigDecimal(0));
+       accountRecord.setOwnBalance(new BigDecimal(0));
        accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
        accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord.setComment(accountSynchronize.getComment());
-       accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
-       accountRecord.setBalance(new BigDecimal(0));
-       //管理费用
-       int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
-       AccountRecord accountRecord1=new AccountRecord();
-       accountRecord1.setAccountTitleId(accountTitleExpenseID);
-       accountRecord1.setPersonId(personId);
-       accountRecord1.setDebitAmount(totalAmount);
-       accountRecord1.setCreditAmount(ZERO);
-       accountRecord1.setWarehouseId(warehouseId);
-       accountRecord1.setVoucherInfo(accountSynchronize.getVoucherInfo());
-       accountRecord1.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
-       accountRecord1.setComment(accountSynchronize.getComment());
-       accountRecord1.setBalance(new BigDecimal(0));
-       accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
+       accountRecord.setServiceTime(new Timestamp(System.currentTimeMillis()));
        //TODO 将总金额增加到 总账
        try{
-       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
+       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord});
        }
        catch (AccountTitleException e){
            throw new WMSServiceException("无法向非子级科目记录账目，请将应付款科目和薪资费用科目修改为子级科目！");
@@ -331,34 +322,24 @@ public class PayNoteServiceImpl implements PayNoteService{
        }
        //应付薪资
        int accountTitlePayableID=payNoteViews[0].getAccountTitlePayableId();
+       //银行资产
+       int accountTitlePropertyID=payNoteViews[0].getAccountTitlePropertyId();
        AccountRecord accountRecord=new AccountRecord();
-       accountRecord.setAccountTitleId(accountTitlePayableID);
+       accountRecord.setOwnAccountTitleId(accountTitlePropertyID);
+       accountRecord.setOtherAccountTitleId(accountTitlePayableID);
        accountRecord.setPersonId(personId);
-       accountRecord.setDebitAmount(totalPaidAmount);
-       accountRecord.setCreditAmount(ZERO);
+       accountRecord.setDebitAmount(ZERO);//借方
+       accountRecord.setCreditAmount(totalPaidAmount);//贷方
+       accountRecord.setOtherBalance(new BigDecimal(0));
+       accountRecord.setOwnBalance(new BigDecimal(0));
        accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
        accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
        accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
        accountRecord.setComment(accountSynchronize.getComment());
-       accountRecord.setBalance(new BigDecimal(0));
-       accountRecord.setTime(new Timestamp(System.currentTimeMillis()));
-       //银行资产
-       int accountTitlePropertyID=payNoteViews[0].getAccountTitlePropertyId();
-       //同步到总账
-       AccountRecord accountRecord1=new AccountRecord();
-       accountRecord1.setAccountTitleId(accountTitlePropertyID);
-       accountRecord1.setPersonId(personId);
-       accountRecord1.setCreditAmount(totalPaidAmount);
-       accountRecord1.setDebitAmount(ZERO);
-       accountRecord1.setWarehouseId(accountSynchronize.getWarehouseId());
-       accountRecord1.setVoucherInfo(accountSynchronize.getVoucherInfo());
-       accountRecord1.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
-       accountRecord1.setComment(accountSynchronize.getComment());
-       accountRecord1.setBalance(new BigDecimal(0));
-       accountRecord1.setTime(new Timestamp(System.currentTimeMillis()));
+       accountRecord.setServiceTime(new Timestamp(System.currentTimeMillis()));
        try
        {
-       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord,accountRecord1});
+       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord});
        }
        catch (AccountTitleException e)
        {

@@ -1,6 +1,7 @@
 package com.wms.services.ledger.datestructures;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 public class AccrualCheck {
     int warehouseId;
@@ -73,4 +74,43 @@ public class AccrualCheck {
 
     int curAccountTitleId;
 
+    public String getCurAccountTitleName() {
+        return curAccountTitleName;
+    }
+
+    public void setCurAccountTitleName(String curAccountTitleName) {
+        this.curAccountTitleName = curAccountTitleName;
+    }
+
+    String curAccountTitleName;
+
+    public Timestamp getStartTime() {
+        return startTime;
+    }
+
+    Timestamp startTime;
+
+    public Timestamp getEndTime() {
+        return endTime;
+    }
+
+    public void setStartTime(Timestamp startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setEndTime(Timestamp endTime) {
+        this.endTime = endTime;
+    }
+
+    Timestamp endTime;
+
+    public int getCheckMode() {
+        return checkMode;
+    }
+
+    public void setCheckMode(int checkMode) {
+        this.checkMode = checkMode;
+    }
+
+    int checkMode=-1;
 }

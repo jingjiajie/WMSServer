@@ -15,6 +15,7 @@ public class SalaryItem {
     private int giveOut;
     private int priority;
     private String identifier;
+    private int displayPriority;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -117,6 +118,16 @@ public class SalaryItem {
         this.identifier = identifier;
     }
 
+    @Basic
+    @Column(name = "DisplayPriority")
+    public int getDisplayPriority() {
+        return displayPriority;
+    }
+
+    public void setDisplayPriority(int displayPriority) {
+        this.displayPriority = displayPriority;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -129,6 +140,7 @@ public class SalaryItem {
         if (warehouseId != that.warehouseId) return false;
         if (giveOut != that.giveOut) return false;
         if (priority != that.priority) return false;
+        if (displayPriority != that.displayPriority) return false;
         if (salaryTypeId != null ? !salaryTypeId.equals(that.salaryTypeId) : that.salaryTypeId != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         if (defaultAmount != null ? !defaultAmount.equals(that.defaultAmount) : that.defaultAmount != null)
@@ -151,6 +163,7 @@ public class SalaryItem {
         result = 31 * result + giveOut;
         result = 31 * result + priority;
         result = 31 * result + (identifier != null ? identifier.hashCode() : 0);
+        result = 31 * result + displayPriority;
         return result;
     }
 }

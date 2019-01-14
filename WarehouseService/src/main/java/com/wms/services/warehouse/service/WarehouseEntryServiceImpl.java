@@ -108,7 +108,14 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         Condition cond = new Condition();
         cond.addCondition("warehouseId", warehouseEntries[0].getWarehouseId());
         WarehouseEntry[] warehouseEntriesCheck = warehouseEntryDAO.findTable(accountBook, cond);
-        List<WarehouseEntry> warehouseEntryList = Arrays.asList(warehouseEntriesCheck);
+        List<WarehouseEntry> warehouseEntryList = new ArrayList<>();
+        for(int i=0;i<warehouseEntriesCheck.length;i++){
+            if(warehouseEntriesCheck[i].getInboundDeliveryOrderNo()!=null){
+                if(!warehouseEntriesCheck[i].getInboundDeliveryOrderNo().equals(""))
+                {
+                    warehouseEntryList.add(warehouseEntriesCheck[i]);
+                }}
+        }
         warehouseEntryList.stream().reduce((last, cur) -> {
             if (last.getInboundDeliveryOrderNo().equals(cur.getInboundDeliveryOrderNo()) && last.getInboundDeliveryOrderNo() != null && !(last.getInboundDeliveryOrderNo().equals(""))) {
                 throw new WMSServiceException("入库单内向单号重复:" + cur.getNo());

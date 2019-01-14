@@ -111,6 +111,8 @@
                 <value>com.wms.utilities.model.TrayThresholdsView</value>
                 <value>com.wms.utilities.model.PriceView</value>
                 <value>com.wms.utilities.model.ItemRelatedRecord</value>
+                <value>com.wms.utilities.model.PersonSalaryWithSumAmount</value>
+
             </list>
         </property>
     </bean>

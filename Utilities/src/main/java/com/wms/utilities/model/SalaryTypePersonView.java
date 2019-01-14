@@ -11,10 +11,11 @@ public class SalaryTypePersonView {
     private Integer salaryTypeId;
     private Integer personId;
     private String personName;
+    private Integer warehouseId;
 
     @Basic
-    @Column(name = "ID")
     @Id
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -53,17 +54,28 @@ public class SalaryTypePersonView {
         this.personName = personName;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "WarehouseID")
+    public Integer getWarehouseId() {
+        return warehouseId;
+    }
 
-        SalaryTypePersonView that = (SalaryTypePersonView) object;
+    public void setWarehouseId(Integer warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SalaryTypePersonView that = (SalaryTypePersonView) o;
 
         if (id != that.id) return false;
         if (salaryTypeId != null ? !salaryTypeId.equals(that.salaryTypeId) : that.salaryTypeId != null) return false;
         if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
         if (personName != null ? !personName.equals(that.personName) : that.personName != null) return false;
+        if (warehouseId != null ? !warehouseId.equals(that.warehouseId) : that.warehouseId != null) return false;
 
         return true;
     }
@@ -74,6 +86,7 @@ public class SalaryTypePersonView {
         result = 31 * result + (salaryTypeId != null ? salaryTypeId.hashCode() : 0);
         result = 31 * result + (personId != null ? personId.hashCode() : 0);
         result = 31 * result + (personName != null ? personName.hashCode() : 0);
+        result = 31 * result + (warehouseId != null ? warehouseId.hashCode() : 0);
         return result;
     }
 }

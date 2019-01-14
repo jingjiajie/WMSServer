@@ -184,25 +184,25 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
             Stream.of(settlementNoteItemViews).forEach(settlementNoteItemView -> {
 
                 AccountRecord accountRecord=new AccountRecord();
-                accountRecord.setAccountTitleId(settlementNoteView.getAccountTitleIncomeId());
+                //accountRecord.setAccountTitleId(settlementNoteView.getAccountTitleIncomeId());
                 accountRecord.setAccountPeriodId(ledgerSynchronous.getAccountPeriodId());
                 accountRecord.setPersonId(ledgerSynchronous.getPersonId());
                 accountRecord.setComment("结算单应收同步");
                 accountRecord.setWarehouseId(settlementNoteView.getWarehouseId());
                 accountRecord.setCreditAmount(settlementNoteItemView.getStorageCharge().add(settlementNoteItemView.getLogisticFee()));
                 accountRecord.setDebitAmount(BigDecimal.ZERO);
-                accountRecord.setBalance(BigDecimal.ZERO);
+                //accountRecord.setBalance(BigDecimal.ZERO);
                 accountRecord.setSummary(settlementNoteItemView.getSupplierName());
 
                 AccountRecord accountRecord1=new AccountRecord();
-                accountRecord1.setAccountTitleId(settlementNoteView.getAccountTitleReceivableId());
+                //accountRecord1.setAccountTitleId(settlementNoteView.getAccountTitleReceivableId());
                 accountRecord1.setAccountPeriodId(ledgerSynchronous.getAccountPeriodId());
                 accountRecord1.setPersonId(ledgerSynchronous.getPersonId());
                 accountRecord1.setComment("结算单应收同步");
                 accountRecord1.setWarehouseId(settlementNoteView.getWarehouseId());
                 accountRecord1.setDebitAmount(settlementNoteItemView.getStorageCharge().add(settlementNoteItemView.getLogisticFee()));
                 accountRecord1.setCreditAmount(BigDecimal.ZERO);
-                accountRecord1.setBalance(BigDecimal.ZERO);
+                //accountRecord1.setBalance(BigDecimal.ZERO);
                 accountRecord1.setSummary(settlementNoteItemView.getSupplierName());
 
                 accountRecordList.add(accountRecord);
@@ -244,25 +244,25 @@ public class SettlementNoteServiceImpl implements SettlementNoteService {
             Stream.of(settlementNoteItemViews).forEach(settlementNoteItemView -> {
 
                 AccountRecord accountRecord=new AccountRecord();
-                accountRecord.setAccountTitleId(settlementNoteView.getAccountTitleReceivableId());
+               // accountRecord.setAccountTitleId(settlementNoteView.getAccountTitleReceivableId());
                 accountRecord.setAccountPeriodId(ledgerSynchronous.getAccountPeriodId());
                 accountRecord.setPersonId(ledgerSynchronous.getPersonId());
                 accountRecord.setComment("结算单实收款同步");
                 accountRecord.setWarehouseId(settlementNoteView.getWarehouseId());
                 accountRecord.setCreditAmount(settlementNoteItemView.getActualPayment());
                 accountRecord.setDebitAmount(BigDecimal.ZERO);
-                accountRecord.setBalance(BigDecimal.ZERO);
+                //accountRecord.setBalance(BigDecimal.ZERO);
                 accountRecord.setSummary(settlementNoteItemView.getSupplierName());
 
                 AccountRecord accountRecord1=new AccountRecord();
-                accountRecord1.setAccountTitleId(settlementNoteView.getAccountTitlePropertyId());
+                //accountRecord1.setAccountTitleId(settlementNoteView.getAccountTitlePropertyId());
                 accountRecord1.setAccountPeriodId(ledgerSynchronous.getAccountPeriodId());
                 accountRecord1.setPersonId(ledgerSynchronous.getPersonId());
                 accountRecord1.setComment("结算单实收款同步");
                 accountRecord1.setWarehouseId(settlementNoteView.getWarehouseId());
                 accountRecord1.setDebitAmount(settlementNoteItemView.getActualPayment());
                 accountRecord1.setCreditAmount(BigDecimal.ZERO);
-                accountRecord1.setBalance(BigDecimal.ZERO);
+                //accountRecord1.setBalance(BigDecimal.ZERO);
                 accountRecord1.setSummary(settlementNoteItemView.getSupplierName());
 
                 accountRecordList.add(accountRecord);

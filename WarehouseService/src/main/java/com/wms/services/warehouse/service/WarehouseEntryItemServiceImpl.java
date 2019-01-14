@@ -244,11 +244,6 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
             transferStockAgainst.setManufactureDate(oriItemView.getManufactureDate());
             this.stockRecordService.addAmount(accountBook, transferStockAgainst);
-            //删除入库时记录的随机码
-            RandomCode randomCode=new RandomCode();
-            randomCode.setEntryOrDeliver(0);//0代表入库
-            randomCode.setItemId(id);
-            this.stockRecordService.removeRandomCode(accountBook,randomCode);
         }
         try {
             this.warehouseEntryItemDAO.remove(accountBook, ids);
@@ -286,11 +281,6 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStockAgainst.setItemId(oriItemView.getId());
             transferStockAgainst.setItemType(ItemType.entryItem);
             this.stockRecordService.restoreAmount(accountBook, transferStockAgainst);
-            //删除入库时记录的随机码
-            RandomCode randomCode=new RandomCode();
-            randomCode.setEntryOrDeliver(0);//0代表入库
-            randomCode.setItemId(id);
-            this.stockRecordService.removeRandomCode(accountBook,randomCode);
         }
         try {
             this.warehouseEntryItemDAO.remove(accountBook, ids);

@@ -1,7 +1,6 @@
 package com.wms.utilities.model;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 public class AccountTitle {
@@ -11,10 +10,11 @@ public class AccountTitle {
     private int type;
     private int direction;
     private int enabled;
+    private String accountTitleDdpendent;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID", nullable = false)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
@@ -24,7 +24,7 @@ public class AccountTitle {
     }
 
     @Basic
-    @Column(name = "Name", nullable = false, length = 64)
+    @Column(name = "Name")
     public String getName() {
         return name;
     }
@@ -34,7 +34,7 @@ public class AccountTitle {
     }
 
     @Basic
-    @Column(name = "No", nullable = false, length = 64)
+    @Column(name = "No")
     public String getNo() {
         return no;
     }
@@ -44,7 +44,7 @@ public class AccountTitle {
     }
 
     @Basic
-    @Column(name = "Type", nullable = false)
+    @Column(name = "Type")
     public int getType() {
         return type;
     }
@@ -54,7 +54,7 @@ public class AccountTitle {
     }
 
     @Basic
-    @Column(name = "Direction", nullable = false)
+    @Column(name = "Direction")
     public int getDirection() {
         return direction;
     }
@@ -64,7 +64,7 @@ public class AccountTitle {
     }
 
     @Basic
-    @Column(name = "Enabled", nullable = false)
+    @Column(name = "Enabled")
     public int getEnabled() {
         return enabled;
     }
@@ -73,22 +73,44 @@ public class AccountTitle {
         this.enabled = enabled;
     }
 
+    @Basic
+    @Column(name = "AccountTitleDdpendent")
+    public String getAccountTitleDdpendent() {
+        return accountTitleDdpendent;
+    }
+
+    public void setAccountTitleDdpendent(String accountTitleDdpendent) {
+        this.accountTitleDdpendent = accountTitleDdpendent;
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AccountTitle that = (AccountTitle) o;
-        return id == that.id &&
-                type == that.type &&
-                direction == that.direction &&
-                enabled == that.enabled &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(no, that.no);
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        AccountTitle that = (AccountTitle) object;
+
+        if (id != that.id) return false;
+        if (type != that.type) return false;
+        if (direction != that.direction) return false;
+        if (enabled != that.enabled) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (no != null ? !no.equals(that.no) : that.no != null) return false;
+        if (accountTitleDdpendent != null ? !accountTitleDdpendent.equals(that.accountTitleDdpendent) : that.accountTitleDdpendent != null)
+            return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, name, no, type, direction, enabled);
+        int result = id;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (no != null ? no.hashCode() : 0);
+        result = 31 * result + type;
+        result = 31 * result + direction;
+        result = 31 * result + enabled;
+        result = 31 * result + (accountTitleDdpendent != null ? accountTitleDdpendent.hashCode() : 0);
+        return result;
     }
 }
