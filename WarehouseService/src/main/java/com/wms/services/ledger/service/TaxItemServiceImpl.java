@@ -79,6 +79,10 @@ public class TaxItemServiceImpl implements TaxItemService {
         Stream.of(taxItems).forEach((taxItem -> {
             new Validator("税务类型").min(0).max(1).validate(taxItem.getType());
             new Validator("起始金额").notEmpty().min(0).max(taxItem.getEndAmount()).validate(taxItem.getStartAmount());
+            if (taxItem.getStartAmount().compareTo(taxItem.getEndAmount())>0){
+                throw new WMSServiceException("起始金额不能大于截止金额！");
+            }
+
             new Validator("截止金额").notEmpty().greaterThan(0).validate(taxItem.getEndAmount());
             if (taxItem.getType()==TaxItemService.Type_QUOTA){
                 new Validator("定额金额").min(0).max(taxItem.getEndAmount().subtract(taxItem.getStartAmount())).validate(taxItem.getTaxAmount());
