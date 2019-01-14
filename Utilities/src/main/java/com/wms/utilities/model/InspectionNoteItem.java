@@ -17,7 +17,7 @@ public class InspectionNoteItem {
     private BigDecimal returnUnitAmount;
     private String comment;
     private Integer personId;
-    private Integer version;
+//    private Integer version;
 
     @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -139,15 +139,15 @@ public class InspectionNoteItem {
         this.personId = personId;
     }
 
-    @Basic
-    @Column(name = "Version")
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
+//    @Basic
+//    @Column(name = "Version")
+//    public Integer getVersion() {
+//        return version;
+//    }
+//
+//    public void setVersion(Integer version) {
+//        this.version = version;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -169,7 +169,7 @@ public class InspectionNoteItem {
             return false;
         if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
         if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
-        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+//        if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -188,7 +188,7 @@ public class InspectionNoteItem {
         result = 31 * result + (returnUnitAmount != null ? returnUnitAmount.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (personId != null ? personId.hashCode() : 0);
-        result = 31 * result + (version != null ? version.hashCode() : 0);
+//        result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 }

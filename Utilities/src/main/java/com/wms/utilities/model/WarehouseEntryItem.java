@@ -27,7 +27,7 @@ public class WarehouseEntryItem {
     private Timestamp expiryDate;
     private Integer qualifiedStorageLocationId;
     private Integer unqualifiedStorageLocationId;
-    private Integer version;
+//    private Integer version;
     private String entryRandomCode;
 
     @Id
@@ -241,15 +241,15 @@ public class WarehouseEntryItem {
         this.unqualifiedStorageLocationId = unqualifiedStorageLocationId;
     }
 
-    @Basic
-    @Column(name = "Version")
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
+//    @Basic
+//    @Column(name = "Version")
+//    public Integer getVersion() {
+//        return version;
+//    }
+//
+//    public void setVersion(Integer version) {
+//        this.version = version;
+//    }
 
     @Basic
     @Column(name = "EntryRandomCode")
@@ -297,7 +297,7 @@ public class WarehouseEntryItem {
             return false;
         if (unqualifiedStorageLocationId != null ? !unqualifiedStorageLocationId.equals(that.unqualifiedStorageLocationId) : that.unqualifiedStorageLocationId != null)
             return false;
-        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+//        if (version != null ? !version.equals(that.version) : that.version != null) return false;
         if (entryRandomCode != null ? !entryRandomCode.equals(that.entryRandomCode) : that.entryRandomCode != null)
             return false;
 
@@ -327,7 +327,7 @@ public class WarehouseEntryItem {
         result = 31 * result + (expiryDate != null ? expiryDate.hashCode() : 0);
         result = 31 * result + (qualifiedStorageLocationId != null ? qualifiedStorageLocationId.hashCode() : 0);
         result = 31 * result + (unqualifiedStorageLocationId != null ? unqualifiedStorageLocationId.hashCode() : 0);
-        result = 31 * result + (version != null ? version.hashCode() : 0);
+//        result = 31 * result + (version != null ? version.hashCode() : 0);
         result = 31 * result + (entryRandomCode != null ? entryRandomCode.hashCode() : 0);
         return result;
     }
