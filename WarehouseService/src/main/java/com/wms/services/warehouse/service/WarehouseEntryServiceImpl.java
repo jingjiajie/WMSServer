@@ -118,7 +118,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         }
         warehouseEntryList.stream().reduce((last, cur) -> {
             if (last.getInboundDeliveryOrderNo().equals(cur.getInboundDeliveryOrderNo()) && last.getInboundDeliveryOrderNo() != null && !(last.getInboundDeliveryOrderNo().equals(""))) {
-                throw new WMSServiceException("入库单内向单号重复:" + cur.getNo());
+                throw new WMSServiceException("入库单内向单号重复:" + cur.getInboundDeliveryOrderNo());
             }
             return cur;
         });
