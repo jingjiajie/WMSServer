@@ -151,7 +151,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                 //TODO 如果都有历史纪录有就存上，没有就看是不是有实际发生额，有的话要提示还没有录入期初余额
                 if ((oldAccountRecords.length > 0 || oldAccountRecords1.length > 0)
                         && (oldAccountRecords2.length > 0 || oldAccountRecords3.length > 0)) {
-
+                    //找借方科目余额
                     BigDecimal curOwnBalance = BigDecimal.ZERO;
                     if (oldAccountRecords.length > 0) {
                         AccountRecord newestAccountRecord = oldAccountRecords[0];
@@ -169,6 +169,16 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                             }
                             curOwnBalance = newestAccountRecord.getOtherBalance();
                         }
+                    }else{
+                        AccountRecord newestAccountRecord = oldAccountRecords1[0];
+                        if (oldAccountRecords1.length > 0) {
+                            for (int i = 0; i < oldAccountRecords1.length; i++) {
+                                if (oldAccountRecords1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                    newestAccountRecord = oldAccountRecords1[i];
+                                }
+                            }
+                            curOwnBalance = newestAccountRecord.getOtherBalance();
+                        }
                     }
 
                     //如果科目类型是借方
@@ -178,6 +188,7 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                         accountRecords[k].setOwnBalance(curOwnBalance.subtract(debitAmount).add(creditAmount));
                     }
 
+                    //找对方科目余额
                     BigDecimal curOtherBalance = BigDecimal.ZERO;
                     if (oldAccountRecords2.length > 0) {
                         AccountRecord newestAccountRecord1 = oldAccountRecords2[0];
@@ -195,6 +206,14 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                             }
                             curOtherBalance = newestAccountRecord1.getOtherBalance();
                         }
+                    }else{
+                        AccountRecord newestAccountRecord1 = oldAccountRecords3[0];
+                        for (int i = 0; i < oldAccountRecords3.length; i++) {
+                            if (oldAccountRecords3[i].getRecordingTime().after(newestAccountRecord1.getRecordingTime())) {
+                                newestAccountRecord1 = oldAccountRecords3[i];
+                            }
+                        }
+                        curOtherBalance = newestAccountRecord1.getOtherBalance();
                     }
 
                     //如果科目类型是借方
@@ -220,6 +239,16 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                             }
                         }
                         curOwnBalance = newestAccountRecord.getOwnBalance();
+                        if (oldAccountRecords1.length > 0) {
+                            for (int i = 0; i < oldAccountRecords1.length; i++) {
+                                if (oldAccountRecords1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                                    newestAccountRecord = oldAccountRecords1[i];
+                                }
+                            }
+                            curOwnBalance = newestAccountRecord.getOtherBalance();
+                        }
+                    }else{
+                        AccountRecord newestAccountRecord = oldAccountRecords1[0];
                         if (oldAccountRecords1.length > 0) {
                             for (int i = 0; i < oldAccountRecords1.length; i++) {
                                 if (oldAccountRecords1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {

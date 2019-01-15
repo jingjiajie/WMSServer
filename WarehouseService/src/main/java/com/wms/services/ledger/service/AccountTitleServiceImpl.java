@@ -168,6 +168,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
         try {
             accountTitleDAO.remove(accountBook, ids);
+            this.updateAllTitle(accountBook);
         } catch (Throwable ex) {
             throw new WMSServiceException("删除科目失败，如果科目已经被引用，需要先删除引用内容，才能删除！");
         }
@@ -227,12 +228,12 @@ public class AccountTitleServiceImpl implements AccountTitleService {
 
             if (curParentAccountTitleViews.length>0) {
                 StringBuilder parent=new StringBuilder();
-                for (int i = 0; i < curParentAccountTitleViews.length - 1; i++) {
-                    for (int j = 0; j < curParentAccountTitleViews.length - 1 - j; j++) {
-                        if (curParentAccountTitleViews[j].getNo().length() > curParentAccountTitleViews[j + 1].getNo().length()) {
+                for (int i = 0; i < curParentAccountTitleViews.length-1; i++) {
+                    for (int j = i+1; j < curParentAccountTitleViews.length ; j++) {
+                        if (curParentAccountTitleViews[i].getNo().length() > curParentAccountTitleViews[j].getNo().length()) {
                             AccountTitleView temp = curParentAccountTitleViews[j];
-                            curParentAccountTitleViews[j] = curParentAccountTitleViews[j + 1];
-                            curParentAccountTitleViews[j + 1] = temp;
+                            curParentAccountTitleViews[j] = curParentAccountTitleViews[i];
+                            curParentAccountTitleViews[i] = temp;
                         }
                     }
                 }
