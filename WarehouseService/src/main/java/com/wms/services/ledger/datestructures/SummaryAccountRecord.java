@@ -86,4 +86,24 @@ public class SummaryAccountRecord {
 
     Timestamp summaryEndTime;
 
+    public void setCurId(int curId) {
+        this.curId = curId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
+    }
+
+    int curId;
+
+    public int getCurId() {
+        return curId;
+    }
+
+    public int getParentId() {
+        return parentId;
+    }
+
+    int parentId;
+
 }

@@ -103,4 +103,14 @@ public class AccrualCheck {
     }
 
     Timestamp endTime;
+
+    public int getCheckMode() {
+        return checkMode;
+    }
+
+    public void setCheckMode(int checkMode) {
+        this.checkMode = checkMode;
+    }
+
+    int checkMode=-1;
 }

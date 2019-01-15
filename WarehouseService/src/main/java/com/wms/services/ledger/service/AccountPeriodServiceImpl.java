@@ -2,16 +2,14 @@ package com.wms.services.ledger.service;
 
 import com.wms.services.ledger.dao.AccountPeriodDAO;
 import com.wms.services.ledger.datestructures.CarryOver;
+import com.wms.services.ledger.datestructures.FindBalance;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.datastructures.OrderItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.AccountPeriod;
-import com.wms.utilities.model.AccountPeriodView;
-import com.wms.utilities.model.AccountRecord;
-import com.wms.utilities.model.AccountRecordView;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -197,42 +195,63 @@ public class AccountPeriodServiceImpl implements AccountPeriodService{
         {
             throw new WMSServiceException("当前期间此仓库中无账目记录，无法结转");
         }
-        Map<Integer, List<AccountRecordView>> groupBySupplierIdMap =
-                Stream.of(accountRecordViews).collect(Collectors.groupingBy(AccountRecordView::getOwnAccountTitleId));
+        for (int i=0;i<accountRecordViews.length;i++){
 
-        Iterator<Map.Entry<Integer,List<AccountRecordView>>> entries = groupBySupplierIdMap.entrySet().iterator();
-        //将每组最新的加到一个列表中
-        while (entries.hasNext()) {
-            Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
-            Integer accountPeriodId = entry.getKey();
-            List<AccountRecordView> accountRecordViewsList=entry.getValue();
-
-            AccountRecordView[] curAccountRecordViews=null;
-            curAccountRecordViews = (AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
-            accountRecordViewsList.toArray(curAccountRecordViews);
-
-            AccountRecordView newestAccountRecordView=curAccountRecordViews[0];
-            for (int i=0;i<curAccountRecordViews.length;i++){
-//                    if (curAccountRecordViews[i].getTime().after(newestAccountRecordView.getTime())){
-//                        newestAccountRecordView=curAccountRecordViews[i];
-//                    }
-//                if (curAccountRecordViews[i].getTime().after(cutTime)){
-//                    throw new WMSServiceException("结转时间节点不能早于现存记录最后时间！");
-//                }
+            if (accountRecordViews[i].getRecordingTime().after(cutTime)){
+                throw new WMSServiceException("结转时间节点不能早于现存记录最后时间！");
             }
-            AccountRecord theAccountRecord=new AccountRecord();
-            theAccountRecord.setWarehouseId(curWarehouseId);
-            //theAccountRecord.setAccountTitleId(accountPeriodId);
-            theAccountRecord.setAccountPeriodId(newAccountPeriodID);
-            //theAccountRecord.setTime(new Timestamp(System.currentTimeMillis()));
-            theAccountRecord.setPersonId(curPersonId);
-            //heAccountRecord.setBalance(newestAccountRecordView.getBalance());
-            theAccountRecord.setComment("财务转结");
-            theAccountRecord.setCreditAmount(new BigDecimal(0));
-            theAccountRecord.setDebitAmount(new BigDecimal(0));
-            theAccountRecord.setVoucherInfo("财务转结");
-            accountRecordList.add(theAccountRecord);
         }
+
+        AccountTitle[] accountTitles= ReflectHelper.createAndCopyFields(this.accountRecordService.find(accountBook,new Condition()),AccountTitle.class);
+
+        Stream.of(accountTitles).forEach((accountTitle)->{
+
+            FindBalance findBalance=this.accountRecordService.findNewBalance(accountBook,accountTitle,curWarehouseId);
+            if (findBalance.getExistBalance()) {
+                AccountRecord theAccountRecord = new AccountRecord();
+                theAccountRecord.setWarehouseId(curWarehouseId);
+                theAccountRecord.setAccountPeriodId(newAccountPeriodID);
+
+                theAccountRecord.setOwnAccountTitleId(accountTitle.getId());
+                theAccountRecord.setOwnAccountTitleDependence(accountTitle.getAccountTitleDdpendent());
+                theAccountRecord.setOwnBalance(findBalance.getBalance());
+
+                theAccountRecord.setRecordingTime(new Timestamp(System.currentTimeMillis()));
+                theAccountRecord.setServiceTime(new Timestamp(System.currentTimeMillis()));
+                theAccountRecord.setPersonId(curPersonId);
+
+                theAccountRecord.setComment("财务转结");
+                theAccountRecord.setCreditAmount(new BigDecimal(0));
+                theAccountRecord.setDebitAmount(new BigDecimal(0));
+                theAccountRecord.setVoucherInfo("QC_001");
+                accountRecordList.add(theAccountRecord);
+            }
+        });
+//        //将每组最新的加到一个列表中
+//        while (entries.hasNext()) {
+//            Map.Entry<Integer, List<AccountRecordView>> entry = entries.next();
+//            Integer accountPeriodId = entry.getKey();
+//            List<AccountRecordView> accountRecordViewsList=entry.getValue();
+//
+//            AccountRecordView[] curAccountRecordViews=null;
+//            curAccountRecordViews = (AccountRecordView[]) Array.newInstance(AccountRecordView.class,accountRecordViewsList.size());
+//            accountRecordViewsList.toArray(curAccountRecordViews);
+//
+//            AccountRecordView newestAccountRecordView=curAccountRecordViews[0];
+//
+//            AccountRecord theAccountRecord=new AccountRecord();
+//            theAccountRecord.setWarehouseId(curWarehouseId);
+//            //theAccountRecord.setAccountTitleId(accountPeriodId);
+//            theAccountRecord.setAccountPeriodId(newAccountPeriodID);
+//            //theAccountRecord.setTime(new Timestamp(System.currentTimeMillis()));
+//            theAccountRecord.setPersonId(curPersonId);
+//            //heAccountRecord.setBalance(newestAccountRecordView.getBalance());
+//            theAccountRecord.setComment("财务转结");
+//            theAccountRecord.setCreditAmount(new BigDecimal(0));
+//            theAccountRecord.setDebitAmount(new BigDecimal(0));
+//            theAccountRecord.setVoucherInfo("财务转结");
+//            accountRecordList.add(theAccountRecord);
+//        }
         AccountRecord[] curAccountRecords=null;
         curAccountRecords = (AccountRecord[]) Array.newInstance(AccountRecord.class,accountRecordList.size());
         accountRecordList.toArray(curAccountRecords);
