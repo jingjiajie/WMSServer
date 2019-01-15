@@ -100,7 +100,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
         });
 
         int[] ids = warehouseEntryDAO.add(accountBook, warehouseEntries);
-        this.validateDuplication(accountBook, warehouseEntries);
+        //this.validateDuplication(accountBook, warehouseEntries);
         return ids;
     }
 
@@ -144,7 +144,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
             warehouseEntry.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
         }));
         warehouseEntryDAO.update(accountBook, warehouseEntries);
-        this.validateDuplication(accountBook, warehouseEntries);
+        //this.validateDuplication(accountBook, warehouseEntries);
     }
 
     @Override
