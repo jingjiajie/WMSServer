@@ -106,10 +106,11 @@ public class SupplierControllerImpl implements SupplierController {
     }
 
     @Override
-    @RequestMapping(value="/count/{condStr}/{supplierId}",method = RequestMethod.GET)
+    @RequestMapping(value="/remind/{supplierId}",method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public SupplierAmount[] supplierRemind(@PathVariable("accountBook") String accountBook,
-                                         @PathVariable("supplierId") int supplierId){
+                                         @PathVariable("supplierId") String id){
+        int supplierId=Integer.valueOf(id.substring(1,id.length()-1));
         return this.supplierServices.supplierRemind(accountBook, supplierId);
     }
 }
