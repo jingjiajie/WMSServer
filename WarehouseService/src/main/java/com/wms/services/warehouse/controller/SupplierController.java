@@ -15,5 +15,5 @@ public interface SupplierController {
     long findCount(String accountBook,String condStr);
     long findCountNew(String accountBook,String condStr);
     long findCountHistory(String accountBook,String condStr);
-    SupplierAmount[] supplierRemind(String accountBook, int supplierId);
+    SupplierAmount[] supplierRemind(String accountBook, String supplierId);
 }
