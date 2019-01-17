@@ -37,6 +37,8 @@ public class DeliveryOrderItemView {
     private Integer deliveryOrderType;
     private Integer version;
     private String deliveryRandomCode;
+    private String destinationName;
+    private Integer destinationId;
 
     @Basic
     @Id
@@ -319,6 +321,26 @@ public class DeliveryOrderItemView {
         this.deliveryRandomCode = deliveryRandomCode;
     }
 
+    @Basic
+    @Column(name = "DestinationName")
+    public String getDestinationName() {
+        return destinationName;
+    }
+
+    public void setDestinationName(String destinationName) {
+        this.destinationName = destinationName;
+    }
+
+    @Basic
+    @Column(name = "DestinationID")
+    public Integer getDestinationId() {
+        return destinationId;
+    }
+
+    public void setDestinationId(Integer destinationId) {
+        this.destinationId = destinationId;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -365,6 +387,10 @@ public class DeliveryOrderItemView {
         if (version != null ? !version.equals(that.version) : that.version != null) return false;
         if (deliveryRandomCode != null ? !deliveryRandomCode.equals(that.deliveryRandomCode) : that.deliveryRandomCode != null)
             return false;
+        if (destinationName != null ? !destinationName.equals(that.destinationName) : that.destinationName != null)
+            return false;
+        if (destinationId != null ? !destinationId.equals(that.destinationId) : that.destinationId != null)
+            return false;
 
         return true;
     }
@@ -399,6 +425,8 @@ public class DeliveryOrderItemView {
         result = 31 * result + (deliveryOrderType != null ? deliveryOrderType.hashCode() : 0);
         result = 31 * result + (version != null ? version.hashCode() : 0);
         result = 31 * result + (deliveryRandomCode != null ? deliveryRandomCode.hashCode() : 0);
+        result = 31 * result + (destinationName != null ? destinationName.hashCode() : 0);
+        result = 31 * result + (destinationId != null ? destinationId.hashCode() : 0);
         return result;
     }
 }

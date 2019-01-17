@@ -22,8 +22,8 @@ public class DeliveryOrderItem {
     private String deliveryRandomCode;
 
     @Id
-    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     public int getId() {
         return id;
     }
