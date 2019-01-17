@@ -112,7 +112,8 @@
                 <value>com.wms.utilities.model.PriceView</value>
                 <value>com.wms.utilities.model.ItemRelatedRecord</value>
                 <value>com.wms.utilities.model.PersonSalaryWithSumAmount</value>
-
+                <value>com.wms.utilities.model.Destination</value>
+                <value>com.wms.utilities.model.DestinationView</value>
             </list>
         </property>
     </bean>

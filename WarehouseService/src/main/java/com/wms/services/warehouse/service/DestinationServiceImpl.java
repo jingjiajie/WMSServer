@@ -9,6 +9,8 @@ import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -20,6 +22,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Service
+@Transactional
 public class DestinationServiceImpl implements DestinationService{
     @Autowired
     DestinationDAO destinationDAO;
@@ -33,7 +37,7 @@ public class DestinationServiceImpl implements DestinationService{
         //名称查重
         for (int i = 0; i < destinations.length; i++) {
             Condition cond = new Condition();
-            cond.addCondition("no", new String[]{destinations[i].getName()});
+            cond.addCondition("name", new String[]{destinations[i].getName()});
             if (destinationDAO.find(accountBook, cond).length > 0) {
                 throw new WMSServiceException("目的地名称重复：" + destinations[i].getName());
             }
@@ -50,7 +54,7 @@ public class DestinationServiceImpl implements DestinationService{
         //名称查重
         for (int i = 0; i < destinations.length; i++) {
             Condition cond = new Condition();
-            cond.addCondition("no", new String[]{destinations[i].getName()});
+            cond.addCondition("name", new String[]{destinations[i].getName()});
             cond.addCondition("id", new Integer[]{destinations[i].getId()}, ConditionItem.Relation.NOT_EQUAL);
             if (destinationDAO.find(accountBook, cond).length > 0) {
                 throw new WMSServiceException("目的地名称重复：" + destinations[i].getName());
