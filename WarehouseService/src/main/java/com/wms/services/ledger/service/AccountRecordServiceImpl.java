@@ -1145,23 +1145,26 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                 summaryAccountRecord.setDebitAmount(returnAccrualCheck.getDebitAmount());
             }
 
-//            onWorking[i]=summaryAccountRecord;
-            summary.add(summaryAccountRecord);
+            onWorking[i]=summaryAccountRecord;
+//            summary.add(summaryAccountRecord);
         }
 
-//        //合理编码
-//        for (int i=0;i<onWorking.length;i++){
-//            String theNo=onWorking[i].getAccountTitleNo();
-//            for (int j=i;j<onWorking.length;j++){
-//                //如果后面有编码是以该编码开头，则替换掉PID
-//                if (onWorking[j].getAccountTitleNo().startsWith(theNo)
-//                        &&!onWorking[j].getAccountTitleNo().equals(theNo)){
-//                    onWorking[j].setParentId(onWorking[i].getCurId());
-//                }
-//            }
-//        }
-
-
+        //合理编码
+        for (int i=0;i<onWorking.length;i++){
+                int noLength=18;
+            if (onWorking[i].getAccountTitleNo().length()<noLength){
+                String thNo= String.valueOf(onWorking[i].getAccountTitleNo());
+                int curLength=noLength-(thNo.length());
+                StringBuffer sb = new StringBuffer();
+                sb.append(thNo);
+                for (int j = 0; j < curLength;j++) {
+                    sb.append('0');
+                }
+                onWorking[i].setCurId(Long.parseLong(sb.toString()));
+            }
+        }
+        summary=Arrays.asList(onWorking);
+        summary.sort(Comparator.comparing(SummaryAccountRecord::getCurId));
         return summary;
     }
 
