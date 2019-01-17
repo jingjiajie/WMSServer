@@ -39,8 +39,6 @@ public class WarehouseService {
     public static void main(String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
-        SupplierServices supplierServices=applicationContext.getBean(SupplierServices.class);
-        supplierServices.supplierRemind("WMS_Template");
 
 //        JudgeOldestBatch judgeOldestBatch=new JudgeOldestBatch();
 //        judgeOldestBatch.setSupplyId(15);

@@ -436,7 +436,7 @@ public class SupplierServicesImpl implements SupplierServices {
         return this.supplierDAO.findCount(database, cond);
     }
 
-    public void supplierRemind(String accountBook,int supplierId) {
+    public SupplierAmount[] supplierRemind(String accountBook,int supplierId) {
         //首先查找该供应商的合格品数量
         Session session = sessionFactory.getCurrentSession();
         try {
@@ -482,5 +482,6 @@ public class SupplierServicesImpl implements SupplierServices {
         }
         SupplierAmount[] supplierAmounts=(SupplierAmount[]) Array.newInstance(SupplierAmount.class, supplierAmountArrayList.size());;
         supplierAmountArrayList.toArray(supplierAmounts);
+        return supplierAmounts;
     }
 }
