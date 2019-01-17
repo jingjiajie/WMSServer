@@ -6,11 +6,13 @@ import com.wms.services.warehouse.datastructures.JudgeOldestBatch;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.service.RefreshGlobalDateService;
 import com.wms.services.warehouse.service.StockRecordService;
+import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.SummaryNote;
 import com.wms.utilities.model.SummaryNoteView;
+import com.wms.utilities.model.Supplier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -37,6 +39,8 @@ public class WarehouseService {
     public static void main(String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
+        SupplierServices supplierServices=applicationContext.getBean(SupplierServices.class);
+        supplierServices.supplierRemind("WMS_Template");
 
 //        JudgeOldestBatch judgeOldestBatch=new JudgeOldestBatch();
 //        judgeOldestBatch.setSupplyId(15);

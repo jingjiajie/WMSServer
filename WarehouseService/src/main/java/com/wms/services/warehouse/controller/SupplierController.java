@@ -1,4 +1,5 @@
 package com.wms.services.warehouse.controller;
+import com.wms.services.warehouse.datastructures.SupplierAmount;
 import com.wms.utilities.model.Supplier;
 import com.wms.utilities.model.SupplierView;
 import org.springframework.http.ResponseEntity;
@@ -14,4 +15,5 @@ public interface SupplierController {
     long findCount(String accountBook,String condStr);
     long findCountNew(String accountBook,String condStr);
     long findCountHistory(String accountBook,String condStr);
+    SupplierAmount[] supplierRemind(String accountBook, int supplierId);
 }
