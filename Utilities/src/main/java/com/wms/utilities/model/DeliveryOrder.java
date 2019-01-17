@@ -20,6 +20,7 @@ public class DeliveryOrder {
     private String driverName;
     private String liscensePlateNumber;
     private int type;
+    private int destinationId;
     private Integer version;
 
     @Id
@@ -174,6 +175,16 @@ public class DeliveryOrder {
     }
 
     @Basic
+    @Column(name = "DestinationID")
+    public int getDestinationId() {
+        return destinationId;
+    }
+
+    public void setDestinationId(int destinationId) {
+        this.destinationId = destinationId;
+    }
+
+    @Basic
     @Column(name = "Version")
     public Integer getVersion() {
         return version;
@@ -184,17 +195,18 @@ public class DeliveryOrder {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
 
-        DeliveryOrder that = (DeliveryOrder) o;
+        DeliveryOrder that = (DeliveryOrder) object;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
         if (state != that.state) return false;
         if (createPersonId != that.createPersonId) return false;
         if (type != that.type) return false;
+        if (destinationId != that.destinationId) return false;
         if (no != null ? !no.equals(that.no) : that.no != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (deliverTime != null ? !deliverTime.equals(that.deliverTime) : that.deliverTime != null) return false;
@@ -231,6 +243,7 @@ public class DeliveryOrder {
         result = 31 * result + (driverName != null ? driverName.hashCode() : 0);
         result = 31 * result + (liscensePlateNumber != null ? liscensePlateNumber.hashCode() : 0);
         result = 31 * result + type;
+        result = 31 * result + destinationId;
         result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }

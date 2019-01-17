@@ -160,10 +160,10 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
         }
         if(payNoteItemViews.length==0){throw new WMSServiceException("薪资发放单中无条目！");}
-        BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
         List<Integer> state=new ArrayList<>();
         state.add(PayNoteItemState.CALCULATED_PAY);
         state.add(PayNoteItemState.WAITING_FOR_CALCULATE_PAY);
+        state.add(PayNoteItemState.PAYED);
         payNoteItems= this.getStateItem(payNoteItemViews, state);
         //计算税费
         TaxCalculation taxCalculation=new TaxCalculation();
@@ -173,7 +173,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             BigDecimal tax=taxService.taxCalculation(accountBook,taxCalculation);
             payNoteItems[i].setTaxAmount(tax);
             payNoteItems[i].setAfterTaxAmount(payNoteItems[i].getPreTaxAmount().subtract(tax));
-            payNoteItems[i].setState(PayNoteItemState.CALCULATED_PAY);
+            payNoteItems[i].setState(PayNoteItemState.PAYED);
         }
         payNoteItemDAO.update(accountBook,payNoteItems);
     }
@@ -236,112 +236,55 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
    //整单应付 同时将条目状态变为已付款
     public void realPayAll(String accountBook, PayNoteItemPay payNoteItemPays)
     {
-        int payNoteId=payNoteItemPays.getPayNoteId();
-        PayNoteItemView[] payNoteItemViews=null;
-        payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
-        if(payNoteItemViews.length==0){throw new WMSServiceException("薪资发放单中无条目！");}
-        PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
-        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
-        if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("请先将本薪资发放单确认应该同步到总账");}
-        BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
-        List<Integer> state=new ArrayList<>();
-        state.add(PayNoteItemState.CALCULATED_PAY);
-        state.add(PayNoteItemState.PAYED);
-        PayNoteItem[] payNoteItems= this.getStateItem(payNoteItemViews,state);
-        //因为是全部完成，所以金额直接相等
-        for(int i=0;i<payNoteItems.length;i++){
-            payNoteItems[i].setPaidAmount(payNoteItems[i].getAfterTaxAmount());
-            payNoteItems[i].setState(PayNoteItemState.PAYED);
-        }
-        payNoteItemDAO.update(accountBook,payNoteItems);
+//        int payNoteId=payNoteItemPays.getPayNoteId();
+//        PayNoteItemView[] payNoteItemViews=null;
+//        payNoteItemViews=payNoteItemDAO.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
+//        if(payNoteItemViews.length==0){throw new WMSServiceException("薪资发放单中无条目！");}
+//        PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
+//        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
+//        if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("请先将本薪资发放单确认应该同步到总账");}
+//        BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
+//        List<Integer> state=new ArrayList<>();
+//        state.add(PayNoteItemState.CALCULATED_PAY);
+//        state.add(PayNoteItemState.PAYED);
+//        PayNoteItem[] payNoteItems= this.getStateItem(payNoteItemViews,state);
+//        //因为是全部完成，所以金额直接相等
+//        for(int i=0;i<payNoteItems.length;i++){
+//            payNoteItems[i].setPaidAmount(payNoteItems[i].getAfterTaxAmount());
+//            payNoteItems[i].setState(PayNoteItemState.PAYED);
+//        }
+//        payNoteItemDAO.update(accountBook,payNoteItems);
     }
 
     //按条目应付 同时将条目状态变为已付款
     public void realPayPartItems(String accountBook, PayNoteItemView[] payNoteItemViews)
     {
-        boolean dateNull=true;
-        for(int i=0;i<payNoteItemViews.length;i++){
-            if(payNoteItemViews[i].getId()!=0){
-                dateNull=false;
-                break;}
-        }
-        if(dateNull){throw new WMSServiceException("薪资发放单中无可操作条目！");}
-        for(int i=0;i<payNoteItemViews.length;i++){
-            if(payNoteItemViews[i].getPaidAmount().compareTo(new BigDecimal(0))<0){
-                throw new WMSServiceException("实付金额不能为负，请检查金额！"); }
-        }
-        int payNoteId=payNoteItemViews[0].getPayNoteId();
-        PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
-        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
-        if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
-        BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
-        List<Integer> state=new ArrayList<>();
-        state.add(PayNoteItemState.CALCULATED_PAY);
-        state.add(PayNoteItemState.PAYED);
-        PayNoteItem[] payNoteItems= this.getStateItem(payNoteItemViews,state);
-        for(int i=0;i<payNoteItems.length;i++){
-            payNoteItems[i].setState(PayNoteItemState.PAYED);
-        }
-        payNoteItemDAO.update(accountBook,payNoteItems);
+//        boolean dateNull=true;
+//        for(int i=0;i<payNoteItemViews.length;i++){
+//            if(payNoteItemViews[i].getId()!=0){
+//                dateNull=false;
+//                break;}
+//        }
+//        if(dateNull){throw new WMSServiceException("薪资发放单中无可操作条目！");}
+//        for(int i=0;i<payNoteItemViews.length;i++){
+//            if(payNoteItemViews[i].getPaidAmount().compareTo(new BigDecimal(0))<0){
+//                throw new WMSServiceException("实付金额不能为负，请检查金额！"); }
+//        }
+//        int payNoteId=payNoteItemViews[0].getPayNoteId();
+//        PayNoteView[] payNoteViews=payNoteService.find(accountBook,new Condition().addCondition("id",payNoteId));
+//        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
+//        if(payNoteViews[0].getState()!=PayNoteState.CONFIRM_PAY){throw new WMSServiceException("薪资发放单不为已确认应付状态");}
+//        BigDecimal[] preTaxAmounts=new BigDecimal[payNoteItemViews.length];
+//        List<Integer> state=new ArrayList<>();
+//        state.add(PayNoteItemState.CALCULATED_PAY);
+//        state.add(PayNoteItemState.PAYED);
+//        PayNoteItem[] payNoteItems= this.getStateItem(payNoteItemViews,state);
+//        for(int i=0;i<payNoteItems.length;i++){
+//            payNoteItems[i].setState(PayNoteItemState.PAYED);
+//        }
+//        payNoteItemDAO.update(accountBook,payNoteItems);
     }
 
-    public void addOneItem(String accountBook,AddAllItem AddAllItem){
-    int payNoteId= AddAllItem.getPayNoteId();
-    PayNote[] payNotes=payNoteService.findTable(accountBook,new Condition().addCondition("id",payNoteId));
-    PayNoteItem[] payNoteItemsTable=payNoteItemDAO.findTable(accountBook,new Condition().addCondition("payNoteId",payNoteId));
-    List<Integer> ids=new ArrayList<>();
-    for(int i=0;i<payNoteItemsTable.length;i++){ids.add(payNoteItemsTable[i].getPersonId());}
-        int[] idsArray=new int[ids.size()];
-        /*
-        for(int i=0;i<ids.size();i++){idsArray[i]=ids.get(i);}
- */
-    if(payNotes.length!=1){throw new WMSServiceException("查询薪金发放单出错！");}
-    if(payNotes[0].getState()!=PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("本单不在待确认状态，无法添加条目！");}
-    int periodId=payNotes[0].getSalaryPeriodId();
-    int typeId=payNotes[0].getSalaryTypeId();
-    int warehouseId=payNotes[0].getWarehouseId();
-    List<PayNoteItem> payNoteItemList=new ArrayList<>();
-        SalaryItem[] salaryItems=this.salaryItemService.findTable(accountBook,new Condition().addCondition("salaryTypeId",typeId));
-        List<Integer> itemIds=new ArrayList<>();
-        for(int i=0;i<salaryItems.length;i++)
-        {
-            itemIds.add(salaryItems[i].getId());
-        }
-        //TODO 加人员
-        PersonSalary[] personSalarys=personSalaryService.findTable(accountBook,new Condition().addCondition("salaryPeriodId",periodId).addCondition("warehouseId",warehouseId).addCondition("salaryItemId",itemIds.toArray(), ConditionItem.Relation.IN));
-        Map<Integer, List<PersonSalary>> groupByPersonIdMap =
-                Stream.of(personSalarys).collect(Collectors.groupingBy(PersonSalary::getPersonId));
-        for (Map.Entry<Integer, List<PersonSalary>> entry : groupByPersonIdMap.entrySet()){
-            PersonSalary[] personSalaryViewsEachGroup=new PersonSalary[entry.getValue().size()];
-            entry.getValue().toArray(personSalaryViewsEachGroup);
-            BigDecimal preTaxAmount=new BigDecimal(0);
-            for(int i=0;i<personSalaryViewsEachGroup.length;i++){
-                preTaxAmount=preTaxAmount.add(personSalaryViewsEachGroup[i].getAmount());
-            }
-                if(ids.contains(entry.getKey())){continue;}
-                /*
-            for(int i=0;i<payNoteItemViews.length;i++){
-                if(entry.getKey()==payNoteItemViews[i].getPersonId()&&payNoteItemViews[i].getState()!=PayNoteItemState.PAYED){
-
-                }
-                }
-                */
-            PayNoteItem payNoteItem=new PayNoteItem();
-            payNoteItem.setPersonId(entry.getKey());
-            payNoteItem.setPreTaxAmount(preTaxAmount);
-            payNoteItem.setAfterTaxAmount(BigDecimal.ZERO);
-            payNoteItem.setTaxAmount(BigDecimal.ZERO);
-            payNoteItem.setPaidAmount(BigDecimal.ZERO);
-            payNoteItem.setPayNoteId(payNoteId);
-            payNoteItem.setState(PayNoteItemState.WAITING_FOR_CALCULATE_PAY);
-            payNoteItem.setComment("自动生成薪资单条目");
-            payNoteItemList.add(payNoteItem);
-        }
-        PayNoteItem[] payNoteItems=new PayNoteItem[payNoteItemList.size()];
-        payNoteItemList.toArray(payNoteItems);
-        //TODO
-        payNoteItemDAO.add(accountBook,payNoteItems);
-    }
 
     public void addAllItem(String accountBook,AddAllItem AddAllItem){
         int payNoteId= AddAllItem.getPayNoteId();
@@ -349,10 +292,6 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         PayNoteItem[] payNoteItemsTable=payNoteItemDAO.findTable(accountBook,new Condition().addCondition("payNoteId",payNoteId));
         List<Integer> ids=new ArrayList<>();
         for(int i=0;i<payNoteItemsTable.length;i++){ids.add(payNoteItemsTable[i].getPersonId());}
-        int[] idsArray=new int[ids.size()];
-        /*
-        for(int i=0;i<ids.size();i++){idsArray[i]=ids.get(i);}
- */
         if(payNotes.length!=1){throw new WMSServiceException("查询薪金发放单出错！");}
         if(payNotes[0].getState()!=PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("本单不在待确认状态，无法添加条目！");}
         int periodId=payNotes[0].getSalaryPeriodId();
@@ -365,7 +304,6 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         {
             itemIds.add(salaryItems[i].getId());
         }
-        //TODO 加人员
         PersonSalaryView[] personSalaryViews=personSalaryService.find(accountBook,new Condition().addCondition("salaryPeriodId",periodId).addCondition("warehouseId",warehouseId).addCondition("salaryItemId",itemIds.toArray(), ConditionItem.Relation.IN));
         //把人员薪资按人员分组
         Map<Integer, List<PersonSalaryView>> groupByPersonIdMap =
@@ -379,13 +317,6 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
                 preTaxAmount=preTaxAmount.add(personSalaryViewsEachGroup[i].getAmount());
             }
             if(ids.contains(entry.getKey())){continue;}
-                /*
-            for(int i=0;i<payNoteItemViews.length;i++){
-                if(entry.getKey()==payNoteItemViews[i].getPersonId()&&payNoteItemViews[i].getState()!=PayNoteItemState.PAYED){
-
-                }
-                }
-                */
             PayNoteItem payNoteItem=new PayNoteItem();
             payNoteItem.setPersonId(entry.getKey());
             payNoteItem.setPreTaxAmount(preTaxAmount);
@@ -399,7 +330,6 @@ private PayNoteItem[] getStateItem(PayNoteItemView[] payNoteItemViews,List<Integ
         }
         PayNoteItem[] payNoteItems=new PayNoteItem[payNoteItemList.size()];
         payNoteItemList.toArray(payNoteItems);
-        //TODO
         payNoteItemDAO.add(accountBook,payNoteItems);
     }
 

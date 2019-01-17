@@ -191,6 +191,7 @@ public class SupplyServiceImpl implements SupplyService {
             new Validator("物料ID").notEmpty().validate(supply.getMaterialId());
 //            new Validator("单托含量").notEmpty().validate(supply.getBarCodeNo());
             new Validator("序号").notEmpty().validate(supply.getSerialNo());
+            new Validator("供货安全库存").min(0);
         }));
 
         for(int i=0;i<supplies.length;i++){

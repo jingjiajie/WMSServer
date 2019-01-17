@@ -257,49 +257,49 @@ public class PayNoteServiceImpl implements PayNoteService{
 
    //确认支付到总账
    public void confirmToAccountTitle(String accountBook, AccountSynchronize accountSynchronize){
-        int payNoteId=accountSynchronize.getPayNoteId();
-        int personId=accountSynchronize.getPersonId();
-        int warehouseId=accountSynchronize.getWarehouseId();
-       PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
-       if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
-       if(payNoteViews[0].getState()!= PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("此单不为未确认状态，无法执行确认操作！");}
-       PayNoteItemView[] payNoteItemViews=payNoteItemService.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
-       if(payNoteItemViews.length==0){throw new WMSServiceException("操作的薪金发放单中无条目，无法进行同步！");}
-       //判断条目是否全部计算同时计算总金额
-       BigDecimal totalAmount=new BigDecimal(0);
-       for(int i=0;i<payNoteItemViews.length;i++){
-           if(payNoteItemViews[i].getState()!= PayNoteItemState.CALCULATED_PAY){throw new WMSServiceException("操作的薪金发放单中条目未全部计算应付，无法同步到总账！");
-           }
-           totalAmount=totalAmount.add(payNoteItemViews[i].getAfterTaxAmount());
-       }
-       //应付薪资
-       int accountTitlePayableID=payNoteViews[0].getAccountTitlePayableId();
-       //管理费用
-       int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
-       AccountRecord accountRecord=new AccountRecord();
-       accountRecord.setOwnAccountTitleId(accountTitlePayableID);
-       accountRecord.setOtherAccountTitleId(accountTitleExpenseID);
-       accountRecord.setPersonId(personId);
-       accountRecord.setCreditAmount(totalAmount);//贷方
-       accountRecord.setDebitAmount(ZERO);//借方
-       accountRecord.setOtherBalance(new BigDecimal(0));
-       accountRecord.setOwnBalance(new BigDecimal(0));
-       accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
-       accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
-       accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
-       accountRecord.setComment(accountSynchronize.getComment());
-       accountRecord.setServiceTime(new Timestamp(System.currentTimeMillis()));
-       //TODO 将总金额增加到 总账
-       try{
-       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord});
-       }
-       catch (AccountTitleException e){
-           throw new WMSServiceException("无法向非子级科目记录账目，请将应付款科目和薪资费用科目修改为子级科目！");
-       }
-       //将整单变为已确认待付款状态
-       PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
-       payNote.setState(PayNoteState.CONFIRM_PAY);
-       payNoteDAO.update(accountBook,new PayNote[]{payNote});
+//        int payNoteId=accountSynchronize.getPayNoteId();
+//        int personId=accountSynchronize.getPersonId();
+//        int warehouseId=accountSynchronize.getWarehouseId();
+//       PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
+//       if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
+//       if(payNoteViews[0].getState()!= PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("此单不为未确认状态，无法执行确认操作！");}
+//       PayNoteItemView[] payNoteItemViews=payNoteItemService.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
+//       if(payNoteItemViews.length==0){throw new WMSServiceException("操作的薪金发放单中无条目，无法进行同步！");}
+//       //判断条目是否全部计算同时计算总金额
+//       BigDecimal totalAmount=new BigDecimal(0);
+//       for(int i=0;i<payNoteItemViews.length;i++){
+//           if(payNoteItemViews[i].getState()!= PayNoteItemState.CALCULATED_PAY){throw new WMSServiceException("操作的薪金发放单中条目未全部计算应付，无法同步到总账！");
+//           }
+//           totalAmount=totalAmount.add(payNoteItemViews[i].getAfterTaxAmount());
+//       }
+//       //应付薪资
+//       int accountTitlePayableID=payNoteViews[0].getAccountTitlePayableId();
+//       //管理费用
+//       int accountTitleExpenseID=payNoteViews[0].getAccountTitleExpenseId();
+//       AccountRecord accountRecord=new AccountRecord();
+//       accountRecord.setOwnAccountTitleId(accountTitlePayableID);
+//       accountRecord.setOtherAccountTitleId(accountTitleExpenseID);
+//       accountRecord.setPersonId(personId);
+//       accountRecord.setCreditAmount(totalAmount);//贷方
+//       accountRecord.setDebitAmount(ZERO);//借方
+//       accountRecord.setOtherBalance(new BigDecimal(0));
+//       accountRecord.setOwnBalance(new BigDecimal(0));
+//       accountRecord.setWarehouseId(accountSynchronize.getWarehouseId());
+//       accountRecord.setVoucherInfo(accountSynchronize.getVoucherInfo());
+//       accountRecord.setAccountPeriodId(accountSynchronize.getAccountPeriodId());
+//       accountRecord.setComment(accountSynchronize.getComment());
+//       accountRecord.setServiceTime(new Timestamp(System.currentTimeMillis()));
+//       //TODO 将总金额增加到 总账
+//       try{
+//       accountRecordService.add(accountBook,new AccountRecord[]{accountRecord});
+//       }
+//       catch (AccountTitleException e){
+//           throw new WMSServiceException("无法向非子级科目记录账目，请将应付款科目和薪资费用科目修改为子级科目！");
+//       }
+//       //将整单变为已确认待付款状态
+//       PayNote payNote=ReflectHelper.createAndCopyFields(payNoteViews[0],PayNote.class);
+//       payNote.setState(PayNoteState.CONFIRM_PAY);
+//       payNoteDAO.update(accountBook,new PayNote[]{payNote});
    }
 
    //实际支付同步到总账 同时将状态变为下一个状态
@@ -307,10 +307,9 @@ public class PayNoteServiceImpl implements PayNoteService{
    {
        int payNoteId=accountSynchronize.getPayNoteId();
        int personId=accountSynchronize.getPersonId();
-       int warehouseId=accountSynchronize.getWarehouseId();
        PayNoteView[] payNoteViews=payNoteDAO.find(accountBook,new Condition().addCondition("id",payNoteId));
        if(payNoteViews.length!=1){throw new WMSServiceException("查询薪资发放单出错,可能已经不存在！");}
-       if(payNoteViews[0].getState()!= PayNoteState.CONFIRM_PAY){throw new WMSServiceException("此单不为等待支付状态，无法执行确认操作！");}
+       if(payNoteViews[0].getState()!= PayNoteState.WAITING_FOR_CONFIRM){throw new WMSServiceException("此单不为等待支付状态，无法执行确认操作！");}
        PayNoteItemView[] payNoteItemViews=payNoteItemService.find(accountBook,new Condition().addCondition("payNoteId",payNoteId));
        if(payNoteItemViews.length==0){throw new WMSServiceException("操作的薪金发放单中无条目，无法进行同步！");}
        //判断条目是否全部计算同时计算总金额
@@ -318,7 +317,8 @@ public class PayNoteServiceImpl implements PayNoteService{
        for(int i=0;i<payNoteItemViews.length;i++){
            if(payNoteItemViews[i].getState()!= PayNoteItemState.PAYED){throw new WMSServiceException("操作的薪金发放单中条目未全部付款，无法同步到总账！");
            }
-           totalPaidAmount=totalPaidAmount.add(payNoteItemViews[i].getPaidAmount());
+           //改为用税后应付 因为少了一个状态
+           totalPaidAmount=totalPaidAmount.add(payNoteItemViews[i].getAfterTaxAmount());
        }
        //应付薪资
        int accountTitlePayableID=payNoteViews[0].getAccountTitlePayableId();
