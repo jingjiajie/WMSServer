@@ -11,8 +11,8 @@ import java.util.List;
 
 public interface PayNoteItemController extends BaseController<PayNoteItem,PayNoteItemView> {
     void calculateTax(String accountBook, CalculateTax calculateTax);
-    void realPayAll(String accountBook,PayNoteItemPay payNoteItemPay);
-    void realPayPartItems(String accountBook,PayNoteItemView[] payNoteItemViews);
+//    void realPayAll(String accountBook,PayNoteItemPay payNoteItemPay);
+//    void realPayPartItems(String accountBook,PayNoteItemView[] payNoteItemViews);
     void addAllItems( String accountBook,AddAllItem AddAllItem);
     boolean judgeAllFinish(String accountBook,int state,int payNoteId);
 }
