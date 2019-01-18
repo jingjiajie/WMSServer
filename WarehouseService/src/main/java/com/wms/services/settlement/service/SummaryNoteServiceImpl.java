@@ -1,6 +1,7 @@
 package com.wms.services.settlement.service;
 
 import com.wms.services.ledger.service.PersonService;
+import com.wms.services.settlement.dao.DeliveryAmountDetailsDAO;
 import com.wms.services.settlement.dao.SummaryDetailsDAO;
 import com.wms.services.settlement.dao.SummaryNoteDAO;
 import com.wms.services.settlement.datastructures.StockRecordAmount;
@@ -61,6 +62,8 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
     TrayService trayService;
     @Autowired
     StorageLocationService storageLocationService;
+    @Autowired
+    DeliveryAmountDetailsDAO deliveryAmountDetailsDAO;
 
     private static final String NO_PREFIX = "H";
 
@@ -154,6 +157,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
             throw new WMSServiceException(String.format("汇总单不存在，请重新提交！(%s)", summaryNote.getNo()));
         }
         List<SummaryDetails> summaryDetailsList = new ArrayList();
+        List<DeliveryAmountDetails> deliveryAmountDetails = new ArrayList();
 
         //找时间段内发货的出库单
         DeliveryOrderView[] deliveryOrderViews = this.deliveryOrderService.find(accountBook, new Condition().addCondition("warehouseId", warehouseId)
@@ -171,7 +175,7 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         DeliveryOrderItemView[] deliveryOrderItemViews = this.deliveryOrderItemService.find(accountBook, new Condition().addCondition("deliveryOrderId", ids, ConditionItem.Relation.IN));
 
         if (deliveryOrderItemViews.length != 0) {
-            //按科目分组
+            //按供货分组
             Map<Integer, List<DeliveryOrderItemView>> groupBySupplyId =
                     Stream.of(deliveryOrderItemViews).collect(Collectors.groupingBy(DeliveryOrderItemView::getSupplyId));
 
@@ -196,16 +200,42 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
                         throw new WMSServiceException(String.format("汇总单条目不存在，请重新提交！(%s)", summaryNote.getNo()));
                     }
 
-                    SummaryDetails[] summaryDetailsViews = this.summaryDetailsService.findTable(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItemViews[0].getId())
+                    SummaryDetails[] summaryDetails = this.summaryDetailsService.findTable(accountBook, new Condition().addCondition("summaryNoteItemId", summaryNoteItemViews[0].getId())
                             .addCondition("supplyId", supplyId));
-                    if (summaryDetailsViews.length != 1) {
+                    if (summaryDetails.length != 1) {
                         throw new WMSServiceException(String.format("汇总单条目详情对应供货不唯一，请重新提交！(%s)", summaryNote.getNo()));
                     }
 
-                    SummaryDetails[] summaryDetails = ReflectHelper.createAndCopyFields(summaryDetailsViews, SummaryDetails.class);
-
                     summaryDetails[0].setDeliveryAmount(deliveryAmount);
                     summaryDetailsList.add(summaryDetails[0]);
+
+
+                    //针对新添加的，供货物流详情界面的维护
+                    //按目的地分组
+                    Map<Integer, List<DeliveryOrderItemView>> groupByDestinationId =
+                            Stream.of(curDeliveryOrderItemViews).collect(Collectors.groupingBy(DeliveryOrderItemView::getDestinationId));
+
+                    Iterator<Map.Entry<Integer, List<DeliveryOrderItemView>>> groupByDestinations = groupByDestinationId.entrySet().iterator();
+                    while (groupByDestinations.hasNext()) {
+                        Map.Entry<Integer, List<DeliveryOrderItemView>> groupByDestination = entries.next();
+                        Integer destinationId = entry.getKey();
+                        List<DeliveryOrderItemView> deliveryOrderItemViewGroupByDestinationList = entry.getValue();
+                        DeliveryOrderItemView[] thDeliveryOrderItemViews = (DeliveryOrderItemView[]) Array.newInstance(DeliveryOrderItemView.class, deliveryOrderItemViewGroupByDestinationList.size());
+                        deliveryOrderItemViewGroupByDestinationList.toArray(thDeliveryOrderItemViews);
+
+                        BigDecimal deliveryAmountDetail = BigDecimal.ZERO;
+                        if (thDeliveryOrderItemViews.length!=0){
+                            for (int i = 0; i < thDeliveryOrderItemViews.length; i++) {
+                                deliveryAmountDetail = deliveryAmountDetail.add(thDeliveryOrderItemViews[i].getRealAmount());
+                            }
+                        }
+                        DeliveryAmountDetails addDeliveryAmountDetails = new DeliveryAmountDetails();
+                        addDeliveryAmountDetails.setDeliveryAmount(deliveryAmountDetail);
+                        addDeliveryAmountDetails.setDestinationId(destinationId);
+                        addDeliveryAmountDetails.setSupplyId(supplyId);
+                        addDeliveryAmountDetails.setSummaryNoteItemId(summaryNoteItemViews[0].getId());
+                        deliveryAmountDetails.add(addDeliveryAmountDetails);
+                    }
                 }
             }
         }
@@ -214,6 +244,8 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
         SummaryDetails[] returnSummaryDetails = new SummaryDetails[summaryDetailsList.size()];
         summaryDetailsList.toArray(returnSummaryDetails);
         this.summaryDetailsService.updateIn(accountBook, returnSummaryDetails);
+        //TODO 改service
+        this.deliveryAmountDetailsDAO.add(accountBook,deliveryAmountDetails.toArray(new DeliveryAmountDetails[deliveryAmountDetails.size()]));
 
         SummaryNoteItemView[] summaryNoteItemViews = this.summaryNoteItemService.find(accountBook, new Condition().addCondition("summaryNoteId", summaryNote.getId()));
         SummaryNoteItem[] summaryNoteItems = ReflectHelper.createAndCopyFields(summaryNoteItemViews, SummaryNoteItem.class);
