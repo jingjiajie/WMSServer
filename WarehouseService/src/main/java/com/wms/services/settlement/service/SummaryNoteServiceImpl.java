@@ -217,9 +217,9 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
 
                     Iterator<Map.Entry<Integer, List<DeliveryOrderItemView>>> groupByDestinations = groupByDestinationId.entrySet().iterator();
                     while (groupByDestinations.hasNext()) {
-                        Map.Entry<Integer, List<DeliveryOrderItemView>> groupByDestination = entries.next();
-                        Integer destinationId = entry.getKey();
-                        List<DeliveryOrderItemView> deliveryOrderItemViewGroupByDestinationList = entry.getValue();
+                        Map.Entry<Integer, List<DeliveryOrderItemView>> groupByDestination = groupByDestinations.next();
+                        Integer destinationId = groupByDestination.getKey();
+                        List<DeliveryOrderItemView> deliveryOrderItemViewGroupByDestinationList = groupByDestination.getValue();
                         DeliveryOrderItemView[] thDeliveryOrderItemViews = (DeliveryOrderItemView[]) Array.newInstance(DeliveryOrderItemView.class, deliveryOrderItemViewGroupByDestinationList.size());
                         deliveryOrderItemViewGroupByDestinationList.toArray(thDeliveryOrderItemViews);
 
