@@ -1,20 +1,18 @@
 package com.wms.utilities.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 public class DeliveryAmountDetails {
     private int id;
-    private int summaryDetailsId;
+    private int summaryNoteItemId;
     private int supplyId;
     private BigDecimal deliveryAmount;
     private int destinationId;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     public int getId() {
         return id;
@@ -25,13 +23,13 @@ public class DeliveryAmountDetails {
     }
 
     @Basic
-    @Column(name = "SummaryDetailsID")
-    public int getSummaryDetailsId() {
-        return summaryDetailsId;
+    @Column(name = "SummaryNoteItemID")
+    public int getSummaryNoteItemId() {
+        return summaryNoteItemId;
     }
 
-    public void setSummaryDetailsId(int summaryDetailsId) {
-        this.summaryDetailsId = summaryDetailsId;
+    public void setSummaryNoteItemId(int summaryNoteItemId) {
+        this.summaryNoteItemId = summaryNoteItemId;
     }
 
     @Basic
@@ -65,14 +63,14 @@ public class DeliveryAmountDetails {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        DeliveryAmountDetails that = (DeliveryAmountDetails) object;
+        DeliveryAmountDetails that = (DeliveryAmountDetails) o;
 
         if (id != that.id) return false;
-        if (summaryDetailsId != that.summaryDetailsId) return false;
+        if (summaryNoteItemId != that.summaryNoteItemId) return false;
         if (supplyId != that.supplyId) return false;
         if (destinationId != that.destinationId) return false;
         if (deliveryAmount != null ? !deliveryAmount.equals(that.deliveryAmount) : that.deliveryAmount != null)
@@ -84,7 +82,7 @@ public class DeliveryAmountDetails {
     @Override
     public int hashCode() {
         int result = id;
-        result = 31 * result + summaryDetailsId;
+        result = 31 * result + summaryNoteItemId;
         result = 31 * result + supplyId;
         result = 31 * result + (deliveryAmount != null ? deliveryAmount.hashCode() : 0);
         result = 31 * result + destinationId;
