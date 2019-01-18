@@ -67,8 +67,6 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
                     }
                 }
         );
-        //将人员薪资的总数找出来填到税前应付
-        //payNoteItems=this.getPersonAmount(accountBook,payNoteItems);
         return payNoteItemDAO.add(accountBook, payNoteItems);
     }
 
@@ -82,8 +80,7 @@ public class PayNoteItemServiceImpl implements PayNoteItemService {
             validator.notnull().notEmpty().min(0).validate(payNoteItems[i].getTaxAmount());
             Validator validator2 = new Validator("税后应付");
             validator2.notnull().notEmpty().min(0).validate(payNoteItems[i].getAfterTaxAmount());
-            Validator validator3 = new Validator("实付金额");
-            validator3.notnull().notEmpty().min(0).validate(payNoteItems[i].getPaidAmount());
+            payNoteItems[i].setPaidAmount(BigDecimal.ZERO);
         }
         //对于已计算税费的条目应该保持税后应付=税前-税费
         for (int i = 0; i < payNoteItems.length; i++) {
