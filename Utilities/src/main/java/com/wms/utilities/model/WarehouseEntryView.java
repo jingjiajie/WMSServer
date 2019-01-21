@@ -27,7 +27,7 @@ public class WarehouseEntryView {
     private String warehouseName;
     private String createPersonName;
     private String lastUpdatePersonName;
-//    private Integer version;
+    //private Integer version;
 
     @Basic
     @Id
@@ -267,6 +267,7 @@ public class WarehouseEntryView {
             return false;
 //        if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
+
         return true;
     }
 
@@ -291,7 +292,8 @@ public class WarehouseEntryView {
         result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
         result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
         result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
-//        result = 31 * result + (version != null ? version.hashCode() : 0);
+        //result = 31 * result + (version != null ? version.hashCode() : 0);
+
         return result;
     }
 }

@@ -64,13 +64,13 @@ public class PayNoteControllerImpl implements PayNoteController {
         return this.payNoteService.findCount(accountBook, Condition.fromJson(condStr));
     }
 
-    @Override
-    @RequestMapping(value="/confirm_to_account_title",method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public void confirmToAccountTitle(@PathVariable("accountBook") String accountBook,
-                                      @RequestBody AccountSynchronize accountSynchronize ){
-         this.payNoteService.confirmToAccountTitle(accountBook, accountSynchronize);
-    }
+//    @Override
+//    @RequestMapping(value="/confirm_to_account_title",method = RequestMethod.POST)
+//    @ResponseStatus(HttpStatus.OK)
+//    public void confirmToAccountTitle(@PathVariable("accountBook") String accountBook,
+//                                      @RequestBody AccountSynchronize accountSynchronize ){
+//         this.payNoteService.confirmToAccountTitle(accountBook, accountSynchronize);
+//    }
 
     @Override
     @RequestMapping(value="/real_pay_to_account_title",method = RequestMethod.POST)

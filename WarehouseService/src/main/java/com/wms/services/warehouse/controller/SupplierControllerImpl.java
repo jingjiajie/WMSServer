@@ -1,6 +1,7 @@
 package com.wms.services.warehouse.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.SupplierAmount;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.Supplier;
@@ -102,5 +103,14 @@ public class SupplierControllerImpl implements SupplierController {
     public long findCountHistory(@PathVariable("accountBook") String accountBook,
                              @PathVariable("condStr") String condStr){
         return this.supplierServices.findCountHistory(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/remind/{supplierId}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public SupplierAmount[] supplierRemind(@PathVariable("accountBook") String accountBook,
+                                         @PathVariable("supplierId") String id){
+        int supplierId=Integer.valueOf(id.substring(1,id.length()-1));
+        return this.supplierServices.supplierRemind(accountBook, supplierId);
     }
 }

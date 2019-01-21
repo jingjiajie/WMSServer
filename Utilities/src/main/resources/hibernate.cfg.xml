@@ -101,6 +101,10 @@
       <mapping class="com.wms.utilities.model.TrayThresholdsView"/>
       <mapping class="com.wms.utilities.model.ItemRelatedRecord"/>
       <mapping class="com.wms.utilities.model.PersonSalaryWithSumAmount"/>
+      <mapping class="com.wms.utilities.model.DeliveryAmountDetails"/>
+      <mapping class="com.wms.utilities.model.Destination"/>
+      <mapping class="com.wms.utilities.model.DeliveryAmountDetailsView"/>
+      <mapping class="com.wms.utilities.model.DestinationView"/>
 
 
       <!-- DB schema will be updated if needed -->

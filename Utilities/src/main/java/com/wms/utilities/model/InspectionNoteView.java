@@ -28,7 +28,6 @@ public class InspectionNoteView {
     private String inboundDeliveryOrderNo;
     private String purchaseOrderNo;
     private String sapNo;
-//    private Integer version;
 
     @Basic
     @Id
@@ -277,7 +276,7 @@ public class InspectionNoteView {
         if (purchaseOrderNo != null ? !purchaseOrderNo.equals(that.purchaseOrderNo) : that.purchaseOrderNo != null)
             return false;
         if (sapNo != null ? !sapNo.equals(that.sapNo) : that.sapNo != null) return false;
-//        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+
 
         return true;
     }
@@ -304,7 +303,7 @@ public class InspectionNoteView {
         result = 31 * result + (inboundDeliveryOrderNo != null ? inboundDeliveryOrderNo.hashCode() : 0);
         result = 31 * result + (purchaseOrderNo != null ? purchaseOrderNo.hashCode() : 0);
         result = 31 * result + (sapNo != null ? sapNo.hashCode() : 0);
-//        result = 31 * result + (version != null ? version.hashCode() : 0);
+
         return result;
     }
 }

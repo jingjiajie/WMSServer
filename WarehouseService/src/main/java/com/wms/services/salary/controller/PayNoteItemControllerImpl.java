@@ -67,21 +67,21 @@ public class PayNoteItemControllerImpl implements PayNoteItemController {
          this.payNoteItemService.calculateTax(accountBook,calculateTax);
     }
 
-    @Override
-    @RequestMapping(value="/real_pay_all",method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public void realPayAll(@PathVariable("accountBook") String accountBook,
-                             @RequestBody PayNoteItemPay payNoteItemPay){
-        this.payNoteItemService.realPayAll(accountBook,payNoteItemPay);
-    }
+//    @Override
+//    @RequestMapping(value="/real_pay_all",method = RequestMethod.POST)
+//    @ResponseStatus(HttpStatus.OK)
+//    public void realPayAll(@PathVariable("accountBook") String accountBook,
+//                             @RequestBody PayNoteItemPay payNoteItemPay){
+//        this.payNoteItemService.realPayAll(accountBook,payNoteItemPay);
+//    }
 
-    @Override
-    @RequestMapping(value="/real_pay_part_items",method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public void realPayPartItems(@PathVariable("accountBook") String accountBook,
-                                 @RequestBody PayNoteItemView[] payNoteItemViews){
-        this.payNoteItemService.realPayPartItems(accountBook,payNoteItemViews);
-    }
+//    @Override
+//    @RequestMapping(value="/real_pay_part_items",method = RequestMethod.POST)
+//    @ResponseStatus(HttpStatus.OK)
+//    public void realPayPartItems(@PathVariable("accountBook") String accountBook,
+//                                 @RequestBody PayNoteItemView[] payNoteItemViews){
+//        this.payNoteItemService.realPayPartItems(accountBook,payNoteItemViews);
+//    }
 
     @Override
     @RequestMapping(value="/add_all_item",method = RequestMethod.POST)

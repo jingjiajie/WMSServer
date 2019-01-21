@@ -83,9 +83,10 @@ public class SupplyView {
     private String createPersonName;
     private String lastUpdatePersonName;
     private BigDecimal singleCarUsageAmount;
+    private BigDecimal supplySaftyStock;
 
-    @Id
     @Basic
+    @Id
     @Column(name = "ID")
     public int getId() {
         return id;
@@ -825,12 +826,22 @@ public class SupplyView {
         this.singleCarUsageAmount = singleCarUsageAmount;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    @Basic
+    @Column(name = "SupplySaftyStock")
+    public BigDecimal getSupplySaftyStock() {
+        return supplySaftyStock;
+    }
 
-        SupplyView that = (SupplyView) o;
+    public void setSupplySaftyStock(BigDecimal supplySaftyStock) {
+        this.supplySaftyStock = supplySaftyStock;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+
+        SupplyView that = (SupplyView) object;
 
         if (id != that.id) return false;
         if (createPersonId != that.createPersonId) return false;
@@ -956,6 +967,8 @@ public class SupplyView {
             return false;
         if (singleCarUsageAmount != null ? !singleCarUsageAmount.equals(that.singleCarUsageAmount) : that.singleCarUsageAmount != null)
             return false;
+        if (supplySaftyStock != null ? !supplySaftyStock.equals(that.supplySaftyStock) : that.supplySaftyStock != null)
+            return false;
 
         return true;
     }
@@ -1036,6 +1049,7 @@ public class SupplyView {
         result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
         result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
         result = 31 * result + (singleCarUsageAmount != null ? singleCarUsageAmount.hashCode() : 0);
+        result = 31 * result + (supplySaftyStock != null ? supplySaftyStock.hashCode() : 0);
         return result;
     }
 }

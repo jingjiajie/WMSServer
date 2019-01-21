@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 public interface PayNoteController extends
         BaseController<PayNote,PayNoteView>{
-    void confirmToAccountTitle(String accountBook, AccountSynchronize accountSynchronize);
+    //void confirmToAccountTitle(String accountBook, AccountSynchronize accountSynchronize);
     void realPayToAccountTitle(String accountBook,AccountSynchronize accountSynchronize);
     AccountTitleView[] findSonAccountTitleForAssociation(String accountBook, String condStr);
 }

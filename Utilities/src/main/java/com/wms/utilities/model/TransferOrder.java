@@ -18,7 +18,7 @@ public class TransferOrder {
     private Timestamp lastUpdateTime;
     private int type;
     private Integer supplierId;
-//    private Integer version;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -172,7 +172,7 @@ public class TransferOrder {
         if (lastUpdateTime != null ? !lastUpdateTime.equals(that.lastUpdateTime) : that.lastUpdateTime != null)
             return false;
         if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
-//        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+
 
         return true;
     }
@@ -191,7 +191,7 @@ public class TransferOrder {
         result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
         result = 31 * result + type;
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
-//        result = 31 * result + (version != null ? version.hashCode() : 0);
+
         return result;
     }
 }

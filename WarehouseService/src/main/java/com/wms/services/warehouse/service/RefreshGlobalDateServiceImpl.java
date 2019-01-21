@@ -54,6 +54,8 @@ public class RefreshGlobalDateServiceImpl implements RefreshGlobalDateService{
     TaxService taxService;
     @Autowired
     AccountPeriodService accountPeriodService;
+    @Autowired
+    DestinationService destinationService;
 
     public Map<String,Object[]>  refreshGlobalDate(String accountBook, int warehouseId)
     {
@@ -75,6 +77,7 @@ public class RefreshGlobalDateServiceImpl implements RefreshGlobalDateService{
         globalDateMap.put("AllAccountTitle",payNoteService.findSonTitleForAssociation(accountBook, new Condition()));
         globalDateMap.put("AllAccountTitleTrue",accountTitleService.find(accountBook,new Condition()));
         globalDateMap.put("AllTax",taxService.find(accountBook,new Condition()));
+        globalDateMap.put("AllDestinations",destinationService.find(accountBook,new Condition()));
         globalDateMap.put("AllAccountPeriod",accountPeriodService.find(accountBook,
                 new Condition().addCondition("warehouseId",warehouseId).addOrder("startTime", OrderItem.Order.DESC)));
         globalDateMap.put("AccountPeriod",accountPeriodService.find(accountBook,

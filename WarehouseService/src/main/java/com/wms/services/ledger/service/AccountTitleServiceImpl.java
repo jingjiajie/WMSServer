@@ -42,7 +42,12 @@ public class AccountTitleServiceImpl implements AccountTitleService {
         });
 
         for(int i=0;i<accountTitles.length;i++){
-
+            String No=accountTitles[i].getNo();
+            for (int j = No.length();--j>=0;){
+                if (!Character.isDigit(No.charAt(j))){
+                    throw new WMSServiceException("科目编码必须为纯数字！出错编码："+No);
+                }
+            }
             List<FindLinkAccountTitle> findSonAccountTitleList=this.accountRecordService.FindSonAccountTitle(accountBook,new AccountTitle[]{accountTitles[i]});
             FindLinkAccountTitle[] sonAccountTitles=new FindLinkAccountTitle[findSonAccountTitleList.size()];
             findSonAccountTitleList.toArray(sonAccountTitles);
@@ -195,6 +200,7 @@ public class AccountTitleServiceImpl implements AccountTitleService {
             new Validator("余额方向").min(0).max(1).validate(accountTitle.getDirection());
             new Validator("启用").min(0).max(1).validate(accountTitle.getEnabled());
             new Validator("科目类型").min(0).max(5).validate(accountTitle.getType());
+            new Validator("科目编码长度").max(18).validate(accountTitle.getNo().length());
         }));
 
         for(int i=0;i<accountTitles.length;i++){
