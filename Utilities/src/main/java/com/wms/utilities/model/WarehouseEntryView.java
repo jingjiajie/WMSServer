@@ -27,7 +27,7 @@ public class WarehouseEntryView {
     private String warehouseName;
     private String createPersonName;
     private String lastUpdatePersonName;
-    private Integer version;
+    //private Integer version;
 
     @Basic
     @Id
@@ -220,15 +220,15 @@ public class WarehouseEntryView {
         this.lastUpdatePersonName = lastUpdatePersonName;
     }
 
-    @Basic
-    @Column(name = "Version")
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
+//    @Basic
+//    @Column(name = "Version")
+//    public Integer getVersion() {
+//        return version;
+//    }
+//
+//    public void setVersion(Integer version) {
+//        this.version = version;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -265,7 +265,7 @@ public class WarehouseEntryView {
             return false;
         if (lastUpdatePersonName != null ? !lastUpdatePersonName.equals(that.lastUpdatePersonName) : that.lastUpdatePersonName != null)
             return false;
-        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+        //if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -291,7 +291,7 @@ public class WarehouseEntryView {
         result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
         result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
         result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
-        result = 31 * result + (version != null ? version.hashCode() : 0);
+        //result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 }

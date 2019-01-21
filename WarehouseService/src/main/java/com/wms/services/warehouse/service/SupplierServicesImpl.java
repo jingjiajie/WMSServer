@@ -480,6 +480,17 @@ public class SupplierServicesImpl implements SupplierServices {
                 }
             }
         }
+        SupplierAmount supplierAmount=new SupplierAmount();
+        supplierAmount.setAmountNeed(new BigDecimal(10));
+        supplierAmount.setMaterialName("1其缺点是");
+        supplierAmount.setAmountNeed(new BigDecimal(12));
+        supplierAmountArrayList.add(supplierAmount);
+        supplierAmount.setAmountNeed(new BigDecimal(100));
+        supplierAmount.setMaterialName("啊实打实大所大所多");
+        supplierAmountArrayList.add(supplierAmount);
+        supplierAmountArrayList.add(supplierAmount);
+        supplierAmountArrayList.add(supplierAmount);
+        supplierAmountArrayList.add(supplierAmount);
         SupplierAmount[] supplierAmounts=(SupplierAmount[]) Array.newInstance(SupplierAmount.class, supplierAmountArrayList.size());;
         supplierAmountArrayList.toArray(supplierAmounts);
         return supplierAmounts;
