@@ -380,15 +380,15 @@ public class AccountRecordServiceImpl implements AccountRecordService{
         this.validateEntities(accountBook,accountRecords);
         for (int k=0;k<accountRecords.length;k++){
 
-            AccountRecordView[] oidAccountTitleViews=this.find(accountBook,new Condition().addCondition("id",accountRecords[k].getId()));
+            AccountRecordView[] oidAccountRecordViews=this.find(accountBook,new Condition().addCondition("id",accountRecords[k].getId()));
 
-            if(oidAccountTitleViews[0].getCreditAmount().compareTo(accountRecords[k].getCreditAmount())!=0
-                    ||oidAccountTitleViews[0].getDebitAmount().compareTo(accountRecords[k].getDebitAmount())!=0
-                    ||oidAccountTitleViews[0].getOwnBalance().compareTo(accountRecords[k].getOwnBalance())!=0
-                    ||oidAccountTitleViews[0].getOtherBalance().compareTo(accountRecords[k].getOtherBalance())!=0
-                    ||oidAccountTitleViews[0].getOwnAccountTitleId()!=accountRecords[k].getOwnAccountTitleId()
-                    ||oidAccountTitleViews[0].getOtherAccountTitleId()!=accountRecords[k].getOtherAccountTitleId()){
-                throw new WMSServiceException(String.format("无法修改账目记录！发生额/余额/科目名称无法修改！如需订正，请进行冲销操作，凭证信息(%s)", oidAccountTitleViews[0].getVoucherInfo()));
+            if(oidAccountRecordViews[0].getCreditAmount().compareTo(accountRecords[k].getCreditAmount())!=0
+                    ||oidAccountRecordViews[0].getDebitAmount().compareTo(accountRecords[k].getDebitAmount())!=0
+                    ||oidAccountRecordViews[0].getOwnBalance().compareTo(accountRecords[k].getOwnBalance())!=0
+                    ||oidAccountRecordViews[0].getOtherBalance().compareTo(accountRecords[k].getOtherBalance())!=0
+                    ||oidAccountRecordViews[0].getOwnAccountTitleId()!=accountRecords[k].getOwnAccountTitleId()
+                    ||!oidAccountRecordViews[0].getOtherAccountTitleId().equals(accountRecords[k].getOtherAccountTitleId())){
+                throw new WMSServiceException(String.format("无法修改账目记录！发生额/余额/科目名称无法修改！如需订正，请进行冲销操作，凭证信息(%s)", oidAccountRecordViews[0].getVoucherInfo()));
             }
         }
 
