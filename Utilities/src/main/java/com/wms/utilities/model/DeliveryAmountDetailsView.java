@@ -132,7 +132,7 @@ public class DeliveryAmountDetailsView {
     }
 
     @Basic
-    @Column(name = "MaterialProduchLine")
+    @Column(name = "MaterialProductLine")
     public String getMaterialProductLine() {
         return materialProductLine;
     }
