@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.SupplierAmount;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
@@ -494,5 +495,33 @@ public class SupplierServicesImpl implements SupplierServices {
         SupplierAmount[] supplierAmounts=(SupplierAmount[]) Array.newInstance(SupplierAmount.class, supplierAmountArrayList.size());;
         supplierAmountArrayList.toArray(supplierAmounts);
         return supplierAmounts;
+    }
+
+    private StockRecordView[] findSupplierStockByTime(String accountBook, StockRecordFind stockRecordFind) {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query = null;
+        //库存查询最新一条用
+        String sqlNew = "SELECT s1.* FROM StockRecordView AS s1\n" +
+                "INNER JOIN \n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2 \n" +
+                "where s2.supplierId=:supplierId and s2.time<=:checkTime \n" +
+                "GROUP BY s2.BatchNo,s2.Unit,s2.UnitAmount,s2.State,s2.supplyId,s2.StorageLocationID) AS s3 \n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
+                "and s1.supplierId=:supplierId";
+        session.flush();
+        query = session.createNativeQuery(sqlNew, StockRecordView.class);
+        query.setParameter("supplierId",stockRecordFind.getSupplierId());
+        query.setParameter("checkTime",stockRecordFind.getTimeEnd());
+        StockRecordView[] resultArray = null;
+        List<StockRecordView> resultList = query.list();
+        resultArray = (StockRecordView[]) Array.newInstance(StockRecord.class, resultList.size());
+        resultList.toArray(resultArray);
+        return resultArray;
     }
 }
