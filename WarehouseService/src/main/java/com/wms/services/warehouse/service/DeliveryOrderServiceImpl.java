@@ -141,7 +141,8 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
         //外键检测
         Stream.of(deliveryOrders).forEach(
                 (deliveryOrder) -> {
-                    this.idChecker.check(DestinationService.class, accountBook, deliveryOrder.getDestinationId(), "目的地ID");
+                    if(deliveryOrder.getDestinationId()!=null){
+                    this.idChecker.check(DestinationService.class, accountBook, deliveryOrder.getDestinationId(), "目的地ID");}
                     if (this.warehouseService.find(accountBook,
                             new Condition().addCondition("id", deliveryOrder.getWarehouseId())).length == 0) {
                         throw new WMSServiceException(String.format("仓库不存在，请重新提交！(%d)", deliveryOrder.getWarehouseId()));
