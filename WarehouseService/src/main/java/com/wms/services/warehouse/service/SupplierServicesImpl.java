@@ -2,8 +2,10 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.datastructures.DailyReports;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.SupplierAmount;
+import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -486,17 +488,6 @@ public class SupplierServicesImpl implements SupplierServices {
                 }
             }
         }
-        SupplierAmount supplierAmount = new SupplierAmount();
-        supplierAmount.setAmountNeed(new BigDecimal(10));
-        supplierAmount.setMaterialName("1其缺点是");
-        supplierAmount.setAmountNeed(new BigDecimal(12));
-        supplierAmountArrayList.add(supplierAmount);
-        supplierAmount.setAmountNeed(new BigDecimal(100));
-        supplierAmount.setMaterialName("啊实打实大所大所多");
-        supplierAmountArrayList.add(supplierAmount);
-        supplierAmountArrayList.add(supplierAmount);
-        supplierAmountArrayList.add(supplierAmount);
-        supplierAmountArrayList.add(supplierAmount);
         SupplierAmount[] supplierAmounts = (SupplierAmount[]) Array.newInstance(SupplierAmount.class, supplierAmountArrayList.size());
         ;
         supplierAmountArrayList.toArray(supplierAmounts);
@@ -505,20 +496,61 @@ public class SupplierServicesImpl implements SupplierServices {
 
     //返回每个时间的总数 所有的入库、出库信息
     public void generateDailyReports(String accountBook) {
+        List<DailyReports> dailyReportsList=new ArrayList<>();
+        //找出这段时间之前 每种供货的数量 加到列表里 作为初期数量 时间应该是这段时间的起始时间
+        StockRecordFind stockRecordFindPrime=new StockRecordFind();
+        Object[] objectPrime=this.findSupplierStockByTime(accountBook,stockRecordFindPrime,"");
+        for(int j=0;j<objectPrime.length;j++){
+            //物料代号 物料名 状态 总数量
+            Object[] o=(Object[])objectPrime[j];
+            DailyReports dailyReports=new DailyReports();
+            dailyReports.setMaterialName((String)o[0]);
+            dailyReports.setMaterialNo((String)o[1]);
+            dailyReports.setState((int)o[2]);
+            dailyReports.setRealStock((BigDecimal)o[3]);
+            dailyReports.setTimestamp(new Timestamp(1));//TODO
+            dailyReports.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
+            dailyReportsList.add(dailyReports);
+        }
+        //找出供应商一段时间内的出库单条目和入库单条目
         DeliveryOrderItemView[] deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition());
         WarehouseEntryItemView[] warehouseEntryItemViews = warehouseEntryItemService.find(accountBook, new Condition());
-        List<Timestamp> timestamps = new ArrayList<>();
         for (DeliveryOrderItemView deliveryOrderItemView : deliveryOrderItemViews) {
-            timestamps.add(deliveryOrderItemView.getDeliveryOrderCreateTime());
+            StockRecordFind stockRecordFind=new StockRecordFind();
+            Object[] objects=this.findSupplierStockByTime(accountBook,stockRecordFind,"supplyId="+deliveryOrderItemView.getSupplyId());
+            for(int j=0;j<objects.length;j++){
+                //物料代号 物料名 状态 总数量
+                Object[] o=(Object[])objects[j];
+                DailyReports dailyReports=new DailyReports();
+                dailyReports.setMaterialName((String)o[0]);
+                dailyReports.setMaterialNo((String)o[1]);
+                dailyReports.setState((int)o[2]);
+                dailyReports.setRealStock((BigDecimal)o[3]);
+                dailyReports.setSupplierName(deliveryOrderItemView.getSupplierName());
+                dailyReports.setAmountDiff(deliveryOrderItemView.getRealAmount());
+                dailyReports.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
+            }
         }
         for (WarehouseEntryItemView warehouseEntryItem : warehouseEntryItemViews) {
-            timestamps.add(warehouseEntryItem.getExpiryDate());
+            StockRecordFind stockRecordFind=new StockRecordFind();
+            Object[] objects=this.findSupplierStockByTime(accountBook,stockRecordFind,"supplyId="+warehouseEntryItem.getSupplyId());
+            for(int j=0;j<objects.length;j++){
+                //物料代号 物料名 状态 总数量
+                Object[] o=(Object[])objects[j];
+                DailyReports dailyReports=new DailyReports();
+                dailyReports.setMaterialName((String)o[0]);
+                dailyReports.setMaterialNo((String)o[1]);
+                dailyReports.setState((int)o[2]);
+                dailyReports.setRealStock((BigDecimal)o[3]);
+                dailyReports.setSupplierName(warehouseEntryItem.getSupplierName());
+                dailyReports.setAmountDiff(warehouseEntryItem.getRealAmount());
+                dailyReports.setType(DailyReports.AMOUNT_DIFF_ENTRY_STATE);
+            }
         }
-
-
     }
 
-    private StockRecordView[] findSupplierStockByTime(String accountBook, StockRecordFind stockRecordFind) {
+    //物料代号 物料名 状态 总数量
+    private Object[] findSupplierStockByTime(String accountBook, StockRecordFind stockRecordFind,String supplyId) {
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
         try {
@@ -528,20 +560,22 @@ public class SupplierServicesImpl implements SupplierServices {
         }
         Query query = null;
         //库存查询最新一条用
-        String sqlNew = "SELECT s1.* FROM StockRecordView AS s1\n" +
-                "INNER JOIN \n" +
-                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2 \n" +
+        String sqlNew = "select s_all.materialNo,s_all.materialName,s_all.state,sum(s_all.amount) as sum_amount from \n" +
+                "(SELECT s1.* FROM StockRecordView AS s1\n" +
+                "INNER JOIN\n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2\n" +
                 "where s2.supplierId=:supplierId and s2.time<=:checkTime \n" +
                 "GROUP BY s2.BatchNo,s2.Unit,s2.UnitAmount,s2.State,s2.supplyId,s2.StorageLocationID) AS s3 \n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
-                "and s1.supplierId=:supplierId";
+                "and s1.supplierId=:supplierId "+ supplyId+") as s_all\n" +
+                "GROUP BY s_all.state,s_all.supplyId";
         session.flush();
         query = session.createNativeQuery(sqlNew, StockRecordView.class);
         query.setParameter("supplierId", stockRecordFind.getSupplierId());
         query.setParameter("checkTime", stockRecordFind.getTimeEnd());
-        StockRecordView[] resultArray = null;
-        List<StockRecordView> resultList = query.list();
-        resultArray = (StockRecordView[]) Array.newInstance(StockRecord.class, resultList.size());
+        Object[] resultArray = null;
+        List<Object[]> resultList = query.list();
+        resultArray = (Object[]) Array.newInstance(Object.class, resultList.size());
         resultList.toArray(resultArray);
         return resultArray;
     }
