@@ -511,14 +511,18 @@ public class SupplierServicesImpl implements SupplierServices {
         for (DeliveryOrderItemView deliveryOrderItemView : deliveryOrderItemViews) {
             timestamps.add(deliveryOrderItemView.getDeliveryOrderCreateTime());
         }
-        for (WarehouseEntryItemView warehouseEntryItem : warehouseEntryItemViews) {
-            timestamps.add(warehouseEntryItem.getExpiryDate());
-        }
+//        for (WarehouseEntryItemView warehouseEntryItem : warehouseEntryItemViews) {
+//            timestamps.add(warehouseEntryItem.getExpiryDate());
+//        }
+        StockRecordFind stockRecordFind=new StockRecordFind();
+        Object[] objects=this.findSupplierStockByTime(accountBook,stockRecordFind);
 
 
+//
     }
 
-    private StockRecordView[] findSupplierStockByTime(String accountBook, StockRecordFind stockRecordFind) {
+    //物料代号 物料名 状态 总数量
+    private Object[] findSupplierStockByTime(String accountBook, StockRecordFind stockRecordFind) {
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
         try {
@@ -541,9 +545,9 @@ public class SupplierServicesImpl implements SupplierServices {
         query = session.createNativeQuery(sqlNew, StockRecordView.class);
         query.setParameter("supplierId", stockRecordFind.getSupplierId());
         query.setParameter("checkTime", stockRecordFind.getTimeEnd());
-        StockRecordView[] resultArray = null;
-        List<StockRecordView> resultList = query.list();
-        resultArray = (StockRecordView[]) Array.newInstance(StockRecord.class, resultList.size());
+        Object[] resultArray = null;
+        List<Object[]> resultList = query.list();
+        resultArray = (Object[]) Array.newInstance(Object.class, resultList.size());
         resultList.toArray(resultArray);
         return resultArray;
     }
