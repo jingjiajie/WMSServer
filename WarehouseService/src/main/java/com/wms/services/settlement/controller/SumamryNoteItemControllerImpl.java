@@ -3,12 +3,15 @@ package com.wms.services.settlement.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.settlement.service.SummaryNoteItemService;
+import com.wms.services.settlement.datastructures.SummaryNoteItemAndDeliveryDetails;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.SummaryNoteItem;
 import com.wms.utilities.model.SummaryNoteItemView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/{accountBook}/summary_note_item")
@@ -58,5 +61,15 @@ public class SumamryNoteItemControllerImpl implements SummaryNoteItemController{
     public long findCount(@PathVariable("accountBook") String accountBook,
                           @PathVariable("condStr") String condStr){
         return this.summaryNoteItemService.findCount(accountBook, Condition.fromJson(condStr));
+    }
+
+    @Override
+    @RequestMapping(value="/preview/{strIDs}",method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public List<SummaryNoteItemAndDeliveryDetails> getPreviewData(@PathVariable("accountBook") String accountBook,
+                                                      @PathVariable("strIDs") String strIDs){
+        Gson gson = new Gson();
+        List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {}.getType());
+        return summaryNoteItemService.getPreviewData(accountBook,ids);
     }
 }
