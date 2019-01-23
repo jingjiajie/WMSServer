@@ -497,7 +497,7 @@ public class SupplierServicesImpl implements SupplierServices {
     //返回每个时间的总数 所有的入库、出库信息
     public void generateDailyReports(String accountBook) {
         List<DailyReports> dailyReportsList=new ArrayList<>();
-        //找出这段时间之前 每种供货的数量 加到列表里 作为初期数量
+        //找出这段时间之前 每种供货的数量 加到列表里 作为初期数量 时间应该是这段时间的起始时间
         StockRecordFind stockRecordFindPrime=new StockRecordFind();
         Object[] objectPrime=this.findSupplierStockByTime(accountBook,stockRecordFindPrime,"");
         for(int j=0;j<objectPrime.length;j++){
@@ -508,6 +508,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setMaterialNo((String)o[1]);
             dailyReports.setState((int)o[2]);
             dailyReports.setRealStock((BigDecimal)o[3]);
+            dailyReports.setTimestamp(new Timestamp(1));//TODO
             dailyReports.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
             dailyReportsList.add(dailyReports);
         }
