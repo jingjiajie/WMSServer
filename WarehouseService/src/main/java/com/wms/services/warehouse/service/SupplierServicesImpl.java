@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.SupplierAmount;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
@@ -37,6 +38,10 @@ public class SupplierServicesImpl implements SupplierServices {
     WarehouseService warehouseService;
     @Autowired
     private SessionFactory sessionFactory;
+    @Autowired
+    DeliveryOrderItemService deliveryOrderItemService;
+    @Autowired
+    WarehouseEntryItemService warehouseEntryItemService;
 
     @Override
     public int[] add(String accountBook, Supplier[] suppliers) throws WMSServiceException {
@@ -352,6 +357,7 @@ public class SupplierServicesImpl implements SupplierServices {
             supplier.setTel(supplierViews[0].getTel());
             supplier.setZipCode(supplierViews[0].getZipCode());
             supplier.setWarehouseId(supplierViews[0].getWarehouseId());
+            supplier.setSupplierPassward(supplierViews[0].getSupplierPassward());
             supplier.setIsHistory(1);
             supplier.setSerialNo(supplierViews[0].getSerialNo());
             supplier.setNewestSupplierId(suppliers[i].getId());
@@ -436,7 +442,7 @@ public class SupplierServicesImpl implements SupplierServices {
         return this.supplierDAO.findCount(database, cond);
     }
 
-    public SupplierAmount[] supplierRemind(String accountBook,int supplierId) {
+    public SupplierAmount[] supplierRemind(String accountBook, int supplierId) {
         //首先查找该供应商的合格品数量
         Session session = sessionFactory.getCurrentSession();
         try {
@@ -456,32 +462,87 @@ public class SupplierServicesImpl implements SupplierServices {
                 "as s_all \n" +
                 "GROUP BY s_all.supplyid";
         query = session.createNativeQuery(sqlCheckNew2);
-        query.setParameter("supplierId",supplierId);
+        query.setParameter("supplierId", supplierId);
         Object[] resultArray = null;
         List list = query.list();
         resultArray = list.toArray();
-        List<SupplierAmount> supplierAmountArrayList=new ArrayList<>();
+        List<SupplierAmount> supplierAmountArrayList = new ArrayList<>();
         //供应商名称 物料名称 数量 supplyId
-        for(int i=0;i<resultArray.length;i++){
-            SupplierAmount supplierAmount=new SupplierAmount();
-            Object[] objects=(Object[])resultArray[i];
-            supplierAmount.setSupplierName((String)objects[0]);
-            supplierAmount.setMaterialName((String)objects[1]);
-            supplierAmount.setAmount((BigDecimal)objects[2]);
-            supplierAmount.setSupplyId((int)objects[3]);
-            SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("id",supplierAmount.getSupplyId()));
-            if(supplyViews.length!=1){
+        for (int i = 0; i < resultArray.length; i++) {
+            SupplierAmount supplierAmount = new SupplierAmount();
+            Object[] objects = (Object[]) resultArray[i];
+            supplierAmount.setSupplierName((String) objects[0]);
+            supplierAmount.setMaterialName((String) objects[1]);
+            supplierAmount.setAmount((BigDecimal) objects[2]);
+            supplierAmount.setSupplyId((int) objects[3]);
+            SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("id", supplierAmount.getSupplyId()));
+            if (supplyViews.length != 1) {
                 throw new WMSServiceException("查找供货出错！");
             }
-            if(supplyViews[0].getSupplySaftyStock()!=null){
-                if(supplyViews[0].getSupplySaftyStock().compareTo(new BigDecimal(0))>0){
+            if (supplyViews[0].getSupplySaftyStock() != null) {
+                if (supplyViews[0].getSupplySaftyStock().compareTo(new BigDecimal(0)) > 0) {
                     supplierAmount.setAmountNeed(supplyViews[0].getSupplySaftyStock());
                     supplierAmountArrayList.add(supplierAmount);
                 }
             }
         }
-        SupplierAmount[] supplierAmounts=(SupplierAmount[]) Array.newInstance(SupplierAmount.class, supplierAmountArrayList.size());;
+        SupplierAmount supplierAmount = new SupplierAmount();
+        supplierAmount.setAmountNeed(new BigDecimal(10));
+        supplierAmount.setMaterialName("1其缺点是");
+        supplierAmount.setAmountNeed(new BigDecimal(12));
+        supplierAmountArrayList.add(supplierAmount);
+        supplierAmount.setAmountNeed(new BigDecimal(100));
+        supplierAmount.setMaterialName("啊实打实大所大所多");
+        supplierAmountArrayList.add(supplierAmount);
+        supplierAmountArrayList.add(supplierAmount);
+        supplierAmountArrayList.add(supplierAmount);
+        supplierAmountArrayList.add(supplierAmount);
+        SupplierAmount[] supplierAmounts = (SupplierAmount[]) Array.newInstance(SupplierAmount.class, supplierAmountArrayList.size());
+        ;
         supplierAmountArrayList.toArray(supplierAmounts);
         return supplierAmounts;
+    }
+
+    //返回每个时间的总数 所有的入库、出库信息
+    public void generateDailyReports(String accountBook) {
+        DeliveryOrderItemView[] deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition());
+        WarehouseEntryItemView[] warehouseEntryItemViews = warehouseEntryItemService.find(accountBook, new Condition());
+        List<Timestamp> timestamps = new ArrayList<>();
+        for (DeliveryOrderItemView deliveryOrderItemView : deliveryOrderItemViews) {
+            timestamps.add(deliveryOrderItemView.getDeliveryOrderCreateTime());
+        }
+        for (WarehouseEntryItemView warehouseEntryItem : warehouseEntryItemViews) {
+            timestamps.add(warehouseEntryItem.getExpiryDate());
+        }
+
+
+    }
+
+    private StockRecordView[] findSupplierStockByTime(String accountBook, StockRecordFind stockRecordFind) {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query = null;
+        //库存查询最新一条用
+        String sqlNew = "SELECT s1.* FROM StockRecordView AS s1\n" +
+                "INNER JOIN \n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2 \n" +
+                "where s2.supplierId=:supplierId and s2.time<=:checkTime \n" +
+                "GROUP BY s2.BatchNo,s2.Unit,s2.UnitAmount,s2.State,s2.supplyId,s2.StorageLocationID) AS s3 \n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
+                "and s1.supplierId=:supplierId";
+        session.flush();
+        query = session.createNativeQuery(sqlNew, StockRecordView.class);
+        query.setParameter("supplierId", stockRecordFind.getSupplierId());
+        query.setParameter("checkTime", stockRecordFind.getTimeEnd());
+        StockRecordView[] resultArray = null;
+        List<StockRecordView> resultList = query.list();
+        resultArray = (StockRecordView[]) Array.newInstance(StockRecord.class, resultList.size());
+        resultList.toArray(resultArray);
+        return resultArray;
     }
 }

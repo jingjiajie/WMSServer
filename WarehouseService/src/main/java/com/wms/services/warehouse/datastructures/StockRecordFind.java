@@ -128,4 +128,14 @@ public class StockRecordFind {
     }
 
     private String[] batchNo=null;
+
+    public int getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(int supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    private int supplierId;
 }

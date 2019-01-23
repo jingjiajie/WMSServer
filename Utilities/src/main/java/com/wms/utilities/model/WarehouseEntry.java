@@ -19,7 +19,7 @@ public class WarehouseEntry {
     private Timestamp createTime;
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
-    private Integer version;
+    //private Integer version;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -162,15 +162,15 @@ public class WarehouseEntry {
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    @Basic
-    @Column(name = "Version")
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
+//    @Basic
+//    @Column(name = "Version")
+//    public Integer getVersion() {
+//        return version;
+//    }
+//
+//    public void setVersion(Integer version) {
+//        this.version = version;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -199,7 +199,7 @@ public class WarehouseEntry {
             return false;
         if (lastUpdateTime != null ? !lastUpdateTime.equals(that.lastUpdateTime) : that.lastUpdateTime != null)
             return false;
-        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+        //if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -220,7 +220,7 @@ public class WarehouseEntry {
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         result = 31 * result + (lastUpdatePersonId != null ? lastUpdatePersonId.hashCode() : 0);
         result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
-        result = 31 * result + (version != null ? version.hashCode() : 0);
+        //result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 }
