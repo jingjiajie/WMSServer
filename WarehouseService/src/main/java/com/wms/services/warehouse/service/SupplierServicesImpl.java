@@ -528,13 +528,15 @@ public class SupplierServicesImpl implements SupplierServices {
         }
         Query query = null;
         //库存查询最新一条用
-        String sqlNew = "SELECT s1.* FROM StockRecordView AS s1\n" +
-                "INNER JOIN \n" +
-                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2 \n" +
+        String sqlNew = "select s_all.materialNo,s_all.materialName,s_all.state,sum(s_all.amount) as sum_amount from \n" +
+                "(SELECT s1.* FROM StockRecordView AS s1\n" +
+                "INNER JOIN\n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2\n" +
                 "where s2.supplierId=:supplierId and s2.time<=:checkTime \n" +
                 "GROUP BY s2.BatchNo,s2.Unit,s2.UnitAmount,s2.State,s2.supplyId,s2.StorageLocationID) AS s3 \n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
-                "and s1.supplierId=:supplierId";
+                "and s1.supplierId=:supplierId) as s_all\n" +
+                "GROUP BY s_all.state,s_all.supplyId";
         session.flush();
         query = session.createNativeQuery(sqlNew, StockRecordView.class);
         query.setParameter("supplierId", stockRecordFind.getSupplierId());
