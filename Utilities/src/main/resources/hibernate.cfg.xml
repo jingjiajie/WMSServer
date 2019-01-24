@@ -105,6 +105,8 @@
       <mapping class="com.wms.utilities.model.Destination"/>
       <mapping class="com.wms.utilities.model.DeliveryAmountDetailsView"/>
       <mapping class="com.wms.utilities.model.DestinationView"/>
+      <mapping class="com.wms.utilities.model.ReturnRecord"/>
+      <mapping class="com.wms.utilities.model.ReturnRecordView"/>
 
 
       <!-- DB schema will be updated if needed -->

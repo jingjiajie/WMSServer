@@ -116,6 +116,8 @@
                 <value>com.wms.utilities.model.DestinationView</value>
                 <value>com.wms.utilities.model.DeliveryAmountDetails</value>
                 <value>com.wms.utilities.model.DeliveryAmountDetailsView</value>
+                <value>com.wms.utilities.model.ReturnRecord</value>
+                <value>com.wms.utilities.model.ReturnRecordView</value>
             </list>
         </property>
     </bean>
