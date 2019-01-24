@@ -58,6 +58,8 @@ public class StockRecordServiceImpl implements StockRecordService {
     DeliveryOrderItemService deliveryOrderItemService;
     @Autowired
     CommonDataService commonDataService;
+    @Autowired
+    ReturnRecordService returnRecordService;
 
     private final int STATE_DEFAULT_DEPENDENT = -1;
 
@@ -230,6 +232,13 @@ public class StockRecordServiceImpl implements StockRecordService {
             } else {
                 throw new WMSServiceException("查询库存记录出现问题，请检查输入条件!");
             }
+            //增加退货记录
+            ReturnRecord returnRecord=new ReturnRecord();
+            returnRecord.setAmount(stockRecords[i].getAmount());
+            returnRecord.setSupplyId(stockRecords[i].getSupplyId());
+            returnRecord.setWarehouseId(stockRecords[i].getWarehouseId());
+            returnRecord.setComment(stockRecords[i].getComment());
+            returnRecordService.add(accountBook,new ReturnRecord[]{returnRecord});
         }
     }
 
