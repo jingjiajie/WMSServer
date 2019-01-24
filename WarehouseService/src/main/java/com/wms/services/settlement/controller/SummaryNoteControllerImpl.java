@@ -69,4 +69,12 @@ public class SummaryNoteControllerImpl implements SummaryNoteController {
         this.summaryNoteService.generateSummaryNotes(accountBook, addAllItem.getWarehouseId(), addAllItem.getSummaryNoteId());
     }
 
+    @Override
+    @ResponseStatus(HttpStatus.OK)
+    @RequestMapping(value = "/find/{summaryNoteItemId}", method = RequestMethod.GET)
+    public PriceDetails[] find(@PathVariable("accountBook") String accountBook,
+                                  @PathVariable("summaryNoteItemId") int summaryNoteItemId) {
+        return summaryNoteService.find(accountBook, summaryNoteItemId);
+    }
+
 }

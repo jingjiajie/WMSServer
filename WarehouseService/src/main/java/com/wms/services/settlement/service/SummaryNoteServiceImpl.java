@@ -419,5 +419,25 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
             throw new WMSServiceException("托位面积："+validateTray.getLength().multiply(validateTray.getWidth())+" 不能大于所有库位面积最小值"+areaMin);
         }
     }
+
+    public PriceDetails[] find(String accountBook, int summaryNoteItemId){
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query = null;
+        String sqlNew = "select * from PriceDetails where SummaryNoteItemID=:summaryNoteItemId";
+        session.flush();
+        query = session.createNativeQuery(sqlNew, PriceDetails.class);
+        query.setParameter("summaryNoteItemId",summaryNoteItemId );
+        PriceDetails[] resultArray = null;
+        List<PriceDetails> resultList = query.list();
+        resultArray = (PriceDetails[]) Array.newInstance(PriceDetails.class, resultList.size());
+        resultList.toArray(resultArray);
+        return resultArray;
+    }
 }
 

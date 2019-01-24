@@ -118,6 +118,7 @@
                 <value>com.wms.utilities.model.DeliveryAmountDetailsView</value>
                 <value>com.wms.utilities.model.ReturnRecord</value>
                 <value>com.wms.utilities.model.ReturnRecordView</value>
+                <value>com.wms.utilities.model.PriceDetails</value>
             </list>
         </property>
     </bean>
