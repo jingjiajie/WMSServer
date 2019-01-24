@@ -114,7 +114,7 @@ public class StockRecordServiceImpl implements StockRecordService {
     }
 
     @Override
-    public void returnSupply(String accountBook, StockRecord[] stockRecords) throws WMSServiceException {
+    public void returnSupply(String accountBook, StockRecordWithComment[] stockRecords) throws WMSServiceException {
         int[] addId = {};
         for (int i = 0; i < stockRecords.length; i++) {
             new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
