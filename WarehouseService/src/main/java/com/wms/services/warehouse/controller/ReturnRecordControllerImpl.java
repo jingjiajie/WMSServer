@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/{accountBook}/return_stock")
+@RequestMapping("/{accountBook}/return_record")
 public class ReturnRecordControllerImpl implements ReturnRecordController {
     @Autowired
     ReturnRecordService returnRecordService;
