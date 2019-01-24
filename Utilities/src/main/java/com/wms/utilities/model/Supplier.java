@@ -17,9 +17,9 @@ public class Supplier {
     private Timestamp contractEndTime;
     private BigDecimal invoiceDelayMonth;
     private BigDecimal balanceDelayMonth;
-    private BigDecimal netArea;
-    private BigDecimal fixedStorageCost;
-    private BigDecimal contractStorageArea;
+    private BigDecimal basicArea;
+    private BigDecimal fixedStorageSingleCost;
+    private String realArea;
     private String taxpayerNumber;
     private String address;
     private String tel;
@@ -151,33 +151,33 @@ public class Supplier {
     }
 
     @Basic
-    @Column(name = "NetArea")
-    public BigDecimal getNetArea() {
-        return netArea;
+    @Column(name = "BasicArea")
+    public BigDecimal getBasicArea() {
+        return basicArea;
     }
 
-    public void setNetArea(BigDecimal netArea) {
-        this.netArea = netArea;
-    }
-
-    @Basic
-    @Column(name = "FixedStorageCost")
-    public BigDecimal getFixedStorageCost() {
-        return fixedStorageCost;
-    }
-
-    public void setFixedStorageCost(BigDecimal fixedStorageCost) {
-        this.fixedStorageCost = fixedStorageCost;
+    public void setBasicArea(BigDecimal basicArea) {
+        this.basicArea = basicArea;
     }
 
     @Basic
-    @Column(name = "ContractStorageArea")
-    public BigDecimal getContractStorageArea() {
-        return contractStorageArea;
+    @Column(name = "FixedStorageSingleCost")
+    public BigDecimal getFixedStorageSingleCost() {
+        return fixedStorageSingleCost;
     }
 
-    public void setContractStorageArea(BigDecimal contractStorageArea) {
-        this.contractStorageArea = contractStorageArea;
+    public void setFixedStorageSingleCost(BigDecimal fixedStorageSingleCost) {
+        this.fixedStorageSingleCost = fixedStorageSingleCost;
+    }
+
+    @Basic
+    @Column(name = "RealArea")
+    public String getRealArea() {
+        return realArea;
+    }
+
+    public void setRealArea(String realArea) {
+        this.realArea = realArea;
     }
 
     @Basic
@@ -386,11 +386,10 @@ public class Supplier {
             return false;
         if (balanceDelayMonth != null ? !balanceDelayMonth.equals(supplier.balanceDelayMonth) : supplier.balanceDelayMonth != null)
             return false;
-        if (netArea != null ? !netArea.equals(supplier.netArea) : supplier.netArea != null) return false;
-        if (fixedStorageCost != null ? !fixedStorageCost.equals(supplier.fixedStorageCost) : supplier.fixedStorageCost != null)
+        if (basicArea != null ? !basicArea.equals(supplier.basicArea) : supplier.basicArea != null) return false;
+        if (fixedStorageSingleCost != null ? !fixedStorageSingleCost.equals(supplier.fixedStorageSingleCost) : supplier.fixedStorageSingleCost != null)
             return false;
-        if (contractStorageArea != null ? !contractStorageArea.equals(supplier.contractStorageArea) : supplier.contractStorageArea != null)
-            return false;
+        if (realArea != null ? !realArea.equals(supplier.realArea) : supplier.realArea != null) return false;
         if (taxpayerNumber != null ? !taxpayerNumber.equals(supplier.taxpayerNumber) : supplier.taxpayerNumber != null)
             return false;
         if (address != null ? !address.equals(supplier.address) : supplier.address != null) return false;
@@ -431,9 +430,9 @@ public class Supplier {
         result = 31 * result + (contractEndTime != null ? contractEndTime.hashCode() : 0);
         result = 31 * result + (invoiceDelayMonth != null ? invoiceDelayMonth.hashCode() : 0);
         result = 31 * result + (balanceDelayMonth != null ? balanceDelayMonth.hashCode() : 0);
-        result = 31 * result + (netArea != null ? netArea.hashCode() : 0);
-        result = 31 * result + (fixedStorageCost != null ? fixedStorageCost.hashCode() : 0);
-        result = 31 * result + (contractStorageArea != null ? contractStorageArea.hashCode() : 0);
+        result = 31 * result + (basicArea != null ? basicArea.hashCode() : 0);
+        result = 31 * result + (fixedStorageSingleCost != null ? fixedStorageSingleCost.hashCode() : 0);
+        result = 31 * result + (realArea != null ? realArea.hashCode() : 0);
         result = 31 * result + (taxpayerNumber != null ? taxpayerNumber.hashCode() : 0);
         result = 31 * result + (address != null ? address.hashCode() : 0);
         result = 31 * result + (tel != null ? tel.hashCode() : 0);
