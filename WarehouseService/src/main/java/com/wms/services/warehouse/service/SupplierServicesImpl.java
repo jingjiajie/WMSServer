@@ -2,11 +2,13 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.SupplierDAO;
+import com.wms.services.warehouse.datastructures.DailyReportRequest;
 import com.wms.services.warehouse.datastructures.DailyReports;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.datastructures.SupplierAmount;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.dao.DatabaseNotFoundException;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
@@ -498,10 +500,12 @@ public class SupplierServicesImpl implements SupplierServices {
     }
 
     //返回每个时间的总数 所有的入库、出库信息
-    public void generateDailyReports(String accountBook) {
+    public void generateDailyReports(String accountBook, DailyReportRequest dailyReportRequest) {
         List<DailyReports> dailyReportsList=new ArrayList<>();
         //找出这段时间之前 每种供货的数量 加到列表里 作为初期数量 时间应该是这段时间的起始时间
         StockRecordFind stockRecordFindPrime=new StockRecordFind();
+        stockRecordFindPrime.setSupplierId(dailyReportRequest.getSupplierId());
+        stockRecordFindPrime.setTimeEnd(dailyReportRequest.getStartTime());
         Object[] objectPrime=this.findSupplierStockByTime(accountBook,stockRecordFindPrime,"");
         for(int j=0;j<objectPrime.length;j++){
             //物料代号 物料名 状态 总数量
@@ -515,9 +519,13 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
             dailyReportsList.add(dailyReports);
         }
-        //找出供应商一段时间内的出库单条目和入库单条目
-        DeliveryOrderItemView[] deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition());
-        WarehouseEntryItemView[] warehouseEntryItemViews = warehouseEntryItemService.find(accountBook, new Condition());
+        //找出供应商一段时间内的出库单条目和入库单条目 出库单条目中实际数量不为0的
+        DeliveryOrderItemView[] deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition().addCondition("deliveryOrderItemCreatTime",
+                new Timestamp[]{dailyReportRequest.getStartTime(),dailyReportRequest.getEndTime()}, ConditionItem.Relation.BETWEEN).
+                addCondition("supplierId",dailyReportRequest.getSupplierId()));
+        WarehouseEntryItemView[] warehouseEntryItemViews = warehouseEntryItemService.find(accountBook, new Condition().addCondition("warehouseEntryItemCreatTime",
+                new Timestamp[]{dailyReportRequest.getStartTime(),dailyReportRequest.getEndTime()}, ConditionItem.Relation.BETWEEN).
+                addCondition("supplierId",dailyReportRequest.getSupplierId()));
         for (DeliveryOrderItemView deliveryOrderItemView : deliveryOrderItemViews) {
             StockRecordFind stockRecordFind=new StockRecordFind();
             Object[] objects=this.findSupplierStockByTime(accountBook,stockRecordFind,"supplyId="+deliveryOrderItemView.getSupplyId());
