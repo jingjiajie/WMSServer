@@ -513,6 +513,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setMaterialNo((String) o[1]);
             dailyReports.setState((int) o[2]);
             dailyReports.setRealStock((BigDecimal) o[3]);
+            dailyReports.setSupplyId((int) o[4]);
             dailyReports.setTimestamp(dailyReportRequest.getStartTime());
             dailyReports.setType(DailyReports.AMOUNT_PRIME);
             dailyReportsList.add(dailyReports);
@@ -529,6 +530,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setMaterialNo((String) o[1]);
             dailyReports.setState((int) o[2]);
             dailyReports.setRealStock((BigDecimal) o[3]);
+            dailyReports.setSupplyId((int) o[4]);
             dailyReports.setTimestamp(dailyReportRequest.getEndTime());
             dailyReports.setType(DailyReports.AMOUNT_END);
             dailyReportsList.add(dailyReports);
@@ -541,6 +543,7 @@ public class SupplierServicesImpl implements SupplierServices {
         DailyReports dailyReportsDeliver = new DailyReports();
         dailyReportsDeliver.setAmountDiff(BigDecimal.ZERO);
         for (DeliveryOrderItemView deliveryOrderItemView : deliveryOrderItemViews) {
+            dailyReportsDeliver.setSupplyId(deliveryOrderItemView.getSupplyId());
             dailyReportsDeliver.setMaterialName(deliveryOrderItemView.getMaterialName());
             dailyReportsDeliver.setMaterialNo(deliveryOrderItemView.getMaterialNo());
             dailyReportsDeliver.setState(TransferStock.QUALIFIED);
@@ -551,6 +554,7 @@ public class SupplierServicesImpl implements SupplierServices {
         dailyReportsList.add(dailyReportsDeliver);
         for (WarehouseEntryItemView warehouseEntryItem : warehouseEntryItemViews) {
             DailyReports dailyReports = new DailyReports();
+            dailyReports.setSupplyId(warehouseEntryItem.getSupplyId());
             dailyReports.setMaterialName(warehouseEntryItem.getMaterialName());
             dailyReports.setMaterialNo((warehouseEntryItem.getMaterialNo()));
             if (warehouseEntryItem.getState() == WarehouseEntryItemService.BEING_INSPECTED || warehouseEntryItem.getState() == WarehouseEntryItemService.WAIT_FOR_PUT_IN_STORAGE) {
@@ -569,7 +573,7 @@ public class SupplierServicesImpl implements SupplierServices {
         }
     }
 
-    //物料代号 物料名 状态 总数量
+    //物料代号 物料名 状态 总数量 supplyId
     private Object[] findSupplierStockByTime(String accountBook, StockRecordFind stockRecordFind, String supplyId) {
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
@@ -580,7 +584,7 @@ public class SupplierServicesImpl implements SupplierServices {
         }
         Query query = null;
         //库存查询最新一条用
-        String sqlNew = "select s_all.materialNo,s_all.materialName,s_all.state,sum(s_all.amount) as sum_amount from \n" +
+        String sqlNew = "select s_all.materialNo,s_all.materialName,s_all.state,sum(s_all.amount) as sum_amount,s_all.supplyId from \n" +
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2\n" +

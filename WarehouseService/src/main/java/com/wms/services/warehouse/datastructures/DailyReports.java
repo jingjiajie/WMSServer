@@ -69,17 +69,26 @@ public class DailyReports {
         this.state = state;
     }
 
-    String supplierName;
-    String materialNo;
-    String materialName;
-    BigDecimal amountDiff;
-    BigDecimal realStock;
-    Timestamp timestamp;
-    int state;
-    int type;
+    public int getSupplyId() {
+        return supplyId;
+    }
 
-    public static final int AMOUNT_DIFF_ENTRY_STATE=0;
-    public static final int AMOUNT_DIFF_DELIVERY_STATE=1;
-    public static final int AMOUNT_PRIME=2;
+    public void setSupplyId(int supplyId) {
+        this.supplyId = supplyId;
+    }
+
+    private int supplyId;
+    private String supplierName;
+    private String materialNo;
+    private String materialName;
+    private BigDecimal amountDiff;
+    private BigDecimal realStock;
+    private Timestamp timestamp;
+    private int state;
+    private int type;
+
+    public static final int AMOUNT_DIFF_ENTRY_STATE=1;
+    public static final int AMOUNT_DIFF_DELIVERY_STATE=2;
+    public static final int AMOUNT_PRIME=0;
     public static final int AMOUNT_END=3;
 }
