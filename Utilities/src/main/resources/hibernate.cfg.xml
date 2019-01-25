@@ -7,7 +7,7 @@
     <property name="connection.url">jdbc:mysql://linuxserver.jingjiajie.com:3306/WMS_Template</property>
     <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
 
-      <mapping class="com.wms.utilities.model.AccountTitle"/>
+    <mapping class="com.wms.utilities.model.AccountTitle"/>
     <mapping class="com.wms.utilities.model.BarCode"/>
     <mapping class="com.wms.utilities.model.DeliveryOrder"/>
     <mapping class="com.wms.utilities.model.DeliveryOrderItem"/>

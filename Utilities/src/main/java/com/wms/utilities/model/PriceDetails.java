@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 public class PriceDetails {
     private int id;
     private int supplyId;
+    private String supplierName;
     private BigDecimal deliveryAmount;
     private int summaryNoteItemId;
     private BigDecimal logisticsUnitPrice1;
@@ -45,6 +46,16 @@ public class PriceDetails {
 
     public void setSupplyId(int supplyId) {
         this.supplyId = supplyId;
+    }
+
+    @Basic
+    @Column(name = "SupplierName")
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
     }
 
     @Basic
@@ -197,6 +208,7 @@ public class PriceDetails {
         if (id != that.id) return false;
         if (supplyId != that.supplyId) return false;
         if (summaryNoteItemId != that.summaryNoteItemId) return false;
+        if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
         if (deliveryAmount != null ? !deliveryAmount.equals(that.deliveryAmount) : that.deliveryAmount != null)
             return false;
         if (logisticsUnitPrice1 != null ? !logisticsUnitPrice1.equals(that.logisticsUnitPrice1) : that.logisticsUnitPrice1 != null)
@@ -225,6 +237,7 @@ public class PriceDetails {
     public int hashCode() {
         int result = id;
         result = 31 * result + supplyId;
+        result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
         result = 31 * result + (deliveryAmount != null ? deliveryAmount.hashCode() : 0);
         result = 31 * result + summaryNoteItemId;
         result = 31 * result + (logisticsUnitPrice1 != null ? logisticsUnitPrice1.hashCode() : 0);
