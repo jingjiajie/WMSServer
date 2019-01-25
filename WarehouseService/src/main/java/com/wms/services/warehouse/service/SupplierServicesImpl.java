@@ -2,10 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.ledger.service.PersonService;
 import com.wms.services.warehouse.dao.SupplierDAO;
-import com.wms.services.warehouse.datastructures.DailyReportRequest;
-import com.wms.services.warehouse.datastructures.DailyReports;
-import com.wms.services.warehouse.datastructures.StockRecordFind;
-import com.wms.services.warehouse.datastructures.SupplierAmount;
+import com.wms.services.warehouse.datastructures.*;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -516,48 +513,52 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setMaterialNo((String)o[1]);
             dailyReports.setState((int)o[2]);
             dailyReports.setRealStock((BigDecimal)o[3]);
-            dailyReports.setTimestamp(new Timestamp(1));//TODO
-            dailyReports.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
+            dailyReports.setTimestamp(dailyReportRequest.getStartTime());
+            dailyReportsList.add(dailyReports);
+        }
+        StockRecordFind stockRecordFindEnd=new StockRecordFind();
+        stockRecordFindEnd.setSupplierId(dailyReportRequest.getSupplierId());
+        stockRecordFindEnd.setTimeEnd(dailyReportRequest.getEndTime());
+        Object[] objectEnd=this.findSupplierStockByTime(accountBook,stockRecordFindEnd,"");
+        for(int j=0;j<objectEnd.length;j++){
+            //物料代号 物料名 状态 总数量
+            Object[] o=(Object[])objectPrime[j];
+            DailyReports dailyReports=new DailyReports();
+            dailyReports.setMaterialName((String)o[0]);
+            dailyReports.setMaterialNo((String)o[1]);
+            dailyReports.setState((int)o[2]);
+            dailyReports.setRealStock((BigDecimal)o[3]);
+            dailyReports.setTimestamp(dailyReportRequest.getEndTime());
             dailyReportsList.add(dailyReports);
         }
         //找出供应商一段时间内的出库单条目和入库单条目 出库单条目中实际数量不为0的
-        DeliveryOrderItemView[] deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition().addCondition("deliveryOrderItemCreatTime",
-                new Timestamp[]{dailyReportRequest.getStartTime(),dailyReportRequest.getEndTime()}, ConditionItem.Relation.BETWEEN).
-                addCondition("supplierId",dailyReportRequest.getSupplierId()));
-        WarehouseEntryItemView[] warehouseEntryItemViews = warehouseEntryItemService.find(accountBook, new Condition().addCondition("warehouseEntryItemCreatTime",
-                new Timestamp[]{dailyReportRequest.getStartTime(),dailyReportRequest.getEndTime()}, ConditionItem.Relation.BETWEEN).
-                addCondition("supplierId",dailyReportRequest.getSupplierId()));
+        DeliveryOrderItemView[] deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition().addCondition("deliveryOrderItemCreatTime", new Timestamp[]{dailyReportRequest.getStartTime(),dailyReportRequest.getEndTime()},ConditionItem.Relation.BETWEEN).addCondition("supplierId",dailyReportRequest.getSupplierId()));
+        //找创建时间是这段时间之内的条目
+        WarehouseEntryItemView[] warehouseEntryItemViews = warehouseEntryItemService.find(accountBook, new Condition().addCondition("warehouseEntryItemCreatTime", new Timestamp[]{dailyReportRequest.getStartTime(),dailyReportRequest.getEndTime()},ConditionItem.Relation.BETWEEN).addCondition("supplierId",dailyReportRequest.getSupplierId()));
         for (DeliveryOrderItemView deliveryOrderItemView : deliveryOrderItemViews) {
-            StockRecordFind stockRecordFind=new StockRecordFind();
-            Object[] objects=this.findSupplierStockByTime(accountBook,stockRecordFind,"supplyId="+deliveryOrderItemView.getSupplyId());
-            for(int j=0;j<objects.length;j++){
-                //物料代号 物料名 状态 总数量
-                Object[] o=(Object[])objects[j];
                 DailyReports dailyReports=new DailyReports();
-                dailyReports.setMaterialName((String)o[0]);
-                dailyReports.setMaterialNo((String)o[1]);
-                dailyReports.setState((int)o[2]);
-                dailyReports.setRealStock((BigDecimal)o[3]);
+                dailyReports.setMaterialName(deliveryOrderItemView.getMaterialName());
+                dailyReports.setMaterialNo(deliveryOrderItemView.getMaterialNo());
+                dailyReports.setState(TransferStock.QUALIFIED);
                 dailyReports.setSupplierName(deliveryOrderItemView.getSupplierName());
                 dailyReports.setAmountDiff(deliveryOrderItemView.getRealAmount());
                 dailyReports.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
             }
-        }
         for (WarehouseEntryItemView warehouseEntryItem : warehouseEntryItemViews) {
-            StockRecordFind stockRecordFind=new StockRecordFind();
-            Object[] objects=this.findSupplierStockByTime(accountBook,stockRecordFind,"supplyId="+warehouseEntryItem.getSupplyId());
-            for(int j=0;j<objects.length;j++){
-                //物料代号 物料名 状态 总数量
-                Object[] o=(Object[])objects[j];
                 DailyReports dailyReports=new DailyReports();
-                dailyReports.setMaterialName((String)o[0]);
-                dailyReports.setMaterialNo((String)o[1]);
-                dailyReports.setState((int)o[2]);
-                dailyReports.setRealStock((BigDecimal)o[3]);
+                dailyReports.setMaterialName(warehouseEntryItem.getMaterialName());
+                dailyReports.setMaterialNo((warehouseEntryItem.getMaterialNo()));
+                if(warehouseEntryItem.getState()==WarehouseEntryItemService.BEING_INSPECTED||warehouseEntryItem.getState()==WarehouseEntryItemService.WAIT_FOR_PUT_IN_STORAGE){
+                dailyReports.setState(TransferStock.WAITING_FOR_INSPECTION);}
+                if(warehouseEntryItem.getState()==WarehouseEntryItemService.QUALIFIED){
+                    dailyReports.setState(TransferStock.QUALIFIED);
+                }
+            if(warehouseEntryItem.getState()==WarehouseEntryItemService.UNQUALIFIED){
+                dailyReports.setState(TransferStock.UNQUALIFIED);
+            }
                 dailyReports.setSupplierName(warehouseEntryItem.getSupplierName());
                 dailyReports.setAmountDiff(warehouseEntryItem.getRealAmount());
                 dailyReports.setType(DailyReports.AMOUNT_DIFF_ENTRY_STATE);
-            }
         }
     }
 
