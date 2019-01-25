@@ -16,7 +16,7 @@ public class DailyReportsComparator implements Comparator<DailyReports> {
             if (a != 0) {
                 cr = (a > 0) ? 2 : -2;
             } else {
-                //TODO 
+                //TODO
                 a = dailyReports2.getType() - dailyReports1.getType();
                 if (a != 0) {
                     cr = (a > 0) ? 1 : -3;

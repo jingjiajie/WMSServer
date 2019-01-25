@@ -19,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.sql.Timestamp;
 import java.util.stream.Stream;
 
@@ -570,6 +567,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setAmountDiff(warehouseEntryItem.getRealAmount());
             dailyReports.setType(DailyReports.AMOUNT_DIFF_ENTRY_STATE);
             dailyReportsList.add(dailyReports);
+            Collections.sort(dailyReportsList, new DailyReportsComparator());
         }
     }
 
