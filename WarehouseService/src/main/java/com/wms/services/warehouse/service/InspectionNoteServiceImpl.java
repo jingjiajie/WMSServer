@@ -251,6 +251,9 @@ public class InspectionNoteServiceImpl
                     transferStock.setRelatedOrderNo(warehouseEntryItemView.getWarehouseEntryNo());
                     transferStock.setItemId(warehouseEntryItemView.getId());
                     transferStock.setItemType(ItemType.entryItem);
+                    transferStock.setInventoryDate(warehouseEntryItemView.getInventoryDate());
+                    transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
+                    transferStock.setNewState(TransferStock.WAITING_FOR_INSPECTION);
                     TransferStock transferStockRestore=new TransferStock();
                     transferStockRestore.setUnit(warehouseEntryItemView.getUnit());
                     transferStockRestore.setUnitAmount(warehouseEntryItemView.getUnitAmount());

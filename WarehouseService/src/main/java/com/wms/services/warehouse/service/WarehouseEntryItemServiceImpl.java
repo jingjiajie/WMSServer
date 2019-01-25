@@ -165,7 +165,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
 
     @Override
     public void update1(String accountBook, WarehouseEntryItem[] warehouseEntryItems) throws WMSServiceException {
-        this.update(accountBook, warehouseEntryItems, false);
+        this.update1(accountBook, warehouseEntryItems, false);
     }
 
     @Override
@@ -202,11 +202,15 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                 transferStockAgainst.setUnitAmount(oriItemView.getUnitAmount());
                 transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
                 transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
+                transferStockAgainst.setState(TransferStock.WAITING_FOR_INSPECTION);
+                transferStockAgainst.setItemId(oriItemView.getId());
+                transferStockAgainst.setItemType(ItemType.entryItem);
                 //默认是未送检的
                 transferStockAgainst.setState(TransferStock.WAITING_FOR_INSPECTION);
                 //增加新库存
                 TransferStock transferStockNew = new TransferStock();
                 transferStockNew.setAmount(warehouseEntryItem.getRealAmount());
+                transferStockNew.setAvailableAmount(warehouseEntryItem.getRealAmount());
                 transferStockNew.setUnit(warehouseEntryItem.getUnit());
                 transferStockNew.setUnitAmount(warehouseEntryItem.getUnitAmount());
                 transferStockNew.setInventoryDate(warehouseEntryItem.getInventoryDate());
@@ -214,6 +218,9 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                 transferStockNew.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId());
                 transferStockNew.setSupplyId(warehouseEntryItem.getSupplyId());
                 transferStockNew.setManufactureDate(warehouseEntryItem.getManufactureDate());
+                transferStockNew.setState(TransferStock.WAITING_FOR_INSPECTION);
+                transferStockNew.setItemType(ItemType.entryItem);
+                transferStockNew.setItemId(warehouseEntryItem.getId());
                 this.stockRecordService.addAmount(accountBook, transferStockNew,transferStockAgainst);
             }
         });

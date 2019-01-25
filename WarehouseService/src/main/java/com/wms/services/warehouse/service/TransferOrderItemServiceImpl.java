@@ -408,7 +408,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             tureTransferStock.setNewUnitAmount(transferOrderItems[i].getUnitAmount());
             tureTransferStock.setUnit(transferOrderItems[i].getSourceUnit());
             tureTransferStock.setUnitAmount(transferOrderItems[i].getSourceUnitAmount());
-
+            tureTransferStock.setState(2);
             this.stockRecordService.transferStock(accountBook, tureTransferStock,new TransferStock());//直接改数
 
             if (transferOrderItems[i].getScheduledAmount().compareTo(transferOrderItems[i].getRealAmount())==0){
@@ -465,6 +465,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 transferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
                 transferStock.setNewUnit(transferOrderItem.getUnit());
                 transferStock.setNewUnitAmount(transferOrderItem.getUnitAmount());
+                transferStock.setState(2);
 
                 //旧的信息
                 TransferStock transferStockRestore = new TransferStock();
@@ -481,6 +482,8 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 transferStockRestore.setUnitAmount(oriItemViews[0].getUnitAmount());
                 transferStockRestore.setNewUnit(oriItemViews[0].getSourceUnit());
                 transferStockRestore.setNewUnitAmount(oriItemViews[0].getSourceUnitAmount());
+                transferStockRestore.setState(2);
+                transferStockRestore.setNewState(2);
 
 
                 this.stockRecordService.transferStock(accountBook, transferStock,transferStockRestore);//使用更新单位的库存修改
@@ -504,6 +507,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 transferStock.setUnitAmount(transferOrderItem.getSourceUnitAmount());
                 transferStock.setNewUnit(transferOrderItem.getUnit());
                 transferStock.setNewUnitAmount(transferOrderItem.getUnitAmount());
+                transferStock.setState(2);
 
                 this.stockRecordService.transferStock(accountBook, transferStock,new TransferStock());//使用更新单位的库存修改
             }
@@ -595,7 +599,8 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 transferStockRestore.setUnitAmount(oriItemView.getUnitAmount());
                 transferStockRestore.setNewUnit(oriItemView.getSourceUnit());
                 transferStockRestore.setNewUnitAmount(oriItemView.getSourceUnitAmount());
-
+                transferStockRestore.setState(2);
+                transferStockRestore.setNewState(2);
                 this.stockRecordService.restoreAmount(accountBook,transferStockRestore);//使用更新单位的库存修改
             }
         }
@@ -632,6 +637,8 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             transferStockRestore.setUnitAmount(oriItemView.getUnitAmount());
             transferStockRestore.setNewUnit(oriItemView.getSourceUnit());
             transferStockRestore.setNewUnitAmount(oriItemView.getSourceUnitAmount());
+            transferStockRestore.setState(2);
+            transferStockRestore.setNewState(2);
 
             this.stockRecordService.restoreAmount(accountBook,transferStockRestore);//使用更新单位的库存修改
 

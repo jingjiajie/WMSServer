@@ -41,7 +41,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             // new Validator("宽度内边距").notnull().min(0).validate(storageLocations[i].getWidthPadding());
             //new Validator("余留面积").notnull().min(0).validate(storageLocations[i].getReservedArea());
             //new Validator("最高码放层数").notnull().greaterThan(0).validate(storageLocations[i].getPiles());
-            this.validate(accountBook,storageLocations[i]);
+            //this.validate(accountBook,storageLocations[i]);
             if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");
             }
@@ -115,7 +115,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             //new Validator("宽度内边距").notnull().min(0).validate(storageLocations[i].getWidthPadding());
            // new Validator("余留面积").notnull().min(0).validate(storageLocations[i].getReservedArea());
            // new Validator("最高码放层数").notnull().greaterThan(0).validate(storageLocations[i].getPiles());
-            this.validate(accountBook,storageLocations[i]);
+            //this.validate(accountBook,storageLocations[i]);
             validator.notnull().validate(storageLocations[i].getNo());
             if(storageLocations[i].getEnabled()!=0&&storageLocations[i].getEnabled()!=1){
                 throw new WMSServiceException("是否启用只能为0和1！");

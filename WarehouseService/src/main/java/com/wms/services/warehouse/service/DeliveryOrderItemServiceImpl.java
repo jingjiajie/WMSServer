@@ -386,7 +386,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             if(foundOriItems.length == 0) throw new WMSServiceException(String.format("出库单条目不存在，请重新提交！",deliveryOrderItem.getId()));//排除异常
             DeliveryOrderItemView oriItemView = foundOriItems[0];
 
-            if (deliveryOrderItem.getScheduledAmount().subtract(oriItemView.getRealAmount()).compareTo(new BigDecimal(0))<0)//如果新修改时计划数量小于当前实际已经移动的数量
+            if (deliveryOrderItem.getScheduledAmount().subtract(deliveryOrderItem.getRealAmount()).compareTo(new BigDecimal(0))<0)//如果新修改时计划数量小于当前实际已经移动的数量
             {
                 throw new WMSServiceException(String.format("出库单条目计划数量不能小于实际数量！出库单号：(%s)",deliveryOrderView.getNo()));
             }
@@ -416,8 +416,8 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 //旧的信息
                 TransferStock transferStockRestore = new TransferStock();
                 transferStockRestore.setSourceStorageLocationId(oriItemView.getSourceStorageLocationId());
-                transferStock.setAmount(oriItemView.getRealAmount());//实际数量
-                transferStock.setAvailableAmount(oriItemView.getScheduledAmount());
+                transferStockRestore.setAmount(oriItemView.getRealAmount());//实际数量
+                transferStockRestore.setAvailableAmount(oriItemView.getScheduledAmount());
 
                 transferStockRestore.setRelatedOrderNo(deliveryOrderView.getNo());//获取单号
                 transferStockRestore.setItemId(deliveryOrderItem.getId());
@@ -537,6 +537,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                 transferStockRestore.setState(deliveryType);
                 transferStockRestore.setUnit(oriItemView.getUnit());
                 transferStockRestore.setUnitAmount(oriItemView.getUnitAmount());
+                transferStockRestore.setState(deliveryType);
 
                 this.stockRecordService.restoreAmount(accountBook,transferStockRestore);//使用更新单位的库存修改
             }
@@ -670,10 +671,15 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             if (deliveryOrderItem.getState() ==TransferOrderItemService.STATE_IN_TRANSFER) {
                 deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
                 deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+                deliveryOrderItem.setLoadingTime(new Timestamp(System.currentTimeMillis()));
+                if (deliveryOrderItem.getVersion()==0){
+                    this.update(accountBook,new DeliveryOrderItem[]{deliveryOrderItem});
+                }else{
+                    this.update2(accountBook,new DeliveryOrderItem[]{deliveryOrderItem});
+                }
             }
-            deliveryOrderItem.setLoadingTime(new Timestamp(System.currentTimeMillis()));
         });
-        this.update(accountBook,deliveryOrderItems);
+
         //更新出库单状态
         Stream.of(deliveryOrders).forEach(deliveryOrder -> {
             if (deliveryOrder.getState() ==DeliveryOrderService.STATE_IN_DELIVER) {
@@ -716,9 +722,14 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             if (deliveryOrderItem.getState() ==TransferOrderItemService.STATE_IN_TRANSFER) {
                 deliveryOrderItem.setRealAmount(deliveryOrderItem.getScheduledAmount());
                 deliveryOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
+
+                if (deliveryOrderItem.getVersion()==0){
+                    this.update(accountBook,new DeliveryOrderItem[]{deliveryOrderItem});
+                }else{
+                    this.update2(accountBook,new DeliveryOrderItem[]{deliveryOrderItem});
+                }
             }
         });
-        this.update(accountBook,deliveryOrderItems);
         //TODO 如果部分更新的时候是全部完成，需要补逻辑
         //更新出库单状态,应该是只有一个单子
         Stream.of(deliveryOrders).forEach(deliveryOrder -> {
@@ -739,6 +750,7 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
             }
 
         });
+
         this.deliveryOrderService.update(accountBook, deliveryOrders);
 
     }

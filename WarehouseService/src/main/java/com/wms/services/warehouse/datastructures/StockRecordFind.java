@@ -128,4 +128,14 @@ public class StockRecordFind {
     }
 
     private String[] batchNo=null;
+
+    public boolean isFilterZero() {
+        return filterZero;
+    }
+
+    public void setFilterZero(boolean filterZero) {
+        this.filterZero = filterZero;
+    }
+
+    private boolean filterZero=true;
 }
