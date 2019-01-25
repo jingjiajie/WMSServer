@@ -80,4 +80,6 @@ public class DailyReports {
 
     public static final int AMOUNT_DIFF_ENTRY_STATE=0;
     public static final int AMOUNT_DIFF_DELIVERY_STATE=1;
+    public static final int AMOUNT_PRIME=2;
+    public static final int AMOUNT_END=3;
 }
