@@ -1,4 +1,6 @@
 package com.wms.services.warehouse.controller;
+import com.wms.utilities.model.Supplier;
+import com.wms.utilities.model.SupplierView;
 import org.springframework.http.ResponseEntity;
 
 public interface SupplierController {
