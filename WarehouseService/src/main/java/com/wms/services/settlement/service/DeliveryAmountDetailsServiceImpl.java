@@ -40,7 +40,9 @@ public class DeliveryAmountDetailsServiceImpl implements DeliveryAmountDetailsSe
     @Override
     public int[] add(String accountBook, DeliveryAmountDetails[] deliveryAmountDetails) throws WMSServiceException {
         this.validateEntities(accountBook,deliveryAmountDetails);
-        return deliveryAmountDetailsDAO.add(accountBook, deliveryAmountDetails);
+        int[] ids= deliveryAmountDetailsDAO.add(accountBook, deliveryAmountDetails);
+        this.updateSummary(accountBook,deliveryAmountDetails);
+        return ids;
     }
 
     @Override
@@ -114,16 +116,113 @@ public class DeliveryAmountDetailsServiceImpl implements DeliveryAmountDetailsSe
 
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
+        int summaryNoteItemId = deliveryAmountDetailsDAO.find(accountBook, new Condition().addCondition("id", ids[0]))[0].getSummaryNoteItemId();
         for (int id : ids) {
-            if (deliveryAmountDetailsDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
-                throw new WMSServiceException(String.format("删除目的地不存在，请重新查询！(%d)", id));
+            DeliveryAmountDetailsView[] deliveryAmountDetailsViews= deliveryAmountDetailsDAO.find(accountBook, new Condition().addCondition("id", id));
+            if (deliveryAmountDetailsViews.length == 0) {
+                throw new WMSServiceException(String.format("删除物流详情不存在，请重新查询！(%d)", id));
+            }
+            int supplyId=deliveryAmountDetailsViews[0].getSupplyId();
+
+            try {
+                deliveryAmountDetailsDAO.remove(accountBook, new int[]{id});
+                this.updateSummaryById(accountBook,summaryNoteItemId,supplyId);
+            } catch (Throwable ex) {
+                throw new WMSServiceException("删除物流详情失败，如果物流详情已经被引用，需要先删除引用该物流详情的内容，才能删除该物流详情。");
             }
         }
+    }
 
-        try {
-            deliveryAmountDetailsDAO.remove(accountBook, ids);
-        } catch (Throwable ex) {
-            throw new WMSServiceException("删除目的地失败，如果目的地已经被引用，需要先删除引用该目的地的内容，才能删除该目的地");
+    public void updateSummaryById(String accountBook,int summaryNoteItemId)throws WMSServiceException{
+
+            //TODO 更新汇总单条目，供货商级
+            SummaryNoteItem[] summaryNoteItems = summaryNoteItemService.findTable(accountBook, new Condition().addCondition("id", summaryNoteItemId));
+            if (summaryNoteItems.length != 0) {
+                BigDecimal newDeliveryAmount=BigDecimal.ZERO;
+                DeliveryAmountDetails[] allSupplierDelivery= this.deliveryAmountDetailsDAO.findTable(accountBook,new Condition().addCondition("summaryNoteItemId",summaryNoteItemId));
+                if (allSupplierDelivery.length>0){
+                    for (int i=0;i<allSupplierDelivery.length;i++){
+                        newDeliveryAmount=newDeliveryAmount.add(allSupplierDelivery[i].getDeliveryAmount());
+                    }
+                }
+                summaryNoteItems[0].setTotalDeliveryAmount(newDeliveryAmount);
+                this.summaryNoteItemService.update(accountBook,summaryNoteItems);
+
+                //TODO 更新面积详情，供货级
+                //二级分组按供货id分组
+                if (allSupplierDelivery.length>0) {
+                    Map<Integer, List<DeliveryAmountDetails>> groupBySupplyId =
+                            Stream.of(allSupplierDelivery).collect(Collectors.groupingBy(DeliveryAmountDetails::getSupplyId));
+
+                    Iterator<Map.Entry<Integer, List<DeliveryAmountDetails>>> groupBySupplyIds = groupBySupplyId.entrySet().iterator();
+                    while (groupBySupplyIds.hasNext()) {
+                        Map.Entry<Integer, List<DeliveryAmountDetails>> group = groupBySupplyIds.next();
+                        Integer supplyId = group.getKey();
+
+                        //供货级supplyId
+                        SummaryDetails[] summaryDetails1 = this.summaryDetailsService.findTable(accountBook, new Condition()
+                                .addCondition("summaryNoteItemId", summaryNoteItemId)
+                                .addCondition("supplyId", supplyId));
+
+                        if (summaryDetails1.length > 0) {
+                            BigDecimal thDeliveryAmount=BigDecimal.ZERO;
+
+                            DeliveryAmountDetails[] theAllSupplyDelivery= this.deliveryAmountDetailsDAO.findTable(accountBook,new Condition()
+                                    .addCondition("summaryNoteItemId",summaryNoteItemId)
+                                    .addCondition("supplyId", supplyId));
+
+                            if (theAllSupplyDelivery.length>0){
+                                for (int i=0;i<theAllSupplyDelivery.length;i++){
+                                    thDeliveryAmount=thDeliveryAmount.add(theAllSupplyDelivery[i].getDeliveryAmount());
+                                }
+                            }
+                            summaryDetails1[0].setDeliveryAmount(thDeliveryAmount);
+                            //调用更新
+                            this.summaryDetailsService.update(accountBook,summaryDetails1);
+                        }
+                    }
+                }
+            }
+    }
+
+    public void updateSummaryById(String accountBook,int summaryNoteItemId,int supplyId)throws WMSServiceException{
+
+        //TODO 更新汇总单条目，供货商级
+        SummaryNoteItem[] summaryNoteItems = summaryNoteItemService.findTable(accountBook, new Condition().addCondition("id", summaryNoteItemId));
+        if (summaryNoteItems.length != 0) {
+            BigDecimal newDeliveryAmount=BigDecimal.ZERO;
+            DeliveryAmountDetails[] allSupplierDelivery= this.deliveryAmountDetailsDAO.findTable(accountBook,new Condition().addCondition("summaryNoteItemId",summaryNoteItemId));
+            if (allSupplierDelivery.length>0){
+                for (int i=0;i<allSupplierDelivery.length;i++){
+                    newDeliveryAmount=newDeliveryAmount.add(allSupplierDelivery[i].getDeliveryAmount());
+                }
+            }
+            summaryNoteItems[0].setTotalDeliveryAmount(newDeliveryAmount);
+            this.summaryNoteItemService.update(accountBook,summaryNoteItems);
+
+            //TODO 更新面积详情，供货级
+            //二级分组按供货id分组
+            //供货级supplyId
+            SummaryDetails[] summaryDetails1 = this.summaryDetailsService.findTable(accountBook, new Condition()
+                    .addCondition("summaryNoteItemId", summaryNoteItemId)
+                    .addCondition("supplyId", supplyId));
+
+            if (summaryDetails1.length > 0) {
+                BigDecimal thDeliveryAmount=BigDecimal.ZERO;
+
+                DeliveryAmountDetails[] theAllSupplyDelivery= this.deliveryAmountDetailsDAO.findTable(accountBook,new Condition()
+                        .addCondition("summaryNoteItemId",summaryNoteItemId)
+                        .addCondition("supplyId", supplyId));
+
+                if (theAllSupplyDelivery.length>0){
+                    for (int i=0;i<theAllSupplyDelivery.length;i++){
+                        thDeliveryAmount=thDeliveryAmount.add(theAllSupplyDelivery[i].getDeliveryAmount());
+                    }
+                }
+                summaryDetails1[0].setDeliveryAmount(thDeliveryAmount);
+                //调用更新
+                this.summaryDetailsService.update(accountBook,summaryDetails1);
+            }
         }
     }
 
