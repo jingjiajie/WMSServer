@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Entity
 public class PriceDetails {
@@ -20,6 +21,9 @@ public class PriceDetails {
     private BigDecimal logisticsUnitPrice3;
     private String materialName;
     private String materialNo;
+    private Timestamp startTime;
+    private Timestamp endTime;
+    private BigDecimal singlePrice;
     private BigDecimal sumPrice;
 
     @Basic
@@ -144,6 +148,36 @@ public class PriceDetails {
     }
 
     @Basic
+    @Column(name = "StartTime")
+    public Timestamp getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Timestamp startTime) {
+        this.startTime = startTime;
+    }
+
+    @Basic
+    @Column(name = "EndTime")
+    public Timestamp getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Timestamp endTime) {
+        this.endTime = endTime;
+    }
+
+    @Basic
+    @Column(name = "SinglePrice")
+    public BigDecimal getSinglePrice() {
+        return singlePrice;
+    }
+
+    public void setSinglePrice(BigDecimal singlePrice) {
+        this.singlePrice = singlePrice;
+    }
+
+    @Basic
     @Column(name = "SumPrice")
     public BigDecimal getSumPrice() {
         return sumPrice;
@@ -179,6 +213,9 @@ public class PriceDetails {
             return false;
         if (materialName != null ? !materialName.equals(that.materialName) : that.materialName != null) return false;
         if (materialNo != null ? !materialNo.equals(that.materialNo) : that.materialNo != null) return false;
+        if (startTime != null ? !startTime.equals(that.startTime) : that.startTime != null) return false;
+        if (endTime != null ? !endTime.equals(that.endTime) : that.endTime != null) return false;
+        if (singlePrice != null ? !singlePrice.equals(that.singlePrice) : that.singlePrice != null) return false;
         if (sumPrice != null ? !sumPrice.equals(that.sumPrice) : that.sumPrice != null) return false;
 
         return true;
@@ -198,6 +235,9 @@ public class PriceDetails {
         result = 31 * result + (logisticsUnitPrice3 != null ? logisticsUnitPrice3.hashCode() : 0);
         result = 31 * result + (materialName != null ? materialName.hashCode() : 0);
         result = 31 * result + (materialNo != null ? materialNo.hashCode() : 0);
+        result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
+        result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
+        result = 31 * result + (singlePrice != null ? singlePrice.hashCode() : 0);
         result = 31 * result + (sumPrice != null ? sumPrice.hashCode() : 0);
         return result;
     }
