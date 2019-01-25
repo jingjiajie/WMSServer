@@ -72,7 +72,7 @@ public class SummaryNoteControllerImpl implements SummaryNoteController {
     @Override
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/find/{summaryNoteItemId}", method = RequestMethod.GET)
-    public PriceDetails[] find(@PathVariable("accountBook") String accountBook,
+        public PriceDetails[] find(@PathVariable("accountBook") String accountBook,
                                   @PathVariable("summaryNoteItemId") int summaryNoteItemId) {
         return summaryNoteService.find(accountBook, summaryNoteItemId);
     }

@@ -122,7 +122,7 @@ public class SummaryNoteItemServiceImpl
     @Override
     public List<SummaryNoteItemAndDeliveryDetails> getPreviewData(String accountBook, List<Integer> summaryNoteItemIds) throws WMSServiceException{
         SummaryNoteItemView[] summaryNoteItemViews = this.find(accountBook,new Condition().addCondition("id",summaryNoteItemIds.toArray(), ConditionItem.Relation.IN));
-        DeliveryAmountDetailsView[] itemViews = this.deliveryAmountDetailsService.find(accountBook,new Condition().addCondition("deliveryOrderId",summaryNoteItemIds.toArray(), ConditionItem.Relation.IN));
+        DeliveryAmountDetailsView[] itemViews = this.deliveryAmountDetailsService.find(accountBook,new Condition().addCondition("summaryNoteItemId",summaryNoteItemIds.toArray(), ConditionItem.Relation.IN));
         List<SummaryNoteItemAndDeliveryDetails> result = new ArrayList<>();
         for(SummaryNoteItemView summaryNoteItemView : summaryNoteItemViews){
             SummaryNoteItemAndDeliveryDetails settlementNoteItemAndDeliveryDetails = new SummaryNoteItemAndDeliveryDetails();
