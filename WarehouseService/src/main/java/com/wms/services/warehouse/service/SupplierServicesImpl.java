@@ -547,8 +547,8 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReportsDeliver.setSupplierName(deliveryOrderItemView.getSupplierName());
             dailyReportsDeliver.setAmountDiff(dailyReportsDeliver.getAmountDiff().add(deliveryOrderItemView.getRealAmount()));
             dailyReportsDeliver.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
+            dailyReportsList.add(dailyReportsDeliver);
         }
-        dailyReportsList.add(dailyReportsDeliver);
         for (WarehouseEntryItemView warehouseEntryItem : warehouseEntryItemViews) {
             DailyReports dailyReports = new DailyReports();
             dailyReports.setSupplyId(warehouseEntryItem.getSupplyId());
