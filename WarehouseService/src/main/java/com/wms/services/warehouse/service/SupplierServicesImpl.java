@@ -501,6 +501,7 @@ public class SupplierServicesImpl implements SupplierServices {
         StockRecordFind stockRecordFindPrime = new StockRecordFind();
         stockRecordFindPrime.setSupplierId(dailyReportRequest.getSupplierId());
         stockRecordFindPrime.setTimeEnd(dailyReportRequest.getStartTime());
+        SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("supplierId",dailyReportRequest.getSupplierId()));
         Object[] objectPrime = this.findSupplierStockByTime(accountBook, stockRecordFindPrime, "");
         for (int j = 0; j < objectPrime.length; j++) {
             //物料代号 物料名 状态 总数量
@@ -514,6 +515,29 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setTimestamp(dailyReportRequest.getStartTime());
             dailyReports.setType(DailyReports.AMOUNT_PRIME);
             dailyReportsList.add(dailyReports);
+        }
+        //把不存在零件显示为0
+        for(int i=0;i<supplyViews.length;i++){
+            boolean exist=false;
+            for (int j = 0; j < objectPrime.length; j++) {
+                //物料代号 物料名 状态 总数量
+                Object[] o = (Object[]) objectPrime[j];
+                if((int)o[4]==supplyViews[i].getId()){
+                    exist=true;
+                }
+            }
+            //如果不存在
+            if(!exist){
+                DailyReports dailyReports = new DailyReports();
+                dailyReports.setMaterialName(supplyViews[i].getMaterialName());
+                dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
+                dailyReports.setState(TransferStock.QUALIFIED);
+                dailyReports.setRealStock(BigDecimal.ZERO);
+                dailyReports.setSupplyId(supplyViews[i].getId());
+                dailyReports.setTimestamp(dailyReportRequest.getStartTime());
+                dailyReports.setType(DailyReports.AMOUNT_PRIME);
+                dailyReportsList.add(dailyReports);
+            }
         }
         StockRecordFind stockRecordFindEnd = new StockRecordFind();
         stockRecordFindEnd.setSupplierId(dailyReportRequest.getSupplierId());
@@ -531,6 +555,29 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setTimestamp(dailyReportRequest.getEndTime());
             dailyReports.setType(DailyReports.AMOUNT_END);
             dailyReportsList.add(dailyReports);
+        }
+        //把不存在零件显示为0
+        for(int i=0;i<supplyViews.length;i++){
+            boolean exist=false;
+            for (int j = 0; j < objectEnd.length; j++) {
+                //物料代号 物料名 状态 总数量
+                Object[] o = (Object[]) objectEnd[j];
+                if((int)o[4]==supplyViews[i].getId()){
+                    exist=true;
+                }
+            }
+            //如果不存在
+            if(!exist){
+                DailyReports dailyReports = new DailyReports();
+                dailyReports.setMaterialName(supplyViews[i].getMaterialName());
+                dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
+                dailyReports.setState(TransferStock.QUALIFIED);
+                dailyReports.setRealStock(BigDecimal.ZERO);
+                dailyReports.setSupplyId(supplyViews[i].getId());
+                dailyReports.setTimestamp(dailyReportRequest.getStartTime());
+                dailyReports.setType(DailyReports.AMOUNT_END);
+                dailyReportsList.add(dailyReports);
+            }
         }
         //找出供应商一段时间内的出库单条目和入库单条目 出库单条目中实际数量不为0的
         DeliveryOrderItemView[] deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition().addCondition("deliveryOrderItemCreatTime", new Timestamp[]{dailyReportRequest.getStartTime(), dailyReportRequest.getEndTime()}, ConditionItem.Relation.BETWEEN).addCondition("supplierId", dailyReportRequest.getSupplierId()));
