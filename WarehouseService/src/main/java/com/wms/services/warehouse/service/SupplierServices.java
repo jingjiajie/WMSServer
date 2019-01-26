@@ -1,4 +1,5 @@
 package com.wms.services.warehouse.service;
+import com.wms.services.warehouse.datastructures.DailyReportRequest;
 import com.wms.services.warehouse.datastructures.SupplierAmount;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -17,4 +18,5 @@ public interface SupplierServices {
     long findCountNew(String database,Condition cond) throws WMSServiceException;
     long findCountHistory(String database,Condition cond) throws WMSServiceException;
     SupplierAmount[] supplierRemind(String accountBook, int supplierId);
+    void generateDailyReports(String accountBook, DailyReportRequest dailyReportRequest);
 }
