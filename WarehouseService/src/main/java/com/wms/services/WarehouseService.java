@@ -44,8 +44,8 @@ public class WarehouseService {
         SupplierServices supplierServices=applicationContext.getBean(SupplierServices.class);
         DailyReportRequest dailyReportRequest=new DailyReportRequest();
         dailyReportRequest.setSupplierId(1);
-        dailyReportRequest.setStartTime(GetTimeStampByTime.getTimestamoByTime("2018-1-1 0:0:0"));
-        dailyReportRequest.setEndTime(GetTimeStampByTime.getTimestamoByTime("2018-1-1 24:0:0"));
+        dailyReportRequest.setStartTime(GetTimeStampByTime.getTimestamoByTime("2018-5-27 0:0:0"));
+        dailyReportRequest.setEndTime(GetTimeStampByTime.getTimestamoByTime("2018-5-27 24:0:0"));
         supplierServices.generateDailyReports("WMS_Template",dailyReportRequest);
 
 //        JudgeOldestBatch judgeOldestBatch=new JudgeOldestBatch();

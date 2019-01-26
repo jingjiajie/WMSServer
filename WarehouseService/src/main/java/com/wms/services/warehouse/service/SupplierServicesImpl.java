@@ -495,7 +495,7 @@ public class SupplierServicesImpl implements SupplierServices {
 
     //返回每个时间的总数 所有的入库、出库信息
     //早库存 晚库存 入库详细 理论出库总数
-    public void generateDailyReports(String accountBook, DailyReportRequest dailyReportRequest) {
+    public List<DailyReports> generateDailyReports(String accountBook, DailyReportRequest dailyReportRequest) {
         List<DailyReports> dailyReportsList = new ArrayList<>();
         //找出这段时间之前 每种供货的数量 加到列表里 作为初期数量 时间应该是这段时间的起始时间
         StockRecordFind stockRecordFindPrime = new StockRecordFind();
@@ -567,8 +567,9 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setAmountDiff(warehouseEntryItem.getRealAmount());
             dailyReports.setType(DailyReports.AMOUNT_DIFF_ENTRY_STATE);
             dailyReportsList.add(dailyReports);
-            Collections.sort(dailyReportsList, new DailyReportsComparator());
         }
+        Collections.sort(dailyReportsList, new DailyReportsComparator());
+        return dailyReportsList;
     }
 
     //物料代号 物料名 状态 总数量 supplyId
@@ -592,7 +593,7 @@ public class SupplierServicesImpl implements SupplierServices {
                 "and s1.supplierId=:supplierId " + supplyId + ") as s_all\n" +
                 "GROUP BY s_all.state,s_all.supplyId";
         session.flush();
-        query = session.createNativeQuery(sqlNew, StockRecordView.class);
+        query = session.createNativeQuery(sqlNew);
         query.setParameter("supplierId", stockRecordFind.getSupplierId());
         query.setParameter("checkTime", stockRecordFind.getTimeEnd());
         Object[] resultArray = null;

@@ -1,6 +1,8 @@
 package com.wms.services.warehouse.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wms.services.warehouse.datastructures.DailyReportRequest;
+import com.wms.services.warehouse.datastructures.DailyReports;
 import com.wms.services.warehouse.datastructures.SupplierAmount;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.datastructures.Condition;
@@ -10,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/{accountBook}/supplier")
@@ -113,4 +117,13 @@ public class SupplierControllerImpl implements SupplierController {
         int supplierId=Integer.valueOf(id.substring(1,id.length()-1));
         return this.supplierServices.supplierRemind(accountBook, supplierId);
     }
+
+    @Override
+    @RequestMapping(value="/generate_daily_reports",method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<DailyReports> generateDailyReports(@PathVariable("accountBook") String accountBook,
+                                                   @RequestBody DailyReportRequest dailyReportRequest){
+        return this.supplierServices.generateDailyReports(accountBook, dailyReportRequest);
+    }
+
 }
