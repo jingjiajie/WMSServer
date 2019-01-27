@@ -20,6 +20,7 @@ public class ReturnRecordView {
     private Timestamp time;
     private String supplierNo;
     private String supplierName;
+    private Integer supplierId;
 
     @Basic
     @Id
@@ -132,6 +133,16 @@ public class ReturnRecordView {
         this.supplierName = supplierName;
     }
 
+    @Basic
+    @Column(name = "SupplierID")
+    public Integer getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Integer supplierId) {
+        this.supplierId = supplierId;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -151,6 +162,7 @@ public class ReturnRecordView {
         if (time != null ? !time.equals(that.time) : that.time != null) return false;
         if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
         if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
+        if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
 
         return true;
     }
@@ -168,6 +180,7 @@ public class ReturnRecordView {
         result = 31 * result + (time != null ? time.hashCode() : 0);
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
         result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
+        result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
         return result;
     }
 }

@@ -3,6 +3,7 @@ import com.wms.services.ledger.datestructures.TreeViewData;
 import com.wms.services.salary.service.GetBigDecimal;
 import com.wms.services.settlement.service.SummaryNoteService;
 import com.wms.services.warehouse.datastructures.DailyReportRequest;
+import com.wms.services.warehouse.datastructures.DailyReports;
 import com.wms.services.warehouse.datastructures.JudgeOldestBatch;
 import com.wms.services.warehouse.datastructures.StockRecordFind;
 import com.wms.services.warehouse.service.RefreshGlobalDateService;
@@ -46,7 +47,7 @@ public class WarehouseService {
         dailyReportRequest.setSupplierId(1);
         dailyReportRequest.setStartTime(GetTimeStampByTime.getTimestamoByTime("2018-5-27 0:0:0"));
         dailyReportRequest.setEndTime(GetTimeStampByTime.getTimestamoByTime("2018-5-27 24:0:0"));
-        supplierServices.generateDailyReports("WMS_Template",dailyReportRequest);
+        List<DailyReports> dailyReports=supplierServices.generateDailyReports("WMS_Template",dailyReportRequest);
 
 //        JudgeOldestBatch judgeOldestBatch=new JudgeOldestBatch();
 //        judgeOldestBatch.setSupplyId(15);
