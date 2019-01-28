@@ -41,4 +41,14 @@ public class DailyReportRequest {
     }
 
     private String time;
+
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
+    }
+
+    private String materialName;
 }

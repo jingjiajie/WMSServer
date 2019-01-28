@@ -19,6 +19,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -153,7 +154,15 @@ public class SupplierControllerImpl implements SupplierController {
         Timestamp timestampEnd = new Timestamp(date.getTime());
         dailyReportRequest.setStartTime(timestampStart);
         dailyReportRequest.setEndTime(timestampEnd);
-        return this.supplierServices.generateDailyReports(accountBook, dailyReportRequest);
+        List<DailyReports> dailyReportRequestList = this.supplierServices.generateDailyReports(accountBook, dailyReportRequest);
+        Iterator<DailyReports> iter = dailyReportRequestList.iterator();
+        while (iter.hasNext()) {
+            //list.remove(0);
+            DailyReports dailyReports = iter.next();
+            if (!dailyReports.getMaterialName().contains(dailyReportRequest.getMaterialName())) {
+                iter.remove();
+            }
+        }
+        return dailyReportRequestList;
     }
-
 }
