@@ -31,4 +31,14 @@ public class DailyReportRequest {
     }
 
     private int supplierId;
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    private String time;
 }
