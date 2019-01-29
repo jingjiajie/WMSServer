@@ -155,10 +155,11 @@ public class SafetyStockServiceImpl implements SafetyStockService{
             new Validator("单位数量").greaterThan(0).validate(safetyStock.getUnitAmount());
             new Validator("源单位").notnull().validate(safetyStock.getSourceUnit());
             new Validator("源单位数量").greaterThan(0).validate(safetyStock.getSourceUnitAmount());
+            new Validator("安全库存数").notEmpty().notnull().greaterThan(0).validate(safetyStock.getAmountMin());
+            new Validator("上架峰值").greaterThan(0).validate(safetyStock.getAmountMax());
 
             if(safetyStock.getAmountMax().compareTo(safetyStock.getAmountMin())<0){
-                SafetyStockView safetyStockView= this.find(accountBook,new Condition().addCondition("id",safetyStock.getId()))[0];
-                throw new WMSServiceException("供货商名称:" + safetyStockView.getSupplierName() + "，物料名称：" + safetyStockView.getMaterialName()+"目标库位："+safetyStockView.getTargetStorageLocationName()+"设置安全库存数小于上架峰值！");
+                throw new WMSServiceException("设置安全库存数不能大于上架峰值！");
             }
             //验证外键
             this.idChecker.check(StorageLocationService.class, accountBook, safetyStock.getTargetStorageLocationId(), "目标库位");
