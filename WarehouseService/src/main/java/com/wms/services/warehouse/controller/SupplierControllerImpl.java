@@ -5,9 +5,12 @@ import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.datastructures.DailyReportRequest;
 import com.wms.services.warehouse.datastructures.DailyReports;
 import com.wms.services.warehouse.datastructures.SupplierAmount;
+import com.wms.services.warehouse.service.DeliveryOrderItemService;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
+import com.wms.utilities.model.DeliveryOrderItemView;
 import com.wms.utilities.model.Supplier;
 import com.wms.utilities.model.SupplierView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,8 @@ import java.util.*;
 public class SupplierControllerImpl implements SupplierController {
     @Autowired
     SupplierServices supplierServices;
+    @Autowired
+    DeliveryOrderItemService deliveryOrderItemService;
 
     @Override
     @ResponseStatus(HttpStatus.OK)
@@ -116,6 +121,36 @@ public class SupplierControllerImpl implements SupplierController {
     }
 
     @Override
+    @RequestMapping(value = "/check_delivery", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public DeliveryOrderItemView[] checkDelivery(@PathVariable("accountBook") String accountBook,
+                                                 @RequestBody DailyReportRequest dailyReportRequest) {
+
+        if (dailyReportRequest.getTime() == null) {
+            dailyReportRequest.setTime(new Timestamp(System.currentTimeMillis()).toString());
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
+        try {
+            date = format.parse(dailyReportRequest.getTime());
+        } catch (Exception e) {
+            throw new WMSServiceException("请检查时间格式是否正确1");
+        }
+        date.setHours(0);
+        date.setMinutes(0);
+        date.setSeconds(0);
+        Timestamp timestampStart = new Timestamp(date.getTime());
+        date.setHours(23);
+        date.setMinutes(59);
+        date.setSeconds(59);
+        Timestamp timestampEnd = new Timestamp(date.getTime());
+        dailyReportRequest.setStartTime(timestampStart);
+        dailyReportRequest.setEndTime(timestampEnd);
+        return this.deliveryOrderItemService.find(accountBook,new Condition().addCondition("supplierId",dailyReportRequest.getSupplierId()).
+                addCondition("deliveryOrderItemCreatTime",new Object[]{dailyReportRequest.getStartTime(),dailyReportRequest.getEndTime()}, ConditionItem.Relation.BETWEEN));
+    }
+
+    @Override
     @RequestMapping(value = "/remind/{supplierId}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public SupplierAmount[] supplierRemind(@PathVariable("accountBook") String accountBook,
@@ -134,7 +169,6 @@ public class SupplierControllerImpl implements SupplierController {
             dailyReportRequest.setTime(new Timestamp(System.currentTimeMillis()).toString());
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        long time = 0;
         Date date;
         try {
             date = format.parse(dailyReportRequest.getTime());

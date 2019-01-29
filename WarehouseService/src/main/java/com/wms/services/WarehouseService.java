@@ -42,12 +42,12 @@ public class WarehouseService {
     public static void main(String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
-        SupplierServices supplierServices=applicationContext.getBean(SupplierServices.class);
-        DailyReportRequest dailyReportRequest=new DailyReportRequest();
-        dailyReportRequest.setSupplierId(1);
-        dailyReportRequest.setStartTime(GetTimeStampByTime.getTimestamoByTime("2018-5-27 0:0:0"));
-        dailyReportRequest.setEndTime(GetTimeStampByTime.getTimestamoByTime("2018-5-27 24:0:0"));
-        List<DailyReports> dailyReports=supplierServices.generateDailyReports("WMS_Template",dailyReportRequest);
+//        SupplierServices supplierServices=applicationContext.getBean(SupplierServices.class);
+//        DailyReportRequest dailyReportRequest=new DailyReportRequest();
+//        dailyReportRequest.setSupplierId(1);
+//        dailyReportRequest.setStartTime(GetTimeStampByTime.getTimestamoByTime("2018-5-27 0:0:0"));
+//        dailyReportRequest.setEndTime(GetTimeStampByTime.getTimestamoByTime("2018-5-27 24:0:0"));
+//        List<DailyReports> dailyReports=supplierServices.generateDailyReports("WMS_Template",dailyReportRequest);
 
 //        JudgeOldestBatch judgeOldestBatch=new JudgeOldestBatch();
 //        judgeOldestBatch.setSupplyId(15);

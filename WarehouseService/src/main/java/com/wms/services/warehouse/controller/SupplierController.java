@@ -2,9 +2,11 @@ package com.wms.services.warehouse.controller;
 import com.wms.services.warehouse.datastructures.DailyReportRequest;
 import com.wms.services.warehouse.datastructures.DailyReports;
 import com.wms.services.warehouse.datastructures.SupplierAmount;
+import com.wms.utilities.model.DeliveryOrderItemView;
 import com.wms.utilities.model.Supplier;
 import com.wms.utilities.model.SupplierView;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -21,4 +23,5 @@ public interface SupplierController {
     long findCountHistory(String accountBook,String condStr);
     SupplierAmount[] supplierRemind(String accountBook, String supplierId);
     List<DailyReports> generateDailyReports(String accountBook, DailyReportRequest dailyReportRequest);
+    DeliveryOrderItemView[] checkDelivery(String accountBook,DailyReportRequest dailyReportRequest);
 }
