@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/{accountBook}/supplier")
@@ -155,14 +152,19 @@ public class SupplierControllerImpl implements SupplierController {
         dailyReportRequest.setStartTime(timestampStart);
         dailyReportRequest.setEndTime(timestampEnd);
         List<DailyReports> dailyReportRequestList = this.supplierServices.generateDailyReports(accountBook, dailyReportRequest);
-        Iterator<DailyReports> iter = dailyReportRequestList.iterator();
-        while (iter.hasNext()) {
-            //list.remove(0);
-            DailyReports dailyReports = iter.next();
-            if (!dailyReports.getMaterialName().contains(dailyReportRequest.getMaterialName())) {
-                iter.remove();
+        if (dailyReportRequest.getMaterialName() != null) {
+            if (!dailyReportRequest.getMaterialName().equals("")) {
+                Iterator<DailyReports> iter = dailyReportRequestList.iterator();
+                while (iter.hasNext()) {
+                    //list.remove(0);
+                    DailyReports dailyReports = iter.next();
+                    if (!dailyReports.getMaterialName().contains(dailyReportRequest.getMaterialName())) {
+                        iter.remove();
+                    }
+                }
             }
         }
+        Collections.reverse(dailyReportRequestList);
         return dailyReportRequestList;
     }
 }
