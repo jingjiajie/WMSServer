@@ -289,7 +289,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
         Stream.of(warehouseEntryItems).forEach(
                 (warehouseEntryItem) -> {
                     new Validator("订单数量").min(0).validate(warehouseEntryItem.getExpectedAmount());
-                    new Validator("实收数量").min(0).validate(warehouseEntryItem.getRealAmount());
+                    new Validator("实收数量").min(0).max(warehouseEntryItem.getExpectedAmount()).validate(warehouseEntryItem.getRealAmount());
                     new Validator("单位数量").min(0).validate(warehouseEntryItem.getUnitAmount());
                     new Validator("已分配送检数量").min(0).max(warehouseEntryItem.getRealAmount()).validate(warehouseEntryItem.getInspectionAmount());
                     new Validator("拒收数量").min(0).max(warehouseEntryItem.getExpectedAmount()).validate(warehouseEntryItem.getRefuseAmount());
