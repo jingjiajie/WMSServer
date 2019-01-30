@@ -66,13 +66,13 @@ public class StorageLocationServiceImpl implements StorageLocationService{
 
             for(int i=0;i<storageLocations.length;i++){
                 Condition cond = new Condition();
-                cond.addCondition("name",new String[]{storageLocations[i].getName()});
+                cond.addCondition("no",new String[]{storageLocations[i].getNo()});
                 StorageLocationView[] storageLocationViews=storageLocationDAO.find(accountBook,cond);
                 StorageAreaView[] storageAreaViews1=storageAreaService.find(accountBook,new Condition().addCondition("id",storageLocations[i].getStorageAreaId()));
                 int warehouseId=storageAreaViews1[0].getWarehouseId();
                 for(int j=0;j<storageLocationViews.length;j++){
                     if(storageLocationViews[j].getWarehouseId()==warehouseId)
-                    {throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());}
+                    {throw new WMSServiceException("库位编码重复：" + storageLocations[i].getName());}
                 }
                 Condition cond1 = new Condition();
                 cond.addCondition("name",new String[]{storageLocations[i].getName()});
@@ -194,7 +194,7 @@ public class StorageLocationServiceImpl implements StorageLocationService{
             cond1.addCondition("id",storageLocations[i].getId(), ConditionItem.Relation.NOT_EQUAL);
             StorageLocationView[] storageLocationViews1=storageLocationDAO.find(accountBook,cond);
             if(storageLocationViews1.length!=0)
-                {throw new WMSServiceException("库位名称重复：" + storageLocations[i].getName());}
+                {throw new WMSServiceException("库位编码重复：" + storageLocations[i].getNo());}
 
         }
             storageLocationDAO.update(accountBook, storageLocations);
