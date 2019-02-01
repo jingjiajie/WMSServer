@@ -409,6 +409,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
             tureTransferStock.setUnit(transferOrderItems[i].getSourceUnit());
             tureTransferStock.setUnitAmount(transferOrderItems[i].getSourceUnitAmount());
             tureTransferStock.setState(2);
+            tureTransferStock.setNewState(2);
             this.stockRecordService.transferStock(accountBook, tureTransferStock,new TransferStock());//直接改数
 
             if (transferOrderItems[i].getScheduledAmount().compareTo(transferOrderItems[i].getRealAmount())==0){
@@ -466,6 +467,7 @@ public class TransferOrderItemServiceImpl implements TransferOrderItemService{
                 transferStock.setNewUnit(transferOrderItem.getUnit());
                 transferStock.setNewUnitAmount(transferOrderItem.getUnitAmount());
                 transferStock.setState(2);
+                transferStock.setNewState(2);
 
                 //旧的信息
                 TransferStock transferStockRestore = new TransferStock();
