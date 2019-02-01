@@ -36,7 +36,6 @@ public class TransferRecordServiceImpl implements TransferRecordService {
             transferRecords[i].setTime(new Timestamp(System.currentTimeMillis()));
         }
         return this.transferRecordDAO.add(accountBook,transferRecords);
-
     }
 
     @Override
