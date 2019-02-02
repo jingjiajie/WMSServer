@@ -892,6 +892,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                 judgeAmount.setI(i);
                 BigDecimal lastRemainAmount = amountAvailableAll.subtract(transferStock.getAvailableAmount());
                 judgeAmount.setLastIRemainAmount(lastRemainAmount);
+                return judgeAmount;
             }
         }
         //数量不足
