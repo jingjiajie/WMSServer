@@ -861,8 +861,8 @@ public class StockRecordServiceImpl implements StockRecordService {
         List<StockRecord> resultList = query.list();
         resultArray = (StockRecord[]) Array.newInstance(StockRecord.class, resultList.size());
         resultList.toArray(resultArray);
-        //正常来说应该是一条
-        if (resultArray.length > 1) {
+        //正常来说应该小于批次数量
+        if (resultArray.length > stockRecordFind.getBatchNo().length) {
             throw new WMSServiceException("按批次查询结果大于1，出错！");
         }
         return resultArray;
@@ -880,7 +880,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
         //没有记录则数量为0
         if (stockRecords.length == 0) {
-            throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "  " + supplyViews[0].getMaterialNo() + "”(单位：“" + transferStock.getUnit() + "”单位数量：“" + transferStock.getUnitAmount() + "”检测状态：“" + this.stateTransfer(transferStock.getState()) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：0");
+            throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "代号" + supplyViews[0].getMaterialNo() + "”(单位：“" + transferStock.getUnit() + "”单位数量：“" + transferStock.getUnitAmount() + "”检测状态：“" + this.stateTransfer(transferStock.getState()) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAvailableAmount() + "，现有库存：0");
         }
         //排序之后最后一条为最久的
         JudgeAmount judgeAmount = new JudgeAmount();
@@ -897,7 +897,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         }
         //数量不足
         if (judgeAmount.getI() == -1) {
-            throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "  " + supplyViews[0].getMaterialNo() + "”(单位：“" + transferStock.getUnit() + "”单位数量：“" + transferStock.getUnitAmount() + "”检测状态：“" + this.stateTransfer(transferStock.getState()) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAmount() + "，现有库存：" + amountAvailableAll);
+            throw new WMSServiceException("物料“" + supplyViews[0].getMaterialName() + "代号" + supplyViews[0].getMaterialNo() + "”(单位：“" + transferStock.getUnit() + "”单位数量：“" + transferStock.getUnitAmount() + "”检测状态：“" + this.stateTransfer(transferStock.getState()) + "”）在库位:“" + storageLocationViews[0].getName() + "”上可用数量不足。需要库存数量：" + transferStock.getAvailableAmount() + "，现有库存：" + amountAvailableAll);
         }
         return judgeAmount;
     }
@@ -1424,7 +1424,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         TransferRecord[] transferRecordsArraySave = (TransferRecord[]) Array.newInstance(TransferRecord.class, transferRecordList.size());
         transferRecordsArraySave = transferRecordList.toArray(transferRecordsArraySave);
         ItemRelatedRecord[] itemRelatedRecordsArraySave = (ItemRelatedRecord[]) Array.newInstance(ItemRelatedRecord.class, itemRelatedRecordList.size());
-        itemRelatedRecordsArraySave = itemRelatedRecordList.toArray(itemRelatedRecords);
+        itemRelatedRecordsArraySave = itemRelatedRecordList.toArray(itemRelatedRecordsArraySave);
         this.stockRecordDAO.add(accountBook, stockRecordsArraySave);
         transformRecordService.add(accountBook, transferRecordsArraySave);
         itemRelatedRecordService.add(accountBook, itemRelatedRecordsArraySave);
@@ -1657,7 +1657,7 @@ public class StockRecordServiceImpl implements StockRecordService {
         this.stockRecordDAO.add(accountBook, stockRecordsArraySave);
         transformRecordService.add(accountBook, transferRecordsArraySave);
         ItemRelatedRecord[] itemRelatedRecordsArraySave = (ItemRelatedRecord[]) Array.newInstance(ItemRelatedRecord.class, itemRelatedRecordList.size());
-        itemRelatedRecordsArraySave = itemRelatedRecordList.toArray(itemRelatedRecords);
+        itemRelatedRecordsArraySave = itemRelatedRecordList.toArray(itemRelatedRecordsArraySave);
         itemRelatedRecordService.add(accountBook, itemRelatedRecordsArraySave);
     }
 

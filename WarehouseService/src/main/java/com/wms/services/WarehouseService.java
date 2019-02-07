@@ -12,6 +12,7 @@ import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.SummaryNote;
 import com.wms.utilities.model.SummaryNoteView;
+import com.wms.utilities.model.TransferRecord;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,6 +27,9 @@ import javax.script.ScriptException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 @SpringBootApplication
@@ -52,6 +56,20 @@ public class WarehouseService {
         stockRecord.setState(1);
         stockRecord.setStorageLocationId(23212);
         stockRecord.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+        TransferRecord transferRecord=new TransferRecord();
+        transferRecord.setTransferAmount(new BigDecimal(0));
+        TransferRecord[] transferRecords=new TransferRecord[]{transferRecord};
+        List<TransferRecord> list= Arrays.asList(transferRecords);
+        Iterator<TransferRecord> it=list.iterator();
+        //去除数组中"a"的元素
+        while(it.hasNext()){
+            TransferRecord transferRecord1=it.next();
+            if(transferRecord1.getTransferAmount().equals(new BigDecimal(0))){
+                it.remove();
+            }
+        }
+        list.toArray(transferRecords);
+        int a;
         //stockRecordService.add("WMS_Template",new StockRecord[]{stockRecord});
 
 
