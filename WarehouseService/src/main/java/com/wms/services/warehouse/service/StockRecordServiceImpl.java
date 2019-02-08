@@ -1311,6 +1311,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                             amountNeed = amountNeed.subtract(availableAmountDifferecnce);
                         } else {//否则 数量减少需要的值（amountNeed）
                             stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                            amountNeed=BigDecimal.ZERO;
                         }
                     } else {
                         stockRecordNew.setAmount(stockRecordsSource[i].getAmount());
@@ -1328,6 +1329,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                             amountNeed = amountNeed.subtract(availableAmountDifferecnce);
                         } else {//否则 数量减少需要的值（amountNeed）
                             stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                            amountNeed=BigDecimal.ZERO;
                         }
                     } else {
                         stockRecordNew.setAmount(stockRecordsSource[i].getAmount());
@@ -1380,6 +1382,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                             amountNeed = amountNeed.subtract(availableAmountDifferecnce);
                         } else {//否则 数量减少需要的值（amountNeed）
                             stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                            amountNeed=BigDecimal.ZERO;
                         }
                     } else {
                         stockRecordNew.setAmount(stockRecordsSource[i].getAmount());
@@ -1398,6 +1401,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                             amountNeed = amountNeed.subtract(availableAmountDifferecnce);
                         } else {//否则 数量减少需要的值（amountNeed）
                             stockRecordNew.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                            amountNeed=BigDecimal.ZERO;
                         }
                     } else {
                         stockRecordNew.setAmount(stockRecordsSource[i].getAmount());
@@ -1577,6 +1581,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                         amountNeed = amountNeed.subtract(availableAmountDifferecnce);
                     } else {//否则 数量减少需要的值（amountNeed）
                         stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                        amountNeed=BigDecimal.ZERO;
                     }
                 } else {
                     stockRecordOld.setAmount(stockRecordsSource[i].getAmount());
@@ -1609,6 +1614,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                         amountNeed = amountNeed.subtract(availableAmountDifferecnce);
                     } else {//否则 数量减少需要的值（amountNeed）
                         stockRecordOld.setAmount(stockRecordsSource[i].getAmount().subtract(amountNeed));
+                        amountNeed=BigDecimal.ZERO;
                     }
                 } else {
                     stockRecordOld.setAmount(stockRecordsSource[i].getAmount());

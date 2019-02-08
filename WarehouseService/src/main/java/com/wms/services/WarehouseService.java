@@ -42,34 +42,34 @@ public class WarehouseService {
     public static void main(String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
-        StockRecordService stockRecordService=applicationContext.getBean(StockRecordService.class);
-        StockRecord stockRecord=new StockRecord();
-        stockRecord.setId(3380);
-        stockRecord.setBatchNo("3");
-        stockRecord.setSupplyId(5);
-        stockRecord.setWarehouseId(5587);
-        stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
-        stockRecord.setAvailableAmount(new BigDecimal(1));
-        stockRecord.setAmount(new BigDecimal(100));
-        stockRecord.setUnit("5");
-        stockRecord.setUnitAmount(new BigDecimal(1));
-        stockRecord.setState(1);
-        stockRecord.setStorageLocationId(23212);
-        stockRecord.setInventoryDate(new Timestamp(System.currentTimeMillis()));
-        TransferRecord transferRecord=new TransferRecord();
-        transferRecord.setTransferAmount(new BigDecimal(0));
-        TransferRecord[] transferRecords=new TransferRecord[]{transferRecord};
-        List<TransferRecord> list= Arrays.asList(transferRecords);
-        Iterator<TransferRecord> it=list.iterator();
-        //去除数组中"a"的元素
-        while(it.hasNext()){
-            TransferRecord transferRecord1=it.next();
-            if(transferRecord1.getTransferAmount().equals(new BigDecimal(0))){
-                it.remove();
-            }
-        }
-        list.toArray(transferRecords);
-        int a;
+//        StockRecordService stockRecordService=applicationContext.getBean(StockRecordService.class);
+//        StockRecord stockRecord=new StockRecord();
+//        stockRecord.setId(3380);
+//        stockRecord.setBatchNo("3");
+//        stockRecord.setSupplyId(5);
+//        stockRecord.setWarehouseId(5587);
+//        stockRecord.setTime(new Timestamp(System.currentTimeMillis()));
+//        stockRecord.setAvailableAmount(new BigDecimal(1));
+//        stockRecord.setAmount(new BigDecimal(100));
+//        stockRecord.setUnit("5");
+//        stockRecord.setUnitAmount(new BigDecimal(1));
+//        stockRecord.setState(1);
+//        stockRecord.setStorageLocationId(23212);
+//        stockRecord.setInventoryDate(new Timestamp(System.currentTimeMillis()));
+//        TransferRecord transferRecord=new TransferRecord();
+//        transferRecord.setTransferAmount(new BigDecimal(0));
+//        TransferRecord[] transferRecords=new TransferRecord[]{transferRecord};
+//        List<TransferRecord> list= Arrays.asList(transferRecords);
+//        Iterator<TransferRecord> it=list.iterator();
+//        //去除数组中"a"的元素
+//        while(it.hasNext()){
+//            TransferRecord transferRecord1=it.next();
+//            if(transferRecord1.getTransferAmount().equals(new BigDecimal(0))){
+//                it.remove();
+//            }
+//        }
+//        list.toArray(transferRecords);
+//        int a;
         //stockRecordService.add("WMS_Template",new StockRecord[]{stockRecord});
 
 
