@@ -419,7 +419,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.QUALIFIED);
             transferStock.setItemTypeForBatchNo(ItemType.entryItem);
-            transferStock.setItemType(ItemType.transferItem);
+            transferStock.setItemType(ItemType.entryToTransfer);
             transferStock.setItemId(warehouseEntryItem.getId());
             this.stockRecordService.transferStock(accountBook, transferStock,new TransferStock());
 
@@ -463,7 +463,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.UNQUALIFIED);
             transferStock.setItemTypeForBatchNo(ItemType.entryItem);
-            transferStock.setItemType(ItemType.transferItem);
+            transferStock.setItemType(ItemType.entryToTransfer);
             this.stockRecordService.RealTransformStock(accountBook, transferStock);
 
             warehouseEntryItem.setState(WarehouseEntryItemService.UNQUALIFIED);
@@ -509,7 +509,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.UNQUALIFIED);
             transferStock.setItemTypeForBatchNo(ItemType.entryItem);
-            transferStock.setItemType(ItemType.transferItem);
+            transferStock.setItemType(ItemType.entryToTransfer);
             transferStock.setItemId(warehouseEntryItem.getId());
             this.stockRecordService.transferStock(accountBook, transferStock,new TransferStock());
 

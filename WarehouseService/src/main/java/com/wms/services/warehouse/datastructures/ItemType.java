@@ -7,5 +7,6 @@ public class ItemType {
    public static final int entryItem=0;
    public static final int transferItem=1;
    public static final int delierItem=2;
+   public static final int entryToTransfer=3;
    public static final int stateForCreateTransferRecord=-1;
 }
