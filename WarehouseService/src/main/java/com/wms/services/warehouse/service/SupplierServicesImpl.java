@@ -545,7 +545,7 @@ public class SupplierServicesImpl implements SupplierServices {
         Object[] objectEnd = this.findSupplierStockByTime(accountBook, stockRecordFindEnd, "");
         for (int j = 0; j < objectEnd.length; j++) {
             //物料代号 物料名 状态 总数量
-            Object[] o = (Object[]) objectPrime[j];
+            Object[] o = (Object[]) objectEnd[j];
             DailyReports dailyReports = new DailyReports();
             dailyReports.setMaterialName((String) o[0]);
             dailyReports.setMaterialNo((String) o[1]);
