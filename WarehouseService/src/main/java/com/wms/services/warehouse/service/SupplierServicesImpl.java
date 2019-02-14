@@ -509,6 +509,7 @@ public class SupplierServicesImpl implements SupplierServices {
             DailyReports dailyReports = new DailyReports();
             dailyReports.setMaterialName((String) o[0]);
             dailyReports.setMaterialNo((String) o[1]);
+            dailyReports.setMaterialProductLine((String)o[5]);
             dailyReports.setState((int) o[2]);
             dailyReports.setRealStock((BigDecimal) o[3]);
             dailyReports.setSupplyId((int) o[4]);
@@ -531,6 +532,7 @@ public class SupplierServicesImpl implements SupplierServices {
                 DailyReports dailyReports = new DailyReports();
                 dailyReports.setMaterialName(supplyViews[i].getMaterialName());
                 dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
+                dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
                 dailyReports.setState(TransferStock.QUALIFIED);
                 dailyReports.setRealStock(BigDecimal.ZERO);
                 dailyReports.setSupplyId(supplyViews[i].getId());
@@ -549,6 +551,7 @@ public class SupplierServicesImpl implements SupplierServices {
             DailyReports dailyReports = new DailyReports();
             dailyReports.setMaterialName((String) o[0]);
             dailyReports.setMaterialNo((String) o[1]);
+            dailyReports.setMaterialProductLine((String)o[5]);
             dailyReports.setState((int) o[2]);
             dailyReports.setRealStock((BigDecimal) o[3]);
             dailyReports.setSupplyId((int) o[4]);
@@ -571,6 +574,7 @@ public class SupplierServicesImpl implements SupplierServices {
                 DailyReports dailyReports = new DailyReports();
                 dailyReports.setMaterialName(supplyViews[i].getMaterialName());
                 dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
+                dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
                 dailyReports.setState(TransferStock.QUALIFIED);
                 dailyReports.setRealStock(BigDecimal.ZERO);
                 dailyReports.setSupplyId(supplyViews[i].getId());
@@ -590,6 +594,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReportsDeliver.setSupplyId(deliveryOrderItemView.getSupplyId());
             dailyReportsDeliver.setMaterialName(deliveryOrderItemView.getMaterialName());
             dailyReportsDeliver.setMaterialNo(deliveryOrderItemView.getMaterialNo());
+            dailyReportsDeliver.setMaterialProductLine(deliveryOrderItemView.getMaterialProductLine());
             dailyReportsDeliver.setState(TransferStock.QUALIFIED);
             dailyReportsDeliver.setSupplierName(deliveryOrderItemView.getSupplierName());
             dailyReportsDeliver.setAmountDiff(dailyReportsDeliver.getAmountDiff().add(deliveryOrderItemView.getRealAmount()));
@@ -601,6 +606,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setSupplyId(warehouseEntryItem.getSupplyId());
             dailyReports.setMaterialName(warehouseEntryItem.getMaterialName());
             dailyReports.setMaterialNo((warehouseEntryItem.getMaterialNo()));
+            dailyReports.setMaterialProductLine(warehouseEntryItem.getMaterialProductLine());
             if (warehouseEntryItem.getState() == WarehouseEntryItemService.BEING_INSPECTED || warehouseEntryItem.getState() == WarehouseEntryItemService.WAIT_FOR_PUT_IN_STORAGE) {
                 dailyReports.setState(TransferStock.WAITING_FOR_INSPECTION);
             }
@@ -619,7 +625,7 @@ public class SupplierServicesImpl implements SupplierServices {
         return dailyReportsList;
     }
 
-    //物料代号 物料名 状态 总数量 supplyId
+    //物料代号 物料名 状态 总数量 supplyId 物料系列
     private Object[] findSupplierStockByTime(String accountBook, StockRecordFind stockRecordFind, String supplyId) {
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
@@ -630,7 +636,7 @@ public class SupplierServicesImpl implements SupplierServices {
         }
         Query query = null;
         //库存查询最新一条用
-        String sqlNew = "select s_all.materialNo,s_all.materialName,s_all.state,sum(s_all.amount) as sum_amount,s_all.supplyId from \n" +
+        String sqlNew = "select s_all.materialNo,s_all.materialName,s_all.state,sum(s_all.amount) as sum_amount,s_all.supplyId,s_all.MaterialProductLine from \n" +
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2\n" +

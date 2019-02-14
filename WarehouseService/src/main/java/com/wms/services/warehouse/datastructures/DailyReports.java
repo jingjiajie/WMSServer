@@ -77,10 +77,19 @@ public class DailyReports {
         this.supplyId = supplyId;
     }
 
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
     private int supplyId;
     private String supplierName;
     private String materialNo;
     private String materialName;
+    private String materialProductLine;
     private BigDecimal amountDiff;
     private BigDecimal realStock;
     private Timestamp timestamp;
