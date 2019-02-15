@@ -513,7 +513,7 @@ public class StockRecordServiceImpl implements StockRecordService {
                     stockRecordNew.setManufactureDate(stockRecordSource1[i].getManufactureDate());
                     sourceStorageNewAmount = stockRecordNew.getAmount();
                     int[] oldStockRecordId = stockRecordDAO.add(accountBook, new StockRecord[]{stockRecordOld, stockRecordNew});
-                    if (oldStockRecordId.length != 1) {
+                    if (oldStockRecordId.length != 2) {
                         throw new WMSServiceException("添加新库存记录失败！");
                     }
                     //TODO 移位记录还没改

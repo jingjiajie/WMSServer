@@ -53,7 +53,7 @@ public class InspectionNoteServiceImpl
                 obj.setNo(this.orderNoGenerator.generateNextNo(accountBook, PREFIX,obj.getWarehouseId()));
             }
             obj.setCreateTime(new Timestamp(System.currentTimeMillis()));
-            obj.setVersion(1);
+            //obj.setVersion(1);
         });
         this.validateEntities(accountBook, inspectionNotes);
         return inspectionNoteDAO.add(accountBook, inspectionNotes);
