@@ -507,8 +507,8 @@ public class SupplierServicesImpl implements SupplierServices {
             //物料代号 物料名 状态 总数量
             Object[] o = (Object[]) objectPrime[j];
             DailyReports dailyReports = new DailyReports();
-            dailyReports.setMaterialName((String) o[0]);
-            dailyReports.setMaterialNo((String) o[1]);
+            dailyReports.setMaterialNo((String) o[0]);
+            dailyReports.setMaterialName((String) o[1]);
             dailyReports.setMaterialProductLine((String)o[5]);
             dailyReports.setState((int) o[2]);
             dailyReports.setRealStock((BigDecimal) o[3]);
@@ -549,8 +549,8 @@ public class SupplierServicesImpl implements SupplierServices {
             //物料代号 物料名 状态 总数量
             Object[] o = (Object[]) objectEnd[j];
             DailyReports dailyReports = new DailyReports();
-            dailyReports.setMaterialName((String) o[0]);
-            dailyReports.setMaterialNo((String) o[1]);
+            dailyReports.setMaterialNo((String) o[0]);
+            dailyReports.setMaterialName((String) o[1]);
             dailyReports.setMaterialProductLine((String)o[5]);
             dailyReports.setState((int) o[2]);
             dailyReports.setRealStock((BigDecimal) o[3]);
@@ -572,8 +572,8 @@ public class SupplierServicesImpl implements SupplierServices {
             //如果不存在
             if(!exist){
                 DailyReports dailyReports = new DailyReports();
-                dailyReports.setMaterialName(supplyViews[i].getMaterialName());
-                dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
+                dailyReports.setMaterialNo(supplyViews[i].getMaterialName());
+                dailyReports.setMaterialName(supplyViews[i].getMaterialNo());
                 dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
                 dailyReports.setState(TransferStock.QUALIFIED);
                 dailyReports.setRealStock(BigDecimal.ZERO);
@@ -595,10 +595,15 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReportsDeliver.setMaterialName(deliveryOrderItemView.getMaterialName());
             dailyReportsDeliver.setMaterialNo(deliveryOrderItemView.getMaterialNo());
             dailyReportsDeliver.setMaterialProductLine(deliveryOrderItemView.getMaterialProductLine());
-            dailyReportsDeliver.setState(TransferStock.QUALIFIED);
+            if(deliveryOrderItemView.getState()==DeliveryOrderService.DELIVERY_TYPE_Qualified){
+            dailyReportsDeliver.setState(TransferStock.QUALIFIED);}
+            else{
+                dailyReportsDeliver.setState(TransferStock.UNQUALIFIED);
+            }
             dailyReportsDeliver.setSupplierName(deliveryOrderItemView.getSupplierName());
             dailyReportsDeliver.setAmountDiff(dailyReportsDeliver.getAmountDiff().add(deliveryOrderItemView.getRealAmount()));
             dailyReportsDeliver.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
+            dailyReportsDeliver.setTimestamp(deliveryOrderItemView.getDeliveryOrderCreateTime());
             dailyReportsList.add(dailyReportsDeliver);
         }
         for (WarehouseEntryItemView warehouseEntryItem : warehouseEntryItemViews) {
@@ -619,6 +624,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setSupplierName(warehouseEntryItem.getSupplierName());
             dailyReports.setAmountDiff(warehouseEntryItem.getRealAmount());
             dailyReports.setType(DailyReports.AMOUNT_DIFF_ENTRY_STATE);
+            dailyReports.setTimestamp(warehouseEntryItem.getWarehouseEntryCreateTime());
             dailyReportsList.add(dailyReports);
         }
         Collections.sort(dailyReportsList, new DailyReportsComparator());
