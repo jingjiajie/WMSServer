@@ -102,23 +102,23 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
     }
 
     private void validateDuplication(String accountBook, WarehouseEntry[] warehouseEntries) {
-        Condition cond = new Condition();
-        cond.addCondition("warehouseId", warehouseEntries[0].getWarehouseId());
-        WarehouseEntry[] warehouseEntriesCheck = warehouseEntryDAO.findTable(accountBook, cond);
-        List<WarehouseEntry> warehouseEntryList=new ArrayList<>();
-        for(int i=0;i<warehouseEntriesCheck.length;i++){
-            if(warehouseEntriesCheck[i].getInboundDeliveryOrderNo()!=null){
-            if(!warehouseEntriesCheck[i].getInboundDeliveryOrderNo().equals(""))
-            {
-                warehouseEntryList.add(warehouseEntriesCheck[i]);
-            }}
-        }
-        warehouseEntryList.stream().sorted(Comparator.comparing(WarehouseEntry::getInboundDeliveryOrderNo)).reduce((last, cur) -> {
-            if (last.getInboundDeliveryOrderNo().equals(cur.getInboundDeliveryOrderNo()) && last.getInboundDeliveryOrderNo() != null && !(last.getInboundDeliveryOrderNo().equals(""))) {
-                throw new WMSServiceException("入库单内向单号重复:" + cur.getNo());
-            }
-            return cur;
-        });
+//        Condition cond = new Condition();
+//        cond.addCondition("warehouseId", warehouseEntries[0].getWarehouseId());
+//        WarehouseEntry[] warehouseEntriesCheck = warehouseEntryDAO.findTable(accountBook, cond);
+//        List<WarehouseEntry> warehouseEntryList=new ArrayList<>();
+//        for(int i=0;i<warehouseEntriesCheck.length;i++){
+//            if(warehouseEntriesCheck[i].getInboundDeliveryOrderNo()!=null){
+//            if(!warehouseEntriesCheck[i].getInboundDeliveryOrderNo().equals(""))
+//            {
+//                warehouseEntryList.add(warehouseEntriesCheck[i]);
+//            }}
+//        }
+//        warehouseEntryList.stream().sorted(Comparator.comparing(WarehouseEntry::getInboundDeliveryOrderNo)).reduce((last, cur) -> {
+//            if (last.getInboundDeliveryOrderNo().equals(cur.getInboundDeliveryOrderNo()) && last.getInboundDeliveryOrderNo() != null && !(last.getInboundDeliveryOrderNo().equals(""))) {
+//                throw new WMSServiceException("入库单内向单号重复:" + cur.getNo());
+//            }
+//            return cur;
+//        });
     }
 
     @Override
