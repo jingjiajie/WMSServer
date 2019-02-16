@@ -572,8 +572,8 @@ public class SupplierServicesImpl implements SupplierServices {
             //如果不存在
             if(!exist){
                 DailyReports dailyReports = new DailyReports();
-                dailyReports.setMaterialNo(supplyViews[i].getMaterialName());
-                dailyReports.setMaterialName(supplyViews[i].getMaterialNo());
+                dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
+                dailyReports.setMaterialName(supplyViews[i].getMaterialName());
                 dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
                 dailyReports.setState(TransferStock.QUALIFIED);
                 dailyReports.setRealStock(BigDecimal.ZERO);
