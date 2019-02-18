@@ -295,7 +295,7 @@ public class WarehouseEntryServiceImpl implements WarehouseEntryService {
 
     @Override
     public void reject(String accountBook, List<Integer> ids) throws WMSServiceException {
-        this.putIn1(accountBook, ids, false);
+        this.putIn(accountBook, ids, false);
     }
 
     @Override
