@@ -501,7 +501,7 @@ public class SupplierServicesImpl implements SupplierServices {
         StockRecordFind stockRecordFindPrime = new StockRecordFind();
         stockRecordFindPrime.setSupplierId(dailyReportRequest.getSupplierId());
         stockRecordFindPrime.setTimeEnd(dailyReportRequest.getStartTime());
-        SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("supplierId",dailyReportRequest.getSupplierId()));
+        SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("supplierId", dailyReportRequest.getSupplierId()));
         Object[] objectPrime = this.findSupplierStockByTime(accountBook, stockRecordFindPrime, "");
         for (int j = 0; j < objectPrime.length; j++) {
             //物料代号 物料名 状态 总数量
@@ -509,7 +509,7 @@ public class SupplierServicesImpl implements SupplierServices {
             DailyReports dailyReports = new DailyReports();
             dailyReports.setMaterialNo((String) o[0]);
             dailyReports.setMaterialName((String) o[1]);
-            dailyReports.setMaterialProductLine((String)o[5]);
+            dailyReports.setMaterialProductLine((String) o[5]);
             dailyReports.setState((int) o[2]);
             dailyReports.setRealStock((BigDecimal) o[3]);
             dailyReports.setSupplyId((int) o[4]);
@@ -518,29 +518,32 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReportsList.add(dailyReports);
         }
         //把不存在零件显示为0
-        for(int i=0;i<supplyViews.length;i++){
-            boolean exist=false;
-            for (int j = 0; j < objectPrime.length; j++) {
-                //物料代号 物料名 状态 总数量
-                Object[] o = (Object[]) objectPrime[j];
-                if((int)o[4]==supplyViews[i].getId()){
-                    exist=true;
+        for (int i = 0; i < supplyViews.length; i++) {
+            for (int s = 0; s < 3; s++) {
+                boolean exist = false;
+                for (int j = 0; j < objectPrime.length; j++) {
+                    //物料代号 物料名 状态 总数量
+                    Object[] o = (Object[]) objectPrime[j];
+                    if ((int) o[4] == supplyViews[i].getId() && (int) o[2] == s) {
+                        exist = true;
+                    }
+                }
+                //如果不存在
+                if (!exist) {
+                    DailyReports dailyReports = new DailyReports();
+                    dailyReports.setMaterialName(supplyViews[i].getMaterialName());
+                    dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
+                    dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
+                    dailyReports.setState(s);
+                    dailyReports.setRealStock(BigDecimal.ZERO);
+                    dailyReports.setSupplyId(supplyViews[i].getId());
+                    dailyReports.setTimestamp(dailyReportRequest.getStartTime());
+                    dailyReports.setType(DailyReports.AMOUNT_PRIME);
+                    dailyReportsList.add(dailyReports);
                 }
             }
-            //如果不存在
-            if(!exist){
-                DailyReports dailyReports = new DailyReports();
-                dailyReports.setMaterialName(supplyViews[i].getMaterialName());
-                dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
-                dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
-                dailyReports.setState(TransferStock.QUALIFIED);
-                dailyReports.setRealStock(BigDecimal.ZERO);
-                dailyReports.setSupplyId(supplyViews[i].getId());
-                dailyReports.setTimestamp(dailyReportRequest.getStartTime());
-                dailyReports.setType(DailyReports.AMOUNT_PRIME);
-                dailyReportsList.add(dailyReports);
-            }
         }
+
         StockRecordFind stockRecordFindEnd = new StockRecordFind();
         stockRecordFindEnd.setSupplierId(dailyReportRequest.getSupplierId());
         stockRecordFindEnd.setTimeEnd(dailyReportRequest.getEndTime());
@@ -551,7 +554,7 @@ public class SupplierServicesImpl implements SupplierServices {
             DailyReports dailyReports = new DailyReports();
             dailyReports.setMaterialNo((String) o[0]);
             dailyReports.setMaterialName((String) o[1]);
-            dailyReports.setMaterialProductLine((String)o[5]);
+            dailyReports.setMaterialProductLine((String) o[5]);
             dailyReports.setState((int) o[2]);
             dailyReports.setRealStock((BigDecimal) o[3]);
             dailyReports.setSupplyId((int) o[4]);
@@ -560,27 +563,29 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReportsList.add(dailyReports);
         }
         //把不存在零件显示为0
-        for(int i=0;i<supplyViews.length;i++){
-            boolean exist=false;
-            for (int j = 0; j < objectEnd.length; j++) {
-                //物料代号 物料名 状态 总数量
-                Object[] o = (Object[]) objectEnd[j];
-                if((int)o[4]==supplyViews[i].getId()){
-                    exist=true;
+        for (int i = 0; i < supplyViews.length; i++) {
+            for (int s = 0; s < 3; s++) {
+                boolean exist = false;
+                for (int j = 0; j < objectEnd.length; j++) {
+                    //物料代号 物料名 状态 总数量
+                    Object[] o = (Object[]) objectEnd[j];
+                    if ((int) o[4] == supplyViews[i].getId() && (int) o[2] == s) {
+                        exist = true;
+                    }
                 }
-            }
-            //如果不存在
-            if(!exist){
-                DailyReports dailyReports = new DailyReports();
-                dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
-                dailyReports.setMaterialName(supplyViews[i].getMaterialName());
-                dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
-                dailyReports.setState(TransferStock.QUALIFIED);
-                dailyReports.setRealStock(BigDecimal.ZERO);
-                dailyReports.setSupplyId(supplyViews[i].getId());
-                dailyReports.setTimestamp(dailyReportRequest.getStartTime());
-                dailyReports.setType(DailyReports.AMOUNT_END);
-                dailyReportsList.add(dailyReports);
+                //如果不存在
+                if (!exist) {
+                    DailyReports dailyReports = new DailyReports();
+                    dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
+                    dailyReports.setMaterialName(supplyViews[i].getMaterialName());
+                    dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
+                    dailyReports.setState(s);
+                    dailyReports.setRealStock(BigDecimal.ZERO);
+                    dailyReports.setSupplyId(supplyViews[i].getId());
+                    dailyReports.setTimestamp(dailyReportRequest.getStartTime());
+                    dailyReports.setType(DailyReports.AMOUNT_END);
+                    dailyReportsList.add(dailyReports);
+                }
             }
         }
         //找出供应商一段时间内的出库单条目和入库单条目 出库单条目中实际数量不为0的
@@ -595,9 +600,9 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReportsDeliver.setMaterialName(deliveryOrderItemView.getMaterialName());
             dailyReportsDeliver.setMaterialNo(deliveryOrderItemView.getMaterialNo());
             dailyReportsDeliver.setMaterialProductLine(deliveryOrderItemView.getMaterialProductLine());
-            if(deliveryOrderItemView.getState()==DeliveryOrderService.DELIVERY_TYPE_Qualified){
-            dailyReportsDeliver.setState(TransferStock.QUALIFIED);}
-            else{
+            if (deliveryOrderItemView.getState() == DeliveryOrderService.DELIVERY_TYPE_Qualified) {
+                dailyReportsDeliver.setState(TransferStock.QUALIFIED);
+            } else {
                 dailyReportsDeliver.setState(TransferStock.UNQUALIFIED);
             }
             dailyReportsDeliver.setSupplierName(deliveryOrderItemView.getSupplierName());
