@@ -27,7 +27,7 @@ public class DeliveryOrderView {
     private String liscensePlateNumber;
     private int type;
     private String destinationName;
-    private int destinationId;
+    private Integer destinationId;
 
     @Basic
     @Id
@@ -210,8 +210,6 @@ public class DeliveryOrderView {
         this.type = type;
     }
 
-
-
     @Basic
     @Column(name = "DestinationName")
     public String getDestinationName() {
@@ -224,11 +222,11 @@ public class DeliveryOrderView {
 
     @Basic
     @Column(name = "DestinationID")
-    public int getDestinationId() {
+    public Integer getDestinationId() {
         return destinationId;
     }
 
-    public void setDestinationId(int destinationId) {
+    public void setDestinationId(Integer destinationId) {
         this.destinationId = destinationId;
     }
 
@@ -245,7 +243,6 @@ public class DeliveryOrderView {
         if (state != that.state) return false;
         if (createPersonId != that.createPersonId) return false;
         if (type != that.type) return false;
-        if (destinationId != that.destinationId) return false;
         if (no != null ? !no.equals(that.no) : that.no != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (deliverTime != null ? !deliverTime.equals(that.deliverTime) : that.deliverTime != null) return false;
@@ -266,8 +263,9 @@ public class DeliveryOrderView {
         if (driverName != null ? !driverName.equals(that.driverName) : that.driverName != null) return false;
         if (liscensePlateNumber != null ? !liscensePlateNumber.equals(that.liscensePlateNumber) : that.liscensePlateNumber != null)
             return false;
-        //if (version != null ? !version.equals(that.version) : that.version != null) return false;
         if (destinationName != null ? !destinationName.equals(that.destinationName) : that.destinationName != null)
+            return false;
+        if (destinationId != null ? !destinationId.equals(that.destinationId) : that.destinationId != null)
             return false;
 
         return true;
@@ -293,9 +291,8 @@ public class DeliveryOrderView {
         result = 31 * result + (driverName != null ? driverName.hashCode() : 0);
         result = 31 * result + (liscensePlateNumber != null ? liscensePlateNumber.hashCode() : 0);
         result = 31 * result + type;
-        //result = 31 * result + (version != null ? version.hashCode() : 0);
         result = 31 * result + (destinationName != null ? destinationName.hashCode() : 0);
-        result = 31 * result + destinationId;
+        result = 31 * result + (destinationId != null ? destinationId.hashCode() : 0);
         return result;
     }
 }

@@ -20,8 +20,7 @@ public class DeliveryOrder {
     private String driverName;
     private String liscensePlateNumber;
     private int type;
-
-    private int destinationId;
+    private Integer destinationId;
     //private Integer version;
 
 
@@ -179,13 +178,14 @@ public class DeliveryOrder {
 
     @Basic
     @Column(name = "DestinationID")
-    public int getDestinationId() {
+    public Integer getDestinationId() {
         return destinationId;
     }
 
-    public void setDestinationId(int destinationId) {
+    public void setDestinationId(Integer destinationId) {
         this.destinationId = destinationId;
     }
+
 
 
 //    @Basic
@@ -197,6 +197,7 @@ public class DeliveryOrder {
 //    public void setVersion(Integer version) {
 //        this.version = version;
 //    }
+
 
     @Override
     public boolean equals(Object object) {
@@ -210,7 +211,6 @@ public class DeliveryOrder {
         if (state != that.state) return false;
         if (createPersonId != that.createPersonId) return false;
         if (type != that.type) return false;
-        if (destinationId != that.destinationId) return false;
         if (no != null ? !no.equals(that.no) : that.no != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (deliverTime != null ? !deliverTime.equals(that.deliverTime) : that.deliverTime != null) return false;
@@ -225,6 +225,10 @@ public class DeliveryOrder {
         if (driverName != null ? !driverName.equals(that.driverName) : that.driverName != null) return false;
         if (liscensePlateNumber != null ? !liscensePlateNumber.equals(that.liscensePlateNumber) : that.liscensePlateNumber != null)
             return false;
+
+        if (destinationId != null ? !destinationId.equals(that.destinationId) : that.destinationId != null)
+            return false;
+
         return true;
     }
 
@@ -245,7 +249,7 @@ public class DeliveryOrder {
         result = 31 * result + (driverName != null ? driverName.hashCode() : 0);
         result = 31 * result + (liscensePlateNumber != null ? liscensePlateNumber.hashCode() : 0);
         result = 31 * result + type;
-        result = 31 * result + destinationId;
+        result = 31 * result + (destinationId != null ? destinationId.hashCode() : 0);
 
         return result;
     }

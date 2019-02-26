@@ -8,18 +8,17 @@ import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
-import com.wms.utilities.model.SettlementNote;
-import com.wms.utilities.model.SettlementNoteItem;
-import com.wms.utilities.model.SettlementNoteItemView;
-import com.wms.utilities.model.SettlementNoteView;
+import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.wms.services.settlement.datastructures.SummaryNoteItemAndDeliveryDetails;
 
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -35,6 +34,8 @@ public class SettlementNoteItemServiceImpl
     IDChecker idChecker;
     @Autowired
     SettlementNoteService settlementNoteService;
+    @Autowired
+    DeliveryAmountDetailsService deliveryAmountDetailsService;
 
     @Override
     public int[] add(String accountBook, SettlementNoteItem[] settlementNoteItems) throws WMSServiceException

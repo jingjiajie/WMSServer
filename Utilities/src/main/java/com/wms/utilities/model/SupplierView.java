@@ -10,6 +10,9 @@ import java.sql.Timestamp;
 @Entity
 public class SupplierView {
     private int id;
+    private String warehouseName;
+    private String createPersonName;
+    private String lastUpdatePersonName;
     private int warehouseId;
     private String no;
     private String fullName;
@@ -20,9 +23,9 @@ public class SupplierView {
     private Timestamp contractEndTime;
     private BigDecimal invoiceDelayMonth;
     private BigDecimal balanceDelayMonth;
-    private BigDecimal netArea;
-    private BigDecimal fixedStorageCost;
-    private BigDecimal contractStorageArea;
+    private BigDecimal basicArea;
+    private BigDecimal fixedStorageSingleCost;
+    private String realArea;
     private String taxpayerNumber;
     private String address;
     private String tel;
@@ -38,9 +41,6 @@ public class SupplierView {
     private Timestamp createTime;
     private Integer lastUpdatePersonId;
     private Timestamp lastUpdateTime;
-    private String warehouseName;
-    private String createPersonName;
-    private String lastUpdatePersonName;
     private int enabled;
     private String serialNo;
     private String supplierPassward;
@@ -54,6 +54,36 @@ public class SupplierView {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Basic
+    @Column(name = "WarehouseName")
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
+    }
+
+    @Basic
+    @Column(name = "CreatePersonName")
+    public String getCreatePersonName() {
+        return createPersonName;
+    }
+
+    public void setCreatePersonName(String createPersonName) {
+        this.createPersonName = createPersonName;
+    }
+
+    @Basic
+    @Column(name = "LastUpdatePersonName")
+    public String getLastUpdatePersonName() {
+        return lastUpdatePersonName;
+    }
+
+    public void setLastUpdatePersonName(String lastUpdatePersonName) {
+        this.lastUpdatePersonName = lastUpdatePersonName;
     }
 
     @Basic
@@ -157,33 +187,33 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "NetArea")
-    public BigDecimal getNetArea() {
-        return netArea;
+    @Column(name = "BasicArea")
+    public BigDecimal getBasicArea() {
+        return basicArea;
     }
 
-    public void setNetArea(BigDecimal netArea) {
-        this.netArea = netArea;
-    }
-
-    @Basic
-    @Column(name = "FixedStorageCost")
-    public BigDecimal getFixedStorageCost() {
-        return fixedStorageCost;
-    }
-
-    public void setFixedStorageCost(BigDecimal fixedStorageCost) {
-        this.fixedStorageCost = fixedStorageCost;
+    public void setBasicArea(BigDecimal basicArea) {
+        this.basicArea = basicArea;
     }
 
     @Basic
-    @Column(name = "ContractStorageArea")
-    public BigDecimal getContractStorageArea() {
-        return contractStorageArea;
+    @Column(name = "FixedStorageSingleCost")
+    public BigDecimal getFixedStorageSingleCost() {
+        return fixedStorageSingleCost;
     }
 
-    public void setContractStorageArea(BigDecimal contractStorageArea) {
-        this.contractStorageArea = contractStorageArea;
+    public void setFixedStorageSingleCost(BigDecimal fixedStorageSingleCost) {
+        this.fixedStorageSingleCost = fixedStorageSingleCost;
+    }
+
+    @Basic
+    @Column(name = "RealArea")
+    public String getRealArea() {
+        return realArea;
+    }
+
+    public void setRealArea(String realArea) {
+        this.realArea = realArea;
     }
 
     @Basic
@@ -337,36 +367,6 @@ public class SupplierView {
     }
 
     @Basic
-    @Column(name = "WarehouseName")
-    public String getWarehouseName() {
-        return warehouseName;
-    }
-
-    public void setWarehouseName(String warehouseName) {
-        this.warehouseName = warehouseName;
-    }
-
-    @Basic
-    @Column(name = "CreatePersonName")
-    public String getCreatePersonName() {
-        return createPersonName;
-    }
-
-    public void setCreatePersonName(String createPersonName) {
-        this.createPersonName = createPersonName;
-    }
-
-    @Basic
-    @Column(name = "LastUpdatePersonName")
-    public String getLastUpdatePersonName() {
-        return lastUpdatePersonName;
-    }
-
-    public void setLastUpdatePersonName(String lastUpdatePersonName) {
-        this.lastUpdatePersonName = lastUpdatePersonName;
-    }
-
-    @Basic
     @Column(name = "Enabled")
     public int getEnabled() {
         return enabled;
@@ -408,6 +408,12 @@ public class SupplierView {
         if (isHistory != that.isHistory) return false;
         if (createPersonId != that.createPersonId) return false;
         if (enabled != that.enabled) return false;
+        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
+            return false;
+        if (createPersonName != null ? !createPersonName.equals(that.createPersonName) : that.createPersonName != null)
+            return false;
+        if (lastUpdatePersonName != null ? !lastUpdatePersonName.equals(that.lastUpdatePersonName) : that.lastUpdatePersonName != null)
+            return false;
         if (no != null ? !no.equals(that.no) : that.no != null) return false;
         if (fullName != null ? !fullName.equals(that.fullName) : that.fullName != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
@@ -422,11 +428,10 @@ public class SupplierView {
             return false;
         if (balanceDelayMonth != null ? !balanceDelayMonth.equals(that.balanceDelayMonth) : that.balanceDelayMonth != null)
             return false;
-        if (netArea != null ? !netArea.equals(that.netArea) : that.netArea != null) return false;
-        if (fixedStorageCost != null ? !fixedStorageCost.equals(that.fixedStorageCost) : that.fixedStorageCost != null)
+        if (basicArea != null ? !basicArea.equals(that.basicArea) : that.basicArea != null) return false;
+        if (fixedStorageSingleCost != null ? !fixedStorageSingleCost.equals(that.fixedStorageSingleCost) : that.fixedStorageSingleCost != null)
             return false;
-        if (contractStorageArea != null ? !contractStorageArea.equals(that.contractStorageArea) : that.contractStorageArea != null)
-            return false;
+        if (realArea != null ? !realArea.equals(that.realArea) : that.realArea != null) return false;
         if (taxpayerNumber != null ? !taxpayerNumber.equals(that.taxpayerNumber) : that.taxpayerNumber != null)
             return false;
         if (address != null ? !address.equals(that.address) : that.address != null) return false;
@@ -446,12 +451,6 @@ public class SupplierView {
             return false;
         if (lastUpdateTime != null ? !lastUpdateTime.equals(that.lastUpdateTime) : that.lastUpdateTime != null)
             return false;
-        if (warehouseName != null ? !warehouseName.equals(that.warehouseName) : that.warehouseName != null)
-            return false;
-        if (createPersonName != null ? !createPersonName.equals(that.createPersonName) : that.createPersonName != null)
-            return false;
-        if (lastUpdatePersonName != null ? !lastUpdatePersonName.equals(that.lastUpdatePersonName) : that.lastUpdatePersonName != null)
-            return false;
         if (serialNo != null ? !serialNo.equals(that.serialNo) : that.serialNo != null) return false;
         if (supplierPassward != null ? !supplierPassward.equals(that.supplierPassward) : that.supplierPassward != null)
             return false;
@@ -462,6 +461,9 @@ public class SupplierView {
     @Override
     public int hashCode() {
         int result = id;
+        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
+        result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
+        result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
         result = 31 * result + warehouseId;
         result = 31 * result + (no != null ? no.hashCode() : 0);
         result = 31 * result + (fullName != null ? fullName.hashCode() : 0);
@@ -472,9 +474,9 @@ public class SupplierView {
         result = 31 * result + (contractEndTime != null ? contractEndTime.hashCode() : 0);
         result = 31 * result + (invoiceDelayMonth != null ? invoiceDelayMonth.hashCode() : 0);
         result = 31 * result + (balanceDelayMonth != null ? balanceDelayMonth.hashCode() : 0);
-        result = 31 * result + (netArea != null ? netArea.hashCode() : 0);
-        result = 31 * result + (fixedStorageCost != null ? fixedStorageCost.hashCode() : 0);
-        result = 31 * result + (contractStorageArea != null ? contractStorageArea.hashCode() : 0);
+        result = 31 * result + (basicArea != null ? basicArea.hashCode() : 0);
+        result = 31 * result + (fixedStorageSingleCost != null ? fixedStorageSingleCost.hashCode() : 0);
+        result = 31 * result + (realArea != null ? realArea.hashCode() : 0);
         result = 31 * result + (taxpayerNumber != null ? taxpayerNumber.hashCode() : 0);
         result = 31 * result + (address != null ? address.hashCode() : 0);
         result = 31 * result + (tel != null ? tel.hashCode() : 0);
@@ -490,9 +492,6 @@ public class SupplierView {
         result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
         result = 31 * result + (lastUpdatePersonId != null ? lastUpdatePersonId.hashCode() : 0);
         result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
-        result = 31 * result + (warehouseName != null ? warehouseName.hashCode() : 0);
-        result = 31 * result + (createPersonName != null ? createPersonName.hashCode() : 0);
-        result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
         result = 31 * result + enabled;
         result = 31 * result + (serialNo != null ? serialNo.hashCode() : 0);
         result = 31 * result + (supplierPassward != null ? supplierPassward.hashCode() : 0);

@@ -26,6 +26,8 @@ implements SummaryDetailsService{
     SummaryDetailsDAO summaryDetailsDAO;
     @Autowired
     SupplyService supplyService;
+    @Autowired
+    SummaryNoteItemService summaryNoteItemService;
 
     @Override
     public int[] add(String accountBook, SummaryDetails[] summaryDetails) throws WMSServiceException
@@ -43,8 +45,19 @@ implements SummaryDetailsService{
     @Override
     public void update(String accountBook, SummaryDetails[] summaryDetails) throws WMSServiceException
     {
+        if(summaryDetails.length==0){return;}
         this.validateEntities(accountBook,summaryDetails);
         summaryDetailsDAO.update(accountBook, summaryDetails);
+        int summaryNoteItemId=summaryDetails[0].getSummaryNoteItemId();
+        SummaryDetails[] summaryDetailsFind=summaryDetailsDAO.findTable(accountBook,new Condition().addCondition("summaryNoteItemId",summaryNoteItemId));
+        BigDecimal totalArea=new BigDecimal(0);
+        for(int i=0;i<summaryDetailsFind.length;i++){
+            totalArea=totalArea.add(summaryDetailsFind[i].getArea());
+        }
+        SummaryNoteItem[] summaryNoteItems=this.summaryNoteItemService.findTable(accountBook,new Condition().addCondition("id",summaryNoteItemId));
+        if(summaryNoteItems.length!=1){return;}
+        summaryNoteItems[0].setTotalArea(totalArea);
+        this.summaryNoteItemService.update(accountBook,summaryNoteItems);
     }
 
     @Override
@@ -82,10 +95,10 @@ implements SummaryDetailsService{
 
     private void validateEntities(String accountBook,SummaryDetails[] summaryDetails) throws WMSServiceException{
         Stream.of(summaryDetails).forEach((summaryDetail -> {
-            new Validator("列数").greaterThan(0).notEmpty().notnull().validate(summaryDetail.getStorageLocations());
-            new Validator("托数").notEmpty().notnull().greaterThan(0).validate(summaryDetail.getTrays());
-            new Validator("面积").notEmpty().notnull().greaterThan(0).validate(summaryDetail.getArea());
-            new Validator("出货数").notEmpty().notnull().greaterThan(0).validate(summaryDetail.getDeliveryAmount());
+            new Validator("列数").min(0).notEmpty().notnull().validate(summaryDetail.getStorageLocations());
+            new Validator("托数").notEmpty().notnull().min(0).validate(summaryDetail.getTrays());
+            new Validator("面积").notEmpty().notnull().min(0).validate(summaryDetail.getArea());
+            new Validator("出货数").notEmpty().notnull().min(0).validate(summaryDetail.getDeliveryAmount());
             if(this.supplyService.find(accountBook,
                     new Condition().addCondition("id",summaryDetail.getSupplyId())).length == 0){
                 throw new WMSServiceException(String.format("供货不存在，请重新提交！(%d)",summaryDetail.getSupplyId()));

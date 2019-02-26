@@ -93,8 +93,8 @@ public class StockRecordControllerImpl implements StockRecordController {
     @ResponseStatus(HttpStatus.OK)
     @RequestMapping(value = "/return_supply", method = RequestMethod.POST)
     public void returnSupply(@PathVariable("accountBook") String accountBook,
-                             @RequestBody StockRecord[] stockRecords) {
-        stockRecordService.returnSupply(accountBook, stockRecords);
+                             @RequestBody StockRecordWithComment[] stockRecordWithComments) {
+        stockRecordService.returnSupply(accountBook, stockRecordWithComments);
     }
 
     @Override

@@ -2,9 +2,11 @@ package com.wms.services.settlement.service;
 
 import com.wms.services.settlement.dao.SummaryNoteDAO;
 import com.wms.services.settlement.dao.SummaryNoteItemDAO;
+import com.wms.services.settlement.datastructures.SummaryNoteItemAndDeliveryDetails;
 import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.services.warehouse.service.WarehouseService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
 import com.wms.utilities.vaildator.Validator;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -27,6 +31,8 @@ public class SummaryNoteItemServiceImpl
     SupplierServices supplierServices;
     @Autowired
     SummaryDetailsService summaryDetailsService;
+    @Autowired
+    DeliveryAmountDetailsService deliveryAmountDetailsService;
 
     @Override
     public int[] add(String accountBook, SummaryNoteItem[] summaryNoteItems) throws WMSServiceException {
@@ -111,5 +117,24 @@ public class SummaryNoteItemServiceImpl
     @Override
     public long findCount(String database, Condition cond) throws WMSServiceException {
         return this.summaryNoteItemDAO.findCount(database, cond);
+    }
+
+    @Override
+    public List<SummaryNoteItemAndDeliveryDetails> getPreviewData(String accountBook, List<Integer> summaryNoteItemIds) throws WMSServiceException{
+        SummaryNoteItemView[] summaryNoteItemViews = this.find(accountBook,new Condition().addCondition("id",summaryNoteItemIds.toArray(), ConditionItem.Relation.IN));
+        DeliveryAmountDetailsView[] itemViews = this.deliveryAmountDetailsService.find(accountBook,new Condition().addCondition("summaryNoteItemId",summaryNoteItemIds.toArray(), ConditionItem.Relation.IN));
+        List<SummaryNoteItemAndDeliveryDetails> result = new ArrayList<>();
+        for(SummaryNoteItemView summaryNoteItemView : summaryNoteItemViews){
+            SummaryNoteItemAndDeliveryDetails settlementNoteItemAndDeliveryDetails = new SummaryNoteItemAndDeliveryDetails();
+            settlementNoteItemAndDeliveryDetails.setSummaryNoteItem(summaryNoteItemView);
+            settlementNoteItemAndDeliveryDetails.setDeliveryAmountDetails(new ArrayList<>());
+            result.add(settlementNoteItemAndDeliveryDetails);
+            for(DeliveryAmountDetailsView itemView : itemViews){
+                if(itemView.getSummaryNoteItemId() == summaryNoteItemView.getId()){
+                    settlementNoteItemAndDeliveryDetails.getDeliveryAmountDetails().add(itemView);
+                }
+            }
+        }
+        return result;
     }
 }

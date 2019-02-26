@@ -271,6 +271,9 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         if (transferOrderViews[0].getState()!=2){
             throw new WMSServiceException(String.format("当前备货单未整单完成，备货单号（%S），无法创建出库单", transferOrderViews[0].getNo()));
         }
+        if(transferOrderViews[0].getDescription().equals("(已出库)")){
+            throw new WMSServiceException(String.format("当前备货单已经自动生成过出库单，备货单号（%S），无法自动创建出库单", transferOrderViews[0].getNo()));
+        }
 
         TransferOrderItemView[] itemViews = this.transferOrderItemService.find(accountBook,new Condition().addCondition("transferOrderId",deliveryByTransferOrder.getTransferOrderId(), ConditionItem.Relation.IN));
         if (itemViews.length == 0) {

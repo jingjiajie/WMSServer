@@ -58,6 +58,8 @@ public class StockRecordServiceImpl implements StockRecordService {
     DeliveryOrderItemService deliveryOrderItemService;
     @Autowired
     CommonDataService commonDataService;
+    @Autowired
+    ReturnRecordService returnRecordService;
 
     private final int STATE_DEFAULT_DEPENDENT = -1;
 
@@ -114,7 +116,7 @@ public class StockRecordServiceImpl implements StockRecordService {
     }
 
     @Override
-    public void returnSupply(String accountBook, StockRecord[] stockRecords) throws WMSServiceException {
+    public void returnSupply(String accountBook, StockRecordWithComment[] stockRecords) throws WMSServiceException {
         int[] addId = {};
         for (int i = 0; i < stockRecords.length; i++) {
             new Validator("数量").notnull().notEmpty().min(0).validate(stockRecords[i].getAmount());
@@ -230,6 +232,14 @@ public class StockRecordServiceImpl implements StockRecordService {
             } else {
                 throw new WMSServiceException("查询库存记录出现问题，请检查输入条件!");
             }
+            //增加退货记录
+            ReturnRecord returnRecord=new ReturnRecord();
+            returnRecord.setAmount(stockRecords[i].getAmount());
+            returnRecord.setSupplyId(stockRecords[i].getSupplyId());
+            returnRecord.setWarehouseId(stockRecords[i].getWarehouseId());
+            returnRecord.setComment(stockRecords[i].getComment());
+            returnRecord.setTime(new Timestamp(System.currentTimeMillis()));
+            returnRecordService.add(accountBook,new ReturnRecord[]{returnRecord});
         }
     }
 

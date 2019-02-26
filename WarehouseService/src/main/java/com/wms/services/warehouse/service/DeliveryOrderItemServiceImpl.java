@@ -359,6 +359,14 @@ public class DeliveryOrderItemServiceImpl implements DeliveryOrderItemService{
                     this.stockRecordService.modifyAvailableAmount(accountBook, fixTransferStock);
                 }
             }
+
+            if (deliveryOrderItem.getScheduledAmount().equals(deliveryOrderItem.getRealAmount())){
+                deliveryOrderItem.setState(DeliveryOrderService.STATE_ALL_LOADING);
+            }else if (deliveryOrderItem.getRealAmount().compareTo(BigDecimal.ZERO)==0) {
+                deliveryOrderItem.setState(DeliveryOrderService.STATE_IN_LOADING);
+            }else{
+                deliveryOrderItem.setState(DeliveryOrderService.STATE_PARTIAL_LOADING);
+            }
         });
         this.deliveryOrderItemDAO.update(accountBook,deliveryOrderItems);
         this.updateDeliveryOrder(accountBook,deliveryOrderItems[0].getDeliveryOrderId() ,-1);
