@@ -629,7 +629,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setSupplierName(warehouseEntryItem.getSupplierName());
             dailyReports.setAmountDiff(warehouseEntryItem.getRealAmount());
             dailyReports.setType(DailyReports.AMOUNT_DIFF_ENTRY_STATE);
-            dailyReports.setTimestamp(warehouseEntryItem.getWarehouseEntryCreateTime());
+            dailyReports.setTimestamp(warehouseEntryItem.getEntryItemCreatTime());
             dailyReportsList.add(dailyReports);
         }
         Collections.sort(dailyReportsList, new DailyReportsComparator());
