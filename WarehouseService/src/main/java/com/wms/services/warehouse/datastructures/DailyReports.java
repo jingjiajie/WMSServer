@@ -95,6 +95,8 @@ public class DailyReports {
     private Timestamp timestamp;
     private int state;
     private int type;
+    private String destination;
+    private String entryNo;
 
     public static final int AMOUNT_DIFF_ENTRY_STATE=1;
     public static final int AMOUNT_DIFF_DELIVERY_STATE=2;
