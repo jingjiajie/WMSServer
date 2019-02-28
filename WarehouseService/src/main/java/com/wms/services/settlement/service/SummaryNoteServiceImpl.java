@@ -294,6 +294,13 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
                 throw new WMSServiceException("供货序号"+supplyViews[i].getSerialNo()+"的单拖含量不能小于0！");
             }
 
+            if (supplyViews[i].getPiles() == null) {
+                throw new WMSServiceException("供货序号"+supplyViews[i].getSerialNo()+"的最高码放层数未填写！");
+            }
+            if(supplyViews[i].getPiles().compareTo(new BigDecimal(0))<=0)
+            {
+                throw new WMSServiceException("供货序号"+supplyViews[i].getSerialNo()+"的最高码放层数不能小于0！");
+            }
         }
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
