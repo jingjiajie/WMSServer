@@ -12,6 +12,7 @@ import com.wms.services.warehouse.service.SupplierServices;
 import com.wms.utilities.GetTimeStampByTime;
 import com.wms.utilities.ReflectHelper;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.StockRecord;
 import com.wms.utilities.model.SummaryNote;
 import com.wms.utilities.model.SummaryNoteView;
@@ -30,6 +31,11 @@ import javax.script.ScriptException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 @SpringBootApplication
@@ -42,6 +48,42 @@ public class WarehouseService {
     public static void main(String args[]) {
         ApplicationContext applicationContext = SpringApplication.run(WarehouseService.class, args);
         System.out.println("仓库服务启动...");
+        Calendar dayC1 = new GregorianCalendar();
+        Calendar dayC2 = new GregorianCalendar();
+        DateFormat df = new SimpleDateFormat("yy-MM-dd");
+        Date dayStart=new Date();
+        Date dayEnd=new Date();
+        try{
+            dayStart = df.parse("17-1-1"); //按照yyyy-MM-dd格式转换为日期
+            dayEnd = df.parse("17-12-31");}
+        catch (Exception e){
+
+        }
+        dayC1.setTime(dayStart); //设置calendar的日期
+        dayC2.setTime(dayEnd);
+        for (; dayC1.compareTo(dayC2) <= 0;) {
+            //dayC1在dayC2之前就循环
+            String year=String.valueOf(dayC1.get(Calendar.YEAR));
+            int month=dayC1.get(Calendar.MONTH)+1;
+            int day=dayC1.get(Calendar.DATE);
+            Date date;
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                date = format.parse(year+'-'+month+'-'+day);
+            } catch (Exception e) {
+                throw new WMSServiceException("请检查时间格式是否正确1");
+            }
+            date.setHours(0);
+            date.setMinutes(0);
+            date.setSeconds(0);
+            Timestamp timestampStart = new Timestamp(date.getTime());
+            date.setHours(23);
+            date.setMinutes(59);
+            date.setSeconds(59);
+            Timestamp timestampEnd = new Timestamp(date.getTime());
+            dayC1.add(Calendar.DAY_OF_YEAR, 1);  //加1天
+        }
+
 //        SupplierServices supplierServices=applicationContext.getBean(SupplierServices.class);
 //        DailyReportRequest dailyReportRequest=new DailyReportRequest();
 //        dailyReportRequest.setSupplierId(1);
