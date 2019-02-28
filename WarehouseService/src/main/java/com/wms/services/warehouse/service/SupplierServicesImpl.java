@@ -651,7 +651,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dayStart = df.parse(year+"-1-1"); //按照yyyy-MM-dd格式转换为日期
             dayEnd = df.parse(year+"-12-31");}
         catch (Exception e){
-
+            throw new WMSServiceException("请检查时间格式是否正确1");
         }
         dayC1.setTime(dayStart); //设置calendar的日期
         dayC2.setTime(dayEnd);
