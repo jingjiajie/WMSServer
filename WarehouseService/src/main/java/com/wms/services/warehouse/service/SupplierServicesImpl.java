@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.sql.Timestamp;
 import java.util.stream.Stream;
@@ -635,6 +637,192 @@ public class SupplierServicesImpl implements SupplierServices {
         return dailyReportsList;
     }
 
+    public void generateDailyReportsByYear(String accountBook,int supplyId){
+        List<DailyReports> dailyReportsList=new ArrayList<>();
+        Calendar dayC1 = new GregorianCalendar();
+        Calendar dayC2 = new GregorianCalendar();
+        DateFormat df = new SimpleDateFormat("yy-MM-dd");
+        Calendar instance = Calendar.getInstance();
+        String year = String.valueOf(instance.get(Calendar.YEAR));
+        Date dayStart=new Date();
+        Date dayEnd=new Date();
+        try{
+            dayStart = df.parse(year+"-1-1"); //按照yyyy-MM-dd格式转换为日期
+            dayEnd = df.parse(year+"-12-31");}
+        catch (Exception e){
+            throw new WMSServiceException("请检查时间格式是否正确1");
+        }
+        dayC1.setTime(dayStart); //设置calendar的日期
+        dayC2.setTime(dayEnd);
+        for (; dayC1.compareTo(dayC2) <= 0;) {
+            //dayC1在dayC2之前就循环
+            int month=dayC1.get(Calendar.MONTH)+1;
+            int day=dayC1.get(Calendar.DATE);
+            Date date;
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                date = format.parse(year+'-'+month+'-'+day);
+            } catch (Exception e) {
+                throw new WMSServiceException("请检查时间格式是否正确1");
+            }
+            date.setHours(0);
+            date.setMinutes(0);
+            date.setSeconds(0);
+            Timestamp timestampStart = new Timestamp(date.getTime());
+            date.setHours(23);
+            date.setMinutes(59);
+            date.setSeconds(59);
+            Timestamp timestampEnd = new Timestamp(date.getTime());
+            dayC1.add(Calendar.DAY_OF_YEAR, 1);  //加1天
+            DailyReportRequest dailyReportRequest=new DailyReportRequest();
+            dailyReportRequest.setStartTime(timestampStart);
+            dailyReportRequest.setEndTime(timestampEnd);
+            dailyReportsList=this.generateDailyReportsByYear(accountBook,supplyId,dailyReportRequest,dailyReportsList);
+        }
+    }
+
+    //返回每个时间的总数 所有的入库、出库信息
+    //早库存 晚库存 入库详细 理论出库总数
+    public List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId,DailyReportRequest dailyReportRequest,List<DailyReports> dailyReportsList) {
+        //找出这段时间之前 每种供货的数量 加到列表里 作为初期数量 时间应该是这段时间的起始时间
+        StockRecordFind stockRecordFindPrime = new StockRecordFind();
+        stockRecordFindPrime.setTimeEnd(dailyReportRequest.getStartTime());
+        stockRecordFindPrime.setSupplyId(supplyId);
+        SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("supplyId", supplyId));
+        Object[] objectPrime = this.findSuppliyStockByTime(accountBook, stockRecordFindPrime);
+        for (int j = 0; j < objectPrime.length; j++) {
+            //物料代号 物料名 状态 总数量
+            Object[] o = (Object[]) objectPrime[j];
+            DailyReports dailyReports = new DailyReports();
+            dailyReports.setMaterialNo((String) o[0]);
+            dailyReports.setMaterialName((String) o[1]);
+            dailyReports.setMaterialProductLine((String) o[5]);
+            dailyReports.setState((int) o[2]);
+            dailyReports.setRealStock((BigDecimal) o[3]);
+            dailyReports.setSupplyId((int) o[4]);
+            dailyReports.setTimestamp(dailyReportRequest.getStartTime());
+            dailyReports.setType(DailyReports.AMOUNT_PRIME);
+            dailyReportsList.add(dailyReports);
+        }
+        //把不存在零件显示为0
+        for (int i = 0; i < supplyViews.length; i++) {
+            for (int s = 0; s < 3; s++) {
+                boolean exist = false;
+                for (int j = 0; j < objectPrime.length; j++) {
+                    //物料代号 物料名 状态 总数量
+                    Object[] o = (Object[]) objectPrime[j];
+                    if ((int) o[4] == supplyViews[i].getId() && (int) o[2] == s) {
+                        exist = true;
+                    }
+                }
+                //如果不存在
+                if (!exist) {
+                    DailyReports dailyReports = new DailyReports();
+                    dailyReports.setMaterialName(supplyViews[i].getMaterialName());
+                    dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
+                    dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
+                    dailyReports.setState(s);
+                    dailyReports.setRealStock(BigDecimal.ZERO);
+                    dailyReports.setSupplyId(supplyViews[i].getId());
+                    dailyReports.setTimestamp(dailyReportRequest.getStartTime());
+                    dailyReports.setType(DailyReports.AMOUNT_PRIME);
+                    dailyReportsList.add(dailyReports);
+                }
+            }
+        }
+
+        StockRecordFind stockRecordFindEnd = new StockRecordFind();
+        stockRecordFindEnd.setTimeEnd(dailyReportRequest.getEndTime());
+        stockRecordFindEnd.setSupplyId(supplyId);
+        Object[] objectEnd = this.findSuppliyStockByTime(accountBook, stockRecordFindEnd);
+        for (int j = 0; j < objectEnd.length; j++) {
+            //物料代号 物料名 状态 总数量
+            Object[] o = (Object[]) objectEnd[j];
+            DailyReports dailyReports = new DailyReports();
+            dailyReports.setMaterialNo((String) o[0]);
+            dailyReports.setMaterialName((String) o[1]);
+            dailyReports.setMaterialProductLine((String) o[5]);
+            dailyReports.setState((int) o[2]);
+            dailyReports.setRealStock((BigDecimal) o[3]);
+            dailyReports.setSupplyId((int) o[4]);
+            dailyReports.setTimestamp(dailyReportRequest.getEndTime());
+            dailyReports.setType(DailyReports.AMOUNT_END);
+            dailyReportsList.add(dailyReports);
+        }
+        //把不存在零件显示为0
+        for (int i = 0; i < supplyViews.length; i++) {
+            for (int s = 0; s < 3; s++) {
+                boolean exist = false;
+                for (int j = 0; j < objectEnd.length; j++) {
+                    //物料代号 物料名 状态 总数量
+                    Object[] o = (Object[]) objectEnd[j];
+                    if ((int) o[4] == supplyViews[i].getId() && (int) o[2] == s) {
+                        exist = true;
+                    }
+                }
+                //如果不存在
+                if (!exist) {
+                    DailyReports dailyReports = new DailyReports();
+                    dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
+                    dailyReports.setMaterialName(supplyViews[i].getMaterialName());
+                    dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
+                    dailyReports.setState(s);
+                    dailyReports.setRealStock(BigDecimal.ZERO);
+                    dailyReports.setSupplyId(supplyViews[i].getId());
+                    dailyReports.setTimestamp(dailyReportRequest.getStartTime());
+                    dailyReports.setType(DailyReports.AMOUNT_END);
+                    dailyReportsList.add(dailyReports);
+                }
+            }
+        }
+        //找出供应商一段时间内的出库单条目和入库单条目 出库单条目中实际数量不为0的
+        DeliveryOrderItemView[] deliveryOrderItemViews = deliveryOrderItemService.find(accountBook, new Condition().addCondition("deliveryOrderItemCreatTime", new Timestamp[]{dailyReportRequest.getStartTime(), dailyReportRequest.getEndTime()}, ConditionItem.Relation.BETWEEN).addCondition("supplierId", dailyReportRequest.getSupplierId()));
+        //找创建时间是这段时间之内的条目
+        WarehouseEntryItemView[] warehouseEntryItemViews = warehouseEntryItemService.find(accountBook, new Condition().addCondition("entryItemCreatTime", new Timestamp[]{dailyReportRequest.getStartTime(), dailyReportRequest.getEndTime()}, ConditionItem.Relation.BETWEEN).addCondition("supplierId", dailyReportRequest.getSupplierId()));
+        //出库总数
+        DailyReports dailyReportsDeliver = new DailyReports();
+        dailyReportsDeliver.setAmountDiff(BigDecimal.ZERO);
+        for (DeliveryOrderItemView deliveryOrderItemView : deliveryOrderItemViews) {
+            dailyReportsDeliver.setSupplyId(deliveryOrderItemView.getSupplyId());
+            dailyReportsDeliver.setMaterialName(deliveryOrderItemView.getMaterialName());
+            dailyReportsDeliver.setMaterialNo(deliveryOrderItemView.getMaterialNo());
+            dailyReportsDeliver.setMaterialProductLine(deliveryOrderItemView.getMaterialProductLine());
+            if (deliveryOrderItemView.getState() == DeliveryOrderService.DELIVERY_TYPE_Qualified) {
+                dailyReportsDeliver.setState(TransferStock.QUALIFIED);
+            } else {
+                dailyReportsDeliver.setState(TransferStock.UNQUALIFIED);
+            }
+            dailyReportsDeliver.setSupplierName(deliveryOrderItemView.getSupplierName());
+            dailyReportsDeliver.setAmountDiff(dailyReportsDeliver.getAmountDiff().add(deliveryOrderItemView.getRealAmount()));
+            dailyReportsDeliver.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
+            dailyReportsDeliver.setTimestamp(deliveryOrderItemView.getDeliveryOrderItemCreatTime());
+            dailyReportsList.add(dailyReportsDeliver);
+        }
+        for (WarehouseEntryItemView warehouseEntryItem : warehouseEntryItemViews) {
+            DailyReports dailyReports = new DailyReports();
+            dailyReports.setSupplyId(warehouseEntryItem.getSupplyId());
+            dailyReports.setMaterialName(warehouseEntryItem.getMaterialName());
+            dailyReports.setMaterialNo((warehouseEntryItem.getMaterialNo()));
+            dailyReports.setMaterialProductLine(warehouseEntryItem.getMaterialProductLine());
+            if (warehouseEntryItem.getState() == WarehouseEntryItemService.BEING_INSPECTED || warehouseEntryItem.getState() == WarehouseEntryItemService.WAIT_FOR_PUT_IN_STORAGE) {
+                dailyReports.setState(TransferStock.WAITING_FOR_INSPECTION);
+            }
+            if (warehouseEntryItem.getState() == WarehouseEntryItemService.QUALIFIED) {
+                dailyReports.setState(TransferStock.QUALIFIED);
+            }
+            if (warehouseEntryItem.getState() == WarehouseEntryItemService.UNQUALIFIED) {
+                dailyReports.setState(TransferStock.UNQUALIFIED);
+            }
+            dailyReports.setSupplierName(warehouseEntryItem.getSupplierName());
+            dailyReports.setAmountDiff(warehouseEntryItem.getRealAmount());
+            dailyReports.setType(DailyReports.AMOUNT_DIFF_ENTRY_STATE);
+            dailyReports.setTimestamp(warehouseEntryItem.getEntryItemCreatTime());
+            dailyReportsList.add(dailyReports);
+        }
+        Collections.sort(dailyReportsList, new DailyReportsComparator());
+        return dailyReportsList;
+    }
+
     //物料代号 物料名 状态 总数量 supplyId 物料系列
     private Object[] findSupplierStockByTime(String accountBook, StockRecordFind stockRecordFind, String supplyId) {
         Session session = this.sessionFactory.getCurrentSession();
@@ -658,6 +846,37 @@ public class SupplierServicesImpl implements SupplierServices {
         session.flush();
         query = session.createNativeQuery(sqlNew);
         query.setParameter("supplierId", stockRecordFind.getSupplierId());
+        query.setParameter("checkTime", stockRecordFind.getTimeEnd());
+        Object[] resultArray = null;
+        List<Object[]> resultList = query.list();
+        resultArray = (Object[]) Array.newInstance(Object.class, resultList.size());
+        resultList.toArray(resultArray);
+        return resultArray;
+    }
+
+    //物料代号 物料名 状态 总数量 supplyId 物料系列
+    private Object[] findSuppliyStockByTime(String accountBook, StockRecordFind stockRecordFind) {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query = null;
+        //库存查询最新一条用
+        String sqlNew = "select s_all.materialNo,s_all.materialName,s_all.state,sum(s_all.amount) as sum_amount,s_all.supplyId,s_all.MaterialProductLine from \n" +
+                "(SELECT s1.* FROM StockRecordView AS s1\n" +
+                "INNER JOIN\n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2\n" +
+                "where s2.supplierId=:supplierId and s2.time<=:checkTime \n" +
+                "GROUP BY s2.BatchNo,s2.Unit,s2.UnitAmount,s2.State,s2.supplyId,s2.StorageLocationID) AS s3 \n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
+                "and s1.suppliyId=:supplyId ) as s_all\n" +
+                "GROUP BY s_all.state,s_all.supplyId";
+        session.flush();
+        query = session.createNativeQuery(sqlNew);
+        query.setParameter("supplyId", stockRecordFind.getSupplyId());
         query.setParameter("checkTime", stockRecordFind.getTimeEnd());
         Object[] resultArray = null;
         List<Object[]> resultList = query.list();

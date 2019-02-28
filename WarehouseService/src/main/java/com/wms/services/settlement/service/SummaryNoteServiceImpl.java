@@ -294,6 +294,13 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
                 throw new WMSServiceException("供货序号"+supplyViews[i].getSerialNo()+"的单拖含量不能小于0！");
             }
 
+            if (supplyViews[i].getPiles() == null) {
+                throw new WMSServiceException("供货序号"+supplyViews[i].getSerialNo()+"的最高码放层数未填写！");
+            }
+            if(supplyViews[i].getPiles().compareTo(new BigDecimal(0))<=0)
+            {
+                throw new WMSServiceException("供货序号"+supplyViews[i].getSerialNo()+"的最高码放层数不能小于0！");
+            }
         }
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
@@ -387,11 +394,11 @@ public class SummaryNoteServiceImpl implements SummaryNoteService {
             {
                 throw new WMSServiceException("请检查库位:"+storageLocationView.getName()+"的长度、宽度、长度内边距、宽度内边距、余留面积和层数是否填写！");
             }
-            //层数
-            if(storageLocationView.getPiles().compareTo(new BigDecimal(0))<=0)
-            {
-                throw new WMSServiceException("库位:"+storageLocationView.getName()+"的层数必须大于0！");
-            }
+//            //层数
+//            if(storageLocationView.getPiles().compareTo(new BigDecimal(0))<=0)
+//            {
+//                throw new WMSServiceException("库位:"+storageLocationView.getName()+"的层数必须大于0！");
+//            }
                 //记录下最小的长度
 //                if(lengthAvailableMin.compareTo(new BigDecimal(-1))==0||lengthAvailableMin.compareTo(storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate()))>0)
 //                {lengthAvailableMin=storageLocationView.getLength().add(storageLocationView.getLengthPadding().negate());}

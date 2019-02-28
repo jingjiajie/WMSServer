@@ -1,9 +1,6 @@
 package com.wms.utilities.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -84,6 +81,7 @@ public class SupplyView {
     private String lastUpdatePersonName;
     private BigDecimal singleCarUsageAmount;
     private BigDecimal supplySaftyStock;
+    private BigDecimal piles;
 
     @Basic
     @Id
@@ -836,12 +834,22 @@ public class SupplyView {
         this.supplySaftyStock = supplySaftyStock;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "Piles")
+    public BigDecimal getPiles() {
+        return piles;
+    }
 
-        SupplyView that = (SupplyView) object;
+    public void setPiles(BigDecimal piles) {
+        this.piles = piles;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SupplyView that = (SupplyView) o;
 
         if (id != that.id) return false;
         if (createPersonId != that.createPersonId) return false;
@@ -969,6 +977,7 @@ public class SupplyView {
             return false;
         if (supplySaftyStock != null ? !supplySaftyStock.equals(that.supplySaftyStock) : that.supplySaftyStock != null)
             return false;
+        if (piles != null ? !piles.equals(that.piles) : that.piles != null) return false;
 
         return true;
     }
@@ -1050,6 +1059,7 @@ public class SupplyView {
         result = 31 * result + (lastUpdatePersonName != null ? lastUpdatePersonName.hashCode() : 0);
         result = 31 * result + (singleCarUsageAmount != null ? singleCarUsageAmount.hashCode() : 0);
         result = 31 * result + (supplySaftyStock != null ? supplySaftyStock.hashCode() : 0);
+        result = 31 * result + (piles != null ? piles.hashCode() : 0);
         return result;
     }
 }

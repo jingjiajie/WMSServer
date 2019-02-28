@@ -71,6 +71,7 @@ public class Supply {
     private String serialNo;
     private BigDecimal singleCarUsageAmount;
     private BigDecimal supplySaftyStock;
+    private BigDecimal piles;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -723,12 +724,22 @@ public class Supply {
         this.supplySaftyStock = supplySaftyStock;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "Piles")
+    public BigDecimal getPiles() {
+        return piles;
+    }
 
-        Supply supply = (Supply) object;
+    public void setPiles(BigDecimal piles) {
+        this.piles = piles;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Supply supply = (Supply) o;
 
         if (id != supply.id) return false;
         if (createPersonId != supply.createPersonId) return false;
@@ -844,6 +855,7 @@ public class Supply {
             return false;
         if (supplySaftyStock != null ? !supplySaftyStock.equals(supply.supplySaftyStock) : supply.supplySaftyStock != null)
             return false;
+        if (piles != null ? !piles.equals(supply.piles) : supply.piles != null) return false;
 
         return true;
     }
@@ -915,6 +927,7 @@ public class Supply {
         result = 31 * result + (serialNo != null ? serialNo.hashCode() : 0);
         result = 31 * result + (singleCarUsageAmount != null ? singleCarUsageAmount.hashCode() : 0);
         result = 31 * result + (supplySaftyStock != null ? supplySaftyStock.hashCode() : 0);
+        result = 31 * result + (piles != null ? piles.hashCode() : 0);
         return result;
     }
 }

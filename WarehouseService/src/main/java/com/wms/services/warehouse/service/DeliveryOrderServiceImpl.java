@@ -675,6 +675,12 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                 transferOrderItem.setSupplyId(safetyStockViews[i].getSupplyId());
                 //预设计划数量
                 transferOrderItem.setScheduledAmount(safetyStockViews[i].getAmountMax().subtract(sourceAmount));
+                //todo 尝试修正为单托含量
+                SupplyView supplyView=this.supplyService.find(accountBook,new Condition().addCondition("id",safetyStockViews[i].getSupplyId()))[0];
+                BigDecimal originAmount = safetyStockViews[i].getAmountMax().subtract(sourceAmount);//算出应该上架的数值
+                if (originAmount.compareTo(supplyView.getTrayCapacity())<0){
+                    transferOrderItem.setScheduledAmount(supplyView.getTrayCapacity());
+                }
                 transferOrderItem.setPersonId(TransferAuto.getPersonId());
                 transferOrderItem.setRealAmount(new BigDecimal(0));
                 transferOrderItem.setOperateTime(new Timestamp(System.currentTimeMillis()));

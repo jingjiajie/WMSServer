@@ -346,7 +346,15 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     } else {
                         accountRecords[k].setOwnBalance(curOwnBalance.subtract(debitAmount).add(creditAmount));
                     }
+                }else{
+                    //如果科目类型是借方
+                    if (ownAccountTitleView.getDirection() == AccountTitleService.Debit) {
+                        accountRecords[k].setOwnBalance(BigDecimal.ZERO.subtract(creditAmount).add(debitAmount));
+                    } else {
+                        accountRecords[k].setOwnBalance(BigDecimal.ZERO.subtract(debitAmount).add(creditAmount));
+                    }
                 }
+
 
                 ids[k] = accountRecordDAO.add(accountBook, new AccountRecord[]{accountRecords[k]})[0];
             }
@@ -420,14 +428,29 @@ public class AccountRecordServiceImpl implements AccountRecordService{
     @Transactional
     public void remove(String accountBook, int[] ids) throws WMSServiceException{
         for (int id : ids) {
-            if (accountRecordDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
-                throw new WMSServiceException(String.format("删除期间不存在，请重新查询！(%d)", id));
+            AccountRecordView[] accountRecordViews= accountRecordDAO.find(accountBook, new Condition().addCondition("id", id));
+            if (accountRecordViews.length == 0) {
+                throw new WMSServiceException(String.format("删除账目记录不存在，请重新查询！(%d)", id));
+            }
+            AccountRecordView accountRecordView= accountRecordViews[0];
+            AccountRecordView tdAccountRecordView=null;
+            if (accountRecordView.getOtherAccountTitleId()!=null){
+                tdAccountRecordView =this.findNewRecord(accountBook,accountRecordView.getOtherAccountTitleId(),accountRecordView.getWarehouseId());
+            }
+            AccountRecordView rdAccountRecordView =this.findNewRecord(accountBook,accountRecordView.getOwnAccountTitleId(),accountRecordView.getWarehouseId());
+            if (tdAccountRecordView!=null||rdAccountRecordView!=null){
+                if (tdAccountRecordView!=null&&tdAccountRecordView.getId()!=id){
+                    throw new WMSServiceException("删除账目记录信息失败，只能删除对应科目最新一条账目记录信息！");
+                }
+                if (rdAccountRecordView!=null&&rdAccountRecordView.getId()!=id){
+                    throw new WMSServiceException("删除账目记录信息失败，只能删除对应科目最新一条账目记录信息！");
+                }
             }
         }
         try {
             accountRecordDAO.remove(accountBook, ids);
         } catch (Exception e) {
-            throw new WMSServiceException("删除会计期间信息失败，如果会计期间信息已经被引用，需要先删除引用的内容，才能删除会计期间信息！");
+            throw new WMSServiceException("删除账目记录信息失败，如果账目记录信息已经被引用，需要先删除引用的内容，才能删除账目记录信息！");
         }
     }
 
@@ -803,6 +826,52 @@ public class AccountRecordServiceImpl implements AccountRecordService{
 
 
         return returnAccrualCheckList;
+    }
+
+    public AccountRecordView findNewRecord(String accountBook,int curAccountTitleId,Integer curWarehouseId) throws WMSServiceException {
+        AccountRecordView returnAccountRecordView=new AccountRecordView();
+
+        AccountRecordView[] accountRecordViews = this.find(accountBook, new Condition()
+                .addCondition("warehouseId", new Integer[]{curWarehouseId})
+                .addCondition("ownAccountTitleId", new Integer[]{curAccountTitleId}));
+
+        AccountRecordView[] accountRecordViews1 = this.find(accountBook, new Condition()
+                .addCondition("warehouseId", new Integer[]{curWarehouseId})
+                .addCondition("otherAccountTitleId", new Integer[]{curAccountTitleId}));
+
+        if (accountRecordViews.length > 0 || accountRecordViews1.length > 0) {
+            //存在历史纪录
+            if (accountRecordViews.length > 0) {
+                //己方科目
+                AccountRecordView newestAccountRecord = accountRecordViews[0];
+                for (int i = 0; i < accountRecordViews.length; i++) {
+                    if (accountRecordViews[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                        newestAccountRecord = accountRecordViews[i];
+                    }
+                }
+                if (accountRecordViews1.length > 0) {
+                    for (int i = 0; i < accountRecordViews1.length; i++) {
+                        if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                            newestAccountRecord = accountRecordViews1[i];
+                        }
+                    }
+                }
+                returnAccountRecordView=newestAccountRecord;
+            } else {
+                //仅存在对方科目记录
+                AccountRecordView newestAccountRecord = accountRecordViews1[0];
+                BigDecimal curBalance = accountRecordViews1[0].getOtherBalance();
+                for (int i = 0; i < accountRecordViews1.length; i++) {
+                    if (accountRecordViews1[i].getRecordingTime().after(newestAccountRecord.getRecordingTime())) {
+                        newestAccountRecord = accountRecordViews1[i];
+                        curBalance = newestAccountRecord.getOtherBalance();
+                    }
+                }
+                returnAccountRecordView=newestAccountRecord;
+            }
+        }
+
+        return returnAccountRecordView;
     }
 
     public FindBalance findNewBalance(String accountBook,AccountTitle accountTitle,Integer curWarehouseId) throws WMSServiceException {
