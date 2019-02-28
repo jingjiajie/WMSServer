@@ -638,38 +638,58 @@ public class SupplierServicesImpl implements SupplierServices {
         return dailyReportsList;
     }
 
-    public void generateByTime(){
-        Calendar dayc1 = new GregorianCalendar();
-        Calendar dayc2 = new GregorianCalendar();
+    public void generateDailyReportsByYear(String accountBook,int supplyId){
+        List<DailyReports> dailyReportsList=new ArrayList<>();
+        Calendar dayC1 = new GregorianCalendar();
+        Calendar dayC2 = new GregorianCalendar();
         DateFormat df = new SimpleDateFormat("yy-MM-dd");
-        Date daystart=new Date();
-        Date dayend=new Date();
+        Date dayStart=new Date();
+        Date dayEnd=new Date();
         try{
-            daystart = df.parse("17-1-1"); //按照yyyy-MM-dd格式转换为日期
-            dayend = df.parse("17-12-31");}
+            dayStart = df.parse("17-1-1"); //按照yyyy-MM-dd格式转换为日期
+            dayEnd = df.parse("17-12-31");}
         catch (Exception e){
 
         }
-        dayc1.setTime(daystart); //设置calendar的日期
-        dayc2.setTime(dayend);
-        for (; dayc1.compareTo(dayc2) <= 0;) {   //dayc1在dayc2之前就循环
-            System.out.println("PARTITION p"+
-                    dayc1.get(Calendar.YEAR)+dayc1.get(Calendar.MONTH)+dayc1.get(Calendar.DATE)+" VALUES LESS THAN (TO_DAYS('"
-                    +dayc1.get(Calendar.YEAR)+"-"+dayc1.get(Calendar.MONTH) +"-"+ dayc1.get(Calendar.DATE)+"')),");  //打印年月日
-            dayc1.add(Calendar.DAY_OF_YEAR, 1);  //加1天
+        dayC1.setTime(dayStart); //设置calendar的日期
+        dayC2.setTime(dayEnd);
+        for (; dayC1.compareTo(dayC2) <= 0;) {
+            //dayC1在dayC2之前就循环
+            String year=String.valueOf(dayC1.get(Calendar.YEAR));
+            int month=dayC1.get(Calendar.MONTH)+1;
+            int day=dayC1.get(Calendar.DATE);
+            Date date;
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                date = format.parse(year+'-'+month+'-'+day);
+            } catch (Exception e) {
+                throw new WMSServiceException("请检查时间格式是否正确1");
+            }
+            date.setHours(0);
+            date.setMinutes(0);
+            date.setSeconds(0);
+            Timestamp timestampStart = new Timestamp(date.getTime());
+            date.setHours(23);
+            date.setMinutes(59);
+            date.setSeconds(59);
+            Timestamp timestampEnd = new Timestamp(date.getTime());
+            dayC1.add(Calendar.DAY_OF_YEAR, 1);  //加1天
+            DailyReportRequest dailyReportRequest=new DailyReportRequest();
+            dailyReportRequest.setStartTime(timestampStart);
+            dailyReportRequest.setEndTime(timestampEnd);
+            dailyReportsList=this.generateDailyReportsByYear(accountBook,supplyId,dailyReportRequest,dailyReportsList);
         }
     }
 
     //返回每个时间的总数 所有的入库、出库信息
     //早库存 晚库存 入库详细 理论出库总数
-    public List<DailyReports> generateDailyReportsByYear(String accountBook, DailyReportRequest dailyReportRequest) {
-        List<DailyReports> dailyReportsList = new ArrayList<>();
+    public List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId,DailyReportRequest dailyReportRequest,List<DailyReports> dailyReportsList) {
         //找出这段时间之前 每种供货的数量 加到列表里 作为初期数量 时间应该是这段时间的起始时间
         StockRecordFind stockRecordFindPrime = new StockRecordFind();
-        stockRecordFindPrime.setSupplierId(dailyReportRequest.getSupplierId());
         stockRecordFindPrime.setTimeEnd(dailyReportRequest.getStartTime());
-        SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("supplierId", dailyReportRequest.getSupplierId()));
-        Object[] objectPrime = this.findSupplierStockByTime(accountBook, stockRecordFindPrime, "");
+        stockRecordFindPrime.setSupplyId(supplyId);
+        SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("supplyId", supplyId));
+        Object[] objectPrime = this.findSuppliyStockByTime(accountBook, stockRecordFindPrime);
         for (int j = 0; j < objectPrime.length; j++) {
             //物料代号 物料名 状态 总数量
             Object[] o = (Object[]) objectPrime[j];
@@ -712,9 +732,9 @@ public class SupplierServicesImpl implements SupplierServices {
         }
 
         StockRecordFind stockRecordFindEnd = new StockRecordFind();
-        stockRecordFindEnd.setSupplierId(dailyReportRequest.getSupplierId());
         stockRecordFindEnd.setTimeEnd(dailyReportRequest.getEndTime());
-        Object[] objectEnd = this.findSupplierStockByTime(accountBook, stockRecordFindEnd, "");
+        stockRecordFindEnd.setSupplyId(supplyId);
+        Object[] objectEnd = this.findSuppliyStockByTime(accountBook, stockRecordFindEnd);
         for (int j = 0; j < objectEnd.length; j++) {
             //物料代号 物料名 状态 总数量
             Object[] o = (Object[]) objectEnd[j];
@@ -826,6 +846,37 @@ public class SupplierServicesImpl implements SupplierServices {
         session.flush();
         query = session.createNativeQuery(sqlNew);
         query.setParameter("supplierId", stockRecordFind.getSupplierId());
+        query.setParameter("checkTime", stockRecordFind.getTimeEnd());
+        Object[] resultArray = null;
+        List<Object[]> resultList = query.list();
+        resultArray = (Object[]) Array.newInstance(Object.class, resultList.size());
+        resultList.toArray(resultArray);
+        return resultArray;
+    }
+
+    //物料代号 物料名 状态 总数量 supplyId 物料系列
+    private Object[] findSuppliyStockByTime(String accountBook, StockRecordFind stockRecordFind) {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query = null;
+        //库存查询最新一条用
+        String sqlNew = "select s_all.materialNo,s_all.materialName,s_all.state,sum(s_all.amount) as sum_amount,s_all.supplyId,s_all.MaterialProductLine from \n" +
+                "(SELECT s1.* FROM StockRecordView AS s1\n" +
+                "INNER JOIN\n" +
+                "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2\n" +
+                "where s2.supplierId=:supplierId and s2.time<=:checkTime \n" +
+                "GROUP BY s2.BatchNo,s2.Unit,s2.UnitAmount,s2.State,s2.supplyId,s2.StorageLocationID) AS s3 \n" +
+                "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
+                "and s1.suppliyId=:supplyId ) as s_all\n" +
+                "GROUP BY s_all.state,s_all.supplyId";
+        session.flush();
+        query = session.createNativeQuery(sqlNew);
+        query.setParameter("supplyId", stockRecordFind.getSupplyId());
         query.setParameter("checkTime", stockRecordFind.getTimeEnd());
         Object[] resultArray = null;
         List<Object[]> resultList = query.list();
