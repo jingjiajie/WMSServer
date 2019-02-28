@@ -346,7 +346,15 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                     } else {
                         accountRecords[k].setOwnBalance(curOwnBalance.subtract(debitAmount).add(creditAmount));
                     }
+                }else{
+                    //如果科目类型是借方
+                    if (ownAccountTitleView.getDirection() == AccountTitleService.Debit) {
+                        accountRecords[k].setOwnBalance(BigDecimal.ZERO.subtract(creditAmount).add(debitAmount));
+                    } else {
+                        accountRecords[k].setOwnBalance(BigDecimal.ZERO.subtract(debitAmount).add(creditAmount));
+                    }
                 }
+
 
                 ids[k] = accountRecordDAO.add(accountBook, new AccountRecord[]{accountRecords[k]})[0];
             }
@@ -425,11 +433,19 @@ public class AccountRecordServiceImpl implements AccountRecordService{
                 throw new WMSServiceException(String.format("删除账目记录不存在，请重新查询！(%d)", id));
             }
             AccountRecordView accountRecordView= accountRecordViews[0];
-            if (id!=this.findNewRecord(accountBook,accountRecordView.getOtherAccountTitleId(),accountRecordView.getWarehouseId()).getId()
-                    &&id!=this.findNewRecord(accountBook,accountRecordView.getOwnAccountTitleId(),accountRecordView.getWarehouseId()).getId()) {
-                throw new WMSServiceException("删除账目记录信息失败，只能删除对应科目最新一条账目记录信息！");
+            AccountRecordView tdAccountRecordView=null;
+            if (accountRecordView.getOtherAccountTitleId()!=null){
+                tdAccountRecordView =this.findNewRecord(accountBook,accountRecordView.getOtherAccountTitleId(),accountRecordView.getWarehouseId());
             }
-
+            AccountRecordView rdAccountRecordView =this.findNewRecord(accountBook,accountRecordView.getOwnAccountTitleId(),accountRecordView.getWarehouseId());
+            if (tdAccountRecordView!=null||rdAccountRecordView!=null){
+                if (tdAccountRecordView!=null&&tdAccountRecordView.getId()!=id){
+                    throw new WMSServiceException("删除账目记录信息失败，只能删除对应科目最新一条账目记录信息！");
+                }
+                if (rdAccountRecordView!=null&&rdAccountRecordView.getId()!=id){
+                    throw new WMSServiceException("删除账目记录信息失败，只能删除对应科目最新一条账目记录信息！");
+                }
+            }
         }
         try {
             accountRecordDAO.remove(accountBook, ids);
