@@ -643,11 +643,13 @@ public class SupplierServicesImpl implements SupplierServices {
         Calendar dayC1 = new GregorianCalendar();
         Calendar dayC2 = new GregorianCalendar();
         DateFormat df = new SimpleDateFormat("yy-MM-dd");
+        Calendar instance = Calendar.getInstance();
+        String year = String.valueOf(instance.get(Calendar.YEAR));
         Date dayStart=new Date();
         Date dayEnd=new Date();
         try{
-            dayStart = df.parse("17-1-1"); //按照yyyy-MM-dd格式转换为日期
-            dayEnd = df.parse("17-12-31");}
+            dayStart = df.parse(year+"-1-1"); //按照yyyy-MM-dd格式转换为日期
+            dayEnd = df.parse(year+"-12-31");}
         catch (Exception e){
 
         }
@@ -655,7 +657,6 @@ public class SupplierServicesImpl implements SupplierServices {
         dayC2.setTime(dayEnd);
         for (; dayC1.compareTo(dayC2) <= 0;) {
             //dayC1在dayC2之前就循环
-            String year=String.valueOf(dayC1.get(Calendar.YEAR));
             int month=dayC1.get(Calendar.MONTH)+1;
             int day=dayC1.get(Calendar.DATE);
             Date date;
