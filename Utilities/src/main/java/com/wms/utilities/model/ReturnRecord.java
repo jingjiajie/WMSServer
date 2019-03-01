@@ -12,6 +12,7 @@ public class ReturnRecord {
     private BigDecimal amount;
     private String comment;
     private Timestamp time;
+    private Integer state;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -74,12 +75,22 @@ public class ReturnRecord {
         this.time = time;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "State")
+    public Integer getState() {
+        return state;
+    }
 
-        ReturnRecord that = (ReturnRecord) object;
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReturnRecord that = (ReturnRecord) o;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
@@ -87,6 +98,7 @@ public class ReturnRecord {
         if (amount != null ? !amount.equals(that.amount) : that.amount != null) return false;
         if (comment != null ? !comment.equals(that.comment) : that.comment != null) return false;
         if (time != null ? !time.equals(that.time) : that.time != null) return false;
+        if (state != null ? !state.equals(that.state) : that.state != null) return false;
 
         return true;
     }
@@ -99,6 +111,7 @@ public class ReturnRecord {
         result = 31 * result + (amount != null ? amount.hashCode() : 0);
         result = 31 * result + (comment != null ? comment.hashCode() : 0);
         result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + (state != null ? state.hashCode() : 0);
         return result;
     }
 }

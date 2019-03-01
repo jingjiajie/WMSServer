@@ -21,6 +21,7 @@ public class ReturnRecordView {
     private String supplierNo;
     private String supplierName;
     private Integer supplierId;
+    private Integer state;
 
     @Basic
     @Id
@@ -143,12 +144,22 @@ public class ReturnRecordView {
         this.supplierId = supplierId;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+    @Basic
+    @Column(name = "State")
+    public Integer getState() {
+        return state;
+    }
 
-        ReturnRecordView that = (ReturnRecordView) object;
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReturnRecordView that = (ReturnRecordView) o;
 
         if (id != that.id) return false;
         if (warehouseId != that.warehouseId) return false;
@@ -163,6 +174,7 @@ public class ReturnRecordView {
         if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
         if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
         if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
+        if (state != null ? !state.equals(that.state) : that.state != null) return false;
 
         return true;
     }
@@ -181,6 +193,7 @@ public class ReturnRecordView {
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
         result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
+        result = 31 * result + (state != null ? state.hashCode() : 0);
         return result;
     }
 }

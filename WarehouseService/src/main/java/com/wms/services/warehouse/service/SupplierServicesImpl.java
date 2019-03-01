@@ -824,6 +824,9 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReportsList.add(dailyReports);
         }
         //查找退货
+        DailyReports dailyReportsReturn=new DailyReports();
+        ReturnAmount returnAmount=this.returnRecordService.findAmount(accountBook,supplyId,dailyReportRequest.getStartTime(),dailyReportRequest.getEndTime());
+
 
         Collections.sort(dailyReportsList, new DailyReportsComparator());
         return dailyReportsList;

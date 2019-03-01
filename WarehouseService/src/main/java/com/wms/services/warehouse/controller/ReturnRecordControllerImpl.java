@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wms.services.warehouse.service.ReturnRecordService;
 import com.wms.utilities.datastructures.Condition;
-import com.wms.utilities.model.ReturnRecord;
-import com.wms.utilities.model.ReturnRecordView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
