@@ -65,6 +65,7 @@ public class ReturnRecordServiceImpl implements ReturnRecordService {
     public ReturnAmount findAmount(String database, int supplyId, Timestamp timestampStart, Timestamp timestampEnd) throws WMSServiceException {
         ReturnRecordView[] returnRecords=this.returnRecordDAO.find(database,new Condition().addCondition("supplyId",supplyId).
                 addCondition("time",new Object[]{timestampStart,timestampEnd}, ConditionItem.Relation.BETWEEN));
+        if(returnRecords.length==0){return new ReturnAmount();}
         BigDecimal amountAllQualified=new BigDecimal(0);
         BigDecimal amountAllUnqualified=new BigDecimal(0);
         for(int i=0;i<returnRecords.length;i++){
@@ -74,6 +75,10 @@ public class ReturnRecordServiceImpl implements ReturnRecordService {
                 amountAllUnqualified=amountAllUnqualified.add(returnRecords[i].getAmount());
         }
         ReturnAmount returnAmount=new ReturnAmount();
+        returnAmount.setMaterialName(returnRecords[0].getMaterialName());
+        returnAmount.setMaterialNo(returnRecords[0].getMaterialNo());
+        returnAmount.setMaterialProductLine(returnRecords[0].getMaterialProductLine());
+        returnAmount.setSupplierName(returnRecords[0].getSupplierName());
         returnAmount.setSupplyId(supplyId);
         returnAmount.setAmountQualified(amountAllQualified);
         returnAmount.setAmountUnqualified(amountAllUnqualified);

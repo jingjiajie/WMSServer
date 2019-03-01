@@ -13,7 +13,7 @@ public class ReturnAmount {
     }
 
 
-    private int supplyId;
+    private int supplyId=-1;
 
     public void setAmountQualified(BigDecimal amountQualified) {
         this.amountQualified = amountQualified;
@@ -34,4 +34,41 @@ public class ReturnAmount {
     }
 
     private BigDecimal amountUnqualified;
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public String getMaterialNo() {
+        return materialNo;
+    }
+
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
+
+    public void setMaterialNo(String materialNo) {
+        this.materialNo = materialNo;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
+    }
+
+    public String getMaterialProductLine() {
+        return materialProductLine;
+    }
+
+    public void setMaterialProductLine(String materialProductLine) {
+        this.materialProductLine = materialProductLine;
+    }
+
+    private String supplierName;
+    private String materialNo;
+    private String materialName;
+    private String materialProductLine;
 }

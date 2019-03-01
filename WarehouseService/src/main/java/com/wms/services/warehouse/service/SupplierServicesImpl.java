@@ -640,31 +640,31 @@ public class SupplierServicesImpl implements SupplierServices {
         return dailyReportsList;
     }
 
-    public void generateDailyReportsByYear(String accountBook,int supplyId){
-        List<DailyReports> dailyReportsList=new ArrayList<>();
+    public void generateDailyReportsByYear(String accountBook, int supplyId) {
+        List<DailyReports> dailyReportsList = new ArrayList<>();
         Calendar dayC1 = new GregorianCalendar();
         Calendar dayC2 = new GregorianCalendar();
         DateFormat df = new SimpleDateFormat("yy-MM-dd");
         Calendar instance = Calendar.getInstance();
         String year = String.valueOf(instance.get(Calendar.YEAR));
-        Date dayStart=new Date();
-        Date dayEnd=new Date();
-        try{
-            dayStart = df.parse(year+"-1-1"); //按照yyyy-MM-dd格式转换为日期
-            dayEnd = df.parse(year+"-12-31");}
-        catch (Exception e){
+        Date dayStart = new Date();
+        Date dayEnd = new Date();
+        try {
+            dayStart = df.parse(year + "-1-1"); //按照yyyy-MM-dd格式转换为日期
+            dayEnd = df.parse(year + "-12-31");
+        } catch (Exception e) {
             throw new WMSServiceException("请检查时间格式是否正确1");
         }
         dayC1.setTime(dayStart); //设置calendar的日期
         dayC2.setTime(dayEnd);
-        for (; dayC1.compareTo(dayC2) <= 0;) {
+        for (; dayC1.compareTo(dayC2) <= 0; ) {
             //dayC1在dayC2之前就循环
-            int month=dayC1.get(Calendar.MONTH)+1;
-            int day=dayC1.get(Calendar.DATE);
+            int month = dayC1.get(Calendar.MONTH) + 1;
+            int day = dayC1.get(Calendar.DATE);
             Date date;
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             try {
-                date = format.parse(year+'-'+month+'-'+day);
+                date = format.parse(year + '-' + month + '-' + day);
             } catch (Exception e) {
                 throw new WMSServiceException("请检查时间格式是否正确1");
             }
@@ -677,22 +677,22 @@ public class SupplierServicesImpl implements SupplierServices {
             date.setSeconds(59);
             Timestamp timestampEnd = new Timestamp(date.getTime());
             dayC1.add(Calendar.DAY_OF_YEAR, 1);  //加1天
-            DailyReportRequest dailyReportRequest=new DailyReportRequest();
+            DailyReportRequest dailyReportRequest = new DailyReportRequest();
             dailyReportRequest.setStartTime(timestampStart);
             dailyReportRequest.setEndTime(timestampEnd);
-            dailyReportsList=this.generateDailyReportsByYear(accountBook,supplyId,dailyReportRequest,dailyReportsList);
+            dailyReportsList = this.generateDailyReportsByYear(accountBook, supplyId, dailyReportRequest, dailyReportsList);
         }
     }
 
     //返回每个时间的总数 所有的入库、出库信息
     //早库存 晚库存 入库详细 理论出库总数
-    public List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId,DailyReportRequest dailyReportRequest,List<DailyReports> dailyReportsList) {
+    public List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId, DailyReportRequest dailyReportRequest, List<DailyReports> dailyReportsList) {
         //找出这段时间之前 每种供货的数量 加到列表里 作为初期数量 时间应该是这段时间的起始时间
         StockRecordFind stockRecordFindPrime = new StockRecordFind();
         stockRecordFindPrime.setTimeEnd(dailyReportRequest.getStartTime());
         stockRecordFindPrime.setSupplyId(supplyId);
         SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("supplyId", supplyId));
-        Object[] objectPrime = this.findSuppliyStockByTime(accountBook, stockRecordFindPrime);
+        Object[] objectPrime = this.findSupplyStockByTime(accountBook, stockRecordFindPrime);
         for (int j = 0; j < objectPrime.length; j++) {
             //物料代号 物料名 状态 总数量
             Object[] o = (Object[]) objectPrime[j];
@@ -737,7 +737,7 @@ public class SupplierServicesImpl implements SupplierServices {
         StockRecordFind stockRecordFindEnd = new StockRecordFind();
         stockRecordFindEnd.setTimeEnd(dailyReportRequest.getEndTime());
         stockRecordFindEnd.setSupplyId(supplyId);
-        Object[] objectEnd = this.findSuppliyStockByTime(accountBook, stockRecordFindEnd);
+        Object[] objectEnd = this.findSupplyStockByTime(accountBook, stockRecordFindEnd);
         for (int j = 0; j < objectEnd.length; j++) {
             //物料代号 物料名 状态 总数量
             Object[] o = (Object[]) objectEnd[j];
@@ -823,11 +823,32 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setTimestamp(warehouseEntryItem.getEntryItemCreatTime());
             dailyReportsList.add(dailyReports);
         }
-        //查找退货
-        DailyReports dailyReportsReturn=new DailyReports();
-        ReturnAmount returnAmount=this.returnRecordService.findAmount(accountBook,supplyId,dailyReportRequest.getStartTime(),dailyReportRequest.getEndTime());
-
-
+        //查找动力退中都
+        DailyReports dailyReportsReturnQualified = new DailyReports();
+        DailyReports dailyReportsReturnUnqualified = new DailyReports();
+        ReturnAmount returnAmount = this.returnRecordService.findAmount(accountBook, supplyId, dailyReportRequest.getStartTime(), dailyReportRequest.getEndTime());
+        if (returnAmount.getSupplyId() != -1) {
+            dailyReportsReturnQualified.setTimestamp(dailyReportRequest.getEndTime());
+            dailyReportsReturnQualified.setSupplierName(returnAmount.getSupplierName());
+            dailyReportsReturnQualified.setMaterialName(returnAmount.getMaterialName());
+            dailyReportsReturnQualified.setMaterialNo(returnAmount.getMaterialNo());
+            dailyReportsReturnQualified.setMaterialProductLine(returnAmount.getMaterialProductLine());
+            dailyReportsReturnUnqualified.setTimestamp(dailyReportRequest.getEndTime());
+            dailyReportsReturnUnqualified.setSupplierName(returnAmount.getSupplierName());
+            dailyReportsReturnUnqualified.setMaterialName(returnAmount.getMaterialName());
+            dailyReportsReturnUnqualified.setMaterialNo(returnAmount.getMaterialNo());
+            dailyReportsReturnUnqualified.setMaterialProductLine(returnAmount.getMaterialProductLine());
+            dailyReportsReturnQualified.setReturnAmountUnqualified(returnAmount.getAmountQualified());
+            dailyReportsReturnUnqualified.setReturnAmountUnqualified(returnAmount.getAmountUnqualified());
+            dailyReportsReturnQualified.setState(DailyReports.Return);
+            dailyReportsReturnUnqualified.setState(DailyReports.Return);
+            if(dailyReportsReturnQualified.getReturnAmountQualified().compareTo(BigDecimal.ZERO)!=0){
+                dailyReportsList.add(dailyReportsReturnQualified);
+            }
+            if(dailyReportsReturnUnqualified.getReturnAmountUnqualified().compareTo(BigDecimal.ZERO)!=0){
+                dailyReportsList.add(dailyReportsReturnUnqualified);
+            }
+        }
         Collections.sort(dailyReportsList, new DailyReportsComparator());
         return dailyReportsList;
     }
@@ -864,7 +885,7 @@ public class SupplierServicesImpl implements SupplierServices {
     }
 
     //物料代号 物料名 状态 总数量 supplyId 物料系列
-    private Object[] findSuppliyStockByTime(String accountBook, StockRecordFind stockRecordFind) {
+    private Object[] findSupplyStockByTime(String accountBook, StockRecordFind stockRecordFind) {
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
         try {

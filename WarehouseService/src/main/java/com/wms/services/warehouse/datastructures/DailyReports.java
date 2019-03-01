@@ -101,6 +101,22 @@ public class DailyReports {
         this.entryNo = entryNo;
     }
 
+    public BigDecimal getReturnAmountQualified() {
+        return returnAmountQualified;
+    }
+
+    public void setReturnAmountQualified(BigDecimal returnAmountQualified) {
+        this.returnAmountQualified = returnAmountQualified;
+    }
+
+    public BigDecimal getReturnAmountUnqualified() {
+        return returnAmountUnqualified;
+    }
+
+    public void setReturnAmountUnqualified(BigDecimal returnAmountUnqualified) {
+        this.returnAmountUnqualified = returnAmountUnqualified;
+    }
+
     private int supplyId;
     private String supplierName;
     private String materialNo;
@@ -113,9 +129,14 @@ public class DailyReports {
     private int type;
     private String destination;
     private String entryNo;
+    //动力退中都的合格品和不合格品
+    private BigDecimal returnAmountQualified;
+    private BigDecimal returnAmountUnqualified;
 
     public static final int AMOUNT_DIFF_ENTRY_STATE=1;
     public static final int AMOUNT_DIFF_DELIVERY_STATE=2;
     public static final int AMOUNT_PRIME=0;
-    public static final int AMOUNT_END=3;
+    //动力退中都
+    public static final int Return=3;
+    public static final int AMOUNT_END=4;
 }
