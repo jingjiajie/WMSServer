@@ -1,13 +1,16 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.ReturnRecordDAO;
+import com.wms.services.warehouse.datastructures.ReturnAmount;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
-import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Timestamp;
 
 
 @Service
@@ -52,6 +55,16 @@ public class ReturnRecordServiceImpl implements ReturnRecordService {
     @Transactional
     public long findCount(String database, Condition cond) throws WMSServiceException {
         return this.returnRecordDAO.findCount(database, cond);
+    }
+
+    @Override
+    @Transactional
+    public ReturnAmount[] findAmount(String database, int supplierId, Timestamp timestampStart, Timestamp timestampEnd) throws WMSServiceException {
+        ReturnRecordView[] returnRecords=this.returnRecordDAO.find(database,new Condition().addCondition("supplierId",supplierId).
+                addCondition("time",new Object[]{timestampStart,timestampEnd}, ConditionItem.Relation.BETWEEN));
+
+        //ReturnAmount returnAmount=new ReturnAmount();
+        return new ReturnAmount[]{};
     }
 
     private void validate(String accountBook, ReturnRecord[] returnRecords) {

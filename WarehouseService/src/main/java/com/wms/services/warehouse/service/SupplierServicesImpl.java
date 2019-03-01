@@ -42,6 +42,8 @@ public class SupplierServicesImpl implements SupplierServices {
     DeliveryOrderItemService deliveryOrderItemService;
     @Autowired
     WarehouseEntryItemService warehouseEntryItemService;
+    @Autowired
+    ReturnRecordService returnRecordService;
 
     @Override
     public int[] add(String accountBook, Supplier[] suppliers) throws WMSServiceException {
@@ -814,12 +816,15 @@ public class SupplierServicesImpl implements SupplierServices {
             if (warehouseEntryItem.getState() == WarehouseEntryItemService.UNQUALIFIED) {
                 dailyReports.setState(TransferStock.UNQUALIFIED);
             }
+            dailyReports.setEntryNo(warehouseEntryItem.getWarehouseEntryNo());
             dailyReports.setSupplierName(warehouseEntryItem.getSupplierName());
             dailyReports.setAmountDiff(warehouseEntryItem.getRealAmount());
             dailyReports.setType(DailyReports.AMOUNT_DIFF_ENTRY_STATE);
             dailyReports.setTimestamp(warehouseEntryItem.getEntryItemCreatTime());
             dailyReportsList.add(dailyReports);
         }
+        //查找退货
+
         Collections.sort(dailyReportsList, new DailyReportsComparator());
         return dailyReportsList;
     }

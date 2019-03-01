@@ -85,6 +85,22 @@ public class DailyReports {
         this.materialProductLine = materialProductLine;
     }
 
+    public String getDestination() {
+        return destination;
+    }
+
+    public String getEntryNo() {
+        return entryNo;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public void setEntryNo(String entryNo) {
+        this.entryNo = entryNo;
+    }
+
     private int supplyId;
     private String supplierName;
     private String materialNo;
