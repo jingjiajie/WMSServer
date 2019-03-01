@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.ReturnRecordDAO;
 import com.wms.services.warehouse.datastructures.ReturnAmount;
+import com.wms.services.warehouse.datastructures.TransferStock;
 import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
@@ -64,13 +65,18 @@ public class ReturnRecordServiceImpl implements ReturnRecordService {
     public ReturnAmount findAmount(String database, int supplyId, Timestamp timestampStart, Timestamp timestampEnd) throws WMSServiceException {
         ReturnRecordView[] returnRecords=this.returnRecordDAO.find(database,new Condition().addCondition("supplyId",supplyId).
                 addCondition("time",new Object[]{timestampStart,timestampEnd}, ConditionItem.Relation.BETWEEN));
-        BigDecimal amountAll=new BigDecimal(0);
+        BigDecimal amountAllQualified=new BigDecimal(0);
+        BigDecimal amountAllUnqualified=new BigDecimal(0);
         for(int i=0;i<returnRecords.length;i++){
-            amountAll=amountAll.add(returnRecords[i].getAmount());
+            if(returnRecords[i].getState()== TransferStock.QUALIFIED)
+            amountAllQualified=amountAllQualified.add(returnRecords[i].getAmount());
+            if(returnRecords[i].getState()== TransferStock.UNQUALIFIED)
+                amountAllUnqualified=amountAllUnqualified.add(returnRecords[i].getAmount());
         }
         ReturnAmount returnAmount=new ReturnAmount();
         returnAmount.setSupplyId(supplyId);
-        returnAmount.setAmount(amountAll);
+        returnAmount.setAmountQualified(amountAllQualified);
+        returnAmount.setAmountUnqualified(amountAllUnqualified);
         return  returnAmount;
     }
 

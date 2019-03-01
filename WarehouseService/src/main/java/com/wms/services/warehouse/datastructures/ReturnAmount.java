@@ -7,18 +7,31 @@ public class ReturnAmount {
         return supplyId;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
 
     public void setSupplyId(int supplyId) {
         this.supplyId = supplyId;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
 
     private int supplyId;
-    private BigDecimal amount;
+
+    public void setAmountQualified(BigDecimal amountQualified) {
+        this.amountQualified = amountQualified;
+    }
+
+    public void setAmountUnqualified(BigDecimal amountUnqualified) {
+        this.amountUnqualified = amountUnqualified;
+    }
+
+    private BigDecimal amountQualified;
+
+    public BigDecimal getAmountQualified() {
+        return amountQualified;
+    }
+
+    public BigDecimal getAmountUnqualified() {
+        return amountUnqualified;
+    }
+
+    private BigDecimal amountUnqualified;
 }
