@@ -130,13 +130,13 @@ public class DailyReports {
     private String destination;
     private String entryNo;
     //动力退中都的合格品和不合格品
-    private BigDecimal returnAmountQualified;
-    private BigDecimal returnAmountUnqualified;
+    private BigDecimal returnAmountQualified=BigDecimal.ZERO;
+    private BigDecimal returnAmountUnqualified=BigDecimal.ZERO;
 
     public static final int AMOUNT_DIFF_ENTRY_STATE=1;
     public static final int AMOUNT_DIFF_DELIVERY_STATE=2;
     public static final int AMOUNT_PRIME=0;
-    //动力退中都
+    //动力退中都状态
     public static final int Return=3;
     public static final int AMOUNT_END=4;
 }
