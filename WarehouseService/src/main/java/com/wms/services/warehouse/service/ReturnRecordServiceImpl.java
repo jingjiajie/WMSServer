@@ -2,6 +2,7 @@ package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.ReturnRecordDAO;
 import com.wms.services.warehouse.datastructures.ReturnAmount;
+import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 
@@ -59,12 +61,17 @@ public class ReturnRecordServiceImpl implements ReturnRecordService {
 
     @Override
     @Transactional
-    public ReturnAmount[] findAmount(String database, int supplierId, Timestamp timestampStart, Timestamp timestampEnd) throws WMSServiceException {
-        ReturnRecordView[] returnRecords=this.returnRecordDAO.find(database,new Condition().addCondition("supplierId",supplierId).
+    public ReturnAmount findAmount(String database, int supplyId, Timestamp timestampStart, Timestamp timestampEnd) throws WMSServiceException {
+        ReturnRecordView[] returnRecords=this.returnRecordDAO.find(database,new Condition().addCondition("supplyId",supplyId).
                 addCondition("time",new Object[]{timestampStart,timestampEnd}, ConditionItem.Relation.BETWEEN));
-
-        //ReturnAmount returnAmount=new ReturnAmount();
-        return new ReturnAmount[]{};
+        BigDecimal amountAll=new BigDecimal(0);
+        for(int i=0;i<returnRecords.length;i++){
+            amountAll=amountAll.add(returnRecords[i].getAmount());
+        }
+        ReturnAmount returnAmount=new ReturnAmount();
+        returnAmount.setSupplyId(supplyId);
+        returnAmount.setAmount(amountAll);
+        return  returnAmount;
     }
 
     private void validate(String accountBook, ReturnRecord[] returnRecords) {

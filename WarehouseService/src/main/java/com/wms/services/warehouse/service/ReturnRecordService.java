@@ -11,5 +11,5 @@ import java.sql.Timestamp;
 
 public interface ReturnRecordService
         extends BaseService<ReturnRecord,ReturnRecordView> {
-    ReturnAmount[] findAmount(String database, int supplierId, Timestamp timestampStart, Timestamp timestampEnd);
+    ReturnAmount findAmount(String database, int supplierId, Timestamp timestampStart, Timestamp timestampEnd);
 }
