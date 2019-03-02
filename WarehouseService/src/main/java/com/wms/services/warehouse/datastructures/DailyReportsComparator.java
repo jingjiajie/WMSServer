@@ -1,13 +1,14 @@
 package com.wms.services.warehouse.datastructures;
 
+import java.sql.Timestamp;
 import java.util.Comparator;
 
 public class DailyReportsComparator implements Comparator<DailyReports> {
     @Override
     public int compare(DailyReports dailyReports1, DailyReports dailyReports2) {
         int cr = 0;
-        //按供货id降序排列
-        int a = dailyReports2.getSupplyId() - dailyReports1.getSupplyId();
+        //按时间升序排列
+        int a = dailyReports1.getTimestamp().compareTo(dailyReports2.getTimestamp());
         if (a != 0) {
             cr = (a > 0) ? 3 : -1;
         } else {

@@ -687,11 +687,7 @@ public class SupplierServicesImpl implements SupplierServices {
     //返回每个时间的总数 所有的入库、出库信息
     //早库存 晚库存 入库详细 理论出库总数
     public List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId, DailyReportRequest dailyReportRequest, List<DailyReports> dailyReportsList) {
-        //找出这段时间之前 每种供货的数量 加到列表里 作为初期数量 时间应该是这段时间的起始时间
-        StockRecordFind stockRecordFindPrime = new StockRecordFind();
-        stockRecordFindPrime.setTimeEnd(dailyReportRequest.getStartTime());
-        stockRecordFindPrime.setSupplyId(supplyId);
-        SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("supplyId", supplyId));
+        SupplyView[] supplyViews = supplyService.find(accountBook, new Condition().addCondition("id", supplyId));
         if (supplyViews.length != 1) {
             return dailyReportsList;
         }
@@ -761,10 +757,10 @@ public class SupplierServicesImpl implements SupplierServices {
         stockRecordFindEnd.setTimeEnd(dailyReportRequest.getEndTime());
         stockRecordFindEnd.setSupplyId(supplyId);
         Object[] objectEnd = this.findSupplyStockByTime(accountBook, stockRecordFindEnd);
+        DailyReports dailyReports = new DailyReports();
         for (int j = 0; j < objectEnd.length; j++) {
             //物料代号 物料名 状态 总数量
             Object[] o = (Object[]) objectEnd[j];
-            DailyReports dailyReports = new DailyReports();
             dailyReports.setMaterialNo((String) o[0]);
             dailyReports.setMaterialName((String) o[1]);
             dailyReports.setMaterialProductLine((String) o[5]);
@@ -778,7 +774,6 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReports.setSupplyId((int) o[4]);
             dailyReports.setTimestamp(dailyReportRequest.getEndTime());
             dailyReports.setType(DailyReports.AMOUNT_END);
-            dailyReportsList.add(dailyReports);
         }
         //把不存在零件显示为0
         for (int i = 0; i < supplyViews.length; i++) {
@@ -793,7 +788,6 @@ public class SupplierServicesImpl implements SupplierServices {
                 }
                 //如果不存在
                 if (!exist) {
-                    DailyReports dailyReports = new DailyReports();
                     dailyReports.setMaterialNo(supplyViews[i].getMaterialNo());
                     dailyReports.setMaterialName(supplyViews[i].getMaterialName());
                     dailyReports.setMaterialProductLine(supplyViews[i].getMaterialProductLine());
@@ -808,9 +802,9 @@ public class SupplierServicesImpl implements SupplierServices {
                     dailyReports.setSupplyId(supplyViews[i].getId());
                     dailyReports.setTimestamp(dailyReportRequest.getStartTime());
                     dailyReports.setType(DailyReports.AMOUNT_END);
-                    dailyReportsList.add(dailyReports);
                 }
             }
+            dailyReportsList.add(dailyReports);
         }
         Collections.sort(dailyReportsList, new DailyReportsComparator());
         return dailyReportsList;
@@ -862,10 +856,10 @@ public class SupplierServicesImpl implements SupplierServices {
                 "(SELECT s1.* FROM StockRecordView AS s1\n" +
                 "INNER JOIN\n" +
                 "(SELECT s2.BatchNo,s2.Unit,s2.UnitAmount,Max(s2.Time) AS TIME,s2.supplyId,s2.State,StorageLocationID FROM StockRecordView As s2\n" +
-                "where s2.supplierId=:supplierId and s2.time<=:checkTime \n" +
+                "where   s2.supplyId=:supplyId and s2.time<=:checkTime \n" +
                 "GROUP BY s2.BatchNo,s2.Unit,s2.UnitAmount,s2.State,s2.supplyId,s2.StorageLocationID) AS s3 \n" +
                 "ON s1.Unit=s3.Unit AND s1.UnitAmount=s3.UnitAmount AND s1.Time=s3.Time and s1.state=s3.state \n" +
-                "and s1.suppliyId=:supplyId ) as s_all\n" +
+                " ) as s_all\n" +
                 "GROUP BY s_all.state,s_all.supplyId";
         session.flush();
         query = session.createNativeQuery(sqlNew);
