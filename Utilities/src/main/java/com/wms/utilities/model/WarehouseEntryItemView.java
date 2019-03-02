@@ -51,8 +51,10 @@ public class WarehouseEntryItemView {
     private String qualifiedStorageLocationName;
     private String unqualifiedStorageLocationNo;
     private String unqualifiedStorageLocationName;
+    private Integer version;
     private String entryRandomCode;
     private Timestamp entryItemCreatTime;
+    private String warehouseEntryInboundDeliveryNo;
 
     @Basic
     @Id
@@ -476,6 +478,16 @@ public class WarehouseEntryItemView {
     }
 
     @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    @Basic
     @Column(name = "EntryRandomCode")
     public String getEntryRandomCode() {
         return entryRandomCode;
@@ -493,6 +505,16 @@ public class WarehouseEntryItemView {
 
     public void setEntryItemCreatTime(Timestamp entryItemCreatTime) {
         this.entryItemCreatTime = entryItemCreatTime;
+    }
+
+    @Basic
+    @Column(name = "WarehouseEntryInboundDeliveryNo")
+    public String getWarehouseEntryInboundDeliveryNo() {
+        return warehouseEntryInboundDeliveryNo;
+    }
+
+    public void setWarehouseEntryInboundDeliveryNo(String warehouseEntryInboundDeliveryNo) {
+        this.warehouseEntryInboundDeliveryNo = warehouseEntryInboundDeliveryNo;
     }
 
     @Override
@@ -566,9 +588,12 @@ public class WarehouseEntryItemView {
             return false;
         if (unqualifiedStorageLocationName != null ? !unqualifiedStorageLocationName.equals(that.unqualifiedStorageLocationName) : that.unqualifiedStorageLocationName != null)
             return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
         if (entryRandomCode != null ? !entryRandomCode.equals(that.entryRandomCode) : that.entryRandomCode != null)
             return false;
         if (entryItemCreatTime != null ? !entryItemCreatTime.equals(that.entryItemCreatTime) : that.entryItemCreatTime != null)
+            return false;
+        if (warehouseEntryInboundDeliveryNo != null ? !warehouseEntryInboundDeliveryNo.equals(that.warehouseEntryInboundDeliveryNo) : that.warehouseEntryInboundDeliveryNo != null)
             return false;
 
         return true;
@@ -618,8 +643,10 @@ public class WarehouseEntryItemView {
         result = 31 * result + (qualifiedStorageLocationName != null ? qualifiedStorageLocationName.hashCode() : 0);
         result = 31 * result + (unqualifiedStorageLocationNo != null ? unqualifiedStorageLocationNo.hashCode() : 0);
         result = 31 * result + (unqualifiedStorageLocationName != null ? unqualifiedStorageLocationName.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
         result = 31 * result + (entryRandomCode != null ? entryRandomCode.hashCode() : 0);
         result = 31 * result + (entryItemCreatTime != null ? entryItemCreatTime.hashCode() : 0);
+        result = 31 * result + (warehouseEntryInboundDeliveryNo != null ? warehouseEntryInboundDeliveryNo.hashCode() : 0);
         return result;
     }
 }

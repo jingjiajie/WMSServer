@@ -795,6 +795,11 @@ public class SupplierServicesImpl implements SupplierServices {
             } else {
                 dailyReportsDeliver.setState(TransferStock.UNQUALIFIED);
             }
+            if (deliveryOrderItemView.getDestinationName().equals("供应商")) {
+                dailyReportsDeliver.setType(DailyReports.RETURN_TO_SUPPLIER);
+            } else {
+                dailyReportsDeliver.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
+            }
             dailyReportsDeliver.setSupplierName(deliveryOrderItemView.getSupplierName());
             dailyReportsDeliver.setAmountDiff(dailyReportsDeliver.getAmountDiff().add(deliveryOrderItemView.getRealAmount()));
             dailyReportsDeliver.setType(DailyReports.AMOUNT_DIFF_DELIVERY_STATE);
@@ -816,7 +821,7 @@ public class SupplierServicesImpl implements SupplierServices {
             if (warehouseEntryItem.getState() == WarehouseEntryItemService.UNQUALIFIED) {
                 dailyReports.setState(TransferStock.UNQUALIFIED);
             }
-            dailyReports.setEntryNo(warehouseEntryItem.getWarehouseEntryNo());
+            dailyReports.setEntryNo(warehouseEntryItem.getWarehouseEntryInboundDeliveryNo());
             dailyReports.setSupplierName(warehouseEntryItem.getSupplierName());
             dailyReports.setAmountDiff(warehouseEntryItem.getRealAmount());
             dailyReports.setType(DailyReports.AMOUNT_DIFF_ENTRY_STATE);
@@ -840,8 +845,8 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReportsReturnUnqualified.setMaterialProductLine(returnAmount.getMaterialProductLine());
             dailyReportsReturnQualified.setReturnAmountUnqualified(returnAmount.getAmountQualified());
             dailyReportsReturnUnqualified.setReturnAmountUnqualified(returnAmount.getAmountUnqualified());
-            dailyReportsReturnQualified.setState(DailyReports.Return);
-            dailyReportsReturnUnqualified.setState(DailyReports.Return);
+            dailyReportsReturnQualified.setState(DailyReports.RETURN);
+            dailyReportsReturnUnqualified.setState(DailyReports.RETURN);
             if(dailyReportsReturnQualified.getReturnAmountQualified().compareTo(BigDecimal.ZERO)!=0){
                 dailyReportsList.add(dailyReportsReturnQualified);
             }
