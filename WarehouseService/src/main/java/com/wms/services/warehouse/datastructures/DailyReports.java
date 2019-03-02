@@ -21,10 +21,6 @@ public class DailyReports {
         return amountDiff;
     }
 
-    public BigDecimal getRealStock() {
-        return realStock;
-    }
-
     public int getType() {
         return type;
     }
@@ -43,10 +39,6 @@ public class DailyReports {
 
     public void setAmountDiff(BigDecimal amountDiff) {
         this.amountDiff = amountDiff;
-    }
-
-    public void setRealStock(BigDecimal realStock) {
-        this.realStock = realStock;
     }
 
     public Timestamp getTimestamp() {
@@ -133,13 +125,39 @@ public class DailyReports {
         this.returnToSupplierUnqualified = returnToSupplierUnqualified;
     }
 
+    public BigDecimal getRealStockQualified() {
+        return realStockQualified;
+    }
+
+    public BigDecimal getRealStockUnqualified() {
+        return realStockUnqualified;
+    }
+
+    public BigDecimal getRealStockWaitingForInspection() {
+        return realStockWaitingForInspection;
+    }
+
+    public void setRealStockQualified(BigDecimal realStockQualified) {
+        this.realStockQualified = realStockQualified;
+    }
+
+    public void setRealStockUnqualified(BigDecimal realStockUnqualified) {
+        this.realStockUnqualified = realStockUnqualified;
+    }
+
+    public void setRealStockWaitingForInspection(BigDecimal realStockWaitingForInspection) {
+        this.realStockWaitingForInspection = realStockWaitingForInspection;
+    }
+
     private int supplyId;
     private String supplierName;
     private String materialNo;
     private String materialName;
     private String materialProductLine;
     private BigDecimal amountDiff;
-    private BigDecimal realStock;
+    private BigDecimal realStockQualified;
+    private BigDecimal realStockUnqualified;
+    private BigDecimal realStockWaitingForInspection;
     private Timestamp timestamp;
     private int state;
     private int type;
@@ -151,10 +169,9 @@ public class DailyReports {
     //中都退厂家
     private BigDecimal returnToSupplierQualified=BigDecimal.ZERO;
     private BigDecimal returnToSupplierUnqualified=BigDecimal.ZERO;
-
     public static final int AMOUNT_DIFF_ENTRY_STATE=1;
     public static final int AMOUNT_DIFF_DELIVERY_STATE=2;
-    public static final int AMOUNT_PRIME=0;
+    public static final int TOTAl=0;
     //动力退中都状态
     public static final int RETURN=3;
     //中都退厂家
