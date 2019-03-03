@@ -640,7 +640,7 @@ public class SupplierServicesImpl implements SupplierServices {
         return dailyReportsList;
     }
 
-    public void generateDailyReportsByYear(String accountBook, int supplyId) {
+    public  List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId) {
         List<DailyReports> dailyReportsList = new ArrayList<>();
         Calendar dayC1 = new GregorianCalendar();
         Calendar dayC2 = new GregorianCalendar();
@@ -682,6 +682,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReportRequest.setEndTime(timestampEnd);
             dailyReportsList = this.generateDailyReportsByYear(accountBook, supplyId, dailyReportRequest, dailyReportsList);
         }
+        return dailyReportsList;
     }
 
     //返回每个时间的总数 所有的入库、出库信息
@@ -719,8 +720,7 @@ public class SupplierServicesImpl implements SupplierServices {
                 if (deliveryOrderItemView.getDestinationName().equals("供应商")) {
                     dailyReportsTotal.setReturnToSupplierUnqualified(dailyReportsTotal.getReturnToSupplierUnqualified().add(deliveryOrderItemView.getRealAmount()));
                 } else {
-                    //TODO
-                    dailyReportsTotal.setAmountDiff(dailyReportsTotal.getAmountDiff().add(deliveryOrderItemView.getRealAmount()));
+                    //TODO 不良品发运
                 }
             }
         }
@@ -731,6 +731,7 @@ public class SupplierServicesImpl implements SupplierServices {
             dailyReportsTotal.setReturnAmountUnqualified(returnAmount.getAmountUnqualified());
         }
         dailyReportsTotal.setType(DailyReports.TOTAl);
+        dailyReportsList.add(dailyReportsTotal);
         for (WarehouseEntryItemView warehouseEntryItem : warehouseEntryItemViews) {
             DailyReports dailyReports = new DailyReports();
             dailyReports.setSupplyId(warehouseEntryItem.getSupplyId());

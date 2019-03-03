@@ -52,7 +52,7 @@ public class WarehouseService {
         dailyReportRequest.setStartTime(GetTimeStampByTime.getTimestamoByTime("2018-5-27 0:0:0"));
         dailyReportRequest.setEndTime(GetTimeStampByTime.getTimestamoByTime("2018-5-27 24:0:0"));
         List<DailyReports> dailyReports=new ArrayList<>();
-        supplierServices.generateDailyReportsByYear("WMS_Template",1203,dailyReportRequest,dailyReports);
+        supplierServices.generateDailyReportsByYear("WMS_Template",1203);
 
 //        JudgeOldestBatch judgeOldestBatch=new JudgeOldestBatch();
 //        judgeOldestBatch.setSupplyId(15);

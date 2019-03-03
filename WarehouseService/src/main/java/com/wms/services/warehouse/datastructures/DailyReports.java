@@ -154,6 +154,7 @@ public class DailyReports {
     private String materialNo;
     private String materialName;
     private String materialProductLine;
+    //正品出库数量
     private BigDecimal amountDiff;
     private BigDecimal realStockQualified;
     private BigDecimal realStockUnqualified;
@@ -169,6 +170,8 @@ public class DailyReports {
     //中都退厂家
     private BigDecimal returnToSupplierQualified=BigDecimal.ZERO;
     private BigDecimal returnToSupplierUnqualified=BigDecimal.ZERO;
+
+
     public static final int AMOUNT_DIFF_ENTRY_STATE=1;
     public static final int AMOUNT_DIFF_DELIVERY_STATE=2;
     public static final int TOTAl=0;
