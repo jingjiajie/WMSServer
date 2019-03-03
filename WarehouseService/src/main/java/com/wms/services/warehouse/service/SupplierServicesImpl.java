@@ -872,4 +872,21 @@ public class SupplierServicesImpl implements SupplierServices {
         resultList.toArray(resultArray);
         return resultArray;
     }
+
+    public void test(String accountBook) {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.flush();
+        try {
+            session.createNativeQuery("USE " + accountBook + ";").executeUpdate();
+        } catch (Throwable ex) {
+            throw new DatabaseNotFoundException(accountBook);
+        }
+        Query query = null;
+        //库存查询最新一条用
+        String sqlNew ="call test(1203)";
+        session.flush();
+        query = session.createNativeQuery(sqlNew);
+        List<Object[]> list = query.list();
+
+    }
 }
