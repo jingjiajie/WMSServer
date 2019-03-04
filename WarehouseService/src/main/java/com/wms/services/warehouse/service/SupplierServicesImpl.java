@@ -19,10 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.sql.Timestamp;
 import java.util.stream.Stream;
 
 @Service
@@ -640,7 +641,7 @@ public class SupplierServicesImpl implements SupplierServices {
         return dailyReportsList;
     }
 
-    public  List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId) {
+    public List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId) {
         List<DailyReports> dailyReportsList = new ArrayList<>();
         Calendar dayC1 = new GregorianCalendar();
         Calendar dayC2 = new GregorianCalendar();
@@ -874,6 +875,7 @@ public class SupplierServicesImpl implements SupplierServices {
     }
 
     public void test(String accountBook) {
+        List<DailyReports> dailyReportsList = new ArrayList<>();
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
         try {
@@ -881,12 +883,52 @@ public class SupplierServicesImpl implements SupplierServices {
         } catch (Throwable ex) {
             throw new DatabaseNotFoundException(accountBook);
         }
-        Query query = null;
-        //库存查询最新一条用
-        String sqlNew ="call test(1203)";
-        session.flush();
-        query = session.createNativeQuery(sqlNew);
-        List<Object[]> list = query.list();
+        try {
+            Query query = null;
+            //库存查询最新一条用
+            String sqlNew = "call test(5)";
+            session.flush();
+            query = session.createNativeQuery(sqlNew);
+            List<Object[]> list = query.list();
+            //time TIMESTAMP,
+//entryAmountWait
+//entryAmountQua
+//entryAmountUnq
+//amountDiff
+//realStockQualified
+//realStockUnqualified
+//realStockWaitingForInspection
+//state
+//type
+//entryNo
+//returnAmountQualified
+//returnAmountUnqualified
+//returnToSupplierQualified
+//returnToSupplierUnqualified
+            if (list != null && list.size() > 0) {
+                for (Object[] objects : list) {
+                    DailyReports dailyReports = new DailyReports();
+                    dailyReports.setTimestamp((Timestamp)objects[0]);
+                    dailyReports.setEntryAmountWait((BigDecimal) objects[1]);
+                    dailyReports.setEntryAmountUnq((BigDecimal) objects[2]);
+                    dailyReports.setEntryAmountQua((BigDecimal) objects[3]);
+                    dailyReports.setAmountDiff((BigDecimal) objects[4]);
+                    dailyReports.setRealStockQualified((BigDecimal) objects[5]);
+                    dailyReports.setRealStockUnqualified((BigDecimal) objects[6]);
+                    dailyReports.setRealStockWaitingForInspection((BigDecimal) objects[7]);
+                    dailyReports.setState((int) objects[8]);
+                    dailyReports.setType((int) objects[9]);
+                    dailyReports.setReturnAmountQualified((BigDecimal) objects[10]);
+                    dailyReports.setReturnAmountUnqualified((BigDecimal) objects[11]);
+                    dailyReports.setReturnToSupplierQualified((BigDecimal) objects[12]);
+                    dailyReports.setReturnToSupplierUnqualified((BigDecimal) objects[13]);
+                    dailyReportsList.add(dailyReports);
+                }
+            }
+        } catch (Exception e) {
 
+        }
+        DailyReports[] dailyReports = new DailyReports[dailyReportsList.size()];
+        dailyReportsList.toArray(dailyReports);
     }
 }

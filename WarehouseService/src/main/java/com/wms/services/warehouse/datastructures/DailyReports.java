@@ -149,6 +149,30 @@ public class DailyReports {
         this.realStockWaitingForInspection = realStockWaitingForInspection;
     }
 
+    public void setEntryAmountQua(BigDecimal entryAmountQua) {
+        this.entryAmountQua = entryAmountQua;
+    }
+
+    public void setEntryAmountUnq(BigDecimal entryAmountUnq) {
+        this.entryAmountUnq = entryAmountUnq;
+    }
+
+    public BigDecimal getEntryAmountWait() {
+        return entryAmountWait;
+    }
+
+    public BigDecimal getEntryAmountQua() {
+        return entryAmountQua;
+    }
+
+    public BigDecimal getEntryAmountUnq() {
+        return entryAmountUnq;
+    }
+
+    public void setEntryAmountWait(BigDecimal entryAmountWait) {
+        this.entryAmountWait = entryAmountWait;
+    }
+
     private int supplyId;
     private String supplierName;
     private String materialNo;
@@ -170,6 +194,9 @@ public class DailyReports {
     //中都退厂家
     private BigDecimal returnToSupplierQualified=BigDecimal.ZERO;
     private BigDecimal returnToSupplierUnqualified=BigDecimal.ZERO;
+    private BigDecimal entryAmountQua=BigDecimal.ZERO;
+    private BigDecimal entryAmountWait=BigDecimal.ZERO;
+    private BigDecimal entryAmountUnq=BigDecimal.ZERO;
 
 
     public static final int AMOUNT_DIFF_ENTRY_STATE=1;
