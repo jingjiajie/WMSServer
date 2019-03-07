@@ -891,13 +891,12 @@ public class SupplierServicesImpl implements SupplierServices {
             query = session.createNativeQuery(sqlNew);
             List<Object[]> list = query.list();
             //time TIMESTAMP,
-//entryAmountWait
-//entryAmountQua
-//entryAmountUnq
-//amountDiff
-//realStockQualified
-//realStockUnqualified
-//realStockWaitingForInspection
+            //entryAmountWait
+            //entryAmountQua
+            //entryAmountUnq
+            //amountDiff
+            //realStockQualified
+            //realStockUnqualified //realStockWaitingForInspection
 //state
 //type
 //entryNo
@@ -930,5 +929,34 @@ public class SupplierServicesImpl implements SupplierServices {
         }
         DailyReports[] dailyReports = new DailyReports[dailyReportsList.size()];
         dailyReportsList.toArray(dailyReports);
+        Calendar cale = null;
+        cale = Calendar.getInstance();
+        int year = cale.get(Calendar.YEAR);
+        Optional<DailyReports > dailyReportsOp= dailyReportsList.stream().max(Comparator.comparing(DailyReports ::getTimestamp));
+        DailyReports dailyReportsNewest = dailyReportsOp.get();
+        Timestamp timestampNewest=dailyReportsNewest.getTimestamp();
+        Date date;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            date = format.parse(year + "-12-31");
+        } catch (Exception e) {
+            throw new WMSServiceException("请检查时间格式是否正确1");
+        }
+        date.setHours(0);
+        date.setMinutes(0);
+        date.setSeconds(0);
+        //当年最后一天
+        Timestamp timestampEnd = new Timestamp(date.getTime());
+        Date date1 = new Date();
+        try {
+            date1 = timestampNewest;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        int mounthNew=date1.getMonth()+1;
+        for(int i=1;i<=mounthNew;i++){
+
+
+        }
     }
 }
