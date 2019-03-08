@@ -23,6 +23,6 @@ public interface SupplierServices {
     SupplierAmount[] supplierRemind(String accountBook, int supplierId);
     List<DailyReports> generateDailyReports(String accountBook, DailyReportRequest dailyReportRequest);
     List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId, DailyReportRequest dailyReportRequest, List<DailyReports> dailyReportsList);
-    List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId);
-    void test(String accountBook);
+    //List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId);
+    List<DailyReports> generateDailyReportsByYear(String accountBook,int supplyId);
 }

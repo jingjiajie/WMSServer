@@ -640,7 +640,7 @@ public class SupplierServicesImpl implements SupplierServices {
         Collections.sort(dailyReportsList, new DailyReportsComparator());
         return dailyReportsList;
     }
-
+/*
     public List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId) {
         List<DailyReports> dailyReportsList = new ArrayList<>();
         Calendar dayC1 = new GregorianCalendar();
@@ -685,7 +685,7 @@ public class SupplierServicesImpl implements SupplierServices {
         }
         return dailyReportsList;
     }
-
+*/
     //返回每个时间的总数 所有的入库、出库信息
     //早库存 晚库存 入库详细 理论出库总数
     public List<DailyReports> generateDailyReportsByYear(String accountBook, int supplyId, DailyReportRequest dailyReportRequest, List<DailyReports> dailyReportsList) {
@@ -874,7 +874,7 @@ public class SupplierServicesImpl implements SupplierServices {
         return resultArray;
     }
 
-    public void test(String accountBook) {
+    public List<DailyReports> generateDailyReportsByYear(String accountBook,int supplyId) {
         List<DailyReports> dailyReportsList = new ArrayList<>();
         Session session = this.sessionFactory.getCurrentSession();
         session.flush();
@@ -886,7 +886,7 @@ public class SupplierServicesImpl implements SupplierServices {
         try {
             Query query = null;
             //库存查询最新一条用
-            String sqlNew = "call test(5)";
+            String sqlNew = "call test("+supplyId+")";
             session.flush();
             query = session.createNativeQuery(sqlNew);
             List<Object[]> list = query.list();
@@ -896,14 +896,15 @@ public class SupplierServicesImpl implements SupplierServices {
             //entryAmountUnq
             //amountDiff
             //realStockQualified
-            //realStockUnqualified //realStockWaitingForInspection
-//state
-//type
-//entryNo
-//returnAmountQualified
-//returnAmountUnqualified
-//returnToSupplierQualified
-//returnToSupplierUnqualified
+            //realStockUnqualified
+            // realStockWaitingForInspection
+            //state
+            //type
+            // entryNo
+            // returnAmountQualified
+            // returnAmountUnqualified
+            // returnToSupplierQualified
+            //returnToSupplierUnqualified
             if (list != null && list.size() > 0) {
                 for (Object[] objects : list) {
                     DailyReports dailyReports = new DailyReports();
@@ -927,36 +928,7 @@ public class SupplierServicesImpl implements SupplierServices {
         } catch (Exception e) {
 
         }
-        DailyReports[] dailyReports = new DailyReports[dailyReportsList.size()];
-        dailyReportsList.toArray(dailyReports);
-        Calendar cale = null;
-        cale = Calendar.getInstance();
-        int year = cale.get(Calendar.YEAR);
-        Optional<DailyReports > dailyReportsOp= dailyReportsList.stream().max(Comparator.comparing(DailyReports ::getTimestamp));
-        DailyReports dailyReportsNewest = dailyReportsOp.get();
-        Timestamp timestampNewest=dailyReportsNewest.getTimestamp();
-        Date date;
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            date = format.parse(year + "-12-31");
-        } catch (Exception e) {
-            throw new WMSServiceException("请检查时间格式是否正确1");
-        }
-        date.setHours(0);
-        date.setMinutes(0);
-        date.setSeconds(0);
-        //当年最后一天
-        Timestamp timestampEnd = new Timestamp(date.getTime());
-        Date date1 = new Date();
-        try {
-            date1 = timestampNewest;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        int mounthNew=date1.getMonth()+1;
-        for(int i=1;i<=mounthNew;i++){
-
-
-        }
+        Collections.sort(dailyReportsList, new DailyReportsComparator());
+        return dailyReportsList;
     }
 }

@@ -23,5 +23,6 @@ public interface SupplierController {
     long findCountHistory(String accountBook,String condStr);
     SupplierAmount[] supplierRemind(String accountBook, String supplierId);
     List<DailyReports> generateDailyReports(String accountBook, DailyReportRequest dailyReportRequest);
+    List<DailyReports> generateDailyReportsByYear(String accountBook,DailyReportRequest dailyReportRequest);
     DeliveryOrderItemView[] checkDelivery(String accountBook,DailyReportRequest dailyReportRequest);
 }

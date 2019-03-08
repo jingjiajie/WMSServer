@@ -201,4 +201,47 @@ public class SupplierControllerImpl implements SupplierController {
         Collections.reverse(dailyReportRequestList);
         return dailyReportRequestList;
     }
+
+    @Override
+    @RequestMapping(value = "/generate_daily_reports_by_year", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public List<DailyReports> generateDailyReportsByYear(@PathVariable("accountBook") String accountBook,
+                                                   @RequestBody DailyReportRequest dailyReportRequest) {
+
+        if (dailyReportRequest.getTime() == null) {
+            dailyReportRequest.setTime(new Timestamp(System.currentTimeMillis()).toString());
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
+        try {
+            date = format.parse(dailyReportRequest.getTime());
+        } catch (Exception e) {
+            throw new WMSServiceException("请检查时间格式是否正确1");
+        }
+        date.setHours(0);
+        date.setMinutes(0);
+        date.setSeconds(0);
+        Timestamp timestampStart = new Timestamp(date.getTime());
+        date.setHours(23);
+        date.setMinutes(59);
+        date.setSeconds(59);
+        Timestamp timestampEnd = new Timestamp(date.getTime());
+        dailyReportRequest.setStartTime(timestampStart);
+        dailyReportRequest.setEndTime(timestampEnd);
+        List<DailyReports> dailyReportRequestList = this.supplierServices.generateDailyReportsByYear(accountBook, dailyReportRequest.getSupplierId());
+        /*if (dailyReportRequest.getMaterialName() != null) {
+            if (!dailyReportRequest.getMaterialName().equals("")) {
+                Iterator<DailyReports> iter = dailyReportRequestList.iterator();
+                while (iter.hasNext()) {
+                    //list.remove(0);
+                    DailyReports dailyReports = iter.next();
+                    if (!dailyReports.getMaterialName().contains(dailyReportRequest.getMaterialName())) {
+                        iter.remove();
+                    }
+                }
+            }
+        }*/
+        Collections.reverse(dailyReportRequestList);
+        return dailyReportRequestList;
+    }
 }
