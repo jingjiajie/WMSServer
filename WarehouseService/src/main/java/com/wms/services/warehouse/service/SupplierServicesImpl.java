@@ -886,7 +886,7 @@ public class SupplierServicesImpl implements SupplierServices {
         try {
             Query query = null;
             //库存查询最新一条用
-            String sqlNew = "call test("+supplyId+")";
+            String sqlNew = "call GenerateDailyAmountSearch("+supplyId+")";
             session.flush();
             query = session.createNativeQuery(sqlNew);
             List<Object[]> list = query.list();
@@ -910,18 +910,19 @@ public class SupplierServicesImpl implements SupplierServices {
                     DailyReports dailyReports = new DailyReports();
                     dailyReports.setTimestamp((Timestamp)objects[0]);
                     dailyReports.setEntryAmountWait((BigDecimal) objects[1]);
-                    dailyReports.setEntryAmountUnq((BigDecimal) objects[2]);
-                    dailyReports.setEntryAmountQua((BigDecimal) objects[3]);
+                    dailyReports.setEntryAmountQua((BigDecimal) objects[2]);
+                    dailyReports.setEntryAmountUnq((BigDecimal) objects[3]);
                     dailyReports.setAmountDiff((BigDecimal) objects[4]);
                     dailyReports.setRealStockQualified((BigDecimal) objects[5]);
                     dailyReports.setRealStockUnqualified((BigDecimal) objects[6]);
                     dailyReports.setRealStockWaitingForInspection((BigDecimal) objects[7]);
-                    dailyReports.setState((int) objects[8]);
+                    //dailyReports.setState((int) objects[8]);
                     dailyReports.setType((int) objects[9]);
-                    dailyReports.setReturnAmountQualified((BigDecimal) objects[10]);
-                    dailyReports.setReturnAmountUnqualified((BigDecimal) objects[11]);
-                    dailyReports.setReturnToSupplierQualified((BigDecimal) objects[12]);
-                    dailyReports.setReturnToSupplierUnqualified((BigDecimal) objects[13]);
+                    dailyReports.setEntryNo((String)objects[10]);
+                    dailyReports.setReturnAmountQualified((BigDecimal) objects[11]);
+                    dailyReports.setReturnAmountUnqualified((BigDecimal) objects[12]);
+                    dailyReports.setReturnToSupplierQualified((BigDecimal) objects[13]);
+                    dailyReports.setReturnToSupplierUnqualified((BigDecimal) objects[14]);
                     dailyReportsList.add(dailyReports);
                 }
             }

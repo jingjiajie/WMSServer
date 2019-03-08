@@ -241,7 +241,7 @@ public class SupplierControllerImpl implements SupplierController {
                 }
             }
         }*/
-        Collections.reverse(dailyReportRequestList);
+        //Collections.reverse(dailyReportRequestList);
         return dailyReportRequestList;
     }
 }
