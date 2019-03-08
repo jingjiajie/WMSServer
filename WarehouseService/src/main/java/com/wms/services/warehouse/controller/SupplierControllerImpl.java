@@ -7,12 +7,14 @@ import com.wms.services.warehouse.datastructures.DailyReports;
 import com.wms.services.warehouse.datastructures.SupplierAmount;
 import com.wms.services.warehouse.service.DeliveryOrderItemService;
 import com.wms.services.warehouse.service.SupplierServices;
+import com.wms.services.warehouse.service.SupplyService;
 import com.wms.utilities.datastructures.Condition;
 import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.DeliveryOrderItemView;
 import com.wms.utilities.model.Supplier;
 import com.wms.utilities.model.SupplierView;
+import com.wms.utilities.model.SupplyView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,8 @@ public class SupplierControllerImpl implements SupplierController {
     SupplierServices supplierServices;
     @Autowired
     DeliveryOrderItemService deliveryOrderItemService;
+    @Autowired
+    SupplyService supplyService;
 
     @Override
     @ResponseStatus(HttpStatus.OK)
@@ -208,6 +212,14 @@ public class SupplierControllerImpl implements SupplierController {
     public List<DailyReports> generateDailyReportsByYear(@PathVariable("accountBook") String accountBook,
                                                    @RequestBody DailyReportRequest dailyReportRequest) {
 
+        if(dailyReportRequest.getSupplyId()==-1){
+            SupplyView[] supplyViews=supplyService.find(accountBook,new Condition().addCondition("supplierId",dailyReportRequest.getSupplierId()));
+        if(supplyViews.length==0){
+            return null;
+        }
+            dailyReportRequest.setSupplyId(supplyViews[0].getId());
+        }
+
         if (dailyReportRequest.getTime() == null) {
             dailyReportRequest.setTime(new Timestamp(System.currentTimeMillis()).toString());
         }
@@ -228,7 +240,7 @@ public class SupplierControllerImpl implements SupplierController {
         Timestamp timestampEnd = new Timestamp(date.getTime());
         dailyReportRequest.setStartTime(timestampStart);
         dailyReportRequest.setEndTime(timestampEnd);
-        List<DailyReports> dailyReportRequestList = this.supplierServices.generateDailyReportsByYear(accountBook, dailyReportRequest.getSupplierId());
+        List<DailyReports> dailyReportRequestList = this.supplierServices.generateDailyReportsByYear(accountBook, dailyReportRequest.getSupplyId());
         /*if (dailyReportRequest.getMaterialName() != null) {
             if (!dailyReportRequest.getMaterialName().equals("")) {
                 Iterator<DailyReports> iter = dailyReportRequestList.iterator();

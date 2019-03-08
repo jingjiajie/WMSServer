@@ -51,4 +51,14 @@ public class DailyReportRequest {
     }
 
     private String materialName;
+
+    public int getSupplyId() {
+        return supplyId;
+    }
+
+    public void setSupplyId(int supplyId) {
+        this.supplyId = supplyId;
+    }
+
+    private int supplyId;
 }
