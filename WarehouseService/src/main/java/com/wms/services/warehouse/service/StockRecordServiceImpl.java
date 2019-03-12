@@ -239,6 +239,7 @@ public class StockRecordServiceImpl implements StockRecordService {
             returnRecord.setWarehouseId(stockRecords[i].getWarehouseId());
             returnRecord.setComment(stockRecords[i].getComment());
             returnRecord.setTime(new Timestamp(System.currentTimeMillis()));
+            returnRecord.setState(stockRecords[i].getState());
             returnRecordService.add(accountBook,new ReturnRecord[]{returnRecord});
         }
     }

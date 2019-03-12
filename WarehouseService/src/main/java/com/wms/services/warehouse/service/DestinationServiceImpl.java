@@ -66,8 +66,12 @@ public class DestinationServiceImpl implements DestinationService{
     @Override
     public void remove(String accountBook, int[] ids) throws WMSServiceException {
         for (int id : ids) {
-            if (destinationDAO.find(accountBook, new Condition().addCondition("id", id)).length == 0) {
+            DestinationView[] destinationViews=destinationDAO.find(accountBook, new Condition().addCondition("id", id));
+            if (destinationViews.length == 0) {
                 throw new WMSServiceException(String.format("删除目的地不存在，请重新查询！(%d)", id));
+            }
+            if(destinationViews[0].getName().equals("供应商")){
+                throw new WMSServiceException(String.format("“供应商”目的地不允许删除！"));
             }
         }
 

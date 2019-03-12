@@ -1,13 +1,19 @@
 package com.wms.services.warehouse.service;
 
 import com.wms.services.warehouse.dao.ReturnRecordDAO;
+import com.wms.services.warehouse.datastructures.ReturnAmount;
+import com.wms.services.warehouse.datastructures.TransferStock;
+import com.wms.utilities.controller.BaseController;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.datastructures.ConditionItem;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.utilities.model.*;
-import com.wms.utilities.vaildator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 
 @Service
@@ -52,6 +58,31 @@ public class ReturnRecordServiceImpl implements ReturnRecordService {
     @Transactional
     public long findCount(String database, Condition cond) throws WMSServiceException {
         return this.returnRecordDAO.findCount(database, cond);
+    }
+
+    @Override
+    @Transactional
+    public ReturnAmount findAmount(String database, int supplyId, Timestamp timestampStart, Timestamp timestampEnd) throws WMSServiceException {
+        ReturnRecordView[] returnRecords=this.returnRecordDAO.find(database,new Condition().addCondition("supplyId",supplyId).
+                addCondition("time",new Object[]{timestampStart,timestampEnd}, ConditionItem.Relation.BETWEEN));
+        if(returnRecords.length==0){return new ReturnAmount();}
+        BigDecimal amountAllQualified=new BigDecimal(0);
+        BigDecimal amountAllUnqualified=new BigDecimal(0);
+        for(int i=0;i<returnRecords.length;i++){
+            if(returnRecords[i].getState()== TransferStock.QUALIFIED)
+            amountAllQualified=amountAllQualified.add(returnRecords[i].getAmount());
+            if(returnRecords[i].getState()== TransferStock.UNQUALIFIED)
+                amountAllUnqualified=amountAllUnqualified.add(returnRecords[i].getAmount());
+        }
+        ReturnAmount returnAmount=new ReturnAmount();
+        returnAmount.setMaterialName(returnRecords[0].getMaterialName());
+        returnAmount.setMaterialNo(returnRecords[0].getMaterialNo());
+        returnAmount.setMaterialProductLine(returnRecords[0].getMaterialProductLine());
+        returnAmount.setSupplierName(returnRecords[0].getSupplierName());
+        returnAmount.setSupplyId(supplyId);
+        returnAmount.setAmountQualified(amountAllQualified);
+        returnAmount.setAmountUnqualified(amountAllUnqualified);
+        return  returnAmount;
     }
 
     private void validate(String accountBook, ReturnRecord[] returnRecords) {
