@@ -682,7 +682,7 @@ public class DeliveryOrderServiceImpl implements DeliveryOrderService{
                     if (originAmount.compareTo(supplyView.getTrayCapacity()) <= 0) {
                         transferOrderItem.setScheduledAmount(supplyView.getTrayCapacity());
                     } else {
-                        transferOrderItem.setScheduledAmount(originAmount.divide(supplyView.getTrayCapacity(), 2, BigDecimal.ROUND_UP).multiply(supplyView.getTrayCapacity()));
+                        transferOrderItem.setScheduledAmount(originAmount.divide(supplyView.getTrayCapacity(), 0, BigDecimal.ROUND_UP).multiply(supplyView.getTrayCapacity()));
                     }
                 }
                 transferOrderItem.setPersonId(TransferAuto.getPersonId());
