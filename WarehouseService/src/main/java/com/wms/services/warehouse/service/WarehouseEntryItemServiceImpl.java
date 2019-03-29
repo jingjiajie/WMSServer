@@ -74,6 +74,9 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
     @Override
     public int[] add1(String accountBook, WarehouseEntryItem[] warehouseEntryItems) throws WMSServiceException {
         if (warehouseEntryItems.length == 0) return new int[]{};
+        for(int i=0;i<warehouseEntryItems.length;i++){
+            warehouseEntryItems[i].setVersion(1);
+        }
         WarehouseEntryView warehouseEntryView = this.getWarehouseEntryView(accountBook, warehouseEntryItems);
         //验证字段
         this.validateEntities(accountBook, warehouseEntryItems);
@@ -92,6 +95,9 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setSourceStorageLocationId(warehouseEntryItems[i].getStorageLocationId());
             transferStock.setSupplyId(warehouseEntryItems[i].getSupplyId());
             transferStock.setManufactureDate(warehouseEntryItems[i].getManufactureDate());
+            transferStock.setItemId(warehouseEntryItems[i].getId());
+            transferStock.setItemType(ItemType.entryItem);
+            transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             this.stockRecordService.addAmount(accountBook, transferStock,new TransferStock());
         }
         return ids;
@@ -160,7 +166,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
 
     @Override
     public void update1(String accountBook, WarehouseEntryItem[] warehouseEntryItems) throws WMSServiceException {
-        this.update(accountBook, warehouseEntryItems, false);
+        this.update1(accountBook, warehouseEntryItems, false);
     }
 
     @Override
@@ -197,11 +203,15 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                 transferStockAgainst.setUnitAmount(oriItemView.getUnitAmount());
                 transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
                 transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
+                transferStockAgainst.setState(TransferStock.WAITING_FOR_INSPECTION);
+                transferStockAgainst.setItemId(oriItemView.getId());
+                transferStockAgainst.setItemType(ItemType.entryItem);
                 //默认是未送检的
                 transferStockAgainst.setState(TransferStock.WAITING_FOR_INSPECTION);
                 //增加新库存
                 TransferStock transferStockNew = new TransferStock();
                 transferStockNew.setAmount(warehouseEntryItem.getRealAmount());
+                transferStockNew.setAvailableAmount(warehouseEntryItem.getRealAmount());
                 transferStockNew.setUnit(warehouseEntryItem.getUnit());
                 transferStockNew.setUnitAmount(warehouseEntryItem.getUnitAmount());
                 transferStockNew.setInventoryDate(warehouseEntryItem.getInventoryDate());
@@ -209,6 +219,9 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
                 transferStockNew.setSourceStorageLocationId(warehouseEntryItem.getStorageLocationId());
                 transferStockNew.setSupplyId(warehouseEntryItem.getSupplyId());
                 transferStockNew.setManufactureDate(warehouseEntryItem.getManufactureDate());
+                transferStockNew.setState(TransferStock.WAITING_FOR_INSPECTION);
+                transferStockNew.setItemType(ItemType.entryItem);
+                transferStockNew.setItemId(warehouseEntryItem.getId());
                 this.stockRecordService.addAmount(accountBook, transferStockNew,transferStockAgainst);
             }
         });
@@ -233,54 +246,32 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             if (oriItemView.getState() != WarehouseEntryItemService.WAIT_FOR_PUT_IN_STORAGE) {
                 throw new WMSServiceException(String.format("不允许删除已送检/已入库的入库单条目(%d)", oriItemView.getId()));
             }
+            if(oriItemView.getVersion()==0) {
+                //冲抵原库存
+                TransferStock transferStockAgainst = new TransferStock();
+                transferStockAgainst.setAmount(oriItemView.getRealAmount().negate());
+                transferStockAgainst.setUnit(oriItemView.getUnit());
+                transferStockAgainst.setUnitAmount(oriItemView.getUnitAmount());
+                transferStockAgainst.setInventoryDate(oriItemView.getInventoryDate());
+                transferStockAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
+                transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
+                transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
+                transferStockAgainst.setManufactureDate(oriItemView.getManufactureDate());
+                this.stockRecordService.addAmount(accountBook, transferStockAgainst);
+            }
+            else{
             //冲抵原库存
-            TransferStock transferStockAgainst = new TransferStock();
-            transferStockAgainst.setAmount(oriItemView.getRealAmount().negate());
-            transferStockAgainst.setUnit(oriItemView.getUnit());
-            transferStockAgainst.setUnitAmount(oriItemView.getUnitAmount());
-            transferStockAgainst.setInventoryDate(oriItemView.getInventoryDate());
-            transferStockAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
-            transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
-            transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
-            transferStockAgainst.setManufactureDate(oriItemView.getManufactureDate());
-            this.stockRecordService.addAmount(accountBook, transferStockAgainst);
-        }
-        try {
-            this.warehouseEntryItemDAO.remove(accountBook, ids);
-        } catch (Throwable ex) {
-            throw new WMSServiceException("删除失败，如果条目已经被引用，需要先删除引用项目");
-        }
-    }
-
-    @Override
-    public void remove1(String accountBook, int[] ids) throws WMSServiceException {
-        WarehouseEntryView warehouseEntryView = null;
-        for (int id : ids) {
-            WarehouseEntryItemView[] foundItemViews = this.warehouseEntryItemDAO.find(accountBook, new Condition().addCondition("id", id));
-            if (foundItemViews.length == 0) {
-                throw new WMSServiceException(String.format("无法找到入库单条目，请重新提交(%d)"));
-            }
-            WarehouseEntryItemView oriItemView = foundItemViews[0];
-            if (warehouseEntryView == null) {
-                final WarehouseEntryView[] warehouseEntryViews = this.warehouseEntryService.find(accountBook, new Condition().addCondition("id", oriItemView.getWarehouseEntryId()));
-                if (warehouseEntryViews.length == 0)
-                    throw new WMSServiceException(String.format("入库单(%d)不存在，请重新提交！", oriItemView.getWarehouseEntryId()));
-                warehouseEntryView = warehouseEntryViews[0];
-            }
-            if (oriItemView.getState() != WarehouseEntryItemService.WAIT_FOR_PUT_IN_STORAGE) {
-                throw new WMSServiceException(String.format("不允许删除已送检/已入库的入库单条目(%d)", oriItemView.getId()));
-            }
-            //冲抵原库存
-            TransferStock transferStockAgainst = new TransferStock();
-            transferStockAgainst.setUnit(oriItemView.getUnit());
-            transferStockAgainst.setUnitAmount(oriItemView.getUnitAmount());
-            transferStockAgainst.setInventoryDate(oriItemView.getInventoryDate());
-            transferStockAgainst.setRelatedOrderNo(warehouseEntryView.getNo());
-            transferStockAgainst.setSourceStorageLocationId(oriItemView.getStorageLocationId());
-            transferStockAgainst.setSupplyId(oriItemView.getSupplyId());
-            transferStockAgainst.setItemId(oriItemView.getId());
-            transferStockAgainst.setItemType(ItemType.entryItem);
-            this.stockRecordService.restoreAmount(accountBook, transferStockAgainst);
+            TransferStock transferStockAgainst1 = new TransferStock();
+            transferStockAgainst1.setUnit(oriItemView.getUnit());
+            transferStockAgainst1.setUnitAmount(oriItemView.getUnitAmount());
+            transferStockAgainst1.setInventoryDate(oriItemView.getInventoryDate());
+            transferStockAgainst1.setRelatedOrderNo(warehouseEntryView.getNo());
+            transferStockAgainst1.setSourceStorageLocationId(oriItemView.getStorageLocationId());
+            transferStockAgainst1.setSupplyId(oriItemView.getSupplyId());
+            transferStockAgainst1.setItemId(oriItemView.getId());
+            transferStockAgainst1.setItemType(ItemType.entryItem);
+            transferStockAgainst1.setState(TransferStock.WAITING_FOR_INSPECTION);
+            this.stockRecordService.restoreAmount(accountBook, transferStockAgainst1);}
         }
         try {
             this.warehouseEntryItemDAO.remove(accountBook, ids);
@@ -299,7 +290,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
         Stream.of(warehouseEntryItems).forEach(
                 (warehouseEntryItem) -> {
                     new Validator("订单数量").min(0).validate(warehouseEntryItem.getExpectedAmount());
-                    new Validator("实收数量").min(0).validate(warehouseEntryItem.getRealAmount());
+                    new Validator("实收数量").min(0).max(warehouseEntryItem.getExpectedAmount()).validate(warehouseEntryItem.getRealAmount());
                     new Validator("单位数量").min(0).validate(warehouseEntryItem.getUnitAmount());
                     new Validator("已分配送检数量").min(0).max(warehouseEntryItem.getRealAmount()).validate(warehouseEntryItem.getInspectionAmount());
                     new Validator("拒收数量").min(0).max(warehouseEntryItem.getExpectedAmount()).validate(warehouseEntryItem.getRefuseAmount());
@@ -419,17 +410,23 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             } else {
                 transferStock.setAmount(warehouseEntryItem.getRealAmount());
             }
+            transferStock.setAvailableAmount(transferStock.getAmount());
             transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
+            transferStock.setNewUnit(warehouseEntryItem.getUnit());
+            transferStock.setNewUnitAmount(warehouseEntryItem.getUnitAmount());
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(正品移库)");
             transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.QUALIFIED);
+            transferStock.setItemTypeForBatchNo(ItemType.entryItem);
+            transferStock.setItemType(ItemType.entryToTransfer);
+            transferStock.setItemId(warehouseEntryItem.getId());
             this.stockRecordService.transferStock(accountBook, transferStock,new TransferStock());
 
             warehouseEntryItem.setState(WarehouseEntryItemService.QUALIFIED);
         }));
-        this.update(accountBook, warehouseEntryItems);
+        this.update1(accountBook, warehouseEntryItems);
         //this.warehouseEntryService.updateState(accountBook, warehouseEntryIDs);
     }
 
@@ -467,7 +464,7 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.UNQUALIFIED);
             transferStock.setItemTypeForBatchNo(ItemType.entryItem);
-            transferStock.setItemType(ItemType.transferItem);
+            transferStock.setItemType(ItemType.entryToTransfer);
             this.stockRecordService.RealTransformStock(accountBook, transferStock);
 
             warehouseEntryItem.setState(WarehouseEntryItemService.UNQUALIFIED);
@@ -503,19 +500,23 @@ public class WarehouseEntryItemServiceImpl implements WarehouseEntryItemService 
             } else {
                 transferStock.setAmount(warehouseEntryItem.getRealAmount());
             }
+            transferStock.setAvailableAmount(transferStock.getAmount());
             transferStock.setSupplyId(warehouseEntryItem.getSupplyId());
             transferStock.setUnit(warehouseEntryItem.getUnit());
             transferStock.setUnitAmount(warehouseEntryItem.getUnitAmount());
+            transferStock.setNewUnit(warehouseEntryItem.getUnit());
+            transferStock.setNewUnitAmount(warehouseEntryItem.getUnitAmount());
             transferStock.setRelatedOrderNo(warehouseEntry.getNo() + "(不良品移库)");
             transferStock.setState(TransferStock.WAITING_FOR_INSPECTION);
             transferStock.setNewState(TransferStock.UNQUALIFIED);
             transferStock.setItemTypeForBatchNo(ItemType.entryItem);
-            transferStock.setItemType(ItemType.transferItem);
+            transferStock.setItemType(ItemType.entryToTransfer);
+            transferStock.setItemId(warehouseEntryItem.getId());
             this.stockRecordService.transferStock(accountBook, transferStock,new TransferStock());
 
             warehouseEntryItem.setState(WarehouseEntryItemService.UNQUALIFIED);
         }));
-        this.update(accountBook, warehouseEntryItems);
+        this.update1(accountBook, warehouseEntryItems);
         //this.warehouseEntryService.updateState(accountBook, warehouseEntryIDs);
     }
 

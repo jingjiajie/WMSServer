@@ -1,9 +1,6 @@
 package com.wms.utilities.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
@@ -517,6 +514,7 @@ public class WarehouseEntryItemView {
         this.warehouseEntryInboundDeliveryNo = warehouseEntryInboundDeliveryNo;
     }
 
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
@@ -596,6 +594,7 @@ public class WarehouseEntryItemView {
         if (warehouseEntryInboundDeliveryNo != null ? !warehouseEntryInboundDeliveryNo.equals(that.warehouseEntryInboundDeliveryNo) : that.warehouseEntryInboundDeliveryNo != null)
             return false;
 
+
         return true;
     }
 
@@ -647,6 +646,7 @@ public class WarehouseEntryItemView {
         result = 31 * result + (entryRandomCode != null ? entryRandomCode.hashCode() : 0);
         result = 31 * result + (entryItemCreatTime != null ? entryItemCreatTime.hashCode() : 0);
         result = 31 * result + (warehouseEntryInboundDeliveryNo != null ? warehouseEntryInboundDeliveryNo.hashCode() : 0);
+
         return result;
     }
 }

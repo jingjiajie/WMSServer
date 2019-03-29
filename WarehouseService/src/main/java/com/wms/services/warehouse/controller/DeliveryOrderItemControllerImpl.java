@@ -23,7 +23,12 @@ public class DeliveryOrderItemControllerImpl implements DeliveryOrderItemControl
     @Override
     public int[] add(@PathVariable("accountBook") String accountBook,
                      @RequestBody DeliveryOrderItem[] deliveryOrderItems) {
-        return deliveryOrderItemService.add(accountBook, deliveryOrderItems);
+        if (deliveryOrderItems[0].getVersion()==0){
+            return deliveryOrderItemService.add(accountBook, deliveryOrderItems);
+        }else{
+            return deliveryOrderItemService.add2(accountBook, deliveryOrderItems);
+        }
+
     }
 
     @Override
@@ -31,7 +36,11 @@ public class DeliveryOrderItemControllerImpl implements DeliveryOrderItemControl
     @ResponseStatus(HttpStatus.OK)
     public void update(@PathVariable("accountBook") String accountBook,
                        @RequestBody DeliveryOrderItem[] deliveryOrderItems) {
-        deliveryOrderItemService.update(accountBook, deliveryOrderItems);
+        if (deliveryOrderItems[0].getVersion()==0){
+            deliveryOrderItemService.update(accountBook, deliveryOrderItems);
+        }else{
+            deliveryOrderItemService.update2(accountBook, deliveryOrderItems);
+        }
     }
 
     @Override

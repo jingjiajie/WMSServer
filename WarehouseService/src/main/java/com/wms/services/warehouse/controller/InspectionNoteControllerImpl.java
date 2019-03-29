@@ -57,7 +57,9 @@ public class InspectionNoteControllerImpl implements InspectionNoteController {
     @ResponseStatus(HttpStatus.OK)
     public void inspectFinish(@PathVariable("accountBook") String accountBook,
                               @RequestBody InspectFinishArgs inspectFinishArgs) {
-        this.inspectionNoteService.inspectFinish(accountBook, inspectFinishArgs);
+        if(inspectFinishArgs.getVersion()==0){
+        this.inspectionNoteService.inspectFinish(accountBook, inspectFinishArgs);}
+        else{this.inspectionNoteService.inspectFinish1(accountBook, inspectFinishArgs);}
         List<Integer> warehouseEntryIDs = new ArrayList<>();
         List<Integer> inspectionNoteIDs = new ArrayList<>();
         inspectionNoteIDs.add(inspectFinishArgs.getInspectionNoteId());
