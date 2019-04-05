@@ -22,8 +22,14 @@ public class TransferOrderItemControllerImpl
     @RequestMapping(value="/",method = RequestMethod.POST)
     public ResponseEntity<int[]> add(@PathVariable("accountBook") String accountBook,
                                      @RequestBody TransferOrderItem[] transferOrderItems) {
-        int ids[] = transferOrderItemService.add(accountBook, transferOrderItems);
-        return new ResponseEntity<int[]>(ids, HttpStatus.OK);
+        if (transferOrderItems[0].getVersion()==0){
+            int ids[] = transferOrderItemService.add(accountBook, transferOrderItems);
+            return new ResponseEntity<int[]>(ids, HttpStatus.OK);
+        }else{
+            int ids[] = transferOrderItemService.add2(accountBook, transferOrderItems);
+            return new ResponseEntity<int[]>(ids, HttpStatus.OK);
+        }
+
     }
 
     @Override
@@ -41,7 +47,12 @@ public class TransferOrderItemControllerImpl
     @ResponseStatus(HttpStatus.OK)
     public void update(@PathVariable("accountBook")String accountBook,
                        @RequestBody TransferOrderItem[] objs) {
-        this.transferOrderItemService.update(accountBook,objs);
+        if (objs[0].getVersion()==0){
+            this.transferOrderItemService.update(accountBook,objs);
+        }else{
+            this.transferOrderItemService.update2(accountBook,objs);
+        }
+
     }
 
     @Override

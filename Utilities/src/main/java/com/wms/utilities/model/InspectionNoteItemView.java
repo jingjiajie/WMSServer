@@ -34,6 +34,7 @@ public class InspectionNoteItemView {
     private BigDecimal warehouseEntryItemUnitAmount;
     private BigDecimal warehouseEntryItemRealAmount;
     private Timestamp inspectionNoteCreateTime;
+    private Integer version;
 
     @Basic
     @Id
@@ -286,15 +287,15 @@ public class InspectionNoteItemView {
         this.inspectionNoteCreateTime = inspectionNoteCreateTime;
     }
 
-//    @Basic
-//    @Column(name = "Version")
-//    public Integer getVersion() {
-//        return version;
-//    }
-//
-//    public void setVersion(Integer version) {
-//        this.version = version;
-//    }
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -335,7 +336,7 @@ public class InspectionNoteItemView {
             return false;
         if (inspectionNoteCreateTime != null ? !inspectionNoteCreateTime.equals(that.inspectionNoteCreateTime) : that.inspectionNoteCreateTime != null)
             return false;
-
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -367,7 +368,7 @@ public class InspectionNoteItemView {
         result = 31 * result + (warehouseEntryItemUnitAmount != null ? warehouseEntryItemUnitAmount.hashCode() : 0);
         result = 31 * result + (warehouseEntryItemRealAmount != null ? warehouseEntryItemRealAmount.hashCode() : 0);
         result = 31 * result + (inspectionNoteCreateTime != null ? inspectionNoteCreateTime.hashCode() : 0);
-
+        result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 }

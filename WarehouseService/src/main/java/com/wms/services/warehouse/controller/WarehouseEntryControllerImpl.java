@@ -7,12 +7,14 @@ import com.wms.services.warehouse.datastructures.WarehouseEntryAndItems;
 import com.wms.utilities.exceptions.service.WMSServiceException;
 import com.wms.services.warehouse.service.WarehouseEntryService;
 import com.wms.utilities.datastructures.Condition;
+import com.wms.utilities.model.InspectionNoteItem;
 import com.wms.utilities.model.WarehouseEntry;
 import com.wms.utilities.model.WarehouseEntryView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,7 +27,7 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     @ResponseStatus(HttpStatus.OK)
     @Override
     public int[] add(@PathVariable("accountBook") String accountBook,
-                                     @RequestBody WarehouseEntry[] warehouseEntries) {
+                     @RequestBody WarehouseEntry[] warehouseEntries) {
         return warehouseEntryService.add(accountBook, warehouseEntries);
     }
 
@@ -57,53 +59,72 @@ public class WarehouseEntryControllerImpl implements WarehouseEntryController {
     }
 
     @Override
-    @RequestMapping(value = "/inspect",method = RequestMethod.POST)
+    @RequestMapping(value = "/inspect", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public List<Integer> inspect(@PathVariable("accountBook") String accountBook,
-                                 @RequestBody InspectArgs inspectArgs){
-        return this.warehouseEntryService.inspect(accountBook,inspectArgs);
+                                 @RequestBody InspectArgs inspectArgs) {
+        if (inspectArgs.getInspectItems().length != 1) {
+            return new ArrayList<>();
+        }
+        for (InspectionNoteItem inspectionNoteItem : inspectArgs.getInspectItems()[0].getInspectionNoteItems())
+        {
+            if (!inspectionNoteItem.getVersion().equals(inspectArgs.getInspectItems()[0].getInspectionNote().getVersion())) {
+                throw new WMSServiceException("入库单和入库单条目不同！");
+            }
+        }
+        if (inspectArgs.getInspectItems()[0].getInspectionNote().getVersion() == 0) {
+            //throw new WMSServiceException("旧");
+            return this.warehouseEntryService.inspect(accountBook, inspectArgs);
+        }
+        else{
+            //throw new WMSServiceException("新");
+            return this.warehouseEntryService.inspect1(accountBook, inspectArgs);
+        }
     }
 
     @Override
-    @RequestMapping(value = "/update_state",method = RequestMethod.PUT)
+    @RequestMapping(value = "/update_state", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.OK)
     public void updateState(
             @PathVariable("accountBook") String accountBook,
             @RequestBody List<Integer> ids) throws WMSServiceException {
-        this.warehouseEntryService.updateState(accountBook,ids);
+        this.warehouseEntryService.updateState(accountBook, ids);
     }
 
     @Override
-    @RequestMapping(value="/count/{condStr}",method = RequestMethod.GET)
+    @RequestMapping(value = "/count/{condStr}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public long findCount(@PathVariable("accountBook") String accountBook,
-                   @PathVariable("condStr") String condStr){
+                          @PathVariable("condStr") String condStr) {
         return warehouseEntryService.findCount(accountBook, Condition.fromJson(condStr));
     }
 
     @Override
-    @RequestMapping(value="/preview/{strIDs}",method = RequestMethod.GET)
+    @RequestMapping(value = "/preview/{strIDs}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public List<WarehouseEntryAndItems> getPreviewData(@PathVariable("accountBook") String accountBook,
-                          @PathVariable("strIDs") String strIDs){
+                                                       @PathVariable("strIDs") String strIDs) {
         Gson gson = new Gson();
-        List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {}.getType());
-        return warehouseEntryService.getPreviewData(accountBook,ids);
+        List<Integer> ids = gson.fromJson(strIDs, new TypeToken<List<Integer>>() {
+        }.getType());
+        return warehouseEntryService.getPreviewData(accountBook, ids);
     }
 
     @Override
-    @RequestMapping(value="/receive",method = RequestMethod.POST)
+    @RequestMapping(value = "/receive", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void receive(@PathVariable("accountBook") String accountBook,
-                 @RequestBody List<Integer> ids) {
-        this.warehouseEntryService.receive(accountBook,ids);
+                        @RequestBody List<Integer> ids) {
+        //在putin区分了
+        this.warehouseEntryService.receive(accountBook, ids);
     }
 
     @Override
-    @RequestMapping(value="/reject",method = RequestMethod.POST)
+    @RequestMapping(value = "/reject", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     public void reject(@PathVariable("accountBook") String accountBook,
-                        @RequestBody List<Integer> ids) {
-        this.warehouseEntryService.reject(accountBook,ids);
+                       @RequestBody List<Integer> ids) {
+        //在putin区分了
+        this.warehouseEntryService.reject(accountBook, ids);
     }
 }

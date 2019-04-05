@@ -129,6 +129,7 @@ public class StockRecordFind {
 
     private String[] batchNo=null;
 
+
     public int getSupplierId() {
         return supplierId;
     }
@@ -138,4 +139,15 @@ public class StockRecordFind {
     }
 
     private int supplierId;
+
+    public boolean isFilterZero() {
+        return filterZero;
+    }
+
+    public void setFilterZero(boolean filterZero) {
+        this.filterZero = filterZero;
+    }
+
+    private boolean filterZero=true;
+
 }

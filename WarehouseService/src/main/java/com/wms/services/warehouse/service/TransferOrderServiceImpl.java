@@ -132,9 +132,12 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                 transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
             });
 
-
             if(transferOrderItems.length>0){
-            this.transferOrderItemService.update(accountBook, transferOrderItems);
+                if(transferOrderItems[0].getVersion()==0) {
+                    this.transferOrderItemService.update(accountBook, transferOrderItems);
+                }else {
+                    this.transferOrderItemService.update2(accountBook, transferOrderItems);
+                }
             }
         }
         else { //部分完成
@@ -155,7 +158,11 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                 //部分完成移库操作
                 transferOrderItem.setState(TransferOrderItemService.STATE_ALL_FINISH);
 
-                this.transferOrderItemService.update(accountBook, new TransferOrderItem[]{transferOrderItem});
+                if(transferOrderItem.getVersion()==0) {
+                    this.transferOrderItemService.update(accountBook, new TransferOrderItem[]{transferOrderItem});
+                }else {
+                    this.transferOrderItemService.update2(accountBook, new TransferOrderItem[]{transferOrderItem});
+                }
             });
 
 //            this.update(accountBook, transferOrders);
@@ -163,6 +170,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
     }
 
     public void transferSome(String accountBook, List<Integer> ids,int personId) {
+        //新旧版本的改动在transferAll进行
         if (ids.size() == 0) {
             throw new WMSServiceException("请选择至少一个移库单条目！");
         }
@@ -214,6 +222,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
     }
 
     public void transfer(String accountBook, TransferArgs transferArgs) {
+        //没用到，但还是加上新旧版本
         TransferItem[] transferItems = transferArgs.getTransferItems();
         Stream.of(transferItems).forEach((transferItem) -> {
             //创建新的移库单
@@ -233,8 +242,13 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                     transferOrderItem.setState(0);
                     transferOrderItem.setTransferOrderId(newTransferOrderID);
             });
-            this.transferOrderItemService.add(accountBook, transferOrderItems);
-            //TODO 尝试更新移库单时间
+
+            if(transferOrderItems[0].getVersion()==0) {
+                this.transferOrderItemService.add(accountBook, transferOrderItems);
+            }else {
+                this.transferOrderItemService.add2(accountBook, transferOrderItems);
+            }
+
             //transferOrderItemService.updateTransferOrder(accountBook,newTransferOrderID ,transferArgs.getTransferItems()[0].getTransferOrder().getCreatePersonId());
         });
     }
@@ -265,7 +279,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
 
     @Override
     public List<DeliveryOrderItemView> orderToDelivery(String accountBook, DeliveryByTransferOrder deliveryByTransferOrder) {
-
+        //新旧版本解决
         TransferOrderView[] transferOrderViews=this.find(accountBook,new Condition().addCondition("id",deliveryByTransferOrder.getTransferOrderId()));
         TransferOrder transferOrder=this.transferOrderDAO.findTable(accountBook,new Condition().addCondition("id",deliveryByTransferOrder.getTransferOrderId()))[0];
         if (transferOrderViews[0].getState()!=2){
@@ -313,6 +327,7 @@ public class TransferOrderServiceImpl implements TransferOrderService{
                 deliveryOrderItem.setDeliveryOrderId(curDeliveryOrderId);
                 deliveryOrderItem.setRealAmount(BigDecimal.ZERO);
                 deliveryOrderItem.setComment("发货");
+                deliveryOrderItem.setVersion(1);
                 deliveryOrderItemList.add(deliveryOrderItem);
 
             }
@@ -343,7 +358,11 @@ public class TransferOrderServiceImpl implements TransferOrderService{
         if (deliveryOrderItems.length==0) {
             throw new WMSServiceException(String.format("当前备货单无可直接正常发货项，备货单号（%S），无法创建出库单，请检查后再试！", itemViews[0].getTransferOrderNo()));
         }
-        this.deliveryOrderItemService.add(accountBook,deliveryOrderItems);
+        if(itemViews[0].getVersion()==0) {
+            this.deliveryOrderItemService.add(accountBook, deliveryOrderItems);
+        }else {
+            this.deliveryOrderItemService.add2(accountBook, deliveryOrderItems);
+        }
         //加个提示
         transferOrder.setDescription(String.format("(已出库)",transferOrder.getDescription()));
         this.update(accountBook,new TransferOrder[]{transferOrder});

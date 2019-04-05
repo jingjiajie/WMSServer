@@ -16,7 +16,7 @@ public class JudgeAmount {
     }
 
     public void setLastIRemainAmount(BigDecimal lastIRemainAmount) {
-        lastIRemainAmount = lastIRemainAmount;
+        this.lastIRemainAmount = lastIRemainAmount;
     }
 
     int i=-1;

@@ -10,8 +10,10 @@ import java.util.List;
 public interface DeliveryOrderItemService
 extends BaseService<DeliveryOrderItem,DeliveryOrderItemView>{
 
+    //新旧版本更改
     void loadingSome(String accountBook, List<Integer> ids) throws WMSServiceException;
     void loadingALL(String accountBook, List<Integer> ids) throws WMSServiceException;
+
     public void updateSleep();
 
     public void remove2(String accountBook, int[] ids);

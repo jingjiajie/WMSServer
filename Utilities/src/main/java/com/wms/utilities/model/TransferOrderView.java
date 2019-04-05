@@ -26,8 +26,7 @@ public class TransferOrderView {
     private Integer supplierId;
     private String supplierNo;
     private String supplierName;
-
-
+   private Integer version;
     @Basic
     @Id
     @Column(name = "ID")
@@ -199,15 +198,15 @@ public class TransferOrderView {
         this.supplierName = supplierName;
     }
 
-//    @Basic
-//    @Column(name = "Version")
-//    public Integer getVersion() {
-//        return version;
-//    }
-//
-//    public void setVersion(Integer version) {
-//        this.version = version;
-//    }
+    @Basic
+    @Column(name = "Version")
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -238,7 +237,7 @@ public class TransferOrderView {
         if (supplierId != null ? !supplierId.equals(that.supplierId) : that.supplierId != null) return false;
         if (supplierNo != null ? !supplierNo.equals(that.supplierNo) : that.supplierNo != null) return false;
         if (supplierName != null ? !supplierName.equals(that.supplierName) : that.supplierName != null) return false;
-
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
 
         return true;
     }
@@ -262,7 +261,7 @@ public class TransferOrderView {
         result = 31 * result + (supplierId != null ? supplierId.hashCode() : 0);
         result = 31 * result + (supplierNo != null ? supplierNo.hashCode() : 0);
         result = 31 * result + (supplierName != null ? supplierName.hashCode() : 0);
-
+        result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
     }
 }
