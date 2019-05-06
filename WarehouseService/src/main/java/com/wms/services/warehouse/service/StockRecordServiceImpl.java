@@ -1095,6 +1095,10 @@ public class StockRecordServiceImpl implements StockRecordService {
                 StockRecord stockRecordNew = ReflectHelper.createAndCopyFields(stockRecordsNew[0],StockRecord.class);
                 stockRecordNew.setAmount(stockRecordNew.getAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
                 stockRecordNew.setAvailableAmount(stockRecordNew.getAvailableAmount().subtract(itemRelatedRecords[i].getBatchAmount()));
+                //判断新库位数量是否够退回
+                if(stockRecordNew.getAvailableAmount().compareTo(BigDecimal.ZERO)<0){
+                    throw new WMSServiceException("无法删除或修改，目标库位数量不足！");
+                }
                 stockRecordNew.setTime(this.getTime());
                 transferRecord.setTargetStorageLocationAmount(stockRecordsSource[0].getUnitAmount());
                 transferRecord.setTargetStorageLocationUnit(stockRecordsSource[0].getUnit());
