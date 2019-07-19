@@ -1153,6 +1153,9 @@ public class StockRecordServiceImpl implements StockRecordService {
                     stockRecordNew.setRelatedOrderNo(transferStockRestore.getRelatedOrderNo());
                     transferRecordList.add(transferRecord);
                 }
+                if(stockRecordNew.getAmount().compareTo(stockRecordNew.getAvailableAmount())<0){
+                    throw new WMSServiceException("退回数量查可用数量不能大于数量！");
+                }
                 stockRecordsList.add(stockRecordNew);
 
             }
